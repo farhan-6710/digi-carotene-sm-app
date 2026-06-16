@@ -11,6 +11,62 @@ import type {
 import { getDayLabel } from "@/features/posts-management/utils/calendarUtils";
 import { toPostDateString, comparePostTimes } from "@/features/posts-management/utils/postScheduleUtils";
 
+const postSelect = `
+  id,
+  project_id,
+  post_title,
+  socials,
+  post_links,
+  scheduled_date,
+  scheduled_time,
+  posted_date,
+  posted_time,
+  status,
+  created_at,
+  projects (
+    project_name,
+    clients ( client_name )
+  )
+`;
+
+type PostRow = Post & {
+  projects:
+    | {
+        project_name: string;
+        clients: { client_name: string } | { client_name: string }[] | null;
+      }
+    | {
+        project_name: string;
+        clients: { client_name: string } | { client_name: string }[] | null;
+      }[]
+    | null;
+};
+
+function mapPostRow(row: PostRow): Post {
+  const project = Array.isArray(row.projects) ? row.projects[0] ?? null : row.projects;
+  const client = project?.clients
+    ? Array.isArray(project.clients)
+      ? project.clients[0] ?? null
+      : project.clients
+    : null;
+
+  return {
+    id: row.id,
+    project_id: row.project_id,
+    project_name: project?.project_name,
+    client_name: client?.client_name,
+    post_title: row.post_title,
+    socials: row.socials,
+    post_links: row.post_links,
+    scheduled_date: row.scheduled_date,
+    scheduled_time: row.scheduled_time,
+    posted_date: row.posted_date,
+    posted_time: row.posted_time,
+    status: row.status,
+    created_at: row.created_at,
+  };
+}
+
 export function toScheduledDate(
   year: number,
   month: number,
@@ -32,7 +88,9 @@ function getMonthDateRange(year: number, month: number) {
 export function postToSlotClient(post: Post): SlotClient {
   return {
     id: post.id,
-    name: post.client_name,
+    projectId: post.project_id,
+    name: post.project_name ?? "Unknown project",
+    clientName: post.client_name,
     postTitle: post.post_title ?? null,
     socials: post.socials ?? null,
     postLinks: post.post_links ?? null,
@@ -82,7 +140,7 @@ export async function fetchPostsForMonth(
 
   const { data, error } = await supabase
     .from("posts")
-    .select("*")
+    .select(postSelect)
     .gte("scheduled_date", start)
     .lte("scheduled_date", end)
     .order("scheduled_date", { ascending: true })
@@ -92,7 +150,7 @@ export async function fetchPostsForMonth(
     throw error;
   }
 
-  return (data ?? []) as Post[];
+  return (data ?? []).map((row) => mapPostRow(row as unknown as PostRow));
 }
 
 type PostDateTimeInput = {
@@ -101,7 +159,7 @@ type PostDateTimeInput = {
 };
 
 type CreatePostInput = {
-  clientName: string;
+  projectId: string;
   postTitle: string | null;
   socials: string[] | null;
   postLinks?: PostLinks | null;
@@ -110,21 +168,13 @@ type CreatePostInput = {
   status: StatusKey;
 };
 
-type UpdatePostInput = {
-  clientName: string;
-  postTitle: string | null;
-  socials: string[] | null;
-  postLinks?: PostLinks | null;
-  scheduled: PostDateTimeInput;
-  posted: PostDateTimeInput | null;
-  status: StatusKey;
-};
+type UpdatePostInput = CreatePostInput;
 
 export async function createPost(input: CreatePostInput): Promise<Post> {
   const { data, error } = await supabase
     .from("posts")
     .insert({
-      client_name: input.clientName,
+      project_id: input.projectId,
       post_title: input.postTitle,
       socials: input.socials,
       post_links: input.postLinks || {},
@@ -134,14 +184,14 @@ export async function createPost(input: CreatePostInput): Promise<Post> {
       posted_time: input.posted?.time ?? null,
       status: input.status,
     })
-    .select("*")
+    .select(postSelect)
     .single();
 
   if (error) {
     throw error;
   }
 
-  return data as Post;
+  return mapPostRow(data as unknown as PostRow);
 }
 
 export async function updatePost(
@@ -151,7 +201,7 @@ export async function updatePost(
   const { data, error } = await supabase
     .from("posts")
     .update({
-      client_name: input.clientName,
+      project_id: input.projectId,
       post_title: input.postTitle,
       socials: input.socials,
       post_links: input.postLinks || {},
@@ -162,14 +212,14 @@ export async function updatePost(
       status: input.status,
     })
     .eq("id", postId)
-    .select("*")
+    .select(postSelect)
     .single();
 
   if (error) {
     throw error;
   }
 
-  return data as Post;
+  return mapPostRow(data as unknown as PostRow);
 }
 
 export async function deletePost(postId: string): Promise<void> {
@@ -180,13 +230,26 @@ export async function deletePost(postId: string): Promise<void> {
   }
 }
 
-export async function fetchPostsForClientName(
-  clientName: string,
-): Promise<Post[]> {
+export async function fetchPostsForClientId(clientId: string): Promise<Post[]> {
+  const { data: projectRows, error: projectError } = await supabase
+    .from("projects")
+    .select("id")
+    .eq("client_id", clientId);
+
+  if (projectError) {
+    throw projectError;
+  }
+
+  const projectIds = (projectRows ?? []).map((row) => row.id);
+
+  if (projectIds.length === 0) {
+    return [];
+  }
+
   const { data, error } = await supabase
     .from("posts")
-    .select("*")
-    .eq("client_name", clientName)
+    .select(postSelect)
+    .in("project_id", projectIds)
     .order("scheduled_date", { ascending: true })
     .order("scheduled_time", { ascending: true });
 
@@ -194,5 +257,17 @@ export async function fetchPostsForClientName(
     throw error;
   }
 
-  return (data ?? []) as Post[];
+  return (data ?? []).map((row) => mapPostRow(row as unknown as PostRow));
+}
+
+export async function fetchPostsCount(): Promise<number> {
+  const { count, error } = await supabase
+    .from("posts")
+    .select("id", { count: "exact", head: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return count ?? 0;
 }

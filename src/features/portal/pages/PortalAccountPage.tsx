@@ -18,7 +18,7 @@ import {
 
 export function PortalAccountPage() {
   const { user } = useAuth();
-  const { client, posts, loading, error } = usePortalClient();
+  const { client, projects, posts, loading, error } = usePortalClient();
 
   const stats = buildPortalStats(posts).map((stat) => ({
     label: stat.label,
@@ -77,8 +77,8 @@ export function PortalAccountPage() {
           <>
             <AccountDetailsCard title="Brand & login details" details={brandDetails} />
             <AccountPanelCard title="Social profiles">
-              {client ? (
-                <PortalSocialLinks client={client} />
+              {projects.length > 0 ? (
+                <PortalSocialLinks projects={projects} />
               ) : (
                 <p className="text-sm text-muted-foreground">
                   Brand details unavailable.

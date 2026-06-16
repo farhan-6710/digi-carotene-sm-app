@@ -1,11 +1,11 @@
 import { supabase } from "@/shared/lib/supabase";
 import { unlinkProfilesFromClient } from "@/features/auth/utils/profileRepository";
-import type { Client, ClientSocials } from "../types/types";
+import type { Client } from "../types/types";
 
 function formatDeleteClientError(error: { code?: string; message?: string }): Error {
   if (error.code === "23503") {
     return new Error(
-      "This brand is linked to one or more portal logins (profiles.client_id). Run scripts/clients-fk-on-delete-set-null.sql in Supabase SQL Editor, then try again. Portal users will keep their login but lose portal access until you assign a new brand.",
+      "This client is linked to portal logins or projects. Remove those first, then try again.",
     );
   }
 
@@ -43,15 +43,9 @@ export type CreateClientInput = {
   clientName: string;
   mobileNumber?: string | null;
   websiteName?: string | null;
-  socials?: ClientSocials | null;
 };
 
-export type UpdateClientInput = {
-  clientName: string;
-  mobileNumber?: string | null;
-  websiteName?: string | null;
-  socials?: ClientSocials | null;
-};
+export type UpdateClientInput = CreateClientInput;
 
 export async function createClient(input: CreateClientInput): Promise<Client> {
   const { data, error } = await supabase
@@ -60,7 +54,6 @@ export async function createClient(input: CreateClientInput): Promise<Client> {
       client_name: input.clientName,
       mobile_number: input.mobileNumber || null,
       website_name: input.websiteName || null,
-      socials: input.socials || {},
     })
     .select("*")
     .single();
@@ -82,7 +75,6 @@ export async function updateClient(
       client_name: input.clientName,
       mobile_number: input.mobileNumber || null,
       website_name: input.websiteName || null,
-      socials: input.socials || {},
     })
     .eq("id", clientId)
     .select("*")

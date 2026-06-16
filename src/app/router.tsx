@@ -7,9 +7,10 @@ import { AnalyticsPage } from "@/features/analytics/pages/AnalyticsPage";
 import { AdminDashboardPage } from "@/features/dashboard/pages/AdminDashboardPage";
 import { PostsManagementPage } from "@/features/posts-management/pages/PostsManagementPage";
 import { ClientsManagementPage } from "@/features/clients-management/pages/ClientsManagementPage";
+import { ProjectsManagementPage } from "@/features/projects-management/pages/ProjectsManagementPage";
 import { ClientDetailPage } from "@/features/clients-management/pages/ClientDetailPage";
-import { EmployeesManagementPage } from "@/features/employees-management/pages/EmployeesManagementPage";
-import { EmployeeDetailPage } from "@/features/employees-management/pages/EmployeeDetailPage";
+import { TeamManagementPage } from "@/features/team-management/pages/TeamManagementPage";
+import { TeamMemberDetailPage } from "@/features/team-management/pages/TeamMemberDetailPage";
 import { AccountPage } from "@/features/account/pages/AccountPage";
 import { ReportsPage } from "@/features/reports/pages/ReportsPage";
 import { ClientReportPage } from "@/features/reports/pages/ClientReportPage";
@@ -42,15 +43,16 @@ export const router = createBrowserRouter([
         children: [
           { path: "dashboard", element: <AdminDashboardPage /> },
           { path: "posts-management", element: <PostsManagementPage /> },
+          { path: "projects-management", element: <ProjectsManagementPage /> },
           { path: "clients-management", element: <ClientsManagementPage /> },
           {
             path: "clients-management/:clientId",
             element: <ClientDetailPage />,
           },
-          { path: "employees-management", element: <EmployeesManagementPage /> },
+          { path: "team-management", element: <TeamManagementPage /> },
           {
-            path: "employees-management/:employeeId",
-            element: <EmployeeDetailPage />,
+            path: "team-management/:memberId",
+            element: <TeamMemberDetailPage />,
           },
           { path: "analytics", element: <AnalyticsPage /> },
           { path: "reports", element: <ReportsPage /> },

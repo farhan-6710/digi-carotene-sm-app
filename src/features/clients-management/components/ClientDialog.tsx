@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 import { ClientDialogBasicFields } from "@/features/clients-management/components/ClientDialogBasicFields";
-import { ClientDialogSocialFields } from "@/features/clients-management/components/ClientDialogSocialFields";
 import type { ClientDialogProps } from "@/features/clients-management/types/components";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { Button } from "@/shared/ui/button";
@@ -42,18 +41,13 @@ export function ClientDialog({
           <DialogHeader className="shrink-0">
             <DialogTitle>{isEditing ? "Edit Client" : "Add Client"}</DialogTitle>
             <DialogDescription>
-              Set the client name, mobile number, and website address. Client
-              name is the only required field.
+              Register a client company. Social accounts and posts are managed
+              per project under this client.
             </DialogDescription>
           </DialogHeader>
 
           <div className="flex-1 space-y-4 overflow-y-auto py-1 pr-1">
             <ClientDialogBasicFields
-              values={values}
-              onFieldChange={onFieldChange}
-              disabled={isSaving}
-            />
-            <ClientDialogSocialFields
               values={values}
               onFieldChange={onFieldChange}
               disabled={isSaving}
@@ -79,7 +73,6 @@ export function ClientDialog({
             <Button
               onClick={onSave}
               disabled={!canSave || isSaving}
-              className="rounded-full"
             >
               {isSaving ? "Saving..." : isEditing ? "Save Changes" : "Add Client"}
             </Button>
@@ -91,15 +84,12 @@ export function ClientDialog({
         open={isConfirmOpen}
         onOpenChange={setIsConfirmOpen}
         title="Remove client?"
-        description={`Remove "${values.clientName.trim()}" permanently? If a portal login is linked to this brand, they will lose portal access until you assign another client.`}
+        description="This permanently deletes the client. Remove linked projects first."
         confirmLabel="Remove client"
         confirmVariant="destructive"
         loading={isSaving}
         onConfirm={async () => {
-          if (!onDelete) {
-            return;
-          }
-          await onDelete();
+          await onDelete?.();
           setIsConfirmOpen(false);
         }}
       />

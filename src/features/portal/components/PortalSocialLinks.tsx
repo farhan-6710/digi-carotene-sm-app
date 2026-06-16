@@ -1,3 +1,5 @@
+import type { ProjectListItem } from "@/features/projects-management/types/types";
+import type { ProjectSocials } from "@/features/projects-management/types/types";
 import {
   FacebookIcon,
   InstagramIcon,
@@ -14,8 +16,23 @@ const socialEntries = [
   { key: "youtube" as const, label: "YouTube", Icon: YoutubeIcon },
 ];
 
-export function PortalSocialLinks({ client }: PortalSocialLinksProps) {
-  const socials = client.socials ?? {};
+function mergeProjectSocials(projects: ProjectListItem[]): ProjectSocials {
+  const merged: ProjectSocials = {};
+
+  for (const project of projects) {
+    for (const { key } of socialEntries) {
+      const url = project.socials?.[key]?.trim();
+      if (url && !merged[key]) {
+        merged[key] = url;
+      }
+    }
+  }
+
+  return merged;
+}
+
+export function PortalSocialLinks({ projects }: PortalSocialLinksProps) {
+  const socials = mergeProjectSocials(projects);
   const links = socialEntries
     .map(({ key, label, Icon }) => {
       const url = socials[key];

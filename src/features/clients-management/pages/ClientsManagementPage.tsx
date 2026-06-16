@@ -14,7 +14,7 @@ export function ClientsManagementPage() {
     <section className="space-y-8">
       <PageHeader
         heading="Clients Management"
-        description="Manage your agency's client list. Registered clients will be available in the dropdown when adding or editing posts on the schedule calendar."
+        description="Manage client companies and contact details. Create projects under each client for social accounts and posts."
         actions={
           <Button onClick={openAddDialog} className="rounded-full shadow-sm">
             <Plus className="mr-2 size-4" />

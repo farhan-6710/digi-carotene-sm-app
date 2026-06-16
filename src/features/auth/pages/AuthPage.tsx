@@ -102,9 +102,8 @@ export function AuthPage() {
         </p>
         <p className="max-w-md text-sm text-muted-foreground">
           If rows already exist in Supabase Table Editor, run{" "}
-          <code className="text-xs">scripts/profiles-rls.sql</code> in the SQL
-          Editor (RLS blocks the browser from reading profiles without a SELECT
-          policy).
+          <code className="text-xs">scripts/setup-database.sql</code> in the SQL
+          Editor (includes profiles RLS and the signup trigger).
         </p>
         <Link to="/" className="text-sm font-semibold text-primary hover:underline">
           Back to home

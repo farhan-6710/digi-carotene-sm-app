@@ -16,9 +16,8 @@ A premium, full-featured digital marketing agency operations dashboard and clien
 ### 2. Admin & Team Management Workspace
 - **Real-time Dashboard**: Live metrics for team members, total clients, total posts, and missed posts, complete with custom sparklines.
 - **Publishing Performance Chart**: Beautiful dual-line Recharts visualization comparing current and previous month publishing rates.
-- **Employees/Team Management**: Comprehensive CRUD for agency specialists, featuring roles (`executive`, `manager`, `admin`), contact details, and client history.
-- **Dynamic DB Schema Detection**: Advanced database layer that dynamically detects and supports either `employees` or `team_members` table schemas in Supabase.
-- **Client Assignments**: Track active and historical client assignments for each team member.
+- **Team Management**: Comprehensive CRUD for agency specialists, featuring roles (`executive`, `manager`, `admin`), contact details, and project history.
+- **Client Assignments**: Track active and historical project assignments for each team member.
 
 ### 3. Client Portal Workspace
 - **Dedicated Dashboard**: Tailored view for registered brands to track their active campaigns and scheduled posts.
@@ -51,10 +50,13 @@ npm install
 ```
 
 ### 2. Set Up Supabase
-Run the schema migrations located in the `scripts/` folder in your Supabase SQL Editor:
-1. `scripts/employees-table.sql`
-2. `scripts/employee-assignments.sql`
-3. (Optional) `scripts/rename-employees-to-team-members.sql` if you wish to migrate to the new `team_members` naming convention.
+
+Run in Supabase **SQL Editor** (in order):
+
+1. `scripts/reset-database.sql` — full wipe (optional; only when resetting)
+2. `scripts/setup-database.sql` — create all tables, RLS, triggers
+
+See [docs/database.md](docs/database.md) and [docs/README.md](docs/README.md) for schema details and DTOs.
 
 ### 3. Start the Development Server
 ```bash
@@ -77,8 +79,9 @@ npm run build
 ```
 src/
   app/              Router, App shell, global styles
-  features/         Feature modules (dashboard, portal, public, employees-management, etc.)
+  features/         Feature modules (dashboard, portal, public, team-management, etc.)
   shared/           Cross-feature UI (Shadcn), layouts, utils, and toast helpers
-scripts/            Supabase SQL migration and setup scripts
-docs/               Technical documentation and DTO references
+docs/               Schema, DTOs, and feature docs (see docs/README.md)
+  admin/            Per-feature docs under docs/admin/<feature>/
+scripts/            reset-database.sql + setup-database.sql only
 ```

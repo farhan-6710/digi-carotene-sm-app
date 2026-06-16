@@ -1,8 +1,9 @@
 export type NavIconKey =
   | "dashboard"
   | "posts"
+  | "projects"
   | "clients"
-  | "employees"
+  | "team"
   | "analytics"
   | "reports"
   | "account"
@@ -24,14 +25,19 @@ export const primaryNav: NavItem[] = [
     icon: "posts",
   },
   {
+    label: "Projects",
+    to: `${adminBasePath}/projects-management`,
+    icon: "projects",
+  },
+  {
     label: "Clients",
     to: `${adminBasePath}/clients-management`,
     icon: "clients",
   },
   {
     label: "Team",
-    to: `${adminBasePath}/employees-management`,
-    icon: "employees",
+    to: `${adminBasePath}/team-management`,
+    icon: "team",
   },
   { label: "Analytics", to: `${adminBasePath}/analytics`, icon: "analytics" },
   { label: "Reports", to: `${adminBasePath}/reports`, icon: "reports" },

@@ -97,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loadedProfileUserIdRef.current = nextProfile ? userId : null;
         if (!nextProfile) {
           setProfileError(
-            "No profile row returned for your user. If rows exist in the dashboard, add the RLS policy in scripts/profiles-rls.sql.",
+            "No profile row returned for your user. Run scripts/setup-database.sql or sign up again after a reset.",
           );
         }
       } catch (err) {

@@ -1,5 +1,4 @@
 import type { Post } from "@/features/posts-management/types/types";
-import type { Client } from "@/features/clients-management/types/types";
 
 export type PortalPageHeaderProps = {
   title: string;
@@ -18,5 +17,5 @@ export type PortalPostsTableProps = {
 };
 
 export type PortalSocialLinksProps = {
-  client: Client;
+  projects: import("@/features/projects-management/types/types").ProjectListItem[];
 };

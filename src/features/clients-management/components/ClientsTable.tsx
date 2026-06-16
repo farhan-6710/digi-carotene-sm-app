@@ -14,17 +14,16 @@ export function ClientsTable({
         <div>
           <div className="text-sm font-semibold">Clients Directory</div>
           <p className="mt-1 text-xs text-muted-foreground">
-            List of active clients who have posts configured in the calendar.
+            Company registry for portal access. Social accounts live on projects.
           </p>
         </div>
       </div>
 
       <div className="border-t border-border">
-        <div className="grid grid-cols-[1.4fr_1fr_1.8fr_0.6fr_0.6fr] gap-4 bg-muted px-6 py-3 text-xs font-semibold tracking-wider text-muted-foreground max-sm:hidden">
+        <div className="grid grid-cols-[1.4fr_1fr_1.8fr_0.6fr] gap-4 bg-muted px-6 py-3 text-xs font-semibold tracking-wider text-muted-foreground max-sm:hidden">
           <div>CLIENT NAME</div>
           <div>MOBILE NUMBER</div>
           <div>WEBSITE</div>
-          <div>SOCIALS</div>
           <div className="text-right">ACTIONS</div>
         </div>
 

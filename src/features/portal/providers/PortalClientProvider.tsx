@@ -12,10 +12,13 @@ import { useAuth } from "@/features/auth/providers/AuthProvider";
 import type { Client } from "@/features/clients-management/types/types";
 import { fetchClientById } from "@/features/clients-management/utils/clientsRepository";
 import type { Post } from "@/features/posts-management/types/types";
-import { fetchPostsForClientName } from "@/features/posts-management/utils/postsRepository";
+import { fetchPostsForClientId } from "@/features/posts-management/utils/postsRepository";
+import type { ProjectListItem } from "@/features/projects-management/types/types";
+import { fetchProjectsByClientId } from "@/features/projects-management/utils/projectsRepository";
 
 type PortalClientContextValue = {
   client: Client | null;
+  projects: ProjectListItem[];
   posts: Post[];
   loading: boolean;
   error: string | null;
@@ -29,6 +32,7 @@ const PortalClientContext = createContext<PortalClientContextValue | null>(
 export function PortalClientProvider({ children }: { children: ReactNode }) {
   const { clientId } = useAuth();
   const [client, setClient] = useState<Client | null>(null);
+  const [projects, setProjects] = useState<ProjectListItem[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +40,7 @@ export function PortalClientProvider({ children }: { children: ReactNode }) {
   const refresh = useCallback(async () => {
     if (!clientId) {
       setClient(null);
+      setProjects([]);
       setPosts([]);
       setLoading(false);
       setError("No client linked to your account.");
@@ -49,16 +54,23 @@ export function PortalClientProvider({ children }: { children: ReactNode }) {
       const clientRow = await fetchClientById(clientId);
       if (!clientRow) {
         setClient(null);
+        setProjects([]);
         setPosts([]);
         setError("Your client record could not be found.");
         return;
       }
 
+      const [projectRows, clientPosts] = await Promise.all([
+        fetchProjectsByClientId(clientId),
+        fetchPostsForClientId(clientId),
+      ]);
+
       setClient(clientRow);
-      const clientPosts = await fetchPostsForClientName(clientRow.client_name);
+      setProjects(projectRows);
       setPosts(clientPosts);
     } catch (err) {
       setClient(null);
+      setProjects([]);
       setPosts([]);
       setError(
         err instanceof Error ? err.message : "Failed to load portal data.",
@@ -73,8 +85,8 @@ export function PortalClientProvider({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const value = useMemo(
-    () => ({ client, posts, loading, error, refresh }),
-    [client, posts, loading, error, refresh],
+    () => ({ client, projects, posts, loading, error, refresh }),
+    [client, projects, posts, loading, error, refresh],
   );
 
   return (

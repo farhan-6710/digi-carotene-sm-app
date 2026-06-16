@@ -11,7 +11,7 @@ import {
   missedPostsSparklineData,
   totalPostsSparklineData,
 } from "@/features/dashboard/constants/dashboard";
-import { EMPLOYEES_MANAGEMENT_PATH } from "@/features/employees-management/constants/routes";
+import { TEAM_MANAGEMENT_PATH } from "@/features/team-management/constants/routes";
 import type { StatCardItem } from "@/shared/types/statsCards";
 
 type DashboardCounts = {
@@ -36,7 +36,7 @@ export function buildDashboardStatCards({
       icon: UserRound,
       sparklineData: employeesSparklineData,
       sparklineColor: "var(--primary)",
-      href: EMPLOYEES_MANAGEMENT_PATH,
+      href: TEAM_MANAGEMENT_PATH,
     },
     {
       id: "clients",

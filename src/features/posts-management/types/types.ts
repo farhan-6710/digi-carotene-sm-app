@@ -9,7 +9,9 @@ export type PostLinks = {
 
 export type Post = {
   id: string;
-  client_name: string;
+  project_id: string;
+  project_name?: string;
+  client_name?: string;
   post_title: string | null;
   socials: string[] | null;
   post_links: PostLinks | null;
@@ -23,7 +25,9 @@ export type Post = {
 
 export type SlotClient = {
   id: string;
+  projectId: string;
   name: string;
+  clientName?: string;
   postTitle: string | null;
   socials: string[] | null;
   postLinks: PostLinks | null;

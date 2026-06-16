@@ -14,8 +14,8 @@ import {
 } from "@/features/posts-management/utils/postScheduleUtils";
 
 export type PostFormValues = {
-  clientId: string;
-  clientName: string;
+  projectId: string;
+  projectName: string;
   postTitle: string;
   socials: string[];
   postLinks: Record<string, string>;
@@ -25,8 +25,8 @@ export type PostFormValues = {
 };
 
 export const emptyPostFormValues = (): PostFormValues => ({
-  clientId: "",
-  clientName: "",
+  projectId: "",
+  projectName: "",
   postTitle: "",
   socials: [],
   postLinks: {},
@@ -58,8 +58,8 @@ export function buildEditFormValues(
   date: number,
 ): PostFormValues {
   return {
-    clientId: client.id,
-    clientName: client.name,
+    projectId: client.projectId,
+    projectName: client.name,
     postTitle: client.postTitle ?? "",
     socials: client.socials ?? [],
     postLinks: (client.postLinks as Record<string, string>) ?? {},
@@ -86,8 +86,8 @@ export function validatePostForm(values: PostFormValues): string | null {
         values.postedOn.year),
   );
 
-  if (!values.clientName.trim()) {
-    return "Client is required.";
+  if (!values.projectId.trim()) {
+    return "Project is required.";
   }
 
   if (!scheduled) {
@@ -106,7 +106,7 @@ export function postFormToPayload(values: PostFormValues) {
   const posted = toRepositoryDateTime(values.postedOn);
 
   return {
-    clientName: values.clientName.trim(),
+    projectId: values.projectId.trim(),
     postTitle: values.postTitle.trim() || null,
     socials: values.socials.length > 0 ? values.socials : null,
     postLinks: values.postLinks,

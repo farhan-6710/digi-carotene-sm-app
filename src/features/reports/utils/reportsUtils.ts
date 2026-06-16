@@ -13,9 +13,10 @@ export function buildClientReportSummaries(posts: Post[]): ClientReportSummary[]
   const postsByClient = new Map<string, Post[]>();
 
   for (const post of posts) {
-    const clientPosts = postsByClient.get(post.client_name) ?? [];
+    const clientName = post.client_name ?? "Unknown client";
+    const clientPosts = postsByClient.get(clientName) ?? [];
     clientPosts.push(post);
-    postsByClient.set(post.client_name, clientPosts);
+    postsByClient.set(clientName, clientPosts);
   }
 
   const summaries = Array.from(postsByClient.entries()).map(
@@ -37,7 +38,7 @@ export function buildClientReportSummaries(posts: Post[]): ClientReportSummary[]
         })
         .map((post) => ({
           id: post.id,
-          clientName: post.client_name,
+          clientName: post.client_name ?? clientName,
           scheduledDate: post.scheduled_date,
           scheduledTime: post.scheduled_time,
           status: post.status,

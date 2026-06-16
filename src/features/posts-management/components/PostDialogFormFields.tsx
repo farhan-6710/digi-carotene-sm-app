@@ -1,4 +1,4 @@
-import { ClientSelect } from "@/features/posts-management/components/ClientSelect";
+import { ProjectSelect } from "@/features/posts-management/components/ProjectSelect";
 import { PostDateTimePicker } from "@/features/posts-management/components/PostDateTimePicker";
 import { PostDialogLinkFields } from "@/features/posts-management/components/PostDialogLinkFields";
 import { SocialsSelect } from "@/features/posts-management/components/SocialsSelect";
@@ -39,11 +39,11 @@ export function PostDialogFormFields({
         </label>
         <div className="space-y-2">
           <span className="block text-xs font-semibold text-muted-foreground">
-            Client name
+            Project
           </span>
-          <ClientSelect
-            value={values.clientName}
-            onChange={(clientName) => patchValues({ clientName })}
+          <ProjectSelect
+            value={values.projectId}
+            onChange={(projectId) => patchValues({ projectId })}
             disabled={disabled}
           />
         </div>

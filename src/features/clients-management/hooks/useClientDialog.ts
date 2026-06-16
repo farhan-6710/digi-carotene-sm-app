@@ -8,7 +8,6 @@ import type {
 import {
   clientToFormValues,
   emptyClientFormValues,
-  formValuesToSocials,
 } from "@/features/clients-management/utils/clientFormUtils";
 import {
   createClient,
@@ -71,7 +70,6 @@ export function useClientDialog({ reload, setError }: UseClientDialogOptions) {
         clientName: values.clientName.trim(),
         mobileNumber: values.mobileNumber.trim() || null,
         websiteName: values.websiteName.trim() || null,
-        socials: formValuesToSocials(values),
       };
 
       const clientName = values.clientName.trim();

@@ -1,9 +1,7 @@
-import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { Pencil } from "lucide-react";
 
 import { buildClientDetailPath } from "@/features/clients-management/constants/routes";
-import { ClientTableSocialIcons } from "@/features/clients-management/components/ClientTableSocialIcons";
 import type { Client } from "@/features/clients-management/types/types";
 import { Button } from "@/shared/ui/button";
 
@@ -12,21 +10,15 @@ type ClientsTableRowProps = {
   onEditClient: (client: Client) => void;
 };
 
-function MobileLabel({ children }: { children: ReactNode }) {
-  return (
-    <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-      {children}
-    </span>
-  );
-}
-
 export function ClientsTableRow({ client, onEditClient }: ClientsTableRowProps) {
   const website = client.website_name?.trim();
 
   return (
-    <div className="grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:grid-cols-[1.4fr_1fr_1.8fr_0.6fr_0.6fr] sm:gap-4">
+    <div className="grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:grid-cols-[1.4fr_1fr_1.8fr_0.6fr] sm:gap-4">
       <div className="text-sm font-medium text-foreground">
-        <MobileLabel>CLIENT NAME</MobileLabel>
+        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
+          CLIENT NAME
+        </span>
         <Link
           to={buildClientDetailPath(client.id)}
           className="text-primary hover:underline"
@@ -36,12 +28,16 @@ export function ClientsTableRow({ client, onEditClient }: ClientsTableRowProps) 
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <MobileLabel>MOBILE NUMBER</MobileLabel>
+        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
+          MOBILE NUMBER
+        </span>
         {client.mobile_number || <span className="text-muted-foreground/50">—</span>}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <MobileLabel>WEBSITE</MobileLabel>
+        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
+          WEBSITE
+        </span>
         {website ? (
           <a
             href={website.startsWith("http") ? website : `https://${website}`}
@@ -54,11 +50,6 @@ export function ClientsTableRow({ client, onEditClient }: ClientsTableRowProps) 
         ) : (
           <span className="text-muted-foreground/50">—</span>
         )}
-      </div>
-
-      <div className="text-sm text-muted-foreground">
-        <MobileLabel>SOCIALS</MobileLabel>
-        <ClientTableSocialIcons socials={client.socials} />
       </div>
 
       <div className="flex justify-end gap-2 text-right">

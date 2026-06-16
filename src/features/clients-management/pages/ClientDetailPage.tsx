@@ -1,14 +1,10 @@
-import { useState } from "react";
 import { Link, useParams } from "react-router";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
-import { ClientActiveEmployeesSection } from "@/features/clients-management/components/ClientActiveEmployeesSection";
-import { ClientAssignEmployeeDialog } from "@/features/clients-management/components/ClientAssignEmployeeDialog";
-import { ClientEmployeeHistorySection } from "@/features/clients-management/components/ClientEmployeeHistorySection";
 import { ClientProfileCard } from "@/features/clients-management/components/ClientProfileCard";
 import { CLIENTS_MANAGEMENT_PATH } from "@/features/clients-management/constants/routes";
 import { useClientDetailQuery } from "@/features/clients-management/hooks/useClientDetailQuery";
-import { useClientEmployeeActions } from "@/features/clients-management/hooks/useClientEmployeeActions";
+import { ClientProjectsSection } from "@/features/projects-management/components/ClientProjectsSection";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { Button } from "@/shared/ui/button";
 
@@ -25,27 +21,8 @@ function ClientDetailBackButton() {
 
 export function ClientDetailPage() {
   const { clientId = "" } = useParams();
-  const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
 
-  const {
-    client,
-    assignments,
-    activeAssignments,
-    isLoading,
-    error,
-    setError,
-    reload,
-  } = useClientDetailQuery(clientId);
-
-  const { isSaving, assignMember, endAssignment } = useClientEmployeeActions({
-    clientId,
-    reload,
-    setError,
-  });
-
-  const activeMemberIds = activeAssignments.map(
-    (assignment) => assignment.member_id,
-  );
+  const { client, projects, isLoading, error } = useClientDetailQuery(clientId);
 
   if (isLoading) {
     return (
@@ -78,26 +55,7 @@ export function ClientDetailPage() {
 
       <ClientProfileCard client={client} />
 
-      <ClientActiveEmployeesSection
-        assignments={activeAssignments}
-        isLoading={isLoading}
-        isSaving={isSaving}
-        onAssignClick={() => setIsAssignDialogOpen(true)}
-        onEndAssignment={endAssignment}
-      />
-
-      <ClientEmployeeHistorySection
-        assignments={assignments}
-        isLoading={isLoading}
-      />
-
-      <ClientAssignEmployeeDialog
-        open={isAssignDialogOpen}
-        onOpenChange={setIsAssignDialogOpen}
-        activeMemberIds={activeMemberIds}
-        isSaving={isSaving}
-        onAssign={assignMember}
-      />
+      <ClientProjectsSection projects={projects} isLoading={isLoading} />
     </section>
   );
 }

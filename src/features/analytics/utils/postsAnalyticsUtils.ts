@@ -13,7 +13,8 @@ export function buildPostsTopClients(
   >();
 
   for (const post of posts) {
-    const entry = counts.get(post.client_name) ?? {
+    const clientName = post.client_name ?? "Unknown client";
+    const entry = counts.get(clientName) ?? {
       posts: 0,
       scheduled: 0,
       missed: 0,
@@ -27,7 +28,7 @@ export function buildPostsTopClients(
       entry.missed += 1;
     }
 
-    counts.set(post.client_name, entry);
+    counts.set(clientName, entry);
   }
 
   return [...counts.entries()]

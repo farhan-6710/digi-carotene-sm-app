@@ -5,6 +5,7 @@ import {
   BarChart3,
   CalendarClock,
   FileText,
+  FolderKanban,
   LayoutDashboard,
   Settings,
   UserCog,
@@ -38,8 +39,9 @@ const icons: Record<NavIconKey, (props: { className?: string }) => ReactNode> =
   {
     dashboard: (props) => <LayoutDashboard {...props} aria-hidden="true" />,
     posts: (props) => <CalendarClock {...props} aria-hidden="true" />,
+    projects: (props) => <FolderKanban {...props} aria-hidden="true" />,
     clients: (props) => <Users {...props} aria-hidden="true" />,
-    employees: (props) => <UserCog {...props} aria-hidden="true" />,
+    team: (props) => <UserCog {...props} aria-hidden="true" />,
     analytics: (props) => <BarChart3 {...props} aria-hidden="true" />,
     reports: (props) => <FileText {...props} aria-hidden="true" />,
     account: (props) => <UserRound {...props} aria-hidden="true" />,

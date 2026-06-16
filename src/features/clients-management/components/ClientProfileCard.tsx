@@ -1,6 +1,5 @@
 import { format } from "date-fns";
 
-import { ClientTableSocialIcons } from "@/features/clients-management/components/ClientTableSocialIcons";
 import type { ClientProfileCardProps } from "@/features/clients-management/types/components";
 
 export function ClientProfileCard({ client }: ClientProfileCardProps) {
@@ -54,12 +53,6 @@ export function ClientProfileCard({ client }: ClientProfileCardProps) {
             <span className="text-sm text-foreground">{detail.value}</span>
           </div>
         ))}
-        <div className="flex flex-wrap items-center justify-between gap-2 px-6 py-3">
-          <span className="text-xs font-semibold tracking-wider text-muted-foreground">
-            SOCIALS
-          </span>
-          <ClientTableSocialIcons socials={client.socials} />
-        </div>
       </div>
     </div>
   );

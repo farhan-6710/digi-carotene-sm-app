@@ -29,40 +29,15 @@ export type ClientDialogBasicFieldsProps = {
   disabled?: boolean;
 };
 
-export type ClientDialogSocialFieldsProps = ClientDialogBasicFieldsProps;
-
 export type ClientProfileCardProps = {
   client: import("@/features/clients-management/types/types").Client;
-};
-
-export type ClientActiveEmployeesSectionProps = {
-  assignments: import("@/features/employees-management/types/types").ClientMemberAssignment[];
-  isLoading: boolean;
-  isSaving: boolean;
-  onAssignClick: () => void;
-  onEndAssignment: (assignmentId: string) => void | Promise<void>;
-};
-
-export type ClientEmployeeHistorySectionProps = {
-  assignments: import("@/features/employees-management/types/types").ClientMemberAssignment[];
-  isLoading: boolean;
-};
-
-export type ClientAssignEmployeeDialogProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  activeMemberIds: string[];
-  isSaving: boolean;
-  onAssign: (memberId: string) => void | Promise<void>;
 };
 
 export type ClientComboboxProps = {
   value: string;
   onChange: (clientId: string) => void;
   disabled?: boolean;
-  /** Client ids already actively assigned to the current employee. */
   activeClientIds?: string[];
   placeholder?: string;
-  /** Eagerly load options when true (e.g. parent assign dialog is open). */
   preload?: boolean;
 };

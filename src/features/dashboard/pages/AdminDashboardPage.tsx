@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { NeedsAttention } from "@/features/dashboard/components/NeedsAttention";
 import { usePostsAnalyticsQuery } from "@/features/analytics/hooks/usePostsAnalyticsQuery";
 import { fetchClients } from "@/features/clients-management/utils/clientsRepository";
-import { fetchTeamMembers } from "@/features/employees-management/utils/employeesRepository";
+import { fetchTeamMembers } from "@/features/team-management/utils/teamMembersRepository";
 import { PostingComparisonChart } from "@/features/dashboard/components/PostingComparisonChart";
 import { PostsTopClientsTable } from "@/features/analytics/components/PostsTopClientsTable";
 import { buildDashboardStatCards } from "@/features/dashboard/utils/dashboardStatsUtils";

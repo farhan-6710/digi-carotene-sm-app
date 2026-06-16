@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 
-import { fetchClients } from "@/features/clients-management/utils/clientsRepository";
+import { fetchProjects } from "@/features/projects-management/utils/projectsRepository";
 import { statusOptions } from "@/features/posts-management/constants/postsManagement";
-import { findRegisteredClient } from "@/features/posts-management/utils/clientValidationUtils";
+import { findRegisteredProject } from "@/features/posts-management/utils/projectValidationUtils";
 import { showToast } from "@/shared/utils/showToast";
 import type { Slot } from "@/features/posts-management/types/types";
 import { getDayLabel } from "@/features/posts-management/utils/calendarUtils";
@@ -107,17 +107,23 @@ export function usePostDialog({ slots, reload, setError }: UsePostDialogOptions)
     setError(null);
 
     try {
-      const clients = await fetchClients();
-      const registeredClient = findRegisteredClient(values.clientName, clients);
+      const projects = await fetchProjects();
 
-      if (!registeredClient) {
-        showToast("error", "Please select a valid client or add new client first");
+      if (projects.length === 0) {
+        showToast("error", "Create a project before adding posts.");
+        return;
+      }
+
+      const registeredProject = findRegisteredProject(values.projectId, projects);
+
+      if (!registeredProject) {
+        showToast("error", "Please select a valid project or create one first.");
         return;
       }
 
       const payload = {
         ...postFormToPayload(values),
-        clientName: registeredClient.client_name,
+        projectId: registeredProject.id,
       };
 
       if (editingPostId) {

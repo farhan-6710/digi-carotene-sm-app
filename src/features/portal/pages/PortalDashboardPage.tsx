@@ -15,7 +15,7 @@ import {
 } from "@/features/posts-management/constants/postsManagement";
 
 export function PortalDashboardPage() {
-  const { client, posts, loading, error } = usePortalClient();
+  const { client, projects, posts, loading, error } = usePortalClient();
   const stats = buildPortalStats(posts);
   const upcoming = getUpcomingPosts(posts);
 
@@ -126,7 +126,7 @@ export function PortalDashboardPage() {
             {loading || !client ? (
               <Loader2 className="size-6 animate-spin text-muted-foreground" />
             ) : (
-              <PortalSocialLinks client={client} />
+              <PortalSocialLinks projects={projects} />
             )}
           </div>
         </div>
