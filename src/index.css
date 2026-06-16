@@ -1,0 +1,267 @@
+@import url("https://fonts.googleapis.com/css2?family=Ovo&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Brand Colors (Converted to OKLCH) */
+  --primary: #028595;
+  --primary-foreground: oklch(0.99 0.003 199.63);
+
+  --background: oklch(0.98 0.005 199.63);
+  --foreground: oklch(0.18 0.02 199.63);
+
+  --accent: #e25505; /* #e25505 (Orange Accent) */
+  --accent-foreground: oklch(0.99 0.003 26.74);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.02 199.63);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.02 199.63);
+
+  --secondary: oklch(0.92 0.025 199.63);
+  --secondary-foreground: oklch(0.4 0.07 199.63);
+
+  --muted: oklch(0.95 0.01 199.63);
+  --muted-foreground: oklch(0.48 0.015 199.63);
+
+  --destructive: oklch(0.55 0.16 25);
+  --destructive-foreground: oklch(0.98 0.005 25);
+
+  --border: oklch(0.9 0.01 199.63);
+  --input: oklch(0.9 0.01 199.63);
+  --ring: oklch(0.568 0.08 199.63);
+
+  --glow-bg-primary: #0284950d;
+  --glow-bg-accent: #e2560514;
+  /* Charts */
+  --chart-1: #028595;
+  --chart-2: #1ba4b5;
+  --chart-3: #e25505;
+  --chart-4: #69c8d4;
+  --chart-5: #0f5c67;
+
+  /* Harmonized Status Colors (Standardized Lightness & Chroma) */
+  --status-not-posted: oklch(0.65 0.02 199.63);
+  --status-scheduled: oklch(0.65 0.12 245);
+  --status-posted: oklch(0.65 0.12 145);
+  --status-missed: oklch(0.65 0.15 27);
+  --status-done: oklch(0.65 0.12 145);
+  --status-muted: oklch(0.88 0.01 199.63);
+
+  /* Contribution Grid (Cyan Brand Scale) */
+  --contrib-1: oklch(0.9 0.03 199.63);
+  --contrib-2: oklch(0.78 0.05 199.63);
+  --contrib-3: oklch(0.65 0.07 199.63);
+  --contrib-4: oklch(0.52 0.09 199.63);
+
+  /* Sidebar (Elegant Light-Teal Slate) */
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.25 0.02 199.63);
+  --sidebar-primary: oklch(0.568 0.08 199.63);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.92 0.015 199.63);
+  --sidebar-accent-foreground: oklch(0.568 0.08 199.63);
+  --sidebar-border: oklch(0.9 0.01 199.63);
+  --sidebar-ring: oklch(0.568 0.08 199.63);
+
+  /* Typography */
+  --font-sans: "Ovo", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Ovo", ui-serif, Georgia, serif;
+  --font-mono: "Fira Code", ui-monospace, SFMono-Regular, monospace;
+
+  --radius: 0.5rem;
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+
+  /* Raw coordinates for shadow evaluation */
+  --shadow-color-coords: 0.15 0.02 199.63;
+
+  /* Perfect Syntax-Safe Shadows */
+  --shadow-2xs: 0 1px 3px 0px oklch(var(--shadow-color-coords) / 0.04);
+  --shadow-xs: 0 1px 3px 0px oklch(var(--shadow-color-coords) / 0.06);
+  --shadow-sm:
+    0 1px 3px 0px oklch(var(--shadow-color-coords) / 0.08),
+    0 1px 2px -1px oklch(var(--shadow-color-coords) / 0.06);
+  --shadow:
+    0 1px 3px 0px oklch(var(--shadow-color-coords) / 0.1),
+    0 1px 2px -1px oklch(var(--shadow-color-coords) / 0.08);
+  --shadow-md:
+    0 1px 3px 0px oklch(var(--shadow-color-coords) / 0.1),
+    0 2px 4px -1px oklch(var(--shadow-color-coords) / 0.1);
+  --shadow-lg:
+    0 2px 6px 0px oklch(var(--shadow-color-coords) / 0.12),
+    0 4px 8px -1px oklch(var(--shadow-color-coords) / 0.1);
+  --shadow-xl:
+    0 2px 8px 0px oklch(var(--shadow-color-coords) / 0.12),
+    0 8px 16px -2px oklch(var(--shadow-color-coords) / 0.12);
+  --shadow-2xl: 0 4px 16px 0px oklch(var(--shadow-color-coords) / 0.18);
+}
+
+.dark {
+  /* Dark Mode Neutrals (Pure Gray/Black Base, Chroma set to 0) */
+  --primary: #00b6cf;
+  --primary-foreground: #000000;
+
+  --background: oklch(0.10 0 0); /* Pure obsidian black-gray */
+  --foreground: oklch(0.95 0 0);  /* Pure light gray-white */
+
+  --card: oklch(0.15 0 0);        /* Deep neutral gray card background */
+  --card-foreground: oklch(0.95 0 0);
+
+  --popover: oklch(0.15 0 0);
+  --popover-foreground: oklch(0.95 0 0);
+
+  --secondary: oklch(0.18 0 0);   /* Secondary dark gray containers */
+  --secondary-foreground: oklch(0.90 0 0);
+
+  --muted: oklch(0.16 0 0);       /* Muted neutral elements */
+  --muted-foreground: oklch(0.65 0 0);
+
+  --destructive: oklch(0.45 0.16 25);
+  --destructive-foreground: oklch(0.98 0.005 25);
+
+  --border: oklch(0.24 0 0);      /* Neutral gray borders */
+  --input: oklch(0.24 0 0);
+  --ring: oklch(0.568 0.08 199.63);
+
+  --glow-bg-primary: #00b7cf19;
+  --glow-bg-accent: #e2560514;
+
+  /* Contribution Grid (Empty state neutral, active states keep cyan branding) */
+  --contrib-1: oklch(0.18 0 0);   /* Neutral gray empty state block */
+  --contrib-2: oklch(0.34 0.05 199.63);
+  --contrib-3: oklch(0.46 0.07 199.63);
+  --contrib-4: oklch(0.58 0.09 199.63);
+
+  /* Dark Sidebar (Clean neutral slate depth) */
+  --sidebar: oklch(0.15 0 0);     /* Visually distinct depth from main background */
+  --sidebar-foreground: oklch(0.92 0 0);
+  --sidebar-primary: oklch(0.568 0.08 199.63);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.16 0 0);
+  --sidebar-accent-foreground: oklch(0.568 0.08 199.63);
+  --sidebar-border: oklch(0.24 0 0);
+  --sidebar-ring: oklch(0.568 0.08 199.63);
+
+  /* Muted Status Background for Dark Mode */
+  --status-muted: oklch(0.20 0 0);
+
+  /* Shadow Coordinates adjusted to true black shadows for pure neutral contrast */
+  --shadow-color-coords: 0 0 0;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-glow-bg-primary: var(--glow-bg-primary);
+  --color-glow-bg-accent: var(--glow-bg-accent);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-status-not-posted: var(--status-not-posted);
+  --color-status-scheduled: var(--status-scheduled);
+  --color-status-posted: var(--status-posted);
+  --color-status-missed: var(--status-missed);
+  --color-status-upcoming: var(--status-upcoming);
+  --color-status-done: var(--status-done);
+  --color-status-muted: var(--status-muted);
+  --color-contrib-1: var(--contrib-1);
+  --color-contrib-2: var(--contrib-2);
+  --color-contrib-3: var(--contrib-3);
+  --color-contrib-4: var(--contrib-4);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --shadow-2xs: var(--shadow-2xs);
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow: var(--shadow);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.main-content {
+  min-height: 100dvh;
+}
+
+/* custom scrollbar css */
+
+/* width */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
