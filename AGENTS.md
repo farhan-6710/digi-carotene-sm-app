@@ -108,7 +108,7 @@ File name must match the exported component: `AdminDashboardPage.tsx` exports `A
 
 ## Imports
 
-- Use `@/` path alias (e.g. `@/features/dashboard/pages/AdminDashboardPage`).
+- Use `@/` path alias (e.g. `@/features/admin-dashboard/pages/AdminDashboardPage`).
 - Import types with `import type { ... }`.
 - shadcn UI components live in `src/shared/ui/`; configure `components.json` with `src/shared/...` paths (not literal `@/` folders).
 

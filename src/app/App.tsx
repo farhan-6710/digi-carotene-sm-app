@@ -1,17 +1,17 @@
 import { RouterProvider } from "react-router";
 
 import { AuthProvider } from "@/features/auth/providers/AuthProvider";
-import { ThemePreferenceProvider } from "@/features/admin-shell/providers/ThemePreferenceProvider";
+import { ThemeProvider } from "@/features/admin-shell/providers/ThemeProvider";
 import { Toaster } from "@/shared/ui/sonner";
 import { router } from "./router";
 
 function App() {
   return (
     <AuthProvider>
-      <ThemePreferenceProvider>
+      <ThemeProvider>
         <RouterProvider router={router} />
         <Toaster position="top-center" />
-      </ThemePreferenceProvider>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

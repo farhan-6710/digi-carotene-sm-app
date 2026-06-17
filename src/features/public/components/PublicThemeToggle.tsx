@@ -1,10 +1,10 @@
 import { Moon, Sun } from "lucide-react";
 
-import { useThemePreference } from "@/features/admin-shell/providers/ThemePreferenceProvider";
+import { useTheme } from "@/features/admin-shell/providers/ThemeProvider";
 import { Switch } from "@/shared/ui/switch";
 
 export function PublicThemeToggle() {
-  const { isDarkMode, setDarkMode } = useThemePreference();
+  const { isDarkMode, setDarkMode } = useTheme();
 
   return (
     <div className="flex items-center gap-2 text-muted-foreground">

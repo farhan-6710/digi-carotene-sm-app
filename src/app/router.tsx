@@ -4,7 +4,7 @@ import { AdminRoute } from "@/features/auth/components/AdminRoute";
 import { ClientRoute } from "@/features/auth/components/ClientRoute";
 import { AuthPage } from "@/features/auth/pages/AuthPage";
 import { AnalyticsPage } from "@/features/analytics/pages/AnalyticsPage";
-import { AdminDashboardPage } from "@/features/dashboard/pages/AdminDashboardPage";
+import { AdminDashboardPage } from "@/features/admin-dashboard/pages/AdminDashboardPage";
 import { PostsManagementPage } from "@/features/posts-management/pages/PostsManagementPage";
 import { ClientsManagementPage } from "@/features/clients-management/pages/ClientsManagementPage";
 import { ProjectsManagementPage } from "@/features/projects-management/pages/ProjectsManagementPage";

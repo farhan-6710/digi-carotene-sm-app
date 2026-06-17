@@ -1,9 +1,9 @@
 import { Link } from "react-router";
 
-import { needsAttentionItems } from "@/shared/fixtures/dashboardSamples";
-import { needsAttentionStatusStyles } from "@/features/dashboard/constants/needsAttentionStyles";
+import { adminNeedsAttentionStatusStyles } from "@/features/admin-dashboard/constants/adminNeedsAttentionStyles";
+import { adminNeedsAttentionItems } from "@/shared/fixtures/adminSamples";
 
-export function NeedsAttention() {
+export function AdminNeedsAttention() {
   return (
     <div className="rounded-2xl border border-border bg-card p-6 shadow-xs">
       <div className="flex items-center justify-between">
@@ -16,8 +16,8 @@ export function NeedsAttention() {
         </Link>
       </div>
       <div className="mt-4 space-y-3">
-        {needsAttentionItems.map((row) => {
-          const styles = needsAttentionStatusStyles[row.status];
+        {adminNeedsAttentionItems.map((row) => {
+          const styles = adminNeedsAttentionStatusStyles[row.status];
 
           return (
             <div

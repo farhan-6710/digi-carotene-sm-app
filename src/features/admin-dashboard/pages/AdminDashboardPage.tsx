@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { NeedsAttention } from "@/features/dashboard/components/NeedsAttention";
+import { AdminNeedsAttention } from "@/features/admin-dashboard/components/AdminNeedsAttention";
+import { AdminPostingChart } from "@/features/admin-dashboard/components/AdminPostingChart";
+import { buildAdminStatCards } from "@/features/admin-dashboard/utils/adminStatsUtils";
 import { usePostsAnalyticsQuery } from "@/features/analytics/hooks/usePostsAnalyticsQuery";
 import { fetchClients } from "@/features/clients-management/utils/clientsRepository";
 import { fetchTeamMembers } from "@/features/team-management/utils/teamMembersRepository";
-import { PostingComparisonChart } from "@/features/dashboard/components/PostingComparisonChart";
 import { PostsTopClientsTable } from "@/features/analytics/components/PostsTopClientsTable";
-import { buildDashboardStatCards } from "@/features/dashboard/utils/dashboardStatsUtils";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { StatsCards } from "@/shared/components/StatsCards";
 import { supabase } from "@/shared/lib/supabase";
@@ -34,7 +34,7 @@ export function AdminDashboardPage() {
         setMissedPostsCount(missedRes.count);
       })
       .catch((err) => {
-        console.error("Failed to fetch dashboard counts:", err);
+        console.error("Failed to fetch admin dashboard counts:", err);
       })
       .finally(() => {
         setIsCountsLoading(false);
@@ -43,7 +43,7 @@ export function AdminDashboardPage() {
 
   const statCards = useMemo(
     () =>
-      buildDashboardStatCards({
+      buildAdminStatCards({
         clientsCount,
         teamMembersCount,
         totalPostsCount,
@@ -63,12 +63,12 @@ export function AdminDashboardPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <PostingComparisonChart />
+          <AdminPostingChart />
           <PostsTopClientsTable clients={topClients} isLoading={isPostsLoading} />
         </div>
 
         <div className="lg:col-span-1">
-          <NeedsAttention />
+          <AdminNeedsAttention />
         </div>
       </div>
     </section>

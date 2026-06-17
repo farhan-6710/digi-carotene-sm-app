@@ -1,9 +1,9 @@
 import type {
-  NeedsAttentionItem,
-  RecentPost,
-} from "@/features/dashboard/types/types";
+  AdminNeedsAttentionItem,
+  AdminRecentPost,
+} from "@/features/admin-dashboard/types/types";
 
-export const needsAttentionItems: NeedsAttentionItem[] = [
+export const adminNeedsAttentionItems: AdminNeedsAttentionItem[] = [
   {
     time: "09:00 AM",
     from: "Bloom Skincare - Instagram carousel",
@@ -46,7 +46,7 @@ export const needsAttentionItems: NeedsAttentionItem[] = [
   },
 ];
 
-export const recentPosts: RecentPost[] = [
+export const adminRecentPosts: AdminRecentPost[] = [
   {
     time: "09:00 AM",
     client: "Bloom Skincare",
@@ -105,7 +105,7 @@ export const recentPosts: RecentPost[] = [
   },
 ];
 
-export const publishingComparisonData = [
+export const adminPublishingComparisonData = [
   { day: "Day 1", currentMonth: 4, previousMonth: 3 },
   { day: "Day 3", currentMonth: 6, previousMonth: 5 },
   { day: "Day 5", currentMonth: 3, previousMonth: 4 },

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, Outlet } from "react-router";
 import { Menu, Moon, Search, Sun } from "lucide-react";
 
-import { useThemePreference } from "@/features/admin-shell/providers/ThemePreferenceProvider";
+import { useTheme } from "@/features/admin-shell/providers/ThemeProvider";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import {
   ShellMobileNavSheet,
@@ -27,7 +27,7 @@ export function AppShellLayout({
 }: AppShellLayoutProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const { isDarkMode, setDarkMode } = useThemePreference();
+  const { isDarkMode, setDarkMode } = useTheme();
   const { user } = useAuth();
   const displayName = getUserDisplayName(user);
   const initials = getUserInitials(user);

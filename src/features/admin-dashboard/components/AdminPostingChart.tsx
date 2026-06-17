@@ -1,7 +1,7 @@
 import { TrendingUp } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
-import { publishingComparisonData } from "@/shared/fixtures/dashboardSamples";
+import { adminPublishingComparisonData } from "@/shared/fixtures/adminSamples";
 import {
   ChartContainer,
   ChartTooltip,
@@ -22,7 +22,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function PostingComparisonChart() {
+export function AdminPostingChart() {
   return (
     <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
@@ -44,7 +44,7 @@ export function PostingComparisonChart() {
         <ChartContainer config={chartConfig} className="h-full w-full aspect-auto">
           <LineChart
             accessibilityLayer
-            data={publishingComparisonData}
+            data={adminPublishingComparisonData}
             margin={{
               top: 5,
               right: 10,

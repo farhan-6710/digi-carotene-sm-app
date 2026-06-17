@@ -14,19 +14,19 @@ import {
 import { TEAM_MANAGEMENT_PATH } from "@/features/team-management/constants/routes";
 import type { StatCardItem } from "@/shared/types/statsCards";
 
-type DashboardCounts = {
+type AdminStatCounts = {
   clientsCount: number | null;
   teamMembersCount: number | null;
   totalPostsCount: number | null;
   missedPostsCount: number | null;
 };
 
-export function buildDashboardStatCards({
+export function buildAdminStatCards({
   clientsCount,
   teamMembersCount,
   totalPostsCount,
   missedPostsCount,
-}: DashboardCounts): StatCardItem[] {
+}: AdminStatCounts): StatCardItem[] {
   return [
     {
       id: "team-members",

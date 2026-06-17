@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { settingsSections } from "@/features/settings/constants/settings";
-import { useThemePreference } from "@/features/admin-shell/providers/ThemePreferenceProvider";
+import { useTheme } from "@/features/admin-shell/providers/ThemeProvider";
 import type { SettingsToggleId } from "@/features/settings/types/types";
 
 function buildInitialToggleState() {
@@ -26,7 +26,7 @@ function buildInitialToggleState() {
 }
 
 export function useSettingsPreferences() {
-  const { isDarkMode, setDarkMode } = useThemePreference();
+  const { isDarkMode, setDarkMode } = useTheme();
   const [toggleState, setToggleState] = useState(buildInitialToggleState);
 
   const isToggleEnabled = useCallback(

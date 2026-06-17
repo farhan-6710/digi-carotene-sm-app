@@ -1,15 +1,15 @@
-export type NeedsAttentionStatus =
+export type AdminNeedsAttentionStatus =
   | "Missed"
   | "Due Today"
   | "Needs Review";
 
-export type NeedsAttentionItem = {
+export type AdminNeedsAttentionItem = {
   time: string;
   from: string;
-  status: NeedsAttentionStatus;
+  status: AdminNeedsAttentionStatus;
 };
 
-export type RecentPost = {
+export type AdminRecentPost = {
   time: string;
   client: string;
   id: string;
@@ -17,7 +17,7 @@ export type RecentPost = {
   status: "Scheduled" | "Posted" | "Missed";
 };
 
-export type NeedsAttentionStatusStyle = {
+export type AdminNeedsAttentionStatusStyle = {
   dot: string;
   text: string;
 };

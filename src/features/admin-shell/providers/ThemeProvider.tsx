@@ -9,27 +9,28 @@ import {
 } from "react";
 
 import {
+  applyStoredThemeClassToDocument,
   isDarkTheme,
   resolveInitialThemePreference,
   setStoredThemePreference,
   type ThemePreference,
 } from "@/features/admin-shell/utils/themePreferenceStorage";
 
-type ThemePreferenceContextValue = {
+type ThemeContextValue = {
   isDarkMode: boolean;
   setDarkMode: (enabled: boolean) => void;
 };
 
-const ThemePreferenceContext =
-  createContext<ThemePreferenceContextValue | null>(null);
+const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-type ThemePreferenceProviderProps = {
+type ThemeProviderProps = {
   children: ReactNode;
 };
 
-export function ThemePreferenceProvider({
-  children,
-}: ThemePreferenceProviderProps) {
+// Run before the first paint so stored dark mode does not flash light theme.
+applyStoredThemeClassToDocument();
+
+export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setTheme] = useState<ThemePreference>(resolveInitialThemePreference);
   const isDarkMode = isDarkTheme(theme);
 
@@ -48,20 +49,16 @@ export function ThemePreferenceProvider({
   );
 
   return (
-    <ThemePreferenceContext.Provider value={value}>
-      {children}
-    </ThemePreferenceContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 }
 
 // Hook is intentionally colocated with its provider and private context.
 // eslint-disable-next-line react-refresh/only-export-components -- provider + hook pattern
-export function useThemePreference() {
-  const context = useContext(ThemePreferenceContext);
+export function useTheme() {
+  const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error(
-      "useThemePreference must be used within ThemePreferenceProvider",
-    );
+    throw new Error("useTheme must be used within ThemeProvider");
   }
   return context;
 }

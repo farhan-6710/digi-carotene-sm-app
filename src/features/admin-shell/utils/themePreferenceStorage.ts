@@ -23,3 +23,8 @@ export function resolveInitialThemePreference(): ThemePreference {
   if (stored) return stored;
   return document.body.classList.contains("dark") ? "dark" : "light";
 }
+
+export function applyStoredThemeClassToDocument() {
+  const stored = getStoredThemePreference();
+  document.body.classList.toggle("dark", stored === "dark");
+}

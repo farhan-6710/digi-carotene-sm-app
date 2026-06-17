@@ -1,11 +1,11 @@
 import type {
-  NeedsAttentionStatus,
-  NeedsAttentionStatusStyle,
-} from "@/features/dashboard/types/types";
+  AdminNeedsAttentionStatus,
+  AdminNeedsAttentionStatusStyle,
+} from "@/features/admin-dashboard/types/types";
 
-export const needsAttentionStatusStyles: Record<
-  NeedsAttentionStatus,
-  NeedsAttentionStatusStyle
+export const adminNeedsAttentionStatusStyles: Record<
+  AdminNeedsAttentionStatus,
+  AdminNeedsAttentionStatusStyle
 > = {
   Missed: { dot: "bg-status-missed", text: "text-status-missed" },
   "Due Today": { dot: "bg-status-scheduled", text: "text-status-scheduled" },

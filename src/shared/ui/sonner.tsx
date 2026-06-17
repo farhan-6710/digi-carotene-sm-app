@@ -7,10 +7,10 @@ import {
 } from "lucide-react";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 
-import { useThemePreference } from "@/features/admin-shell/providers/ThemePreferenceProvider";
+import { useTheme } from "@/features/admin-shell/providers/ThemeProvider";
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { isDarkMode } = useThemePreference();
+  const { isDarkMode } = useTheme();
 
   return (
     <Sonner
