@@ -1,4 +1,4 @@
-import { analyticsStats } from "@/features/analytics/utils/sessionActivityMock";
+import { analyticsStats } from "@/shared/fixtures/sessionActivityMock";
 import { buildAgencyAnalyticsStatCards } from "@/features/analytics/utils/analyticsStatsUtils";
 import { StatsCards } from "@/shared/components/StatsCards";
 

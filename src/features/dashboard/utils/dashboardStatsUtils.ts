@@ -10,7 +10,7 @@ import {
   employeesSparklineData,
   missedPostsSparklineData,
   totalPostsSparklineData,
-} from "@/features/dashboard/constants/dashboard";
+} from "@/shared/fixtures/sparklines";
 import { TEAM_MANAGEMENT_PATH } from "@/features/team-management/constants/routes";
 import type { StatCardItem } from "@/shared/types/statsCards";
 

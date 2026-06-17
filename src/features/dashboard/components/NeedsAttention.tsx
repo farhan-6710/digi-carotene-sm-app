@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-import { needsAttentionItems } from "@/features/dashboard/constants/dashboard";
+import { needsAttentionItems } from "@/shared/fixtures/dashboardSamples";
 import { needsAttentionStatusStyles } from "@/features/dashboard/constants/needsAttentionStyles";
 
 export function NeedsAttention() {

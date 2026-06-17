@@ -1,3 +1,4 @@
+import { monthLabels } from "@/features/analytics/constants/sessionActivity";
 import type {
   AnalyticsStatCard,
   ContributionSummary,
@@ -7,12 +8,10 @@ import type {
 } from "@/features/analytics/types/types";
 import { getPostActivityLevel } from "@/features/analytics/utils/postActivityLevels";
 
-import {
-  CONTRIBUTION_END_DAY,
-  CONTRIBUTION_END_MONTH,
-  CONTRIBUTION_YEAR,
-  monthLabels,
-} from "@/features/analytics/constants/sessionActivity";
+export const CONTRIBUTION_YEAR = 2026;
+export const CONTRIBUTION_END_MONTH = 4;
+export const CONTRIBUTION_END_DAY = 27;
+export const MAX_DAILY_POSTS = 8;
 
 function formatDateKey(year: number, month: number, day: number): string {
   const paddedMonth = String(month + 1).padStart(2, "0");
@@ -174,7 +173,7 @@ export function buildContributionWeeks(
 
 export function buildMonthLabels(
   weeks: ContributionWeek[],
-  monthLabels: readonly string[],
+  labels: readonly string[],
 ): MonthLabel[] {
   const monthRanges = new Map<number, { min: number; max: number }>();
 
@@ -200,7 +199,7 @@ export function buildMonthLabels(
   return Array.from(monthRanges.entries())
     .sort(([monthA], [monthB]) => monthA - monthB)
     .map(([month, range]) => ({
-      label: monthLabels[month - 1],
+      label: labels[month - 1],
       startColumn: range.min,
       endColumn: range.max,
     }));
@@ -371,10 +370,7 @@ export function buildAnalyticsStats(
 export const dailyContributionCounts = buildDailyContributionCounts();
 export const priorYearDailyCounts = buildPriorYearDailyCounts();
 export const contributionWeeks = buildContributionWeeks(dailyContributionCounts);
-export const contributionMonthLabels = buildMonthLabels(
-  contributionWeeks,
-  monthLabels,
-);
+export const contributionMonthLabels = buildMonthLabels(contributionWeeks, monthLabels);
 export const contributionSummary = buildContributionSummary(dailyContributionCounts);
 export const analyticsStats = buildAnalyticsStats(
   contributionSummary,

@@ -1,7 +1,7 @@
 import { TrendingUp } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
-import { publishingComparisonData } from "@/features/dashboard/constants/dashboard";
+import { publishingComparisonData } from "@/shared/fixtures/dashboardSamples";
 import {
   ChartContainer,
   ChartTooltip,

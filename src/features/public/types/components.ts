@@ -10,6 +10,13 @@ export type PublicSectionHeaderProps = {
   align?: "left" | "center";
 };
 
+export type PublicSectionProps = {
+  id?: string;
+  className?: string;
+  containerClassName?: string;
+  children: React.ReactNode;
+};
+
 export type PublicSectionBadgeProps = {
   label: string;
   variant?: "primary" | "accent";

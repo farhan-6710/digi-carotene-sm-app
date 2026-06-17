@@ -105,7 +105,6 @@ export const recentPosts: RecentPost[] = [
   },
 ];
 
-// Publishing comparison chart dummy data (Current Month vs Previous Month)
 export const publishingComparisonData = [
   { day: "Day 1", currentMonth: 4, previousMonth: 3 },
   { day: "Day 3", currentMonth: 6, previousMonth: 5 },
@@ -123,61 +122,4 @@ export const publishingComparisonData = [
   { day: "Day 27", currentMonth: 15, previousMonth: 12 },
   { day: "Day 29", currentMonth: 13, previousMonth: 11 },
   { day: "Day 31", currentMonth: 16, previousMonth: 13 },
-];
-
-// Sparkline dummy data for the 4 dashboard metric cards
-
-export const employeesSparklineData = [
-  { value: 15 },
-  { value: 10 },
-  { value: 1 },
-  { value: 3 },
-  { value: 1 },
-  { value: 16 },
-  { value: 40 },
-  { value: 25 },
-  { value: 20 },
-  { value: 15 },
-];
-
-export const clientsSparklineData = [
-  { value: 2 },
-  { value: 12 },
-  { value: 4 },
-  { value: 14 },
-  { value: 11 },
-  { value: 1 },
-  { value: 7 },
-  { value: 18 },
-  { value: 10 },
-  { value: 20 },
-  { value: 17 },
-  { value: 24 },
-];
-
-export const totalPostsSparklineData = [
-  { value: 1 },
-  { value: 10 },
-  { value: 1 },
-  { value: 3 },
-  { value: 12 },
-  { value: 10 },
-  { value: 30 },
-  { value: 7 },
-  { value: 2 },
-  { value: 14 },
-];
-
-export const missedPostsSparklineData = [
-  { value: 18 },
-  { value: 15 },
-  { value: 10 },
-  { value: 1 },
-  { value: 3 },
-  { value: 12 },
-  { value: 10 },
-  { value: 30 },
-  { value: 7 },
-  { value: 20 },
-  { value: 14 },
 ];

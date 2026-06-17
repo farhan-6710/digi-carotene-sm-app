@@ -1,8 +1,3 @@
-export const CONTRIBUTION_YEAR = 2026;
-export const CONTRIBUTION_END_MONTH = 4;
-export const CONTRIBUTION_END_DAY = 27;
-export const MAX_DAILY_POSTS = 8;
-
 export const monthLabels = [
   "Jan",
   "Feb",

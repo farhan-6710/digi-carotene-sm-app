@@ -1,5 +1,8 @@
 import { ANALYTICS_STAT_CARD_META } from "@/features/analytics/constants/analyticsStatCards";
-import { clientAnalyticsStats, employeeAnalyticsStats } from "@/features/analytics/constants/placeholderAnalytics";
+import {
+  clientAnalyticsStats,
+  employeeAnalyticsStats,
+} from "@/shared/fixtures/analyticsPlaceholders";
 import type { AnalyticsStatCard } from "@/features/analytics/types/types";
 import type { Post } from "@/features/posts-management/types/types";
 import type { StatCardItem, StatCardTrend } from "@/shared/types/statsCards";
