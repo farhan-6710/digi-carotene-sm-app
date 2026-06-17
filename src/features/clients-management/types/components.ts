@@ -3,6 +3,13 @@ import type {
   ClientFormValues,
 } from "@/features/clients-management/utils/clientFormUtils";
 
+import type { Client } from "@/features/clients-management/types/types";
+
+export type ClientsTableRowProps = {
+  client: Client;
+  onEditClient: (client: Client) => void;
+};
+
 export type ClientDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;

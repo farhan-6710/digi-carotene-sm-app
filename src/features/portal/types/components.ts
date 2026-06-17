@@ -1,21 +1,15 @@
 import type { Post } from "@/features/posts-management/types/types";
-
-export type PortalPageHeaderProps = {
-  title: string;
-  highlight?: string;
-  description: string;
-};
-
-export type PortalPageIntroProps = {
-  title: string;
-  description: string;
-};
+import type { ProjectListItem } from "@/features/projects-management/types/types";
 
 export type PortalPostsTableProps = {
   posts: Post[];
   isLoading: boolean;
 };
 
+export type PortalPostsTableRowProps = {
+  post: Post;
+};
+
 export type PortalSocialLinksProps = {
-  projects: import("@/features/projects-management/types/types").ProjectListItem[];
+  projects: ProjectListItem[];
 };

@@ -1,4 +1,4 @@
-import { formFieldClassName } from "@/features/team-management/constants/formStyles";
+import { formFieldClassName } from "@/shared/constants/formStyles";
 import { TeamMemberRoleSelect } from "@/features/team-management/components/TeamMemberRoleSelect";
 import type { TeamMemberDialogFormFieldsProps } from "@/features/team-management/types/components";
 

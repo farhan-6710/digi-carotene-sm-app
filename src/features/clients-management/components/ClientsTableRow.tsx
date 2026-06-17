@@ -2,19 +2,21 @@ import { Link } from "react-router";
 import { Pencil } from "lucide-react";
 
 import { buildClientDetailPath } from "@/features/clients-management/constants/routes";
-import type { Client } from "@/features/clients-management/types/types";
+import { CLIENTS_DIRECTORY_ROW_GRID_CLASS } from "@/features/clients-management/constants/clientsDirectory";
+import type { ClientsTableRowProps } from "@/features/clients-management/types/components";
 import { Button } from "@/shared/ui/button";
-
-type ClientsTableRowProps = {
-  client: Client;
-  onEditClient: (client: Client) => void;
-};
+import { cn } from "@/shared/lib/utils";
 
 export function ClientsTableRow({ client, onEditClient }: ClientsTableRowProps) {
   const website = client.website_name?.trim();
 
   return (
-    <div className="grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:grid-cols-[1.4fr_1fr_1.8fr_0.6fr] sm:gap-4">
+    <div
+      className={cn(
+        "grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:gap-4",
+        CLIENTS_DIRECTORY_ROW_GRID_CLASS,
+      )}
+    >
       <div className="text-sm font-medium text-foreground">
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           CLIENT NAME

@@ -9,6 +9,7 @@ import {
 import { isAdminPath, isPortalPath } from "@/features/auth/constants/routes";
 import { agencyMeta } from "@/features/public/constants/agency";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { CenteredLoading } from "@/shared/components/LoadingSpinner";
 
 export function AuthPage() {
   const { user, loading, profile, homePath, isAdmin, isClient } = useAuth();
@@ -32,11 +33,7 @@ export function AuthPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center bg-background text-foreground">
-        <div className="size-6 animate-spin rounded-full border-2 border-muted border-t-primary" />
-      </div>
-    );
+    return <CenteredLoading />;
   }
 
   if (user && !profile) {

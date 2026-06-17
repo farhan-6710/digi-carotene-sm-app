@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { Pencil } from "lucide-react";
 
 import { buildTeamMemberDetailPath } from "@/features/team-management/constants/routes";
+import { TEAM_DIRECTORY_ROW_GRID_CLASS } from "@/features/team-management/constants/teamDirectory";
 import {
   TEAM_MEMBER_ROLE_BADGE_CLASS,
   TEAM_MEMBER_ROLE_LABELS,
@@ -24,7 +25,12 @@ export function TeamMembersTableRow({
   onEditMember,
 }: TeamMembersTableRowProps) {
   return (
-    <div className="grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:grid-cols-[1.2fr_1.4fr_1fr_0.8fr_0.6fr] sm:gap-4">
+    <div
+      className={cn(
+        "grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:gap-4",
+        TEAM_DIRECTORY_ROW_GRID_CLASS,
+      )}
+    >
       <div className="text-sm font-medium text-foreground">
         <MobileLabel>NAME</MobileLabel>
         <Link

@@ -1,11 +1,5 @@
-import { formFieldClassName } from "@/features/posts-management/constants/formStyles";
-
-type PostDialogLinkFieldsProps = {
-  socials: string[];
-  postLinks: Record<string, string>;
-  onPostLinksChange: (links: Record<string, string>) => void;
-  disabled?: boolean;
-};
+import { formFieldClassName } from "@/shared/constants/formStyles";
+import type { PostDialogLinkFieldsProps } from "@/features/posts-management/types/components";
 
 export function PostDialogLinkFields({
   socials,

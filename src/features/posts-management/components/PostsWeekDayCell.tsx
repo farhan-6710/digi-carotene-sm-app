@@ -1,5 +1,4 @@
-import type { StatusKey } from "@/features/posts-management/types/types";
-import type { Slot } from "@/features/posts-management/types/types";
+import type { PostsWeekDayCellProps } from "@/features/posts-management/types/components";
 import {
   formatMonthDayLabel,
   getDayLabel,
@@ -14,18 +13,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
-
-type PostsWeekDayCellProps = {
-  year: number;
-  month: number;
-  dateNumber: number;
-  slot: Slot | undefined;
-  isSelected: boolean;
-  statusColors: Record<StatusKey, string>;
-  statusText: Record<StatusKey, string>;
-  onAdd: () => void;
-  onEdit: (postId: string) => void;
-};
 
 export function PostsWeekDayCell({
   year,

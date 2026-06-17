@@ -1,93 +1,68 @@
-import type { ReactNode } from "react";
-
 import { Link, NavLink } from "react-router";
-import {
-  BarChart3,
-  CalendarClock,
-  FileText,
-  FolderKanban,
-  LayoutDashboard,
-  Settings,
-  UserCog,
-  UserRound,
-  Users,
-} from "lucide-react";
-import {
-  appMeta,
-  primaryNav,
-  type NavIconKey,
-} from "@/features/admin-shell/constants/navigation";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/shared/ui/tooltip";
+
+import { shellNavIcons } from "@/shared/constants/shellNavIcons";
+import type {
+  ShellMobileNavSheetProps,
+  ShellSidebarContentProps,
+  ShellSidebarProps,
+} from "@/shared/types/components";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetTitle,
 } from "@/shared/ui/sheet";
-import type {
-  AdminMobileNavSheetProps,
-  SidebarContentProps,
-  SidebarProps,
-} from "@/features/admin-shell/types/components";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/shared/ui/tooltip";
 
-const icons: Record<NavIconKey, (props: { className?: string }) => ReactNode> =
-  {
-    dashboard: (props) => <LayoutDashboard {...props} aria-hidden="true" />,
-    posts: (props) => <CalendarClock {...props} aria-hidden="true" />,
-    projects: (props) => <FolderKanban {...props} aria-hidden="true" />,
-    clients: (props) => <Users {...props} aria-hidden="true" />,
-    team: (props) => <UserCog {...props} aria-hidden="true" />,
-    analytics: (props) => <BarChart3 {...props} aria-hidden="true" />,
-    reports: (props) => <FileText {...props} aria-hidden="true" />,
-    account: (props) => <UserRound {...props} aria-hidden="true" />,
-    settings: (props) => <Settings {...props} aria-hidden="true" />,
-  };
+export function ShellSidebarContent({
+  config,
+  collapsed,
+  onNavigate,
+}: ShellSidebarContentProps) {
+  const nameParts = config.brandName.split(" ");
 
-const Icon = ({ name }: { name: NavIconKey }) => {
-  const Component = icons[name];
-  return <Component className="size-4" />;
-};
-
-export function SidebarContent({ collapsed, onNavigate }: SidebarContentProps) {
   return (
     <div className="flex h-full flex-col">
       <Link
-        to="/"
+        to={config.homeLink}
         onClick={onNavigate}
         className="flex items-center justify-center border-b border-sidebar-border/80 p-4.5"
       >
         <div
           className={
-            "flex items-center justify-center " + (collapsed ? "" : "gap-3")
+            collapsed ? "flex items-center justify-center" : "flex items-center justify-center gap-3"
           }
         >
           <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-lg font-bold text-primary-foreground shadow-sm">
-            {appMeta.userInitials}
+            {config.initials}
           </div>
-          <div
-            className={
-              "text-2xl font-bold tracking-tight truncate " +
-              (collapsed ? "sr-only" : "")
-            }
-          >
-            <span className="text-primary">{appMeta.name.split(" ")[0]}</span>
-            {appMeta.name.includes(" ") ? (
-              <span className="text-accent truncate-ellipsis">
-                {" "}
-                {appMeta.name.split(" ").slice(1).join(" ")}
-              </span>
+          <div className={collapsed ? "sr-only" : "min-w-0 text-left"}>
+            <div className="text-2xl font-bold tracking-tight truncate">
+              <span className="text-primary">{nameParts[0]}</span>
+              {nameParts.length > 1 ? (
+                <span className="text-accent">
+                  {" "}
+                  {nameParts.slice(1).join(" ")}
+                </span>
+              ) : null}
+            </div>
+            {config.brandSubtitle ? (
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {config.brandSubtitle}
+              </p>
             ) : null}
           </div>
         </div>
       </Link>
 
       <nav className="flex-1 space-y-1.5 p-4">
-        {primaryNav.map((item) => {
+        {config.nav.map((item) => {
+          const Icon = shellNavIcons[item.icon];
           const navLinkEl = (
             <NavLink
               key={item.to}
@@ -103,7 +78,7 @@ export function SidebarContent({ collapsed, onNavigate }: SidebarContentProps) {
                 ].join(" ")
               }
             >
-              <Icon name={item.icon} />
+              <Icon className="size-4" aria-hidden="true" />
               {collapsed ? (
                 <span className="sr-only">{item.label}</span>
               ) : (
@@ -129,30 +104,30 @@ export function SidebarContent({ collapsed, onNavigate }: SidebarContentProps) {
         })}
       </nav>
 
-      {!collapsed && (
+      {!collapsed && config.quickAction ? (
         <div className="p-4">
           <div className="rounded-2xl border border-border bg-muted/40 p-4 shadow-xs">
             <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              <p className="truncate">Quick Actions</p>
+              {config.quickAction.title}
             </div>
-            <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed line-clamp-2">
-              Review today&apos;s client posts and content schedule.
+            <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+              {config.quickAction.description}
             </p>
             <Link
-              to="/admin/posts-management"
+              to={config.quickAction.buttonTo}
               onClick={onNavigate}
-              className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-xs transition hover:opacity-95 truncate"
+              className="mt-4 inline-flex w-full items-center justify-center truncate rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-xs transition hover:opacity-95"
             >
-              View Posts
+              {config.quickAction.buttonLabel}
             </Link>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
 
-const Sidebar = ({ collapsed }: SidebarProps) => {
+export function ShellSidebar({ config, collapsed }: ShellSidebarProps) {
   return (
     <TooltipProvider>
       <aside
@@ -162,16 +137,18 @@ const Sidebar = ({ collapsed }: SidebarProps) => {
           collapsed ? "w-20" : "w-64",
         ].join(" ")}
       >
-        <SidebarContent collapsed={collapsed} />
+        <ShellSidebarContent config={config} collapsed={collapsed} />
       </aside>
     </TooltipProvider>
   );
-};
+}
 
-export function AdminMobileNavSheet({
+export function ShellMobileNavSheet({
+  config,
   open,
   onOpenChange,
-}: AdminMobileNavSheetProps) {
+  sheetDescription,
+}: ShellMobileNavSheetProps) {
   const close = () => onOpenChange(false);
 
   return (
@@ -181,15 +158,15 @@ export function AdminMobileNavSheet({
         className="w-64 max-w-[85vw] gap-0 border-sidebar-border/80 bg-sidebar p-0 text-sidebar-foreground sm:max-w-xs"
       >
         <SheetTitle className="sr-only">Navigation menu</SheetTitle>
-        <SheetDescription className="sr-only">
-          Admin navigation links and quick actions
-        </SheetDescription>
+        <SheetDescription className="sr-only">{sheetDescription}</SheetDescription>
         <TooltipProvider>
-          <SidebarContent collapsed={false} onNavigate={close} />
+          <ShellSidebarContent
+            config={config}
+            collapsed={false}
+            onNavigate={close}
+          />
         </TooltipProvider>
       </SheetContent>
     </Sheet>
   );
 }
-
-export default Sidebar;

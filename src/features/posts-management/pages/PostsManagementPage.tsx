@@ -1,5 +1,4 @@
 import { Plus } from "lucide-react";
-import { Loader2 } from "lucide-react";
 
 import { MonthSelector } from "@/shared/ui/MonthSelector";
 import { PostDialog } from "@/features/posts-management/components/PostDialog";
@@ -11,6 +10,8 @@ import {
 } from "@/features/posts-management/constants/postsManagement";
 import { usePostsCalendarSelection } from "@/features/posts-management/hooks/usePostsCalendarSelection";
 import { usePostsManagement } from "@/features/posts-management/hooks/usePostsManagement";
+import { ErrorBanner } from "@/shared/components/ErrorBanner";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { Button } from "@/shared/ui/button";
 
@@ -54,15 +55,11 @@ export function PostsManagementPage() {
         />
       </div>
 
-      {error ? (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {error}
-        </div>
-      ) : null}
+      {error ? <ErrorBanner message={error} /> : null}
 
       {isLoading ? (
         <div className="flex min-h-[320px] items-center justify-center rounded-2xl border border-border bg-card">
-          <Loader2 className="size-6 animate-spin text-muted-foreground" />
+          <LoadingSpinner />
         </div>
       ) : (
         <PostsManagementWeeksTable

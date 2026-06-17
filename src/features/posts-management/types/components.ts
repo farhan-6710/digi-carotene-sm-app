@@ -31,6 +31,32 @@ export type PostDateTimePickerProps = {
   disabled?: boolean;
 };
 
+export type PostDialogFormFieldsProps = {
+  values: PostFormValues;
+  statusOptions: StatusKey[];
+  disabled?: boolean;
+  patchValues: (patch: Partial<PostFormValues>) => void;
+};
+
+export type PostDialogLinkFieldsProps = {
+  socials: string[];
+  postLinks: Record<string, string>;
+  onPostLinksChange: (links: Record<string, string>) => void;
+  disabled?: boolean;
+};
+
+export type PostsWeekDayCellProps = {
+  year: number;
+  month: number;
+  dateNumber: number;
+  slot: import("@/features/posts-management/types/types").Slot | undefined;
+  isSelected: boolean;
+  statusColors: Record<StatusKey, string>;
+  statusText: Record<StatusKey, string>;
+  onAdd: () => void;
+  onEdit: (postId: string) => void;
+};
+
 export type PostDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;

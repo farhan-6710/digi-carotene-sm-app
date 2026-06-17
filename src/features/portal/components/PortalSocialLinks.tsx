@@ -5,7 +5,7 @@ import {
   InstagramIcon,
   LinkedinIcon,
   YoutubeIcon,
-} from "@/features/clients-management/constants/socialIcons";
+} from "@/shared/constants/socialIcons";
 import { formatSocialUrl } from "@/shared/utils/formatSocialUrl";
 import type { PortalSocialLinksProps } from "@/features/portal/types/components";
 

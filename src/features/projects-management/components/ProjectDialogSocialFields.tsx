@@ -1,5 +1,5 @@
-import { formFieldClassName } from "@/features/projects-management/constants/formStyles";
-import type { ProjectFormValues } from "@/features/projects-management/utils/projectFormUtils";
+import { formFieldClassName } from "@/shared/constants/formStyles";
+import type { ProjectDialogSocialFieldsProps } from "@/features/projects-management/types/components";
 
 const socialFields = [
   { field: "facebook" as const, label: "Facebook URL", placeholder: "e.g. facebook.com/brand" },
@@ -7,15 +7,6 @@ const socialFields = [
   { field: "linkedin" as const, label: "LinkedIn URL", placeholder: "e.g. linkedin.com/company/brand" },
   { field: "youtube" as const, label: "YouTube URL", placeholder: "e.g. youtube.com/@brand" },
 ];
-
-type ProjectDialogSocialFieldsProps = {
-  values: ProjectFormValues;
-  onFieldChange: (
-    field: "facebook" | "instagram" | "linkedin" | "youtube",
-    value: string,
-  ) => void;
-  disabled?: boolean;
-};
 
 export function ProjectDialogSocialFields({
   values,

@@ -1,4 +1,4 @@
-import { formFieldClassName } from "@/features/projects-management/constants/formStyles";
+import { formFieldClassName } from "@/shared/constants/formStyles";
 import type { ProjectDialogProps } from "@/features/projects-management/types/components";
 
 export function ProjectDialogBasicFields({

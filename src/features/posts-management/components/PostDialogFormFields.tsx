@@ -4,16 +4,8 @@ import { PostDialogLinkFields } from "@/features/posts-management/components/Pos
 import { SocialsSelect } from "@/features/posts-management/components/SocialsSelect";
 import { StatusSelect } from "@/features/posts-management/components/StatusSelect";
 import type { SocialPlatform } from "@/features/posts-management/constants/postsManagement";
-import { formFieldClassName } from "@/features/posts-management/constants/formStyles";
-import type { StatusKey } from "@/features/posts-management/types/types";
-import type { PostFormValues } from "@/features/posts-management/utils/postFormUtils";
-
-type PostDialogFormFieldsProps = {
-  values: PostFormValues;
-  statusOptions: StatusKey[];
-  disabled?: boolean;
-  patchValues: (patch: Partial<PostFormValues>) => void;
-};
+import { formFieldClassName } from "@/shared/constants/formStyles";
+import type { PostDialogFormFieldsProps } from "@/features/posts-management/types/components";
 
 export function PostDialogFormFields({
   values,

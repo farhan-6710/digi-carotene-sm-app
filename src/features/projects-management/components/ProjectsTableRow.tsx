@@ -1,19 +1,21 @@
 import { Pencil } from "lucide-react";
 
-import { ProjectTableSocialIcons } from "@/features/projects-management/components/ProjectTableSocialIcons";
-import type { ProjectListItem } from "@/features/projects-management/types/types";
-
-type ProjectsTableRowProps = {
-  project: ProjectListItem;
-  onEditProject: (project: ProjectListItem) => void;
-};
+import { PROJECTS_DIRECTORY_ROW_GRID_CLASS } from "@/features/projects-management/constants/projectsDirectory";
+import type { ProjectsTableRowProps } from "@/features/projects-management/types/components";
+import { SocialPlatformButtons } from "@/shared/components/SocialPlatformButtons";
+import { cn } from "@/shared/lib/utils";
 
 export function ProjectsTableRow({
   project,
   onEditProject,
 }: ProjectsTableRowProps) {
   return (
-    <div className="grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:grid-cols-[1.2fr_1fr_1fr_0.8fr_0.5fr] sm:gap-4">
+    <div
+      className={cn(
+        "grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:gap-4",
+        PROJECTS_DIRECTORY_ROW_GRID_CLASS,
+      )}
+    >
       <div className="text-sm font-medium text-foreground">
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           PROJECT
@@ -39,7 +41,7 @@ export function ProjectsTableRow({
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           SOCIALS
         </span>
-        <ProjectTableSocialIcons socials={project.socials} />
+        <SocialPlatformButtons socials={project.socials} />
       </div>
 
       <div className="flex justify-end">

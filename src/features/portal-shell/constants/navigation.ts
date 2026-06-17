@@ -1,4 +1,9 @@
-export type PortalNavIconKey = "dashboard" | "posts" | "account";
+import type { ShellNavIconKey } from "@/shared/constants/shellNavIcons";
+
+export type PortalNavIconKey = Extract<
+  ShellNavIconKey,
+  "dashboard" | "posts" | "account"
+>;
 
 export type PortalNavItem = {
   label: string;

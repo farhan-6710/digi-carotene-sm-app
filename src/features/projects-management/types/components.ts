@@ -1,6 +1,11 @@
 import type { ProjectFormValues } from "@/features/projects-management/utils/projectFormUtils";
 import type { ProjectListItem } from "@/features/projects-management/types/types";
 
+export type ProjectsTableRowProps = {
+  project: ProjectListItem;
+  onEditProject: (project: ProjectListItem) => void;
+};
+
 export type ProjectDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -49,4 +54,13 @@ export type ProjectTeamMembersSelectProps = {
 export type ClientProjectsSectionProps = {
   projects: ProjectListItem[];
   isLoading: boolean;
+};
+
+export type ProjectDialogSocialFieldsProps = {
+  values: ProjectFormValues;
+  onFieldChange: (
+    field: "facebook" | "instagram" | "linkedin" | "youtube",
+    value: string,
+  ) => void;
+  disabled?: boolean;
 };

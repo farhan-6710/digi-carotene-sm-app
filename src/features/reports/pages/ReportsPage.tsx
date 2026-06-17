@@ -2,6 +2,7 @@ import { ReportStatCards } from "@/features/reports/components/ReportStatCards";
 import { ReportDateRangePicker } from "@/features/reports/components/ReportDateRangePicker";
 import { ReportsTable } from "@/features/reports/components/ReportsTable";
 import { useReportsManagement } from "@/features/reports/hooks/useReportsManagement";
+import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageHeader } from "@/shared/components/PageHeader";
 
 export function ReportsPage() {
@@ -45,11 +46,7 @@ export function ReportsPage() {
 
       <ReportStatCards stats={stats} />
 
-      {error ? (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {error}
-        </div>
-      ) : null}
+      {error ? <ErrorBanner message={error} /> : null}
 
       <ReportsTable
         summaries={summaries}

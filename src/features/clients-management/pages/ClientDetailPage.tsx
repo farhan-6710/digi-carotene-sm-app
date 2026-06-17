@@ -1,10 +1,12 @@
 import { Link, useParams } from "react-router";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { ClientProfileCard } from "@/features/clients-management/components/ClientProfileCard";
 import { CLIENTS_MANAGEMENT_PATH } from "@/features/clients-management/constants/routes";
 import { useClientDetailQuery } from "@/features/clients-management/hooks/useClientDetailQuery";
 import { ClientProjectsSection } from "@/features/projects-management/components/ClientProjectsSection";
+import { ErrorBanner } from "@/shared/components/ErrorBanner";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { Button } from "@/shared/ui/button";
 
@@ -27,7 +29,7 @@ export function ClientDetailPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-[320px] items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
@@ -36,9 +38,7 @@ export function ClientDetailPage() {
     return (
       <section className="space-y-4">
         <PageHeader backButton={<ClientDetailBackButton />} />
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {error ?? "Client not found."}
-        </div>
+        <ErrorBanner message={error ?? "Client not found."} />
       </section>
     );
   }
@@ -47,11 +47,7 @@ export function ClientDetailPage() {
     <section className="space-y-8">
       <PageHeader backButton={<ClientDetailBackButton />} />
 
-      {error ? (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {error}
-        </div>
-      ) : null}
+      {error ? <ErrorBanner message={error} /> : null}
 
       <ClientProfileCard client={client} />
 

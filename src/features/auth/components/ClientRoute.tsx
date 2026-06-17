@@ -3,17 +3,14 @@ import { Navigate, Outlet, useLocation } from "react-router";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { ADMIN_HOME } from "@/features/auth/constants/routes";
 import { isClientRole } from "@/features/auth/types/profile";
+import { CenteredLoading } from "@/shared/components/LoadingSpinner";
 
 export function ClientRoute() {
   const { loading, user, isClient, isAdmin, role, profile } = useAuth();
   const location = useLocation();
 
   if (loading) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center bg-background text-foreground">
-        <div className="size-6 animate-spin rounded-full border-2 border-muted border-t-primary" />
-      </div>
-    );
+    return <CenteredLoading />;
   }
 
   if (!user) {

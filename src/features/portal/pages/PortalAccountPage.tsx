@@ -1,15 +1,14 @@
-import { Loader2 } from "lucide-react";
-
-import { PortalPageIntro } from "@/features/portal/components/PortalPageIntro";
 import { PortalSocialLinks } from "@/features/portal/components/PortalSocialLinks";
 import { usePortalClient } from "@/features/portal/providers/PortalClientProvider";
+import { buildPortalStatCards } from "@/features/portal/utils/portalStats";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { AccountHeader } from "@/shared/components/account/AccountHeader";
 import { AccountDetailsCard } from "@/shared/components/account/AccountDetailsCard";
 import type { AccountDetailRow } from "@/shared/components/account/types";
 import { AccountPanelCard } from "@/shared/components/account/AccountPanelCard";
 import { AccountStatsGrid } from "@/shared/components/account/AccountStatsGrid";
-import { buildPortalStats } from "@/features/portal/utils/portalStats";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
+import { PortalPageShell } from "@/shared/components/PortalPageShell";
 import {
   getUserAuthProvider,
   getUserEmail,
@@ -20,9 +19,9 @@ export function PortalAccountPage() {
   const { user } = useAuth();
   const { client, projects, posts, loading, error } = usePortalClient();
 
-  const stats = buildPortalStats(posts).map((stat) => ({
+  const stats = buildPortalStatCards(posts).map((stat) => ({
     label: stat.label,
-    value: loading ? "—" : String(stat.value),
+    value: loading ? "—" : stat.value,
   }));
 
   const brandDetails: AccountDetailRow[] = client
@@ -48,30 +47,19 @@ export function PortalAccountPage() {
     : "Your Digi Carotene client portal account.";
 
   return (
-    <section className="space-y-8">
-      <PortalPageIntro
-        title="Account"
-        description="Your login, brand on file with Digi Carotene, and content performance snapshot."
-      />
-
-      {error && !loading ? (
-        <p className="rounded-2xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-          {error}
-        </p>
-      ) : null}
-
-      <AccountHeader
-        user={user}
-        roleLabel="Client account"
-        bio={bio}
-      />
+    <PortalPageShell
+      heading="Account"
+      description="Your login, brand on file with Digi Carotene, and content performance snapshot."
+      error={error && !loading ? error : null}
+    >
+      <AccountHeader user={user} roleLabel="Client account" bio={bio} />
 
       <AccountStatsGrid stats={stats} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         {loading ? (
           <div className="flex items-center justify-center rounded-2xl border border-border bg-card py-16 shadow-sm lg:col-span-2">
-            <Loader2 className="size-6 animate-spin text-muted-foreground" />
+            <LoadingSpinner />
           </div>
         ) : (
           <>
@@ -88,6 +76,6 @@ export function PortalAccountPage() {
           </>
         )}
       </div>
-    </section>
+    </PortalPageShell>
   );
 }

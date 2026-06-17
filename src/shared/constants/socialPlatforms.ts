@@ -5,7 +5,7 @@ import {
   InstagramIcon,
   LinkedinIcon,
   YoutubeIcon,
-} from "@/features/clients-management/constants/socialIcons";
+} from "@/shared/constants/socialIcons";
 
 export type SocialPlatformKey =
   | "facebook"

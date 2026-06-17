@@ -1,4 +1,4 @@
-import { formFieldClassName } from "@/features/clients-management/constants/formStyles";
+import { formFieldClassName } from "@/shared/constants/formStyles";
 import type { ClientDialogBasicFieldsProps } from "@/features/clients-management/types/components";
 
 export function ClientDialogBasicFields({

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { TeamMemberActiveProjectsSection } from "@/features/team-management/components/TeamMemberActiveProjectsSection";
 import { TeamMemberAssignProjectDialog } from "@/features/team-management/components/TeamMemberAssignProjectDialog";
@@ -9,6 +9,8 @@ import { TeamMemberProfileCard } from "@/features/team-management/components/Tea
 import { TEAM_MANAGEMENT_PATH } from "@/features/team-management/constants/routes";
 import { useTeamMemberProjectActions } from "@/features/team-management/hooks/useTeamMemberProjectActions";
 import { useTeamMemberDetailQuery } from "@/features/team-management/hooks/useTeamMemberDetailQuery";
+import { ErrorBanner } from "@/shared/components/ErrorBanner";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { Button } from "@/shared/ui/button";
 
@@ -52,7 +54,7 @@ export function TeamMemberDetailPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-[320px] items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
@@ -61,9 +63,7 @@ export function TeamMemberDetailPage() {
     return (
       <section className="space-y-4">
         <PageHeader backButton={<TeamMemberDetailBackButton />} />
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {error ?? "Not found."}
-        </div>
+        <ErrorBanner message={error ?? "Not found."} />
       </section>
     );
   }
@@ -72,11 +72,7 @@ export function TeamMemberDetailPage() {
     <section className="space-y-8">
       <PageHeader backButton={<TeamMemberDetailBackButton />} />
 
-      {error ? (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {error}
-        </div>
-      ) : null}
+      {error ? <ErrorBanner message={error} /> : null}
 
       <TeamMemberProfileCard member={member} />
 

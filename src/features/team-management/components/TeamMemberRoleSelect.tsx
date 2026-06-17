@@ -2,7 +2,7 @@ import {
   TEAM_MEMBER_ROLES,
   TEAM_MEMBER_ROLE_LABELS,
 } from "@/features/team-management/constants/teamMemberRoles";
-import { formFieldClassName } from "@/features/team-management/constants/formStyles";
+import { formFieldClassName } from "@/shared/constants/formStyles";
 import type { TeamMemberRoleSelectProps } from "@/features/team-management/types/components";
 
 export function TeamMemberRoleSelect({
