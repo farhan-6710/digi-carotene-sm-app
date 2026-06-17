@@ -1,5 +1,8 @@
 import { ArrowDown, ArrowUp } from "lucide-react";
-import type { ReportStatCardsProps, ReportStatTrendProps } from "@/features/reports/types/components";
+import type {
+  ReportStatCardsProps,
+  ReportStatTrendProps,
+} from "@/features/reports/types/components";
 
 function Trend({ delta, label, trend }: ReportStatTrendProps) {
   const isPositive = trend === "positive";
@@ -26,24 +29,26 @@ function Trend({ delta, label, trend }: ReportStatTrendProps) {
 export function ReportStatCards({ stats }: ReportStatCardsProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {stats.map((stat) => (
-        <div
-          key={stat.label}
-          className="rounded-2xl border border-border bg-card p-6 shadow-sm"
-        >
-          <div className="text-xs font-semibold tracking-wider text-muted-foreground">
-            {stat.label.toUpperCase()}
+      {stats.map((stat) => {
+        return (
+          <div
+            key={stat.label}
+            className="rounded-2xl border border-border bg-card p-6 shadow-sm"
+          >
+            <div className="text-xs font-semibold tracking-wider text-muted-foreground">
+              {stat.label.toUpperCase()}
+            </div>
+            <div className="mt-4 text-3xl font-semibold tracking-tight">
+              {stat.value}
+            </div>
+            <Trend
+              delta={stat.delta}
+              label={stat.deltaLabel}
+              trend={stat.trend}
+            />
           </div>
-          <div className="mt-4 text-3xl font-semibold tracking-tight">
-            {stat.value}
-          </div>
-          <Trend
-            delta={stat.delta}
-            label={stat.deltaLabel}
-            trend={stat.trend}
-          />
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

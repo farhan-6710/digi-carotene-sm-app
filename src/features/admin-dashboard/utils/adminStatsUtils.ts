@@ -1,9 +1,4 @@
-import {
-  Users,
-  UserRound,
-  Layers,
-  XCircle,
-} from "lucide-react";
+import { Users, UserRound, Layers, XCircle } from "lucide-react";
 
 import {
   clientsSparklineData,

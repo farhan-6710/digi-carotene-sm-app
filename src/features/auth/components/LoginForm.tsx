@@ -1,5 +1,3 @@
-import { useState, type FormEvent } from "react";
-
 import {
   AuthEmailField,
   AuthFormAlert,
@@ -7,32 +5,24 @@ import {
 } from "@/features/auth/components/AuthFormFields";
 import { AuthGoogleSignIn } from "@/features/auth/components/AuthGoogleSignIn";
 import { authFormStyles } from "@/features/auth/components/authFormStyles";
-import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { useLoginForm } from "@/features/auth/hooks/useLoginForm";
 import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 export function LoginForm() {
-  const { signInWithEmail } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const isBusy = isSubmitting;
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError(null);
-    setIsSubmitting(true);
-
-    const authError = await signInWithEmail(email.trim(), password);
-    if (authError) {
-      setError(authError.message);
-    }
-
-    setIsSubmitting(false);
-  }
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    error,
+    setError,
+    isSubmitting,
+    isBusy,
+    handleSubmit,
+    clearError,
+  } = useLoginForm();
 
   return (
     <div className="space-y-6">
@@ -75,7 +65,7 @@ export function LoginForm() {
       <AuthGoogleSignIn
         disabled={isBusy}
         onError={setError}
-        onBeforeSignIn={() => setError(null)}
+        onBeforeSignIn={clearError}
       />
     </div>
   );

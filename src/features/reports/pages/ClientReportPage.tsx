@@ -5,33 +5,12 @@ import {
   statusColors,
   statusText,
 } from "@/features/posts-management/constants/postsManagement";
-import type { ClientReportDetail } from "@/features/reports/types/types";
+import { buildDummyClientReport } from "@/features/reports/utils/clientReportUtils";
 import { decodeClientReportId } from "@/features/reports/utils/reportsUtils";
 import { buildReportsListPath } from "@/features/reports/utils/reportsUrlParams";
 import { PageHeader } from "@/shared/components/PageHeader";
+import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
-
-function buildDummyClientReport(clientName: string): ClientReportDetail {
-  return {
-    clientName,
-    periodLabel: "May 1 – May 31, 2026",
-    totalPosts: 12,
-    postedCount: 8,
-    scheduledCount: 3,
-    notPostedCount: 1,
-    highlights: [
-      "Strong posting consistency across Instagram and Facebook.",
-      "Highest engagement on mid-week afternoon slots.",
-      "One missed post flagged for follow-up with the client.",
-    ],
-    recentPosts: [
-      { date: "May 28, 2026", time: "2:00 PM", status: "Posted" },
-      { date: "May 26, 2026", time: "10:00 AM", status: "Posted" },
-      { date: "May 24, 2026", time: "4:30 PM", status: "Scheduled" },
-      { date: "May 22, 2026", time: "11:00 AM", status: "Not posted" },
-    ],
-  };
-}
 
 export function ClientReportPage() {
   const { clientId = "" } = useParams();
@@ -61,10 +40,15 @@ export function ClientReportPage() {
           { label: "Posted", value: report.postedCount },
           { label: "Scheduled", value: report.scheduledCount },
           { label: "Not posted", value: report.notPostedCount },
-        ].map((item) => (
+        ].map((item, idx) => (
           <div
             key={item.label}
-            className="rounded-2xl border border-border bg-card p-6 shadow-sm"
+            className={cn(
+              "rounded-2xl border border-border bg-card p-6 shadow-sm",
+              idx % 2 === 0
+                ? "border-primary/40 bg-glow-bg-primary"
+                : "border-accent/40 bg-glow-bg-accent",
+            )}
           >
             <div className="text-xs font-semibold tracking-wider text-muted-foreground">
               {item.label.toUpperCase()}

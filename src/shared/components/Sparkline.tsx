@@ -11,7 +11,10 @@ export function Sparkline({ data, color }: SparklineProps) {
   return (
     <div className="h-10 w-24 shrink-0">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
+        <LineChart
+          data={data}
+          margin={{ top: 2, right: 2, left: 2, bottom: 2 }}
+        >
           <Line
             type="bump"
             dataKey="value"
