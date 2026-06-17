@@ -23,3 +23,8 @@ export type StatsCardsProps = {
   cards: import("@/shared/types/statsCards").StatCardItem[];
   isLoading?: boolean;
 };
+
+export type SocialPlatformButtonsProps = {
+  socials: import("@/shared/constants/socialPlatforms").SocialLinkMap | null;
+  className?: string;
+};

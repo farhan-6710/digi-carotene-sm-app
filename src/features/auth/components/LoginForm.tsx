@@ -127,7 +127,9 @@ export function LoginForm() {
           <span className="w-full border-t border-border/80" />
         </div>
         <div className="relative flex justify-center">
-          <span className={authFormStyles.divider}>Or continue with Google</span>
+          <span className={authFormStyles.divider}>
+            Or continue with Google
+          </span>
         </div>
       </div>
 

@@ -64,7 +64,7 @@ export function SignupForm() {
 
     setIsSubmitting(true);
 
-    const authError = await signUpWithEmail(name, email.trim(), password);
+    const authError = await signUpWithEmail(email.trim(), password, name.trim());
     if (authError) {
       setError(authError.message);
     } else {
@@ -199,7 +199,9 @@ export function SignupForm() {
           <span className="w-full border-t border-border/80" />
         </div>
         <div className="relative flex justify-center">
-          <span className={authFormStyles.divider}>Or continue with Google</span>
+          <span className={authFormStyles.divider}>
+            Or continue with Google
+          </span>
         </div>
       </div>
 

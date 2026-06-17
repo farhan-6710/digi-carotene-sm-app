@@ -19,9 +19,9 @@ Reference docs for agents and developers. Source of truth for database schema, D
 |---------|-----|
 | Auth / profiles | [admin/auth/profiles.md](./admin/auth/profiles.md) |
 | Clients | [admin/clients-management/clients.md](./admin/clients-management/clients.md) |
+| Team members | [admin/team-management/team-members.md](./admin/team-management/team-members.md) |
 | Projects | [admin/projects-management/projects.md](./admin/projects-management/projects.md) |
 | Posts | [admin/posts-management/posts.md](./admin/posts-management/posts.md) |
-| Team members | [admin/team-management/team-members.md](./admin/team-management/team-members.md) |
 
 ## Domain hierarchy
 

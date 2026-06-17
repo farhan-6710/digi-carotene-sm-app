@@ -68,7 +68,9 @@ export function StatsCards({ cards, isLoading = false }: StatsCardsProps) {
                 </span>
                 <div className="mt-2 flex items-baseline gap-2">
                   {isLoading ? (
-                    <Loader2 className="size-6 animate-spin text-muted-foreground" />
+                    <div className="py-1.5">
+                      <Loader2 className="size-6 animate-spin text-muted-foreground" />
+                    </div>
                   ) : (
                     <span className="text-3xl font-semibold tracking-tight text-foreground">
                       {card.value}

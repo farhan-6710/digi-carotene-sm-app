@@ -1,14 +1,12 @@
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from "react";
-import type { AuthChangeEvent, AuthError, Session, User } from "@supabase/supabase-js";
+import type { AuthError, User } from "@supabase/supabase-js";
 
 import { supabase } from "@/shared/lib/supabase";
 import { fetchProfileByUserId } from "@/features/auth/utils/profileRepository";
@@ -18,17 +16,13 @@ import { getHomePathForRole } from "@/features/auth/constants/routes";
 
 type AuthContextValue = {
   user: User | null;
-  session: Session | null;
   profile: Profile | null;
-  profileError: string | null;
-  profileLoading: boolean;
   role: UserRole | null;
   clientId: string | null;
   isAdmin: boolean;
   isClient: boolean;
   homePath: string;
   loading: boolean;
-  refreshProfile: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<AuthError | null>;
   signUpWithEmail: (
     email: string,
@@ -43,162 +37,88 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 const authRedirectUrl = () => `${window.location.origin}/auth`;
 
-/** Profile-changing auth events only — not tab-focus token refresh. */
-function shouldReloadProfile(
-  event: AuthChangeEvent,
-  userId: string | undefined,
-  loadedProfileUserId: string | null,
-): boolean {
-  if (!userId) {
-    return false;
-  }
-
-  if (event === "USER_UPDATED") {
-    return true;
-  }
-
-  if (event === "SIGNED_IN") {
-    return loadedProfileUserId !== userId;
-  }
-
-  return false;
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [profileError, setProfileError] = useState<string | null>(null);
-  const [profileLoading, setProfileLoading] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const loadedProfileUserIdRef = useRef<string | null>(null);
-  const userIdRef = useRef<string | undefined>(undefined);
-  userIdRef.current = user?.id;
+  const [authReady, setAuthReady] = useState(false);
+  const [profileReady, setProfileReady] = useState(true);
 
-  const loadProfile = useCallback(
-    async (userId: string | undefined, options?: { blocking?: boolean }) => {
-      if (!userId) {
-        setProfile(null);
-        setProfileError(null);
-        loadedProfileUserIdRef.current = null;
-        setProfileLoading(false);
-        return;
-      }
-
-      if (options?.blocking) {
-        setProfileLoading(true);
-      }
-
-      setProfileError(null);
-
-      try {
-        const nextProfile = await fetchProfileByUserId(userId);
-        setProfile(nextProfile);
-        loadedProfileUserIdRef.current = nextProfile ? userId : null;
-        if (!nextProfile) {
-          setProfileError(
-            "No profile row returned for your user. Run scripts/setup-database.sql or sign up again after a reset.",
-          );
-        }
-      } catch (err) {
-        setProfile(null);
-        loadedProfileUserIdRef.current = null;
-        setProfileError(
-          err instanceof Error ? err.message : "Failed to load profile.",
-        );
-      } finally {
-        if (options?.blocking) {
-          setProfileLoading(false);
-        }
-      }
-    },
-    [],
-  );
-
-  const refreshProfile = useCallback(async () => {
-    const userId = userIdRef.current;
-    if (!userId) {
-      return;
-    }
-
-    loadedProfileUserIdRef.current = null;
-    await loadProfile(userId, { blocking: true });
-  }, [loadProfile]);
-
+  // Step 1: listen for Supabase session only (no other Supabase calls here).
   useEffect(() => {
     let isMounted = true;
 
-    const init = async () => {
-      const { data } = await supabase.auth.getSession();
+    void supabase.auth.getSession().then(({ data: { session } }) => {
       if (!isMounted) {
         return;
       }
-
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      await loadProfile(data.session?.user?.id, { blocking: true });
-      if (isMounted) {
-        setLoading(false);
-      }
-    };
-
-    void init();
+      setUser(session?.user ?? null);
+      setAuthReady(true);
+    });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, nextSession) => {
-      setSession(nextSession);
-      setUser(nextSession?.user ?? null);
-
-      if (event === "SIGNED_OUT") {
-        setProfile(null);
-        setProfileError(null);
-        loadedProfileUserIdRef.current = null;
-        setProfileLoading(false);
-      } else if (
-        shouldReloadProfile(
-          event,
-          nextSession?.user?.id,
-          loadedProfileUserIdRef.current,
-        )
-      ) {
-        void loadProfile(nextSession?.user?.id, {
-          blocking: !loadedProfileUserIdRef.current,
-        });
-      }
-
-      setLoading(false);
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setAuthReady(true);
     });
 
     return () => {
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, [loadProfile]);
+  }, []);
+
+  // Step 2: load profile when user id changes (separate from auth listener).
+  useEffect(() => {
+    if (!user?.id) {
+      setProfile(null);
+      setProfileReady(true);
+      return;
+    }
+
+    let isMounted = true;
+    setProfileReady(false);
+
+    void fetchProfileByUserId(user.id)
+      .then((nextProfile) => {
+        if (isMounted) {
+          setProfile(nextProfile);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setProfile(null);
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setProfileReady(true);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.id]);
+
+  const loading = !authReady || (user !== null && !profileReady);
 
   const role = profile?.role ?? null;
   const clientId = profile?.client_id ?? null;
   const isAdmin = role !== null && isAdminRole(role);
-  const isClient =
-    role !== null && isClientRole(role) && Boolean(clientId);
-  const homePath = role
-    ? getHomePathForRole(role)
-    : "/admin/dashboard";
+  const isClient = role !== null && isClientRole(role) && Boolean(clientId);
+  const homePath = role ? getHomePathForRole(role) : "/admin/dashboard";
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
-      session,
       profile,
-      profileError,
-      profileLoading,
       role,
       clientId,
       isAdmin,
       isClient,
       homePath,
       loading,
-      refreshProfile,
       signInWithEmail: async (email, password) => {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -226,24 +146,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       signOut: async () => {
         await supabase.auth.signOut();
+        setUser(null);
         setProfile(null);
-        loadedProfileUserIdRef.current = null;
       },
     }),
-    [
-      user,
-      session,
-      profile,
-      profileError,
-      profileLoading,
-      role,
-      clientId,
-      isAdmin,
-      isClient,
-      homePath,
-      loading,
-      refreshProfile,
-    ],
+    [user, profile, role, clientId, isAdmin, isClient, homePath, loading],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

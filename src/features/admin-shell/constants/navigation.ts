@@ -20,14 +20,9 @@ export const adminBasePath = "/admin";
 export const primaryNav: NavItem[] = [
   { label: "Dashboard", to: `${adminBasePath}/dashboard`, icon: "dashboard" },
   {
-    label: "Posts",
-    to: `${adminBasePath}/posts-management`,
-    icon: "posts",
-  },
-  {
-    label: "Projects",
-    to: `${adminBasePath}/projects-management`,
-    icon: "projects",
+    label: "Team",
+    to: `${adminBasePath}/team-management`,
+    icon: "team",
   },
   {
     label: "Clients",
@@ -35,9 +30,14 @@ export const primaryNav: NavItem[] = [
     icon: "clients",
   },
   {
-    label: "Team",
-    to: `${adminBasePath}/team-management`,
-    icon: "team",
+    label: "Projects",
+    to: `${adminBasePath}/projects-management`,
+    icon: "projects",
+  },
+  {
+    label: "Posts",
+    to: `${adminBasePath}/posts-management`,
+    icon: "posts",
   },
   { label: "Analytics", to: `${adminBasePath}/analytics`, icon: "analytics" },
   { label: "Reports", to: `${adminBasePath}/reports`, icon: "reports" },

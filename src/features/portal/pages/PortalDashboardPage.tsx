@@ -97,9 +97,7 @@ export function PortalDashboardPage() {
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {format(parseISO(post.scheduled_date), "MMM d, yyyy")}
-                        {post.scheduled_time
-                          ? ` · ${post.scheduled_time}`
-                          : ""}
+                        {post.scheduled_time ? ` · ${post.scheduled_time}` : ""}
                       </p>
                     </div>
                     <span

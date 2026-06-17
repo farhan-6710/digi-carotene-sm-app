@@ -1,90 +1,37 @@
-import { useEffect } from "react";
 import { Link, Navigate, useLocation, useSearchParams } from "react-router";
 
 import { LoginForm } from "@/features/auth/components/LoginForm";
 import { SignupForm } from "@/features/auth/components/SignupForm";
 import {
   AUTH_FORM_TYPE_PARAM,
-  AUTH_SIGNUP_CODE_PARAM,
   AUTH_FORM_TYPES,
-  isValidSignupInviteCode,
-  resolveAuthFormType,
 } from "@/features/auth/constants/auth";
-import {
-  isAdminPath,
-  isPortalPath,
-} from "@/features/auth/constants/routes";
+import { isAdminPath, isPortalPath } from "@/features/auth/constants/routes";
 import { agencyMeta } from "@/features/public/constants/agency";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 
-function resolvePostLoginPath(
-  requestedPath: string | undefined,
-  homePath: string,
-  isAdmin: boolean,
-  isClient: boolean,
-): string {
-  if (!requestedPath) {
-    return homePath;
-  }
-
-  if (isAdmin && isAdminPath(requestedPath)) {
-    return requestedPath;
-  }
-
-  if (isClient && isPortalPath(requestedPath)) {
-    return requestedPath;
-  }
-
-  return homePath;
-}
-
 export function AuthPage() {
-  const {
-    user,
-    loading,
-    profileLoading,
-    profile,
-    profileError,
-    homePath,
-    isAdmin,
-    isClient,
-  } = useAuth();
+  const { user, loading, profile, homePath, isAdmin, isClient } = useAuth();
   const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
-  const formTypeParam = searchParams.get(AUTH_FORM_TYPE_PARAM);
-  const signupCode = searchParams.get(AUTH_SIGNUP_CODE_PARAM);
-  const activeForm = resolveAuthFormType(formTypeParam, signupCode);
-  const isSignup = activeForm === AUTH_FORM_TYPES.signup;
+  const isSignup =
+    searchParams.get(AUTH_FORM_TYPE_PARAM) === AUTH_FORM_TYPES.signup;
 
   const requestedPath =
     (location.state as { from?: { pathname?: string } } | null)?.from
       ?.pathname ?? undefined;
 
-  const redirectPath = resolvePostLoginPath(
-    requestedPath,
-    homePath,
-    isAdmin,
-    isClient,
-  );
-
-  useEffect(() => {
-    if (
-      formTypeParam === AUTH_FORM_TYPES.signup &&
-      !isValidSignupInviteCode(signupCode)
-    ) {
-      setSearchParams(
-        (currentParams) => {
-          const nextParams = new URLSearchParams(currentParams);
-          nextParams.set(AUTH_FORM_TYPE_PARAM, AUTH_FORM_TYPES.login);
-          return nextParams;
-        },
-        { replace: true },
-      );
+  let redirectPath = homePath;
+  if (requestedPath) {
+    if (isAdmin && isAdminPath(requestedPath)) {
+      redirectPath = requestedPath;
+    } else if (isClient && isPortalPath(requestedPath)) {
+      redirectPath = requestedPath;
     }
-  }, [formTypeParam, signupCode, setSearchParams]);
+  }
 
-  if (loading || (user && !profile && profileLoading)) {
+  if (loading) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-background text-foreground">
         <div className="size-6 animate-spin rounded-full border-2 border-muted border-t-primary" />
@@ -97,15 +44,14 @@ export function AuthPage() {
       <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-background px-6 text-center text-foreground">
         <p className="text-lg font-semibold">Could not load your profile</p>
         <p className="max-w-md text-sm text-muted-foreground">
-          {profileError ??
-            "You are signed in, but the app could not read your profile row."}
+          You are signed in, but no profile row was found. Run{" "}
+          <code className="text-xs">scripts/setup-database.sql</code> in Supabase,
+          then sign up again or ask an admin to create your profile row.
         </p>
-        <p className="max-w-md text-sm text-muted-foreground">
-          If rows already exist in Supabase Table Editor, run{" "}
-          <code className="text-xs">scripts/setup-database.sql</code> in the SQL
-          Editor (includes profiles RLS and the signup trigger).
-        </p>
-        <Link to="/" className="text-sm font-semibold text-primary hover:underline">
+        <Link
+          to="/"
+          className="text-sm font-semibold text-primary hover:underline"
+        >
           Back to home
         </Link>
       </div>
@@ -116,10 +62,14 @@ export function AuthPage() {
     return <Navigate to={redirectPath} replace />;
   }
 
+  const switchFormPath = isSignup
+    ? `/auth?${AUTH_FORM_TYPE_PARAM}=${AUTH_FORM_TYPES.login}`
+    : `/auth?${AUTH_FORM_TYPE_PARAM}=${AUTH_FORM_TYPES.signup}`;
+
   return (
     <div className="flex min-h-dvh flex-col bg-background text-foreground">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-6 py-12">
-        <div className="mb-8 space-y-2 text-center">
+        <div className="mb-8 text-center">
           <Link
             to="/"
             className="text-3xl font-semibold tracking-wider text-muted-foreground uppercase transition hover:text-foreground"
@@ -129,23 +79,29 @@ export function AuthPage() {
         </div>
 
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <div className="mb-6 flex flex-col justify-center items-center">
+          <div className="mb-6 text-center">
             <h2 className="text-lg font-semibold tracking-tight">
               {isSignup ? "Create account" : "Log in"}
             </h2>
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="mt-1 text-sm text-muted-foreground">
               {isSignup
-                ? "Set up your team portal access to manage clients and posts."
-                : "Log in to your admin or client portal."}
+                ? "Sign up for portal access."
+                : "Sign in to your admin or client portal."}
             </p>
           </div>
 
           {isSignup ? <SignupForm /> : <LoginForm />}
-        </div>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          By continuing, you agree to our team portal terms of use.
-        </p>
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            {isSignup ? "Already have an account?" : "Need an account?"}{" "}
+            <Link
+              to={switchFormPath}
+              className="font-semibold text-primary hover:underline"
+            >
+              {isSignup ? "Log in" : "Sign up"}
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
