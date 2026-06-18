@@ -13,7 +13,7 @@ const projectListSelect = `
   created_at,
   updated_at,
   clients ( id, client_name ),
-  team_members:manager_id ( id, member_name, role )
+  team_members:manager_id ( id, member_name, admin_team_role )
 `;
 
 type ProjectRow = {

@@ -8,7 +8,7 @@ export type TeamMemberFormValues = {
   memberName: string;
   email: string;
   mobileNumber: string;
-  role: TeamMemberRole;
+  adminTeamRole: TeamMemberRole;
 };
 
 export type TeamMemberFormField = keyof TeamMemberFormValues;
@@ -17,7 +17,7 @@ export const emptyTeamMemberFormValues = (): TeamMemberFormValues => ({
   memberName: "",
   email: "",
   mobileNumber: "",
-  role: DEFAULT_TEAM_MEMBER_ROLE,
+  adminTeamRole: DEFAULT_TEAM_MEMBER_ROLE,
 });
 
 export function teamMemberToFormValues(member: TeamMember): TeamMemberFormValues {
@@ -25,7 +25,7 @@ export function teamMemberToFormValues(member: TeamMember): TeamMemberFormValues
     memberName: member.member_name,
     email: member.email,
     mobileNumber: member.mobile_number ?? "",
-    role: member.role,
+    adminTeamRole: member.admin_team_role,
   };
 }
 

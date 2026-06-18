@@ -32,8 +32,8 @@ export type TeamMemberDialogFormFieldsProps = {
 };
 
 export type TeamMemberRoleSelectProps = {
-  value: TeamMemberFormValues["role"];
-  onChange: (role: TeamMemberFormValues["role"]) => void;
+  value: TeamMemberFormValues["adminTeamRole"];
+  onChange: (adminTeamRole: TeamMemberFormValues["adminTeamRole"]) => void;
   disabled?: boolean;
 };
 

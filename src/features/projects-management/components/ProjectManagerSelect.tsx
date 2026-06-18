@@ -18,7 +18,9 @@ export function ProjectManagerSelect({
   const loadManagers = useCallback(() => {
     setIsLoading(true);
     fetchTeamMembers()
-      .then((data) => setMembers(data.filter((member) => member.role === "manager")))
+      .then((data) =>
+        setMembers(data.filter((member) => member.admin_team_role === "manager")),
+      )
       .catch(() => setMembers([]))
       .finally(() => setIsLoading(false));
   }, []);

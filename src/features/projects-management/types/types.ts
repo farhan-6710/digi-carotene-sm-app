@@ -13,7 +13,7 @@ export type ProjectClient = {
 export type ProjectManager = {
   id: string;
   member_name: string;
-  role: string;
+  admin_team_role: string;
 };
 
 export type Project = {

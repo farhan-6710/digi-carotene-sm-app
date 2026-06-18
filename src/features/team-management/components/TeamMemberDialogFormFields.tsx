@@ -44,11 +44,11 @@ export function TeamMemberDialogFormFields({
       </label>
 
       <label className="block text-xs font-semibold text-muted-foreground">
-        Role
+        Admin team role
         <div className="mt-2">
           <TeamMemberRoleSelect
-            value={values.role}
-            onChange={(role) => onFieldChange("role", role)}
+            value={values.adminTeamRole}
+            onChange={(adminTeamRole) => onFieldChange("adminTeamRole", adminTeamRole)}
             disabled={disabled}
           />
         </div>

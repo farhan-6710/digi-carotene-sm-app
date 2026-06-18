@@ -9,7 +9,7 @@ export const teamDirectoryColumns: DirectoryTableColumn[] = [
   { label: "NAME" },
   { label: "EMAIL" },
   { label: "MOBILE NUMBER" },
-  { label: "ROLE" },
+  { label: "ADMIN TEAM ROLE" },
   { label: "ACTIONS", align: "right" },
 ];
 
