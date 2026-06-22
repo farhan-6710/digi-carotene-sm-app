@@ -1,4 +1,4 @@
-export const THEME_STORAGE_KEY = "reviva-theme";
+export const THEME_STORAGE_KEY = "DC-theme";
 
 export type ThemePreference = "light" | "dark";
 
