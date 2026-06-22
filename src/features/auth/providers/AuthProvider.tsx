@@ -49,24 +49,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authReady, setAuthReady] = useState(false);
   const [profileReady, setProfileReady] = useState(true);
 
-  const loadProfile = useCallback(async (authUser: User) => {
-    setProfileReady(false);
-    try {
-      const nextProfile = await loadProfileForUser(authUser);
-      setProfile(nextProfile);
-    } catch {
-      setProfile(null);
-    } finally {
-      setProfileReady(true);
-    }
-  }, []);
+  const loadProfile = useCallback(
+    async (authUser: User, options?: { silent?: boolean }) => {
+      if (!options?.silent) {
+        setProfileReady(false);
+      }
+
+      try {
+        const nextProfile = await loadProfileForUser(authUser);
+        setProfile(nextProfile);
+      } catch {
+        setProfile(null);
+      } finally {
+        setProfileReady(true);
+      }
+    },
+    [],
+  );
 
   const refreshProfile = useCallback(async () => {
     if (!user) {
       return;
     }
 
-    await loadProfile(user);
+    await loadProfile(user, { silent: true });
   }, [loadProfile, user]);
 
   useEffect(() => {

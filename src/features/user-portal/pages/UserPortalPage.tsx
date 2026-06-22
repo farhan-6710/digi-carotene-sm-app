@@ -7,7 +7,7 @@ import { CenteredLoading } from "@/shared/components/LoadingSpinner";
 import { Button } from "@/shared/ui/button";
 
 export function UserPortalPage() {
-  const { loading, signOut } = useAuth();
+  const { loading, signOut, refreshProfile } = useAuth();
   usePortalAccessRedirect();
 
   if (loading) {
@@ -42,7 +42,7 @@ export function UserPortalPage() {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => window.location.reload()}
+              onClick={() => void refreshProfile()}
             >
               Refresh access
             </Button>
