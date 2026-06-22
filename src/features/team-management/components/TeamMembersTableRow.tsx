@@ -64,10 +64,10 @@ export function TeamMembersTableRow({
         <span
           className={cn(
             "inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold",
-            TEAM_MEMBER_ROLE_BADGE_CLASS[member.admin_team_role],
+            TEAM_MEMBER_ROLE_BADGE_CLASS[member.team_role],
           )}
         >
-          {TEAM_MEMBER_ROLE_LABELS[member.admin_team_role]}
+          {TEAM_MEMBER_ROLE_LABELS[member.team_role]}
         </span>
       </div>
 

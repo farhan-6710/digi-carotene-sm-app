@@ -1,7 +1,7 @@
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 
 // Centralized, frontend-only RBAC. Permissions are derived from the
-// logged-in user's `admin_team_role`. Add a new role or resource here and
+// logged-in user's `team_members.team_role`. Add a new role or resource here and
 // the whole app stays in sync — never sprinkle `role === "admin"` checks
 // around components.
 

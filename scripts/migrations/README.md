@@ -18,12 +18,15 @@ Run only migrations you have **not** applied yet, in order:
 | `003_rename_team_members_role_column.sql` | `team_members` still has column `role` (not `admin_team_role`) |
 | `004_is_team_member_email_function.sql` | `is_team_member_email()` does not exist |
 | `005_signup_default_user_role.sql` | Signup still creates `profiles.role = 'client'` |
+| `006_profiles_team_member_id.sql` | `profiles.team_member_id` column missing |
+
+Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 
 Skip any step that is already reflected in your database.
 
 ## Adding a new change
 
-1. Create the next file: `006_<short_description>.sql`
+1. Create the next file: `007_<short_description>.sql`
 2. Document what it does in a header comment
 3. Update [`docs/database.md`](../docs/database.md) if the domain model changes
 

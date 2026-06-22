@@ -1,6 +1,6 @@
 # Auth Profiles
 
-Links Supabase Auth users to app roles and (for portal users) a client brand.
+Links Supabase Auth users to app roles and portal access via linked ids.
 
 **Code:** `src/features/auth/`  
 **Setup:** `profiles` table + RLS + signup trigger in `scripts/migrations/001_initial_schema.sql`
@@ -13,34 +13,32 @@ Links Supabase Auth users to app roles and (for portal users) a client brand.
 |--------|------|----------|-------------|
 | `id` | uuid | No | PK, FK → `auth.users(id)` ON DELETE CASCADE |
 | `role` | text | No | CHECK: `staff`, `client`, `user` |
-| `client_id` | uuid | Yes | FK → `clients.id` ON DELETE SET NULL |
+| `client_id` | uuid | Yes | FK → `clients.id` — required for client portal |
+| `team_member_id` | uuid | Yes | FK → `team_members.id` — required for staff portal |
 
-### Roles
+### Roles & portal access
 
-| Role | App behavior |
-|------|--------------|
-| `user` | Default on signup — `/user-portal` pending until access is granted |
-| `staff` | Full `/staff-portal` access (email must match `team_members`) |
-| `client` | `/client-portal` access; requires non-null `client_id` |
+| Role | Portal access requires |
+|------|------------------------|
+| `user` | Default on signup — pending until staff links ids below |
+| `staff` | `team_member_id` set (plus `role = staff`) |
+| `client` | `client_id` set (plus `role = client`) |
+
+Signup alone does **not** grant portal access. Staff must link the appropriate id after the user signs up.
 
 ### Signup trigger
 
-On new `auth.users` insert → auto-insert `profiles` row with `role = 'user'`, `client_id = null`.
-
-After sign-in, the app syncs access:
-
-- Email on `team_members` → promote to `staff`
-- Staff sets `role = client` + `client_id` → client portal on next refresh
+On new `auth.users` insert → auto-insert `profiles` row with `role = 'user'`, `client_id = null`, `team_member_id = null`.
 
 Defined in `scripts/migrations/001_initial_schema.sql` (`handle_new_user` + `on_auth_user_created`).  
-Existing DBs: run `scripts/migrations/005_signup_default_user_role.sql` if signup still defaults to `client`.
+Existing DBs: run `scripts/migrations/006_profiles_team_member_id.sql` once.
 
 ### Signup flow (V1)
 
 1. User signs up at `/auth?form-type=signup` with **email magic link** or **Google** (no password).
-2. Profile created with `role = user` → redirected to `/user-portal`.
-3. Staff adds email to **Team Management** → user refreshes → staff portal.
-4. Staff links `client_id` on profile → user refreshes → client portal.
+2. Profile created with `role = user` → redirected to `/user-portal` (pending).
+3. Staff links `team_member_id` + sets `role = staff` → user refreshes → staff portal.
+4. Staff links `client_id` + sets `role = client` → user refreshes → client portal.
 
 ---
 
@@ -55,6 +53,7 @@ type Profile = {
   id: string;
   role: UserRole;
   client_id: string | null;
+  team_member_id: string | null;
 };
 ```
 
@@ -62,21 +61,23 @@ type Profile = {
 
 ## Manual setup (after signup)
 
-**Promote to staff:**
+**Grant staff portal access:**
 
 ```sql
 update public.profiles
-set role = 'staff', client_id = null
+set role = 'staff',
+    team_member_id = '<team-members-table-uuid>',
+    client_id = null
 where id = '<auth-user-uuid>';
 ```
 
-Or add the user's email to `team_members` — the app promotes on refresh.
-
-**Link portal user to a client brand:**
+**Grant client portal access:**
 
 ```sql
 update public.profiles
-set role = 'client', client_id = '<clients-table-uuid>'
+set role = 'client',
+    client_id = '<clients-table-uuid>',
+    team_member_id = null
 where id = '<auth-user-uuid>';
 ```
 
@@ -84,9 +85,9 @@ where id = '<auth-user-uuid>';
 
 ## Important distinctions
 
-- **`profiles`** — who can log in and which area they access.
-- **`clients`** — company/brand records for operations and portal.
-- **`team_members`** — internal staff roster; email match promotes `user` → `staff`.
+- **`profiles`** — who can log in and which portal they access (via linked ids).
+- **`clients`** — company/brand records for operations and client portal.
+- **`team_members`** — internal staff roster; link via `profiles.team_member_id`.
 
 ---
 

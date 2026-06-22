@@ -14,5 +14,5 @@ export type AccountCredentialsListProps = {
 export type StaffAccountDetailsCardProps = {
   user: User | null;
   staffAccount: StaffAccount;
-  adminTeamRole: TeamMemberRole | null;
+  teamRole: TeamMemberRole | null;
 };

@@ -7,7 +7,7 @@ import { AccountStatsGrid } from "@/shared/components/account/AccountStatsGrid";
 import { PageHeader } from "@/shared/components/PageHeader";
 
 export function AccountPage() {
-  const { user, adminTeamRole } = useAuth();
+  const { user, teamRole } = useAuth();
 
   return (
     <section className="space-y-8">
@@ -20,7 +20,7 @@ export function AccountPage() {
         user={user}
         roleLabel={staffAccount.department}
         bio={staffAccount.bio}
-        teamRole={adminTeamRole}
+        teamRole={teamRole}
       />
 
       <AccountStatsGrid stats={staffAccount.stats} />
@@ -29,7 +29,7 @@ export function AccountPage() {
         <StaffAccountDetailsCard
           user={user}
           staffAccount={staffAccount}
-          adminTeamRole={adminTeamRole}
+          teamRole={teamRole}
         />
         <AccountCredentialsList
           credentials={staffAccount.credentials}

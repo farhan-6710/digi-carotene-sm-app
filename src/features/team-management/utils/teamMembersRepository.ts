@@ -46,7 +46,7 @@ export type CreateTeamMemberInput = {
   memberName: string;
   email: string;
   mobileNumber?: string | null;
-  adminTeamRole: TeamMemberRole;
+  teamRole: TeamMemberRole;
 };
 
 export type UpdateTeamMemberInput = CreateTeamMemberInput;
@@ -58,7 +58,7 @@ export async function createTeamMember(input: CreateTeamMemberInput): Promise<Te
       member_name: input.memberName,
       email: input.email.trim().toLowerCase(),
       mobile_number: input.mobileNumber || null,
-      admin_team_role: input.adminTeamRole,
+      team_role: input.teamRole,
     })
     .select("*")
     .single();
@@ -80,7 +80,7 @@ export async function updateTeamMember(
       member_name: input.memberName,
       email: input.email.trim().toLowerCase(),
       mobile_number: input.mobileNumber || null,
-      admin_team_role: input.adminTeamRole,
+      team_role: input.teamRole,
     })
     .eq("id", memberId)
     .select("*")
@@ -103,5 +103,5 @@ export async function deleteTeamMember(memberId: string): Promise<void> {
 
 export async function fetchManagers(): Promise<TeamMember[]> {
   const members = await fetchTeamMembers();
-  return members.filter((member) => member.admin_team_role === "manager");
+  return members.filter((member) => member.team_role === "manager");
 }

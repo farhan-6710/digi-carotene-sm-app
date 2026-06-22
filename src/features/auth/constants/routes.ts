@@ -1,5 +1,8 @@
 import type { Profile } from "@/features/auth/types/profile";
-import { isClientRole, isStaffRole } from "@/features/auth/types/profile";
+import {
+  hasClientPortalAccess,
+  hasStaffPortalAccess,
+} from "@/features/auth/types/profile";
 
 export const STAFF_HOME = "/staff-portal/dashboard";
 export const CLIENT_HOME = "/client-portal/dashboard";
@@ -10,11 +13,11 @@ export function getHomePathForProfile(profile: Profile | null): string {
     return USER_HOME;
   }
 
-  if (isStaffRole(profile.role)) {
+  if (hasStaffPortalAccess(profile)) {
     return STAFF_HOME;
   }
 
-  if (isClientRole(profile.role) && profile.client_id) {
+  if (hasClientPortalAccess(profile)) {
     return CLIENT_HOME;
   }
 

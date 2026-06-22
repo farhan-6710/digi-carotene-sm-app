@@ -13,18 +13,23 @@ import { supabase } from "@/shared/lib/supabase";
 import { AUTH_FORM_TYPES, type AuthFormType } from "@/features/auth/constants/auth";
 import { getHomePathForProfile } from "@/features/auth/constants/routes";
 import type { Profile, UserRole } from "@/features/auth/types/profile";
-import { isClientRole, isStaffRole, isPendingAccess } from "@/features/auth/types/profile";
+import {
+  hasClientPortalAccess,
+  hasStaffPortalAccess,
+  isPendingAccess,
+} from "@/features/auth/types/profile";
 import { buildAuthUrl } from "@/features/auth/utils/authUrlParams";
 import { loadProfileForUser } from "@/features/auth/utils/profileRoleSync";
-import { fetchTeamRoleByEmail } from "@/features/auth/utils/teamRoleRepository";
+import { fetchTeamRoleByMemberId } from "@/features/auth/utils/teamRoleRepository";
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 
 type AuthContextValue = {
   user: User | null;
   profile: Profile | null;
   role: UserRole | null;
-  adminTeamRole: TeamMemberRole | null;
+  teamRole: TeamMemberRole | null;
   clientId: string | null;
+  teamMemberId: string | null;
   isStaff: boolean;
   isClient: boolean;
   isPending: boolean;
@@ -45,7 +50,7 @@ const authRedirectUrl = (formType: AuthFormType = AUTH_FORM_TYPES.login) =>
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [adminTeamRole, setAdminTeamRole] = useState<TeamMemberRole | null>(null);
+  const [teamRole, setTeamRole] = useState<TeamMemberRole | null>(null);
   const [authReady, setAuthReady] = useState(false);
   const [profileReady, setProfileReady] = useState(true);
 
@@ -120,38 +125,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user, loadProfile]);
 
   useEffect(() => {
-    const email = user?.email;
-    if (!email) {
-      setAdminTeamRole(null);
+    const teamMemberId = profile?.team_member_id;
+    if (!teamMemberId) {
+      setTeamRole(null);
       return;
     }
 
     let isMounted = true;
 
-    void fetchTeamRoleByEmail(email)
-      .then((teamRole) => {
+    void fetchTeamRoleByMemberId(teamMemberId)
+      .then((role) => {
         if (isMounted) {
-          setAdminTeamRole(teamRole);
+          setTeamRole(role);
         }
       })
       .catch(() => {
         if (isMounted) {
-          setAdminTeamRole(null);
+          setTeamRole(null);
         }
       });
 
     return () => {
       isMounted = false;
     };
-  }, [user?.email]);
+  }, [profile?.team_member_id]);
 
   const loading = !authReady || (user !== null && !profileReady);
 
   const role = profile?.role ?? null;
   const clientId = profile?.client_id ?? null;
-  const isStaff = role !== null && isStaffRole(role);
-  const isClient =
-    role !== null && isClientRole(role) && Boolean(clientId);
+  const teamMemberId = profile?.team_member_id ?? null;
+  const isStaff = hasStaffPortalAccess(profile);
+  const isClient = hasClientPortalAccess(profile);
   const isPending = isPendingAccess(profile);
   const homePath = getHomePathForProfile(profile);
 
@@ -160,8 +165,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       profile,
       role,
-      adminTeamRole,
+      teamRole,
       clientId,
+      teamMemberId,
       isStaff,
       isClient,
       isPending,
@@ -201,15 +207,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await supabase.auth.signOut();
         setUser(null);
         setProfile(null);
-        setAdminTeamRole(null);
+        setTeamRole(null);
       },
     }),
     [
       user,
       profile,
       role,
-      adminTeamRole,
+      teamRole,
       clientId,
+      teamMemberId,
       isStaff,
       isClient,
       isPending,

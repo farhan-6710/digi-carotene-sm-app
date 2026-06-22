@@ -6,7 +6,7 @@ export async function fetchProfileByUserId(
 ): Promise<Profile | null> {
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, role, client_id")
+    .select("id, role, client_id, team_member_id")
     .eq("id", userId)
     .maybeSingle();
 
@@ -15,21 +15,6 @@ export async function fetchProfileByUserId(
   }
 
   return (data as Profile | null) ?? null;
-}
-
-export async function promoteProfileToStaff(userId: string): Promise<Profile> {
-  const { data, error } = await supabase
-    .from("profiles")
-    .update({ role: "staff", client_id: null })
-    .eq("id", userId)
-    .select("id, role, client_id")
-    .single();
-
-  if (error) {
-    throw error;
-  }
-
-  return data as Profile;
 }
 
 export async function unlinkProfilesFromClient(

@@ -37,8 +37,8 @@ create table public.team_members (
   member_name text not null,
   email text not null unique,
   mobile_number text,
-  admin_team_role text not null default 'executive'
-    check (admin_team_role in ('executive', 'manager', 'admin')),
+  team_role text not null default 'executive'
+    check (team_role in ('executive', 'manager', 'admin')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -130,7 +130,8 @@ create table public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   role text not null default 'user'
     check (role in ('staff', 'client', 'user')),
-  client_id uuid references public.clients (id) on delete set null
+  client_id uuid references public.clients (id) on delete set null,
+  team_member_id uuid references public.team_members (id) on delete set null
 );
 
 alter table public.profiles enable row level security;

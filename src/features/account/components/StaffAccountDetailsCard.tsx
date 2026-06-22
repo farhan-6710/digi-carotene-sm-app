@@ -10,13 +10,13 @@ import type { StaffAccountDetailsCardProps } from "@/features/account/types/comp
 export function StaffAccountDetailsCard({
   user,
   staffAccount,
-  adminTeamRole,
+  teamRole,
 }: StaffAccountDetailsCardProps) {
   const details = [
     {
       label: "Team role",
-      value: adminTeamRole
-        ? TEAM_MEMBER_ROLE_LABELS[adminTeamRole]
+      value: teamRole
+        ? TEAM_MEMBER_ROLE_LABELS[teamRole]
         : "Not assigned",
     },
     { label: "Department", value: staffAccount.department },

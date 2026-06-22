@@ -19,7 +19,7 @@ export function ProjectManagerSelect({
     setIsLoading(true);
     fetchTeamMembers()
       .then((data) =>
-        setMembers(data.filter((member) => member.admin_team_role === "manager")),
+        setMembers(data.filter((member) => member.team_role === "manager")),
       )
       .catch(() => setMembers([]))
       .finally(() => setIsLoading(false));

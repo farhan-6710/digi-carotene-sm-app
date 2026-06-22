@@ -5,7 +5,7 @@ export type TeamMember = {
   member_name: string;
   email: string;
   mobile_number: string | null;
-  admin_team_role: TeamMemberRole;
+  team_role: TeamMemberRole;
   created_at: string;
   updated_at: string;
 };

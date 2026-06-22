@@ -13,20 +13,18 @@ export async function isTeamMemberEmail(email: string): Promise<boolean> {
   return Boolean(data);
 }
 
-// Resolves the logged-in user's internal team role by matching their auth
-// email to a `team_members` row. Returns null when the user is not on the team.
-export async function fetchTeamRoleByEmail(
-  email: string,
+export async function fetchTeamRoleByMemberId(
+  teamMemberId: string,
 ): Promise<TeamMemberRole | null> {
   const { data, error } = await supabase
     .from("team_members")
-    .select("admin_team_role")
-    .eq("email", email.trim().toLowerCase())
+    .select("team_role")
+    .eq("id", teamMemberId)
     .maybeSingle();
 
   if (error || !data) {
     return null;
   }
 
-  return data.admin_team_role as TeamMemberRole;
+  return data.team_role as TeamMemberRole;
 }

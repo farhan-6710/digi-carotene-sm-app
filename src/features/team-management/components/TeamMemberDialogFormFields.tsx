@@ -47,8 +47,8 @@ export function TeamMemberDialogFormFields({
         Admin team role
         <div className="mt-2">
           <TeamMemberRoleSelect
-            value={values.adminTeamRole}
-            onChange={(adminTeamRole) => onFieldChange("adminTeamRole", adminTeamRole)}
+            value={values.teamRole}
+            onChange={(teamRole) => onFieldChange("teamRole", teamRole)}
             disabled={disabled}
           />
         </div>

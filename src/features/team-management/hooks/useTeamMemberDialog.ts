@@ -76,7 +76,7 @@ export function useTeamMemberDialog({ reload, setError }: UseTeamMemberDialogOpt
         memberName: values.memberName.trim(),
         email: values.email.trim(),
         mobileNumber: values.mobileNumber.trim() || null,
-        adminTeamRole: values.adminTeamRole,
+        teamRole: values.teamRole,
       };
 
       if (editingMemberId) {
