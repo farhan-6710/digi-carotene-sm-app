@@ -51,10 +51,10 @@ npm install
 
 ### 2. Set Up Supabase
 
-Run in Supabase **SQL Editor** (in order):
+Run in Supabase **SQL Editor**:
 
-1. `scripts/reset-database.sql` — full wipe (optional; only when resetting)
-2. `scripts/setup-database.sql` — create all tables, RLS, triggers
+- **New project:** [`scripts/migrations/001_initial_schema.sql`](scripts/migrations/001_initial_schema.sql)
+- **Existing project:** apply only missing files from [`scripts/migrations/`](scripts/migrations/) (see README there)
 
 See [docs/database.md](docs/database.md) and [docs/README.md](docs/README.md) for schema details and DTOs.
 
@@ -83,5 +83,5 @@ src/
   shared/           Cross-feature UI (Shadcn), layouts, utils, and toast helpers
 docs/               Schema, DTOs, and feature docs (see docs/README.md)
   staff-portal/     Per-feature docs under docs/staff-portal/<feature>/
-scripts/            reset-database.sql + setup-database.sql only
+scripts/migrations/ Numbered SQL migrations (001 = full schema for new projects)
 ```

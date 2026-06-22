@@ -1,10 +1,10 @@
--- Run once in Supabase SQL Editor.
+-- Migration 003 — existing databases only.
 -- Renames team_members.role → admin_team_role (distinct from profiles.role).
+-- Skip if you ran 001_initial_schema.sql (already uses admin_team_role).
 
 alter table public.team_members
   rename column role to admin_team_role;
 
--- Constraint name may still reference "role" on existing DBs; normalize if present.
 alter table public.team_members
   drop constraint if exists team_members_role_check;
 

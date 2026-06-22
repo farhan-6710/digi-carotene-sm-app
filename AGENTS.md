@@ -97,7 +97,7 @@ File name must match the exported component: `StaffDashboardPage.tsx` exports `S
 
 ## Supabase & migrations
 
-- **Setup:** run `scripts/reset-database.sql` then `scripts/setup-database.sql` in Supabase SQL Editor.
+- **Setup:** new projects run `scripts/migrations/001_initial_schema.sql`; existing DBs run only unapplied files from `scripts/migrations/` (see README there). Never edit old migrations — add a new numbered file.
 - **Docs:** all schema, RLS, and DTOs live under `docs/` — start at [docs/README.md](./docs/README.md).
   - `docs/database.md` — reset, setup, domain model
   - `docs/staff-portal/<feature>/` — per-feature tables, DTOs, UI flows
@@ -125,6 +125,6 @@ File name must match the exported component: `StaffDashboardPage.tsx` exports `S
 1. Page/component names match file names and area prefix rules.
 2. New types are in `types/`, new constants in `constants/`.
 3. Router, sidebar nav, and imports updated for new routes.
-4. SQL migration added under `scripts/` when a new table is needed (update `setup-database.sql`; see `docs/database.md`).
+4. New schema change → add `scripts/migrations/00N_<description>.sql` (see `docs/database.md`); do not edit prior migration files.
 5. Important mutations show `showToast` feedback where appropriate.
 6. `bun run build` passes.

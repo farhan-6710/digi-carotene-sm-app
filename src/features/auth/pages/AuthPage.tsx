@@ -57,7 +57,7 @@ export function AuthPage() {
         <p className="text-lg font-semibold">Could not load your profile</p>
         <p className="max-w-md text-sm text-muted-foreground">
           You are signed in, but no profile row was found. Run{" "}
-          <code className="text-xs">scripts/setup-database.sql</code> in Supabase,
+          <code className="text-xs">scripts/migrations/001_initial_schema.sql</code> in Supabase,
           then sign up again or ask an admin to create your profile row.
         </p>
         <Link

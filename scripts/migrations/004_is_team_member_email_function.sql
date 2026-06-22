@@ -1,5 +1,6 @@
--- Run once in Supabase SQL Editor (existing databases only).
--- Allows passwordless signup to detect pre-added team members by email.
+-- Migration 004 — existing databases only.
+-- Adds is_team_member_email() for passwordless signup staff detection.
+-- Skip if you ran 001_initial_schema.sql (function already included).
 
 create or replace function public.is_team_member_email(lookup_email text)
 returns boolean

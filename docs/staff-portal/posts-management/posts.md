@@ -4,7 +4,7 @@ Scheduled content per **project**. Post-level platform tags and published links 
 
 **Route:** `/staff-portal/posts-management`  
 **Code:** `src/features/posts-management/`  
-**Setup:** included in `scripts/setup-database.sql`
+**Setup:** included in `scripts/migrations/001_initial_schema.sql`
 
 ---
 

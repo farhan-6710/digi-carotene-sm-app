@@ -1,5 +1,6 @@
--- Run once in Supabase SQL Editor (existing databases only).
+-- Migration 005 — existing databases only.
 -- New signups get profiles.role = 'user' until staff or client access is granted.
+-- Skip if you ran 001_initial_schema.sql (trigger already uses 'user').
 
 create or replace function public.handle_new_user()
 returns trigger
@@ -17,3 +18,10 @@ $$;
 
 alter table public.profiles
   alter column role set default 'user';
+
+alter table public.profiles
+  drop constraint if exists profiles_role_check;
+
+alter table public.profiles
+  add constraint profiles_role_check
+  check (role in ('staff', 'client', 'user'));

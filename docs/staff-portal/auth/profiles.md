@@ -3,7 +3,7 @@
 Links Supabase Auth users to app roles and (for portal users) a client brand.
 
 **Code:** `src/features/auth/`  
-**Setup:** `profiles` table + RLS + signup trigger in `scripts/setup-database.sql`
+**Setup:** `profiles` table + RLS + signup trigger in `scripts/migrations/001_initial_schema.sql`
 
 ---
 
@@ -32,8 +32,8 @@ After sign-in, the app syncs access:
 - Email on `team_members` → promote to `staff`
 - Staff sets `role = client` + `client_id` → client portal on next refresh
 
-Defined in `scripts/setup-database.sql` (`handle_new_user` + `on_auth_user_created`).  
-Existing DBs: run `scripts/update-signup-default-user-role.sql` once.
+Defined in `scripts/migrations/001_initial_schema.sql` (`handle_new_user` + `on_auth_user_created`).  
+Existing DBs: run `scripts/migrations/005_signup_default_user_role.sql` if signup still defaults to `client`.
 
 ### Signup flow (V1)
 

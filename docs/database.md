@@ -1,15 +1,18 @@
 # Database setup
 
-Full reset and fresh install for Supabase. Run in **SQL Editor** in order.
+Schema is managed with **numbered migrations** in [`scripts/migrations/`](../scripts/migrations/). Run SQL in the Supabase **SQL Editor**.
 
-## Scripts
+See [`scripts/migrations/README.md`](../scripts/migrations/README.md) for the full guide.
 
-| Step | File                         | Action                                                            |
-| ---- | ---------------------------- | ----------------------------------------------------------------- |
-| 1    | `scripts/reset-database.sql` | Drop all app tables, triggers, functions; delete all `auth.users` |
-| 2    | `scripts/setup-database.sql` | Create tables, `updated_at` triggers, RLS, signup profile trigger |
+## Brand-new project
 
-There are no incremental migration files — always reset then setup when schema changes.
+Run **only** [`scripts/migrations/001_initial_schema.sql`](../scripts/migrations/001_initial_schema.sql).
+
+## Existing project
+
+Run only migrations you have not applied yet (`002`–`005`), in order. Skip any step already reflected in your database.
+
+**Do not** edit old migration files after they have been applied. Add a new numbered file for every schema change.
 
 ## Tables
 
@@ -41,7 +44,7 @@ projects ──1:N── posts
 - Same client, different social accounts → create another **project** under that client.
 - Posts require a project — no project, no post.
 
-## RLS summary (from setup-database.sql)
+## RLS summary (from 001_initial_schema.sql)
 
 | Table                  | Staff (authenticated)              | Client portal (client role)                   |
 | ---------------------- | ---------------------------------- | --------------------------------------------- |
@@ -54,20 +57,14 @@ projects ──1:N── posts
 
 ## After setup
 
-1. Sign up at `/auth?form-type=signup`, then promote in SQL Editor:
+1. Sign up at `/auth?form-type=signup` — default role is `user` (pending access at `/user-portal`).
+2. To grant staff access: add the user's email in **Team Management**, then they refresh → staff portal.
+3. Add **clients** (companies).
+4. Add **team members** (at least one with role **manager**).
+5. Add **projects** (client + manager + social URLs).
+6. Add **posts** (each post requires a project).
 
-```sql
-update public.profiles
-set role = 'staff', client_id = null
-where id = '<auth-user-uuid>';
-```
-
-2. Add **clients** (companies).
-3. Add **team members** (at least one with role **manager**).
-4. Add **projects** (client + manager + social URLs).
-5. Add **posts** (each post requires a project).
-
-**Brand portal users:** sign up or create in Supabase → link via SQL (see [staff-portal/auth/profiles.md](./staff-portal/auth/profiles.md)).
+**Client portal users:** staff links `profiles.client_id` after signup (see [staff-portal/auth/profiles.md](./staff-portal/auth/profiles.md)).
 
 Suggested staff nav / setup order: Clients → Team → Projects → Posts.
 

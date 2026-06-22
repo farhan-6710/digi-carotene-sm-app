@@ -1,5 +1,6 @@
--- Run once in Supabase → SQL Editor AFTER reset-database.sql (or on a fresh project).
--- Creates all tables, triggers, RLS, and the signup profile trigger.
+-- Migration 001 — initial schema (brand-new Supabase projects only).
+-- Creates all tables, RLS, triggers, and auth signup helpers.
+-- Skip this file if your project already has these tables.
 
 create or replace function public.handle_updated_at()
 returns trigger as $$
@@ -36,8 +37,8 @@ create table public.team_members (
   member_name text not null,
   email text not null unique,
   mobile_number text,
-  role text not null default 'executive'
-    check (role in ('executive', 'manager', 'admin')),
+  admin_team_role text not null default 'executive'
+    check (admin_team_role in ('executive', 'manager', 'admin')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

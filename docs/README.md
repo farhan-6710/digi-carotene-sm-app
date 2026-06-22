@@ -6,12 +6,12 @@ Reference docs for agents and developers. Source of truth for database schema, D
 
 | Doc | Purpose |
 |-----|---------|
-| [database.md](./database.md) | Full reset + setup, domain model, table overview |
+| [database.md](./database.md) | Migrations, domain model, table overview |
 
-**Scripts (Supabase SQL Editor, in order):**
+**Scripts (Supabase SQL Editor):**
 
-1. `scripts/reset-database.sql` — wipe all tables + auth users
-2. `scripts/setup-database.sql` — create schema, RLS, signup trigger
+- New project: [`scripts/migrations/001_initial_schema.sql`](../scripts/migrations/001_initial_schema.sql)
+- Existing project: see [`scripts/migrations/README.md`](../scripts/migrations/README.md)
 
 ## Staff portal features
 

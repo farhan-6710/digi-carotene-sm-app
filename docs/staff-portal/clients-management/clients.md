@@ -4,7 +4,7 @@ Company registry: name, contact, website. Social profile URLs live on **projects
 
 **Route:** `/staff-portal/clients-management`  
 **Code:** `src/features/clients-management/`  
-**Setup:** included in `scripts/setup-database.sql`
+**Setup:** included in `scripts/migrations/001_initial_schema.sql`
 
 ---
 

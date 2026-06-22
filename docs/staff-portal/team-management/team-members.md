@@ -4,7 +4,7 @@ Internal staff CRUD and project-scoped assignments.
 
 **Route:** `/staff-portal/team-management`  
 **Code:** `src/features/team-management/`  
-**Setup:** included in `scripts/setup-database.sql`
+**Setup:** included in `scripts/migrations/001_initial_schema.sql`
 
 ---
 

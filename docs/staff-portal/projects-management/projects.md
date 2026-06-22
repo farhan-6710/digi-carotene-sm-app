@@ -4,7 +4,7 @@ Operational unit: social profile URLs, manager, team, and posts. Each project be
 
 **Route:** `/staff-portal/projects-management`  
 **Code:** `src/features/projects-management/`  
-**Setup:** included in `scripts/setup-database.sql`
+**Setup:** included in `scripts/migrations/001_initial_schema.sql`
 
 ---
 
