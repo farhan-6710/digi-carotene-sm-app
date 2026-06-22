@@ -6,6 +6,7 @@ import { DirectoryTable } from "@/shared/components/DirectoryTable";
 export function ClientsTable({
   clients,
   isLoading,
+  canEdit,
   onEditClient,
 }: ClientsTableProps) {
   return (
@@ -22,6 +23,7 @@ export function ClientsTable({
         <ClientsTableRow
           key={client.id}
           client={client}
+          canEdit={canEdit}
           onEditClient={onEditClient}
         />
       ))}

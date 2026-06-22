@@ -26,3 +26,7 @@ export type AuthFormAlertProps = {
   message: string;
   variant: "error" | "success";
 };
+
+export type AdminAccessRouteProps = {
+  module: "posts-management" | "projects-management" | "clients-management" | "team-management" | "analytics" | "reports" | "settings" | "account" | "dashboard";
+};

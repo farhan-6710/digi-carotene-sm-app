@@ -3,6 +3,7 @@ import type { ProjectListItem } from "@/features/projects-management/types/types
 
 export type ProjectsTableRowProps = {
   project: ProjectListItem;
+  canEdit: boolean;
   onEditProject: (project: ProjectListItem) => void;
 };
 
@@ -26,6 +27,7 @@ export type ProjectDialogProps = {
 export type ProjectsTableProps = {
   projects: ProjectListItem[];
   isLoading: boolean;
+  canEdit: boolean;
   onEditProject: (project: ProjectListItem) => void;
 };
 

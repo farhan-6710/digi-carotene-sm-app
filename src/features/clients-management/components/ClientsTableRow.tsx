@@ -7,7 +7,11 @@ import type { ClientsTableRowProps } from "@/features/clients-management/types/c
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 
-export function ClientsTableRow({ client, onEditClient }: ClientsTableRowProps) {
+export function ClientsTableRow({
+  client,
+  canEdit,
+  onEditClient,
+}: ClientsTableRowProps) {
   const website = client.website_name?.trim();
 
   return (
@@ -55,15 +59,17 @@ export function ClientsTableRow({ client, onEditClient }: ClientsTableRowProps) 
       </div>
 
       <div className="flex justify-end gap-2 text-right">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-8 rounded-lg text-muted-foreground hover:text-foreground"
-          onClick={() => onEditClient(client)}
-        >
-          <Pencil className="size-3.5" />
-          <span className="sr-only">Edit Client</span>
-        </Button>
+        {canEdit ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8 rounded-lg text-muted-foreground hover:text-foreground"
+            onClick={() => onEditClient(client)}
+          >
+            <Pencil className="size-3.5" />
+            <span className="sr-only">Edit Client</span>
+          </Button>
+        ) : null}
       </div>
     </div>
   );

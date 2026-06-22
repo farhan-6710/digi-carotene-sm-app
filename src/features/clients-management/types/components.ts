@@ -7,6 +7,7 @@ import type { Client } from "@/features/clients-management/types/types";
 
 export type ClientsTableRowProps = {
   client: Client;
+  canEdit: boolean;
   onEditClient: (client: Client) => void;
 };
 
@@ -24,6 +25,7 @@ export type ClientDialogProps = {
 export type ClientsTableProps = {
   clients: import("@/features/clients-management/types/types").Client[];
   isLoading: boolean;
+  canEdit: boolean;
   onEditClient: (client: import("@/features/clients-management/types/types").Client) => void;
   onDeleteClientClick?: (
     client: import("@/features/clients-management/types/types").Client,

@@ -10,14 +10,17 @@ import type { AuthError, User } from "@supabase/supabase-js";
 
 import { supabase } from "@/shared/lib/supabase";
 import { fetchProfileByUserId } from "@/features/auth/utils/profileRepository";
+import { fetchTeamRoleByEmail } from "@/features/auth/utils/teamRoleRepository";
 import type { Profile, UserRole } from "@/features/auth/types/profile";
 import { isAdminRole, isClientRole } from "@/features/auth/types/profile";
 import { getHomePathForRole } from "@/features/auth/constants/routes";
+import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 
 type AuthContextValue = {
   user: User | null;
   profile: Profile | null;
   role: UserRole | null;
+  adminTeamRole: TeamMemberRole | null;
   clientId: string | null;
   isAdmin: boolean;
   isClient: boolean;
@@ -40,6 +43,7 @@ const authRedirectUrl = () => `${window.location.origin}/auth`;
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [adminTeamRole, setAdminTeamRole] = useState<TeamMemberRole | null>(null);
   const [authReady, setAuthReady] = useState(false);
   const [profileReady, setProfileReady] = useState(true);
 
@@ -71,7 +75,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Step 2: load profile when user id changes (separate from auth listener).
   useEffect(() => {
     if (!user?.id) {
+      // eslint-disable-next-line
       setProfile(null);
+      // eslint-disable-next-line
       setProfileReady(true);
       return;
     }
@@ -101,6 +107,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [user?.id]);
 
+  // Step 3: resolve the internal team role (admin / manager / executive) used
+  // for RBAC, by matching the auth email to a team_members row.
+  useEffect(() => {
+    const email = user?.email;
+    if (!email) {
+
+      // eslint-disable-next-line
+      setAdminTeamRole(null);
+      return;
+    }
+
+    let isMounted = true;
+
+    void fetchTeamRoleByEmail(email)
+      .then((teamRole) => {
+        if (isMounted) {
+          setAdminTeamRole(teamRole);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setAdminTeamRole(null);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.email]);
+
   const loading = !authReady || (user !== null && !profileReady);
 
   const role = profile?.role ?? null;
@@ -114,6 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       profile,
       role,
+      adminTeamRole,
       clientId,
       isAdmin,
       isClient,
@@ -148,9 +185,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await supabase.auth.signOut();
         setUser(null);
         setProfile(null);
+        setAdminTeamRole(null);
       },
     }),
-    [user, profile, role, clientId, isAdmin, isClient, homePath, loading],
+    [user, profile, role, adminTeamRole, clientId, isAdmin, isClient, homePath, loading],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

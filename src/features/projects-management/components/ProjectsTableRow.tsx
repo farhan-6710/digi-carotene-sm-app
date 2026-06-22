@@ -7,6 +7,7 @@ import { cn } from "@/shared/lib/utils";
 
 export function ProjectsTableRow({
   project,
+  canEdit,
   onEditProject,
 }: ProjectsTableRowProps) {
   return (
@@ -45,14 +46,16 @@ export function ProjectsTableRow({
       </div>
 
       <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={() => onEditProject(project)}
-          className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
-        >
-          <Pencil className="size-3.5" />
-          <span className="sr-only">Edit project</span>
-        </button>
+        {canEdit ? (
+          <button
+            type="button"
+            onClick={() => onEditProject(project)}
+            className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          >
+            <Pencil className="size-3.5" />
+            <span className="sr-only">Edit project</span>
+          </button>
+        ) : null}
       </div>
     </div>
   );

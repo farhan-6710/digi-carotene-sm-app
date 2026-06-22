@@ -22,6 +22,7 @@ export type TeamMemberDialogProps = {
 export type TeamMembersTableProps = {
   members: TeamMember[];
   isLoading: boolean;
+  canEdit: boolean;
   onEditMember: (member: TeamMember) => void;
 };
 
@@ -39,6 +40,7 @@ export type TeamMemberRoleSelectProps = {
 
 export type TeamMembersTableRowProps = {
   member: TeamMember;
+  canEdit: boolean;
   onEditMember: (member: TeamMember) => void;
 };
 
@@ -51,6 +53,7 @@ export type TeamMemberActiveProjectsSectionProps = {
   managedProjects: ManagedProjectSummary[];
   isLoading: boolean;
   isSaving: boolean;
+  canManage: boolean;
   onAssignClick: () => void;
   onEndAssignment: (assignmentId: string) => void | Promise<void>;
 };

@@ -6,6 +6,7 @@ import { DirectoryTable } from "@/shared/components/DirectoryTable";
 export function TeamMembersTable({
   members,
   isLoading,
+  canEdit,
   onEditMember,
 }: TeamMembersTableProps) {
   return (
@@ -22,6 +23,7 @@ export function TeamMembersTable({
         <TeamMembersTableRow
           key={member.id}
           member={member}
+          canEdit={canEdit}
           onEditMember={onEditMember}
         />
       ))}

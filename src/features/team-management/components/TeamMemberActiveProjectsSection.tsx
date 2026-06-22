@@ -19,6 +19,7 @@ export function TeamMemberActiveProjectsSection({
   managedProjects,
   isLoading,
   isSaving,
+  canManage,
   onAssignClick,
   onEndAssignment,
 }: TeamMemberActiveProjectsSectionProps) {
@@ -37,17 +38,21 @@ export function TeamMemberActiveProjectsSection({
           <div>
             <div className="text-sm font-semibold">Active projects</div>
             <p className="mt-1 text-xs text-muted-foreground">
-              Tap a project assignment to end it. Managed projects are edited from Projects.
+              {canManage
+                ? "Tap a project assignment to end it. Managed projects are edited from Projects."
+                : "Projects this team member is currently working on."}
             </p>
           </div>
-          <Button
-            onClick={onAssignClick}
-            className="rounded-full shadow-sm"
-            disabled={isSaving}
-          >
-            <Plus className="mr-2 size-4" />
-            Assign project
-          </Button>
+          {canManage ? (
+            <Button
+              onClick={onAssignClick}
+              className="rounded-full shadow-sm"
+              disabled={isSaving}
+            >
+              <Plus className="mr-2 size-4" />
+              Assign project
+            </Button>
+          ) : null}
         </div>
 
         <ActiveAssignmentTags
@@ -68,8 +73,10 @@ export function TeamMemberActiveProjectsSection({
               key={assignment.id}
               label={getAssignmentProjectName(assignment)}
               meta={`Since ${formatAssignmentDate(assignment.started_at)}`}
-              disabled={isSaving}
-              onSelect={() => setEndingAssignmentId(assignment.id)}
+              disabled={isSaving || !canManage}
+              onSelect={() =>
+                canManage ? setEndingAssignmentId(assignment.id) : undefined
+              }
             />
           ))}
         </ActiveAssignmentTags>

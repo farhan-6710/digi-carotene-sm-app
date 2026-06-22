@@ -10,12 +10,14 @@ import {
 } from "@/features/posts-management/constants/postsManagement";
 import { usePostsCalendarSelection } from "@/features/posts-management/hooks/usePostsCalendarSelection";
 import { usePostsManagement } from "@/features/posts-management/hooks/usePostsManagement";
+import { usePermissions } from "@/shared/hooks/usePermissions";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { Button } from "@/shared/ui/button";
 
 export function PostsManagementPage() {
+  const { can } = usePermissions();
   const { selectedDate, calendarWeeks, year, month, selectDate } =
     usePostsCalendarSelection();
 
@@ -28,20 +30,22 @@ export function PostsManagementPage() {
         heading="Posts Management"
         description="Manage daily client posts by time and status. Click any day to add a post or tap one to update it."
         actions={
-          <Button
-            className="gap-2 rounded-full px-5 shadow-sm"
-            onClick={() => {
-              const today = new Date();
-              openAddDialog(
-                today.getFullYear(),
-                today.getMonth() + 1,
-                today.getDate(),
-              );
-            }}
-          >
-            <Plus className="size-4" />
-            Add Post
-          </Button>
+          can("posts.create") ? (
+            <Button
+              className="gap-2 rounded-full px-5 shadow-sm"
+              onClick={() => {
+                const today = new Date();
+                openAddDialog(
+                  today.getFullYear(),
+                  today.getMonth() + 1,
+                  today.getDate(),
+                );
+              }}
+            >
+              <Plus className="size-4" />
+              Add Post
+            </Button>
+          ) : null
         }
       />
 

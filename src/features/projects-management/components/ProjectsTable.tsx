@@ -6,6 +6,7 @@ import { DirectoryTable } from "@/shared/components/DirectoryTable";
 export function ProjectsTable({
   projects,
   isLoading,
+  canEdit,
   onEditProject,
 }: ProjectsTableProps) {
   return (
@@ -22,6 +23,7 @@ export function ProjectsTable({
         <ProjectsTableRow
           key={project.id}
           project={project}
+          canEdit={canEdit}
           onEditProject={onEditProject}
         />
       ))}

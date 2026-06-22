@@ -9,6 +9,7 @@ import { TeamMemberProfileCard } from "@/features/team-management/components/Tea
 import { TEAM_MANAGEMENT_PATH } from "@/features/team-management/constants/routes";
 import { useTeamMemberProjectActions } from "@/features/team-management/hooks/useTeamMemberProjectActions";
 import { useTeamMemberDetailQuery } from "@/features/team-management/hooks/useTeamMemberDetailQuery";
+import { usePermissions } from "@/shared/hooks/usePermissions";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageHeader } from "@/shared/components/PageHeader";
@@ -27,6 +28,8 @@ function TeamMemberDetailBackButton() {
 
 export function TeamMemberDetailPage() {
   const { memberId = "" } = useParams();
+  const { can } = usePermissions();
+  const canManageTeam = can("team.update");
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
 
   const {
@@ -77,6 +80,7 @@ export function TeamMemberDetailPage() {
         managedProjects={managedProjects}
         isLoading={isLoading}
         isSaving={isSaving}
+        canManage={canManageTeam}
         onAssignClick={() => setIsAssignDialogOpen(true)}
         onEndAssignment={endAssignment}
       />
@@ -86,13 +90,15 @@ export function TeamMemberDetailPage() {
         isLoading={isLoading}
       />
 
-      <TeamMemberAssignProjectDialog
-        open={isAssignDialogOpen}
-        onOpenChange={setIsAssignDialogOpen}
-        activeProjectIds={activeProjectIds}
-        isSaving={isSaving}
-        onAssign={assignProject}
-      />
+      {canManageTeam ? (
+        <TeamMemberAssignProjectDialog
+          open={isAssignDialogOpen}
+          onOpenChange={setIsAssignDialogOpen}
+          activeProjectIds={activeProjectIds}
+          isSaving={isSaving}
+          onAssign={assignProject}
+        />
+      ) : null}
     </section>
   );
 }

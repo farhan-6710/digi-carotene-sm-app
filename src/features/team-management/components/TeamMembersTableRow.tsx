@@ -22,6 +22,7 @@ function MobileLabel({ children }: { children: ReactNode }) {
 
 export function TeamMembersTableRow({
   member,
+  canEdit,
   onEditMember,
 }: TeamMembersTableRowProps) {
   return (
@@ -71,15 +72,17 @@ export function TeamMembersTableRow({
       </div>
 
       <div className="flex justify-end gap-2 text-right">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-8 rounded-lg text-muted-foreground hover:text-foreground"
-          onClick={() => onEditMember(member)}
-        >
-          <Pencil className="size-3.5" />
-          <span className="sr-only">Edit</span>
-        </Button>
+        {canEdit ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8 rounded-lg text-muted-foreground hover:text-foreground"
+            onClick={() => onEditMember(member)}
+          >
+            <Pencil className="size-3.5" />
+            <span className="sr-only">Edit</span>
+          </Button>
+        ) : null}
       </div>
     </div>
   );
