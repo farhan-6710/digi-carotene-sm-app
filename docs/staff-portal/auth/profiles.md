@@ -87,7 +87,7 @@ where id = '<auth-user-uuid>';
 
 - **`profiles`** — who can log in and which portal they access (via linked ids).
 - **`clients`** — company/brand records for operations and client portal.
-- **`team_members`** — internal staff roster; link via `profiles.team_member_id`.
+- **`team_members`** — internal staff roster; link via `profiles.team_member_id`. Deleting a row resets linked profiles to `role = user` and clears `team_member_id`.
 
 ---
 
