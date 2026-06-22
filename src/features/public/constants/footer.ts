@@ -1,4 +1,6 @@
 import type { SocialLinkItem } from "@/features/public/types/types";
+import { AUTH_FORM_TYPES } from "@/features/auth/constants/auth";
+import { buildAuthUrl } from "@/features/auth/utils/authUrlParams";
 
 export const footerCompanyLinks = [
   { label: "Home", to: "/" },
@@ -7,7 +9,9 @@ export const footerCompanyLinks = [
   { label: "Contact Us", to: "/#contact" },
 ] as const;
 
-export const footerPortalLinks = [{ label: "Dashboard", to: "/auth" }] as const;
+export const footerPortalLinks = [
+  { label: "Dashboard", to: buildAuthUrl({ formType: AUTH_FORM_TYPES.login }) },
+] as const;
 
 export const socialLinks: SocialLinkItem[] = [
   { platform: "facebook", href: "https://facebook.com", label: "Facebook" },

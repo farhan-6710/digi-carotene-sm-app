@@ -1,4 +1,6 @@
 import type { PortalCardItem } from "@/features/public/types/types";
+import { AUTH_FORM_TYPES } from "@/features/auth/constants/auth";
+import { buildAuthUrl } from "@/features/auth/utils/authUrlParams";
 
 export const portalsSectionContent = {
   badge: "Access Points",
@@ -20,7 +22,7 @@ export const portalCards: PortalCardItem[] = [
       { icon: "Activity", label: "Analytics & performance metrics" },
     ],
     ctaLabel: "Dashboard",
-    ctaTo: "/auth",
+    ctaTo: buildAuthUrl({ formType: AUTH_FORM_TYPES.login }),
     variant: "primary",
   },
   {
@@ -35,7 +37,7 @@ export const portalCards: PortalCardItem[] = [
       { icon: "Flame", label: "Advanced publishing tools & analytics" },
     ],
     ctaLabel: "Dashboard",
-    ctaTo: "/auth",
+    ctaTo: buildAuthUrl({ formType: AUTH_FORM_TYPES.login }),
     variant: "accent",
   },
 ];

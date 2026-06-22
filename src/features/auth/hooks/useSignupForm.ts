@@ -2,7 +2,11 @@ import { useCallback, useState, type FormEvent } from "react";
 
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 
-export function useSignupForm() {
+type UseSignupFormOptions = {
+  signupAsStaff?: boolean;
+};
+
+export function useSignupForm({ signupAsStaff = false }: UseSignupFormOptions = {}) {
   const { signUpWithEmail } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -40,7 +44,9 @@ export function useSignupForm() {
 
       setIsSubmitting(true);
 
-      const authError = await signUpWithEmail(email.trim(), password, name.trim());
+      const authError = await signUpWithEmail(email.trim(), password, name.trim(), {
+        signupAsStaff,
+      });
       if (authError) {
         setError(authError.message);
       } else {
@@ -55,7 +61,7 @@ export function useSignupForm() {
 
       setIsSubmitting(false);
     },
-    [confirmPassword, email, name, password, signUpWithEmail],
+    [confirmPassword, email, name, password, signUpWithEmail, signupAsStaff],
   );
 
   return {

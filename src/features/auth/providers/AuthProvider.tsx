@@ -9,11 +9,20 @@ import {
 import type { AuthError, User } from "@supabase/supabase-js";
 
 import { supabase } from "@/shared/lib/supabase";
-import { fetchProfileByUserId } from "@/features/auth/utils/profileRepository";
-import { fetchTeamRoleByEmail } from "@/features/auth/utils/teamRoleRepository";
+import {
+  AUTH_FORM_TYPES,
+  SIGNUP_PORTAL_METADATA_KEY,
+  SIGNUP_PORTAL_STAFF_VALUE,
+} from "@/features/auth/constants/auth";
+import { getHomePathForRole } from "@/features/auth/constants/routes";
 import type { Profile, UserRole } from "@/features/auth/types/profile";
 import { isStaffRole, isClientRole } from "@/features/auth/types/profile";
-import { getHomePathForRole } from "@/features/auth/constants/routes";
+import { buildAuthUrl } from "@/features/auth/utils/authUrlParams";
+import {
+  loadProfileForUser,
+  markPendingStaffOAuthSignup,
+} from "@/features/auth/utils/staffOAuthSignup";
+import { fetchTeamRoleByEmail } from "@/features/auth/utils/teamRoleRepository";
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 
 type AuthContextValue = {
@@ -31,14 +40,22 @@ type AuthContextValue = {
     email: string,
     password: string,
     fullName: string,
+    options?: { signupAsStaff?: boolean },
   ) => Promise<AuthError | null>;
-  signInWithGoogle: () => Promise<AuthError | null>;
+  signInWithGoogle: (options?: { signupAsStaff?: boolean }) => Promise<AuthError | null>;
   signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const authRedirectUrl = () => `${window.location.origin}/auth`;
+const loginRedirectUrl = () =>
+  `${window.location.origin}${buildAuthUrl({ formType: AUTH_FORM_TYPES.login })}`;
+
+const staffSignupRedirectUrl = () =>
+  `${window.location.origin}${buildAuthUrl({
+    formType: AUTH_FORM_TYPES.signup,
+    staffPortal: true,
+  })}`;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -72,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Step 2: load profile when user id changes (separate from auth listener).
+  // Step 2: load profile when user id changes (includes staff Google OAuth promotion).
   useEffect(() => {
     if (!user?.id) {
       // eslint-disable-next-line
@@ -85,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let isMounted = true;
     setProfileReady(false);
 
-    void fetchProfileByUserId(user.id)
+    void loadProfileForUser(user)
       .then((nextProfile) => {
         if (isMounted) {
           setProfile(nextProfile);
@@ -112,7 +129,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const email = user?.email;
     if (!email) {
-
       // eslint-disable-next-line
       setAdminTeamRole(null);
       return;
@@ -163,21 +179,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         return error;
       },
-      signUpWithEmail: async (email, password, fullName) => {
+      signUpWithEmail: async (email, password, fullName, options) => {
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: { full_name: fullName },
-            emailRedirectTo: authRedirectUrl(),
+            data: {
+              full_name: fullName,
+              ...(options?.signupAsStaff
+                ? { [SIGNUP_PORTAL_METADATA_KEY]: SIGNUP_PORTAL_STAFF_VALUE }
+                : {}),
+            },
+            emailRedirectTo: loginRedirectUrl(),
           },
         });
         return error;
       },
-      signInWithGoogle: async () => {
+      signInWithGoogle: async (options) => {
+        if (options?.signupAsStaff) {
+          markPendingStaffOAuthSignup();
+        }
+
         const { error } = await supabase.auth.signInWithOAuth({
           provider: "google",
-          options: { redirectTo: authRedirectUrl() },
+          options: {
+            redirectTo: options?.signupAsStaff
+              ? staffSignupRedirectUrl()
+              : loginRedirectUrl(),
+          },
         });
         return error;
       },

@@ -25,9 +25,18 @@ Links Supabase Auth users to app roles and (for portal users) a client brand.
 
 ### Signup trigger
 
-On new `auth.users` insert → auto-insert `profiles` row with `role = 'client'`, `client_id = null`.
+On new `auth.users` insert → auto-insert `profiles` row:
 
-Defined in `scripts/setup-database.sql` (`handle_new_user` + `on_auth_user_created`).
+| Signup path | `profiles.role` |
+|-------------|-----------------|
+| Default (`/auth?form-type=signup`) | `client` |
+| Staff signup (`/auth?form-type=signup&portal=staff` + access code) | `staff` |
+
+Email signup passes `signup_portal: staff` in auth metadata (read by the trigger).  
+Google staff signup creates a `client` profile first, then the app promotes it to `staff` after OAuth when the account is new.
+
+Defined in `scripts/setup-database.sql` (`handle_new_user` + `on_auth_user_created`).  
+Existing DBs: run `scripts/update-signup-staff-trigger.sql` once.
 
 ### RLS policies
 

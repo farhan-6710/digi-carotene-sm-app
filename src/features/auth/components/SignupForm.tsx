@@ -6,13 +6,17 @@ import {
 import { AuthGoogleSignIn } from "@/features/auth/components/AuthGoogleSignIn";
 import { authFormStyles } from "@/features/auth/components/authFormStyles";
 import { useSignupForm } from "@/features/auth/hooks/useSignupForm";
+import type { SignupFormProps } from "@/features/auth/types/components";
 import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { cn } from "@/shared/lib/utils";
 
-export function SignupForm() {
+export function SignupForm({
+  signupAsStaff = false,
+  disabled = false,
+}: SignupFormProps) {
   const {
     name,
     setName,
@@ -26,10 +30,11 @@ export function SignupForm() {
     setError,
     successMessage,
     isSubmitting,
-    isBusy,
     handleSubmit,
     clearMessages,
-  } = useSignupForm();
+  } = useSignupForm({ signupAsStaff });
+
+  const isBusy = isSubmitting || disabled;
 
   return (
     <div className="space-y-6">
@@ -101,6 +106,7 @@ export function SignupForm() {
 
       <AuthGoogleSignIn
         disabled={isBusy}
+        signupAsStaff={signupAsStaff}
         onError={setError}
         onBeforeSignIn={clearMessages}
       />

@@ -1,3 +1,6 @@
+import { AUTH_FORM_TYPES } from "@/features/auth/constants/auth";
+import { buildAuthUrl } from "@/features/auth/utils/authUrlParams";
+
 export const aboutContent = {
   title: "About Digi Carotene",
   intro:
@@ -47,7 +50,10 @@ export const aboutCtaContent = {
   description:
     "Get in touch with our team for custom services, or log in to your dedicated portal to manage campaign schedules and publishing performance.",
   homeCta: { label: "Back to Home", to: "/" },
-  portalCta: { label: "Dashboard", to: "/auth" },
+  portalCta: {
+    label: "Dashboard",
+    to: buildAuthUrl({ formType: AUTH_FORM_TYPES.login }),
+  },
 } as const;
 
 export const aboutHeroBadge = "Our Story";
