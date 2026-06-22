@@ -16,6 +16,7 @@ export function AccountPage() {
         description="Your Digi Carotene team account, credentials, and current agency performance snapshot."
       />
 
+
       <AccountHeader
         user={user}
         roleLabel={staffAccount.department}
