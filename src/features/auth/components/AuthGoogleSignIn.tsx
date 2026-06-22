@@ -9,7 +9,7 @@ import { Button } from "@/shared/ui/button";
 
 export function AuthGoogleSignIn({
   disabled = false,
-  signupAsStaff = false,
+  isSignup = false,
   onError,
   onBeforeSignIn,
 }: AuthGoogleSignInProps) {
@@ -20,7 +20,7 @@ export function AuthGoogleSignIn({
     onBeforeSignIn?.();
     setIsLoading(true);
 
-    const authError = await signInWithGoogle({ signupAsStaff });
+    const authError = await signInWithGoogle({ isSignup });
     if (authError) {
       onError(authError.message);
       setIsLoading(false);

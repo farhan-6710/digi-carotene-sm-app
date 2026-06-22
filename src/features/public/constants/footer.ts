@@ -10,7 +10,7 @@ export const footerCompanyLinks = [
 ] as const;
 
 export const footerPortalLinks = [
-  { label: "Dashboard", to: buildAuthUrl({ formType: AUTH_FORM_TYPES.login }) },
+  { label: "Dashboard", to: buildAuthUrl(AUTH_FORM_TYPES.login) },
 ] as const;
 
 export const socialLinks: SocialLinkItem[] = [

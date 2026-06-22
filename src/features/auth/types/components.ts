@@ -1,18 +1,8 @@
 export type AuthGoogleSignInProps = {
   disabled?: boolean;
-  signupAsStaff?: boolean;
+  isSignup?: boolean;
   onError: (message: string) => void;
   onBeforeSignIn?: () => void;
-};
-
-export type StaffAccessCodeModalProps = {
-  open: boolean;
-  onVerified: () => void;
-};
-
-export type SignupFormProps = {
-  signupAsStaff?: boolean;
-  disabled?: boolean;
 };
 
 export type AuthEmailFieldProps = {

@@ -22,7 +22,7 @@ export const portalCards: PortalCardItem[] = [
       { icon: "Activity", label: "Analytics & performance metrics" },
     ],
     ctaLabel: "Dashboard",
-    ctaTo: buildAuthUrl({ formType: AUTH_FORM_TYPES.login }),
+    ctaTo: buildAuthUrl(AUTH_FORM_TYPES.login),
     variant: "primary",
   },
   {
@@ -37,7 +37,7 @@ export const portalCards: PortalCardItem[] = [
       { icon: "Flame", label: "Advanced publishing tools & analytics" },
     ],
     ctaLabel: "Dashboard",
-    ctaTo: buildAuthUrl({ formType: AUTH_FORM_TYPES.login }),
+    ctaTo: buildAuthUrl(AUTH_FORM_TYPES.login),
     variant: "accent",
   },
 ];

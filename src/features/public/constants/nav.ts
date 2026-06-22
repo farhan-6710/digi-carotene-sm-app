@@ -10,7 +10,7 @@ export const publicNavLinks = [
 
 export const AUTH_DASHBOARD_LINK = {
   label: "Dashboard",
-  to: buildAuthUrl({ formType: AUTH_FORM_TYPES.login }),
+  to: buildAuthUrl(AUTH_FORM_TYPES.login),
 } as const;
 
 export const HEADER_SCROLL_THRESHOLD_PX = 20;

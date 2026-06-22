@@ -1,11 +1,14 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 
-import { STAFF_HOME, USER_HOME } from "@/features/auth/constants/routes";
+import {
+  CLIENT_HOME,
+  STAFF_HOME,
+} from "@/features/auth/constants/routes";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { CenteredLoading } from "@/shared/components/LoadingSpinner";
 
-export function ClientRoute() {
-  const { loading, user, isClient, isStaff, profile } = useAuth();
+export function UserRoute() {
+  const { loading, user, profile, isStaff, isClient } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -24,8 +27,8 @@ export function ClientRoute() {
     return <Navigate to={STAFF_HOME} replace />;
   }
 
-  if (!isClient) {
-    return <Navigate to={USER_HOME} replace />;
+  if (isClient) {
+    return <Navigate to={CLIENT_HOME} replace />;
   }
 
   return <Outlet />;

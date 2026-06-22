@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -9,19 +10,12 @@ import {
 import type { AuthError, User } from "@supabase/supabase-js";
 
 import { supabase } from "@/shared/lib/supabase";
-import {
-  AUTH_FORM_TYPES,
-  SIGNUP_PORTAL_METADATA_KEY,
-  SIGNUP_PORTAL_STAFF_VALUE,
-} from "@/features/auth/constants/auth";
-import { getHomePathForRole } from "@/features/auth/constants/routes";
+import { AUTH_FORM_TYPES, type AuthFormType } from "@/features/auth/constants/auth";
+import { getHomePathForProfile } from "@/features/auth/constants/routes";
 import type { Profile, UserRole } from "@/features/auth/types/profile";
-import { isStaffRole, isClientRole } from "@/features/auth/types/profile";
+import { isClientRole, isStaffRole, isPendingAccess } from "@/features/auth/types/profile";
 import { buildAuthUrl } from "@/features/auth/utils/authUrlParams";
-import {
-  loadProfileForUser,
-  markPendingStaffOAuthSignup,
-} from "@/features/auth/utils/staffOAuthSignup";
+import { loadProfileForUser } from "@/features/auth/utils/profileRoleSync";
 import { fetchTeamRoleByEmail } from "@/features/auth/utils/teamRoleRepository";
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 
@@ -33,29 +27,20 @@ type AuthContextValue = {
   clientId: string | null;
   isStaff: boolean;
   isClient: boolean;
+  isPending: boolean;
   homePath: string;
   loading: boolean;
+  refreshProfile: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<AuthError | null>;
-  signUpWithEmail: (
-    email: string,
-    password: string,
-    fullName: string,
-    options?: { signupAsStaff?: boolean },
-  ) => Promise<AuthError | null>;
-  signInWithGoogle: (options?: { signupAsStaff?: boolean }) => Promise<AuthError | null>;
+  signUpWithOtp: (email: string, fullName: string) => Promise<AuthError | null>;
+  signInWithGoogle: (options?: { isSignup?: boolean }) => Promise<AuthError | null>;
   signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const loginRedirectUrl = () =>
-  `${window.location.origin}${buildAuthUrl({ formType: AUTH_FORM_TYPES.login })}`;
-
-const staffSignupRedirectUrl = () =>
-  `${window.location.origin}${buildAuthUrl({
-    formType: AUTH_FORM_TYPES.signup,
-    staffPortal: true,
-  })}`;
+const authRedirectUrl = (formType: AuthFormType = AUTH_FORM_TYPES.login) =>
+  `${window.location.origin}${buildAuthUrl(formType)}`;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -64,7 +49,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authReady, setAuthReady] = useState(false);
   const [profileReady, setProfileReady] = useState(true);
 
-  // Step 1: listen for Supabase session only (no other Supabase calls here).
+  const loadProfile = useCallback(async (authUser: User) => {
+    setProfileReady(false);
+    try {
+      const nextProfile = await loadProfileForUser(authUser);
+      setProfile(nextProfile);
+    } catch {
+      setProfile(null);
+    } finally {
+      setProfileReady(true);
+    }
+  }, []);
+
+  const refreshProfile = useCallback(async () => {
+    if (!user) {
+      return;
+    }
+
+    await loadProfile(user);
+  }, [loadProfile, user]);
+
   useEffect(() => {
     let isMounted = true;
 
@@ -89,47 +93,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Step 2: load profile when user id changes (includes staff Google OAuth promotion).
   useEffect(() => {
-    if (!user?.id) {
-      // eslint-disable-next-line
+    if (!user) {
       setProfile(null);
-      // eslint-disable-next-line
       setProfileReady(true);
       return;
     }
 
     let isMounted = true;
-    setProfileReady(false);
 
-    void loadProfileForUser(user)
-      .then((nextProfile) => {
-        if (isMounted) {
-          setProfile(nextProfile);
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          setProfile(null);
-        }
-      })
-      .finally(() => {
-        if (isMounted) {
-          setProfileReady(true);
-        }
-      });
+    void loadProfile(user).then(() => {
+      if (!isMounted) {
+        return;
+      }
+    });
 
     return () => {
       isMounted = false;
     };
-  }, [user?.id]);
+  }, [user, loadProfile]);
 
-  // Step 3: resolve the internal team role (admin / manager / executive) used
-  // for RBAC, by matching the auth email to a team_members row.
   useEffect(() => {
     const email = user?.email;
     if (!email) {
-      // eslint-disable-next-line
       setAdminTeamRole(null);
       return;
     }
@@ -158,8 +144,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const role = profile?.role ?? null;
   const clientId = profile?.client_id ?? null;
   const isStaff = role !== null && isStaffRole(role);
-  const isClient = role !== null && isClientRole(role) && Boolean(clientId);
-  const homePath = role ? getHomePathForRole(role) : "/staff-portal/dashboard";
+  const isClient =
+    role !== null && isClientRole(role) && Boolean(clientId);
+  const isPending = isPendingAccess(profile);
+  const homePath = getHomePathForProfile(profile);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -170,8 +158,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       clientId,
       isStaff,
       isClient,
+      isPending,
       homePath,
       loading,
+      refreshProfile,
       signInWithEmail: async (email, password) => {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -179,34 +169,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         return error;
       },
-      signUpWithEmail: async (email, password, fullName, options) => {
-        const { error } = await supabase.auth.signUp({
+      signUpWithOtp: async (email, fullName) => {
+        const { error } = await supabase.auth.signInWithOtp({
           email,
-          password,
           options: {
-            data: {
-              full_name: fullName,
-              ...(options?.signupAsStaff
-                ? { [SIGNUP_PORTAL_METADATA_KEY]: SIGNUP_PORTAL_STAFF_VALUE }
-                : {}),
-            },
-            emailRedirectTo: loginRedirectUrl(),
+            shouldCreateUser: true,
+            data: { full_name: fullName },
+            emailRedirectTo: authRedirectUrl(AUTH_FORM_TYPES.login),
           },
         });
         return error;
       },
       signInWithGoogle: async (options) => {
-        if (options?.signupAsStaff) {
-          markPendingStaffOAuthSignup();
-        }
+        const formType = options?.isSignup
+          ? AUTH_FORM_TYPES.signup
+          : AUTH_FORM_TYPES.login;
 
         const { error } = await supabase.auth.signInWithOAuth({
           provider: "google",
-          options: {
-            redirectTo: options?.signupAsStaff
-              ? staffSignupRedirectUrl()
-              : loginRedirectUrl(),
-          },
+          options: { redirectTo: authRedirectUrl(formType) },
         });
         return error;
       },
@@ -217,7 +198,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setAdminTeamRole(null);
       },
     }),
-    [user, profile, role, adminTeamRole, clientId, isStaff, isClient, homePath, loading],
+    [
+      user,
+      profile,
+      role,
+      adminTeamRole,
+      clientId,
+      isStaff,
+      isClient,
+      isPending,
+      homePath,
+      loading,
+      refreshProfile,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

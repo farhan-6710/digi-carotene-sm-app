@@ -127,7 +127,7 @@ create policy "Authenticated users manage posts"
 -- Auth profiles (portal users link to a client, not a project)
 create table public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
-  role text not null default 'client'
+  role text not null default 'user'
     check (role in ('staff', 'client', 'user')),
   client_id uuid references public.clients (id) on delete set null
 );
@@ -173,22 +173,32 @@ create policy "Portal users read own posts"
     )
   );
 
--- Auto-create profile on signup
+-- Signup: check whether an email belongs to a pre-added team member (anon-safe).
+create or replace function public.is_team_member_email(lookup_email text)
+returns boolean
+language sql
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.team_members
+    where lower(trim(email)) = lower(trim(lookup_email))
+  );
+$$;
+
+grant execute on function public.is_team_member_email(text) to anon, authenticated;
+
+-- Auto-create profile on signup (default role: user until staff/client access is granted)
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
 security definer
 set search_path = public
 as $$
-declare
-  profile_role text := 'client';
 begin
-  if coalesce(new.raw_user_meta_data->>'signup_portal', '') = 'staff' then
-    profile_role := 'staff';
-  end if;
-
   insert into public.profiles (id, role, client_id)
-  values (new.id, profile_role, null)
+  values (new.id, 'user', null)
   on conflict (id) do nothing;
   return new;
 end;

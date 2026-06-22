@@ -2,16 +2,10 @@ import { useCallback, useState, type FormEvent } from "react";
 
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 
-type UseSignupFormOptions = {
-  signupAsStaff?: boolean;
-};
-
-export function useSignupForm({ signupAsStaff = false }: UseSignupFormOptions = {}) {
-  const { signUpWithEmail } = useAuth();
+export function useSignupForm() {
+  const { signUpWithOtp } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,36 +26,22 @@ export function useSignupForm({ signupAsStaff = false }: UseSignupFormOptions = 
         return;
       }
 
-      if (password !== confirmPassword) {
-        setError("Passwords do not match.");
-        return;
-      }
-
-      if (password.length < 6) {
-        setError("Password must be at least 6 characters.");
-        return;
-      }
-
       setIsSubmitting(true);
 
-      const authError = await signUpWithEmail(email.trim(), password, name.trim(), {
-        signupAsStaff,
-      });
+      const authError = await signUpWithOtp(email.trim(), name.trim());
       if (authError) {
         setError(authError.message);
       } else {
         setSuccessMessage(
-          "Account created. Check your email to confirm your address, then sign in.",
+          "Check your email for a sign-in link to finish creating your account.",
         );
         setName("");
         setEmail("");
-        setPassword("");
-        setConfirmPassword("");
       }
 
       setIsSubmitting(false);
     },
-    [confirmPassword, email, name, password, signUpWithEmail, signupAsStaff],
+    [email, name, signUpWithOtp],
   );
 
   return {
@@ -69,10 +49,6 @@ export function useSignupForm({ signupAsStaff = false }: UseSignupFormOptions = 
     setName,
     email,
     setEmail,
-    password,
-    setPassword,
-    confirmPassword,
-    setConfirmPassword,
     error,
     setError,
     successMessage,

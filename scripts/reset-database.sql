@@ -19,5 +19,6 @@ drop table if exists public.employees cascade;
 
 delete from auth.users;
 
+drop function if exists public.is_team_member_email(text) cascade;
 drop function if exists public.handle_new_user() cascade;
 drop function if exists public.handle_updated_at() cascade;

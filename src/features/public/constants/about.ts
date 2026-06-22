@@ -52,7 +52,7 @@ export const aboutCtaContent = {
   homeCta: { label: "Back to Home", to: "/" },
   portalCta: {
     label: "Dashboard",
-    to: buildAuthUrl({ formType: AUTH_FORM_TYPES.login }),
+    to: buildAuthUrl(AUTH_FORM_TYPES.login),
   },
 } as const;
 

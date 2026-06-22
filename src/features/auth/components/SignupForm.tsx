@@ -1,40 +1,30 @@
 import {
   AuthEmailField,
   AuthFormAlert,
-  AuthPasswordField,
 } from "@/features/auth/components/AuthFormFields";
 import { AuthGoogleSignIn } from "@/features/auth/components/AuthGoogleSignIn";
 import { authFormStyles } from "@/features/auth/components/authFormStyles";
 import { useSignupForm } from "@/features/auth/hooks/useSignupForm";
-import type { SignupFormProps } from "@/features/auth/types/components";
 import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { cn } from "@/shared/lib/utils";
 
-export function SignupForm({
-  signupAsStaff = false,
-  disabled = false,
-}: SignupFormProps) {
+export function SignupForm() {
   const {
     name,
     setName,
     email,
     setEmail,
-    password,
-    setPassword,
-    confirmPassword,
-    setConfirmPassword,
     error,
     setError,
     successMessage,
     isSubmitting,
+    isBusy,
     handleSubmit,
     clearMessages,
-  } = useSignupForm({ signupAsStaff });
-
-  const isBusy = isSubmitting || disabled;
+  } = useSignupForm();
 
   return (
     <div className="space-y-6">
@@ -63,26 +53,6 @@ export function SignupForm({
           disabled={isBusy}
         />
 
-        <AuthPasswordField
-          id="signup-password"
-          label="Password"
-          value={password}
-          onChange={setPassword}
-          autoComplete="new-password"
-          placeholder="Create a password"
-          disabled={isBusy}
-        />
-
-        <AuthPasswordField
-          id="signup-confirm-password"
-          label="Confirm password"
-          value={confirmPassword}
-          onChange={setConfirmPassword}
-          autoComplete="new-password"
-          placeholder="Confirm your password"
-          disabled={isBusy}
-        />
-
         {error ? <AuthFormAlert message={error} variant="error" /> : null}
         {successMessage ? (
           <AuthFormAlert message={successMessage} variant="success" />
@@ -96,20 +66,25 @@ export function SignupForm({
           {isSubmitting ? (
             <>
               <LoadingSpinner size="sm" />
-              Creating account...
+              Sending link...
             </>
           ) : (
-            "Create account"
+            "Send sign-in link"
           )}
         </Button>
       </form>
 
       <AuthGoogleSignIn
         disabled={isBusy}
-        signupAsStaff={signupAsStaff}
+        isSignup
         onError={setError}
         onBeforeSignIn={clearMessages}
       />
+
+      <p className="text-center text-xs text-muted-foreground">
+        After sign-in you may need to wait until Digi Carotene Management grants
+        staff or client portal access.
+      </p>
     </div>
   );
 }
