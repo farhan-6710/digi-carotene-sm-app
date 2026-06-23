@@ -1,4 +1,4 @@
-# Digi Carotene
+# Digi Carotene - Digital Marketting Agency
 
 Service management app for **Digi Carotene**, a digital marketing agency.
 
