@@ -55,7 +55,7 @@ export function buildStaffStatCards({
     },
     {
       id: "missed-posts",
-      label: "Missed Posts",
+      label: "Not Posted Posts",
       value: String(missedPostsCount ?? 0),
       description: "Unpublished or failed slots",
       icon: XCircle,

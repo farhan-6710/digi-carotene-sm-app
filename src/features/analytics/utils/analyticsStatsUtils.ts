@@ -46,6 +46,7 @@ export function buildPostsAnalyticsStatCards(
   currentPosts: Post[],
   previousPosts: Post[],
 ): StatCardItem[] {
+  console.log("currentPosts", currentPosts);
   const currentPublished = currentPosts.filter((post) => post.status === "Posted").length;
   const previousPublished = previousPosts.filter((post) => post.status === "Posted").length;
   const currentScheduled = currentPosts.filter((post) => post.status === "Scheduled").length;
