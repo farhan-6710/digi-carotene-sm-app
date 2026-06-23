@@ -59,6 +59,7 @@ export type DirectoryTableProps = {
   isLoading: boolean;
   isEmpty: boolean;
   emptyMessage: string;
+  headerAside?: ReactNode;
   children: ReactNode;
 };
 

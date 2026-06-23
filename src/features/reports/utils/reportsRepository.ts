@@ -81,8 +81,12 @@ export function formatReportDateRangeLabel(
 export async function fetchPostsForDateRange(
   startDate: string,
   endDate: string,
-  statuses?: StatusKey[],
+  statuses?: StatusKey[] | null,
 ): Promise<Post[]> {
+  if (statuses !== null && statuses !== undefined && statuses.length === 0) {
+    return [];
+  }
+
   let query = supabase
     .from("posts")
     .select(postSelect)

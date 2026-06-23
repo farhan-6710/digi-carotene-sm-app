@@ -16,7 +16,10 @@ import {
   buildReportStatCards,
   flattenReportRows,
 } from "@/features/reports/utils/reportsUtils";
-import type { StatusKey } from "@/features/posts-management/types/types";
+import {
+  resolveStatusesForFetch,
+  type PostStatusFilterState,
+} from "@/shared/utils/postStatusFilterUtils";
 
 export function useReportsQuery() {
   const [appliedRange, setAppliedRange] = useState<ReportDateRange>({
@@ -29,7 +32,7 @@ export function useReportsQuery() {
   const [hasGenerated, setHasGenerated] = useState(false);
 
   const loadReport = useCallback(
-    async (from: Date, to: Date, statuses: StatusKey[]) => {
+    async (from: Date, to: Date, statusFilter: PostStatusFilterState) => {
       setIsLoading(true);
       setError(null);
 
@@ -37,7 +40,7 @@ export function useReportsQuery() {
         const posts = await fetchPostsForDateRange(
           toReportDateString(from),
           toReportDateString(to),
-          statuses,
+          resolveStatusesForFetch(statusFilter),
         );
 
         setSummaries(buildClientReportSummaries(posts));

@@ -1,17 +1,25 @@
 import { useCallback, useState } from "react";
 import { useSearchParams } from "react-router";
 
-import { getDefaultReportStatusFilters } from "@/features/reports/constants/reports";
 import type { ReportDateRange } from "@/features/reports/types/types";
 import {
   buildReportStatusSearchParams,
-  parseReportStatusesFromSearchParams,
+  parseReportStatusFilterFromSearchParams,
 } from "@/features/reports/utils/reportsUrlParams";
-import type { StatusKey } from "@/features/posts-management/types/types";
+import {
+  getDefaultPostStatusFilterState,
+  togglePostStatusFilter,
+  type PostStatusFilterState,
+  type PostStatusFilterTarget,
+} from "@/shared/utils/postStatusFilterUtils";
 
 type UseReportStatusFiltersOptions = {
   appliedRange: ReportDateRange;
-  loadReport: (from: Date, to: Date, statuses: StatusKey[]) => Promise<void>;
+  loadReport: (
+    from: Date,
+    to: Date,
+    statusFilter: PostStatusFilterState,
+  ) => Promise<void>;
 };
 
 export function useReportStatusFilters({
@@ -19,16 +27,14 @@ export function useReportStatusFilters({
   loadReport,
 }: UseReportStatusFiltersOptions) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [activeStatuses, setActiveStatuses] = useState<StatusKey[]>(
-    () =>
-      parseReportStatusesFromSearchParams(searchParams) ??
-      getDefaultReportStatusFilters(),
+  const [statusFilter, setStatusFilter] = useState<PostStatusFilterState>(
+    () => parseReportStatusFilterFromSearchParams(searchParams),
   );
 
   const syncStatusesToUrl = useCallback(
-    (statuses: StatusKey[]) => {
+    (filter: PostStatusFilterState) => {
       setSearchParams(
-        (current) => buildReportStatusSearchParams(statuses, current),
+        (current) => buildReportStatusSearchParams(filter, current),
         { replace: true },
       );
     },
@@ -36,36 +42,36 @@ export function useReportStatusFilters({
   );
 
   const toggleStatusFilter = useCallback(
-    (status: StatusKey) => {
-      let nextStatuses: StatusKey[];
+    (target: PostStatusFilterTarget) => {
+      const nextFilter = togglePostStatusFilter(statusFilter, target);
 
-      if (activeStatuses.includes(status)) {
-        const next = activeStatuses.filter((entry) => entry !== status);
-        if (next.length === 0) {
-          return;
-        }
-        nextStatuses = next;
-      } else {
-        nextStatuses = [...activeStatuses, status];
-      }
-
-      setActiveStatuses(nextStatuses);
-      syncStatusesToUrl(nextStatuses);
+      setStatusFilter(nextFilter);
+      syncStatusesToUrl(nextFilter);
 
       if (appliedRange.from) {
         const to = appliedRange.to ?? appliedRange.from;
-        void loadReport(appliedRange.from, to, nextStatuses);
+        void loadReport(appliedRange.from, to, nextFilter);
       }
     },
-    [activeStatuses, appliedRange.from, appliedRange.to, loadReport, syncStatusesToUrl],
+    [
+      appliedRange.from,
+      appliedRange.to,
+      loadReport,
+      statusFilter,
+      syncStatusesToUrl,
+    ],
   );
 
   return {
-    activeStatuses,
-    setActiveStatuses,
+    statusFilter,
+    showAll: statusFilter.showAll,
+    activeStatuses: statusFilter.statuses,
+    setStatusFilter,
     toggleStatusFilter,
     syncStatusesToUrl,
     searchParams,
     setSearchParams,
   };
 }
+
+export { getDefaultPostStatusFilterState };

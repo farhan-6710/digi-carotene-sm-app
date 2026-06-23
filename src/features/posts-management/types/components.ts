@@ -16,13 +16,6 @@ export type ClientSelectProps = {
   disabled?: boolean;
 };
 
-export type MonthSelectorProps = {
-  year: number;
-  month: number;
-  onSelect: (date: Date) => void;
-  className?: string;
-};
-
 export type PostDateTimePickerProps = {
   label: string;
   value: PostFormValues["toBePostedOn"];

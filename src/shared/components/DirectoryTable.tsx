@@ -10,13 +10,17 @@ export function DirectoryTable({
   isLoading,
   isEmpty,
   emptyMessage,
+  headerAside,
   children,
 }: DirectoryTableProps) {
   return (
     <div className="rounded-2xl border border-border bg-card shadow-sm">
-      <div className="px-6 py-5">
-        <div className="text-sm font-semibold">{title}</div>
-        <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+      <div className="flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="text-sm font-semibold">{title}</div>
+          <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+        </div>
+        {headerAside ? <div className="shrink-0">{headerAside}</div> : null}
       </div>
 
       <div className="border-t border-border">

@@ -7,15 +7,19 @@ import {
   buildReportRangeSearchParams,
   parseReportDateRangeFromSearchParams,
 } from "@/features/reports/utils/reportsUrlParams";
-import type { StatusKey } from "@/features/posts-management/types/types";
+import type { PostStatusFilterState } from "@/shared/utils/postStatusFilterUtils";
 
 type UseReportDatePickerOptions = {
   searchParams: URLSearchParams;
   setSearchParams: SetURLSearchParams;
   appliedRange: ReportDateRange;
-  activeStatuses: StatusKey[];
-  loadReport: (from: Date, to: Date, statuses: StatusKey[]) => Promise<void>;
-  syncStatusesToUrl: (statuses: StatusKey[]) => void;
+  statusFilter: PostStatusFilterState;
+  loadReport: (
+    from: Date,
+    to: Date,
+    statusFilter: PostStatusFilterState,
+  ) => Promise<void>;
+  syncStatusesToUrl: (filter: PostStatusFilterState) => void;
   setError: (message: string | null) => void;
 };
 
@@ -23,7 +27,7 @@ export function useReportDatePicker({
   searchParams,
   setSearchParams,
   appliedRange,
-  activeStatuses,
+  statusFilter,
   loadReport,
   syncStatusesToUrl,
   setError,
@@ -58,14 +62,14 @@ export function useReportDatePicker({
     }
 
     syncRangeToUrl({ from, to });
-    syncStatusesToUrl(activeStatuses);
+    syncStatusesToUrl(statusFilter);
     setIsPickerOpen(false);
-    await loadReport(from, to, activeStatuses);
+    await loadReport(from, to, statusFilter);
   }, [
-    activeStatuses,
     loadReport,
     pickerRange,
     setError,
+    statusFilter,
     syncRangeToUrl,
     syncStatusesToUrl,
   ]);

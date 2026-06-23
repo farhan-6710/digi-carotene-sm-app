@@ -1,14 +1,13 @@
 import { useEffect, useRef } from "react";
 
 import { statusOptions } from "@/features/posts-management/constants/postsManagement";
-import { getDefaultReportStatusFilters } from "@/features/reports/constants/reports";
 import { useReportDatePicker } from "@/features/reports/hooks/useReportDatePicker";
 import { useReportStatusFilters } from "@/features/reports/hooks/useReportStatusFilters";
 import { useReportsQuery } from "@/features/reports/hooks/useReportsQuery";
 import {
   parseReportDateParam,
   parseReportDateRangeFromSearchParams,
-  parseReportStatusesFromSearchParams,
+  parseReportStatusFilterFromSearchParams,
   REPORT_FROM_PARAM,
   REPORT_TO_PARAM,
 } from "@/features/reports/utils/reportsUrlParams";
@@ -24,7 +23,7 @@ export function useReportsManagement() {
     searchParams: filters.searchParams,
     setSearchParams: filters.setSearchParams,
     appliedRange: query.appliedRange,
-    activeStatuses: filters.activeStatuses,
+    statusFilter: filters.statusFilter,
     loadReport: query.loadReport,
     syncStatusesToUrl: filters.syncStatusesToUrl,
     setError: query.setError,
@@ -50,9 +49,9 @@ export function useReportsManagement() {
     const to =
       parseReportDateParam(filters.searchParams.get(REPORT_TO_PARAM)) ?? from;
     const range = parseReportDateRangeFromSearchParams(filters.searchParams);
-    const statuses =
-      parseReportStatusesFromSearchParams(filters.searchParams) ??
-      getDefaultReportStatusFilters();
+    const statusFilter = parseReportStatusFilterFromSearchParams(
+      filters.searchParams,
+    );
 
     if (range) {
       datePicker.setPickerRange(range);
@@ -62,12 +61,19 @@ export function useReportsManagement() {
       });
     }
 
-    filters.setActiveStatuses(statuses);
-    void query.loadReport(from, to, statuses);
-  }, [filters.searchParams, query.loadReport, query.setAppliedRange, filters.setActiveStatuses, datePicker.setPickerRange]);
+    filters.setStatusFilter(statusFilter);
+    void query.loadReport(from, to, statusFilter);
+  }, [
+    filters.searchParams,
+    query.loadReport,
+    query.setAppliedRange,
+    filters.setStatusFilter,
+    datePicker.setPickerRange,
+  ]);
 
   return {
     statusFilterOptions: statusOptions,
+    showAll: filters.showAll,
     activeStatuses: filters.activeStatuses,
     pickerRange: datePicker.pickerRange,
     appliedRangeLabel: query.appliedRangeLabel,

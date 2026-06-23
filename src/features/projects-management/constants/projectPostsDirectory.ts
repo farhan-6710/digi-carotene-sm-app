@@ -18,5 +18,5 @@ export const projectPostsDirectoryConfig = {
   description: "All posts for this project, newest to-be-posted date first.",
   gridClass: PROJECT_POSTS_GRID_CLASS,
   columns: projectPostsColumns,
-  emptyMessage: "No posts for this project yet.",
+  emptyMessage: "No posts for this project in the selected month.",
 } as const;

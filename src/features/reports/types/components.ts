@@ -2,6 +2,7 @@ import type { KeyboardEvent } from "react";
 import type { DateRange } from "react-day-picker";
 
 import type { StatusKey } from "@/features/posts-management/types/types";
+import type { PostStatusFilterTarget } from "@/shared/utils/postStatusFilterUtils";
 import type {
   ClientReportSummary,
   ReportStatCard,
@@ -31,8 +32,9 @@ export type ReportStatTrendProps = {
 
 export type ReportStatusFiltersProps = {
   options: StatusKey[];
+  showAll: boolean;
   activeStatuses: StatusKey[];
-  onToggle: (status: StatusKey) => void;
+  onToggle: (target: PostStatusFilterTarget) => void;
 };
 
 export type ReportsTableProps = {
@@ -41,6 +43,7 @@ export type ReportsTableProps = {
   hasGenerated: boolean;
   periodLabel: string;
   statusFilterOptions: StatusKey[];
+  showAll: boolean;
   activeStatuses: StatusKey[];
-  onToggleStatusFilter: (status: StatusKey) => void;
+  onToggleStatusFilter: (target: PostStatusFilterTarget) => void;
 };

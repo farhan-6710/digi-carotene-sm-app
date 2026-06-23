@@ -3,6 +3,7 @@ import type { DateRange } from "react-day-picker";
 import { statusOptions } from "@/features/posts-management/constants/postsManagement";
 import type { StatusKey } from "@/features/posts-management/types/types";
 import { parseUrlDateParam } from "@/shared/utils/urlDateParams";
+import type { PostStatusFilterState } from "@/shared/utils/postStatusFilterUtils";
 
 import { toReportDateString } from "./reportsRepository";
 
@@ -30,12 +31,12 @@ export function parseReportDateRangeFromSearchParams(
   };
 }
 
-export function parseReportStatusesFromSearchParams(
+export function parseReportStatusFilterFromSearchParams(
   searchParams: URLSearchParams,
-): StatusKey[] | undefined {
+): PostStatusFilterState {
   const value = searchParams.get(REPORT_STATUS_PARAM);
   if (!value) {
-    return undefined;
+    return { showAll: true, statuses: [] };
   }
 
   const parsed = value
@@ -45,7 +46,23 @@ export function parseReportStatusesFromSearchParams(
       statusOptions.includes(entry as StatusKey),
     );
 
-  return parsed.length > 0 ? parsed : undefined;
+  if (parsed.length === 0) {
+    return { showAll: true, statuses: [] };
+  }
+
+  return { showAll: false, statuses: parsed };
+}
+
+/** @deprecated Use parseReportStatusFilterFromSearchParams */
+export function parseReportStatusesFromSearchParams(
+  searchParams: URLSearchParams,
+): StatusKey[] | undefined {
+  const filter = parseReportStatusFilterFromSearchParams(searchParams);
+  if (filter.showAll) {
+    return undefined;
+  }
+
+  return filter.statuses;
 }
 
 export function serializeReportStatuses(statuses: StatusKey[]): string {
@@ -98,11 +115,16 @@ export function buildReportRangeSearchParams(
 }
 
 export function buildReportStatusSearchParams(
-  statuses: StatusKey[],
+  filter: PostStatusFilterState,
   existing?: URLSearchParams,
 ): URLSearchParams {
   const params = new URLSearchParams(existing);
-  params.set(REPORT_STATUS_PARAM, serializeReportStatuses(statuses));
+
+  if (filter.showAll) {
+    params.delete(REPORT_STATUS_PARAM);
+  } else {
+    params.set(REPORT_STATUS_PARAM, serializeReportStatuses(filter.statuses));
+  }
 
   return params;
 }

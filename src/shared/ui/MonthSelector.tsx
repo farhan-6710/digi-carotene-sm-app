@@ -42,13 +42,13 @@ export function MonthSelector({
           type="button"
           variant="default"
           className={cn(
-            "h-auto w-full justify-between gap-2 rounded-full border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground shadow-sm transition hover:bg-muted/50 sm:w-auto sm:justify-start",
+            "h-7 w-full justify-between gap-1.5 rounded-full border-border bg-card px-2.5 py-0 text-[11px] font-medium text-foreground shadow-sm transition hover:bg-muted/50 sm:w-auto sm:justify-start",
             className,
           )}
         >
-          <CalendarIcon className="size-3.5 opacity-70" aria-hidden="true" />
+          <CalendarIcon className="size-3 opacity-70" aria-hidden="true" />
           <span>{format(new Date(year, month - 1, 1), "MMMM yyyy")}</span>
-          <ChevronDown className="size-3.5 opacity-50" aria-hidden="true" />
+          <ChevronDown className="size-3 opacity-50" aria-hidden="true" />
         </Button>
       </PopoverTrigger>
       <PopoverContent

@@ -1,7 +1,7 @@
 import { Link, useSearchParams } from "react-router";
 import { Loader2 } from "lucide-react";
 
-import { ReportStatusFilters } from "@/features/reports/components/ReportStatusFilters";
+import { PostStatusFilter } from "@/shared/ui/PostStatusFilter";
 import {
   statusColors,
   statusText,
@@ -20,6 +20,7 @@ export function ReportsTable({
   hasGenerated,
   periodLabel,
   statusFilterOptions,
+  showAll,
   activeStatuses,
   onToggleStatusFilter,
 }: ReportsTableProps) {
@@ -27,7 +28,7 @@ export function ReportsTable({
 
   return (
     <div className="rounded-2xl border border-border bg-card shadow-sm">
-      <div className="flex flex-wrap items-start justify-between gap-4 px-6 py-5">
+      <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-5">
         <div>
           <div className="text-sm font-semibold">Client activity report</div>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -37,8 +38,9 @@ export function ReportsTable({
           </p>
         </div>
 
-        <ReportStatusFilters
+        <PostStatusFilter
           options={statusFilterOptions}
+          showAll={showAll}
           activeStatuses={activeStatuses}
           onToggle={onToggleStatusFilter}
         />

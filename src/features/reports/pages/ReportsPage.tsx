@@ -8,6 +8,7 @@ import { PageHeader } from "@/shared/components/PageHeader";
 export function ReportsPage() {
   const {
     statusFilterOptions,
+    showAll,
     activeStatuses,
     pickerRange,
     appliedRangeLabel,
@@ -54,6 +55,7 @@ export function ReportsPage() {
         hasGenerated={hasGenerated}
         periodLabel={periodLabel}
         statusFilterOptions={statusFilterOptions}
+        showAll={showAll}
         activeStatuses={activeStatuses}
         onToggleStatusFilter={toggleStatusFilter}
       />
