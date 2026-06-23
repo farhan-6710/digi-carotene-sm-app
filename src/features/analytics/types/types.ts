@@ -44,10 +44,38 @@ export type PostsTopClient = {
   notPosted: number;
 };
 
-export type AnalyticsStatGridItem = {
+export type AnalyticsDataset = {
+  posts: import("@/features/posts-management/types/types").Post[];
+  clients: import("@/features/clients-management/types/types").Client[];
+  teamMembers: import("@/features/team-management/types/types").TeamMember[];
+  projects: import("@/features/projects-management/types/types").ProjectListItem[];
+};
+
+export type CategoryDatum = {
+  key: string;
   label: string;
-  value: string;
-  delta: string;
-  deltaLabel: string;
-  trend?: AnalyticsStatTrend;
+  value: number;
+  color: string;
+};
+
+export type LabeledValue = {
+  label: string;
+  value: number;
+};
+
+export type MonthlyTrendDatum = {
+  month: string;
+  posted: number;
+  scheduled: number;
+  notPosted: number;
+};
+
+export type EntityPostBreakdown = {
+  id: string;
+  name: string;
+  meta?: string;
+  total: number;
+  posted: number;
+  scheduled: number;
+  notPosted: number;
 };

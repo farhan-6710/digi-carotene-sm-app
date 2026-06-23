@@ -8,6 +8,7 @@ type SparklineProps = {
 };
 
 export function Sparkline({ data, color }: SparklineProps) {
+  console.log("color", color);
   return (
     <div className="h-10 w-24 shrink-0">
       <ResponsiveContainer width="100%" height="100%">

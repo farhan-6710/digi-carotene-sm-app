@@ -3,23 +3,29 @@ import { AgencyAnalyticsPanel } from "@/features/analytics/components/AgencyAnal
 import { ClientsAnalyticsPanel } from "@/features/analytics/components/ClientsAnalyticsPanel";
 import { EmployeesAnalyticsPanel } from "@/features/analytics/components/EmployeesAnalyticsPanel";
 import { PostsAnalyticsPanel } from "@/features/analytics/components/PostsAnalyticsPanel";
-import type { AnalyticsTabPanelProps } from "@/features/analytics/types/components";
+import type {
+  AnalyticsPanelProps,
+  AnalyticsTabPanelProps,
+} from "@/features/analytics/types/components";
 
-function renderAnalyticsPanel(tab: AnalyticsTabId) {
+function renderAnalyticsPanel(tab: AnalyticsTabId, panelProps: AnalyticsPanelProps) {
   switch (tab) {
-    case "posts":
-      return <PostsAnalyticsPanel />;
     case "clients":
-      return <ClientsAnalyticsPanel />;
+      return <ClientsAnalyticsPanel {...panelProps} />;
     case "employees":
-      return <EmployeesAnalyticsPanel />;
+      return <EmployeesAnalyticsPanel {...panelProps} />;
     case "agency":
-      return <AgencyAnalyticsPanel />;
+      return <AgencyAnalyticsPanel {...panelProps} />;
+    case "posts":
     default:
-      return <PostsAnalyticsPanel />;
+      return <PostsAnalyticsPanel {...panelProps} />;
   }
 }
 
-export function AnalyticsTabPanel({ activeTab }: AnalyticsTabPanelProps) {
-  return renderAnalyticsPanel(activeTab);
+export function AnalyticsTabPanel({
+  activeTab,
+  data,
+  isLoading,
+}: AnalyticsTabPanelProps) {
+  return renderAnalyticsPanel(activeTab, { data, isLoading });
 }

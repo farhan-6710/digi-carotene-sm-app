@@ -1,9 +1,4 @@
 import { ANALYTICS_STAT_CARD_META } from "@/features/analytics/constants/analyticsStatCards";
-import {
-  clientAnalyticsStats,
-  employeeAnalyticsStats,
-} from "@/shared/fixtures/analyticsPlaceholders";
-import type { AnalyticsStatCard } from "@/features/analytics/types/types";
 import type { Post } from "@/features/posts-management/types/types";
 import type { StatCardItem, StatCardTrend } from "@/shared/types/statsCards";
 
@@ -96,62 +91,13 @@ export function buildPostsAnalyticsStatCards(
     toStatCard(
       "posts-not-posted",
       "postsNotPosted",
-      {
-        label: "Not Posted Posts This Month",
-        value: String(currentNotPosted),
-        delta: formatSignedDelta(currentNotPosted, previousNotPosted),
-        deltaLabel: "from last month",
-      },
-      true,
-    ),
+    {
+      label: "Not Posted Posts This Month",
+      value: String(currentNotPosted),
+      delta: formatSignedDelta(currentNotPosted, previousNotPosted),
+      deltaLabel: "from last month",
+    },
+    true,
+  ),
   ];
-}
-
-export function buildAgencyAnalyticsStatCards(stats: AnalyticsStatCard[]): StatCardItem[] {
-  const metaKeys = [
-    "agencyPublished",
-    "agencyActiveDays",
-    "agencyStreak",
-    "agencyMissedDays",
-  ] as const;
-
-  return stats.map((stat, index) =>
-    toStatCard(
-      `agency-${index}`,
-      metaKeys[index],
-      stat,
-      metaKeys[index] === "agencyMissedDays",
-    ),
-  );
-}
-
-export function buildClientAnalyticsStatCards(): StatCardItem[] {
-  const metaKeys = [
-    "clientTotal",
-    "clientActive",
-    "clientAvgPosts",
-    "clientFollowUp",
-  ] as const;
-
-  return clientAnalyticsStats.map((stat, index) =>
-    toStatCard(`client-${index}`, metaKeys[index], stat, metaKeys[index] === "clientFollowUp"),
-  );
-}
-
-export function buildEmployeeAnalyticsStatCards(): StatCardItem[] {
-  const metaKeys = [
-    "employeeTotal",
-    "employeeAssignments",
-    "employeeAvgClients",
-    "employeeUnassigned",
-  ] as const;
-
-  return employeeAnalyticsStats.map((stat, index) =>
-    toStatCard(
-      `employee-${index}`,
-      metaKeys[index],
-      stat,
-      metaKeys[index] === "employeeUnassigned",
-    ),
-  );
 }

@@ -124,6 +124,20 @@ export function postsToSlots(posts: Post[], year: number, month: number): Slot[]
     }));
 }
 
+export async function fetchAllPosts(): Promise<Post[]> {
+  const { data, error } = await supabase
+    .from("posts")
+    .select(postSelect)
+    .order("to_be_posted_date", { ascending: true })
+    .order("to_be_posted_time", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map((row) => mapPostRow(row as unknown as PostRow));
+}
+
 export async function fetchPostsForMonth(
   year: number,
   month: number,
