@@ -1,30 +1,99 @@
 import { createBrowserRouter, Navigate } from "react-router";
 
+import { lazyRoutePage } from "@/app/lazyRoute";
 import { StaffRoute } from "@/features/auth/components/StaffRoute";
 import { ClientRoute } from "@/features/auth/components/ClientRoute";
 import { UserRoute } from "@/features/auth/components/UserRoute";
-import { AuthPage } from "@/features/auth/pages/AuthPage";
-import { AnalyticsPage } from "@/features/analytics/pages/AnalyticsPage";
-import { StaffDashboardPage } from "@/features/staff-portal/pages/StaffDashboardPage";
-import { PostsManagementPage } from "@/features/posts-management/pages/PostsManagementPage";
-import { ClientsManagementPage } from "@/features/clients-management/pages/ClientsManagementPage";
-import { ProjectsManagementPage } from "@/features/projects-management/pages/ProjectsManagementPage";
-import { ClientDetailPage } from "@/features/clients-management/pages/ClientDetailPage";
-import { TeamManagementPage } from "@/features/team-management/pages/TeamManagementPage";
-import { TeamMemberDetailPage } from "@/features/team-management/pages/TeamMemberDetailPage";
-import { AccountPage } from "@/features/account/pages/AccountPage";
-import { ReportsPage } from "@/features/reports/pages/ReportsPage";
-import { ClientReportPage } from "@/features/reports/pages/ClientReportPage";
-import { SettingsPage } from "@/features/settings/pages/SettingsPage";
-import { ClientDashboardPage } from "@/features/client-portal/pages/ClientDashboardPage";
-import { ClientPostsPage } from "@/features/client-portal/pages/ClientPostsPage";
-import { ClientAccountPage } from "@/features/client-portal/pages/ClientAccountPage";
-import { UserPortalPage } from "@/features/user-portal/pages/UserPortalPage";
-import { AboutPage } from "@/features/public/pages/AboutPage";
-import { HomePage } from "@/features/public/pages/HomePage";
-import { StaffLayout } from "@/shared/layouts/StaffLayout";
-import { ClientLayout } from "@/shared/layouts/ClientLayout";
-import { PublicLayout } from "@/shared/layouts/PublicLayout";
+
+const PublicLayout = lazyRoutePage(
+  () => import("@/shared/layouts/PublicLayout"),
+  "PublicLayout",
+);
+const StaffLayout = lazyRoutePage(
+  () => import("@/shared/layouts/StaffLayout"),
+  "StaffLayout",
+);
+const ClientLayout = lazyRoutePage(
+  () => import("@/shared/layouts/ClientLayout"),
+  "ClientLayout",
+);
+
+const HomePage = lazyRoutePage(
+  () => import("@/features/public/pages/HomePage"),
+  "HomePage",
+);
+const AboutPage = lazyRoutePage(
+  () => import("@/features/public/pages/AboutPage"),
+  "AboutPage",
+);
+const AuthPage = lazyRoutePage(
+  () => import("@/features/auth/pages/AuthPage"),
+  "AuthPage",
+);
+const UserPortalPage = lazyRoutePage(
+  () => import("@/features/user-portal/pages/UserPortalPage"),
+  "UserPortalPage",
+);
+const StaffDashboardPage = lazyRoutePage(
+  () => import("@/features/staff-portal/pages/StaffDashboardPage"),
+  "StaffDashboardPage",
+);
+const PostsManagementPage = lazyRoutePage(
+  () => import("@/features/posts-management/pages/PostsManagementPage"),
+  "PostsManagementPage",
+);
+const ProjectsManagementPage = lazyRoutePage(
+  () => import("@/features/projects-management/pages/ProjectsManagementPage"),
+  "ProjectsManagementPage",
+);
+const ClientsManagementPage = lazyRoutePage(
+  () => import("@/features/clients-management/pages/ClientsManagementPage"),
+  "ClientsManagementPage",
+);
+const ClientDetailPage = lazyRoutePage(
+  () => import("@/features/clients-management/pages/ClientDetailPage"),
+  "ClientDetailPage",
+);
+const TeamManagementPage = lazyRoutePage(
+  () => import("@/features/team-management/pages/TeamManagementPage"),
+  "TeamManagementPage",
+);
+const TeamMemberDetailPage = lazyRoutePage(
+  () => import("@/features/team-management/pages/TeamMemberDetailPage"),
+  "TeamMemberDetailPage",
+);
+const AnalyticsPage = lazyRoutePage(
+  () => import("@/features/analytics/pages/AnalyticsPage"),
+  "AnalyticsPage",
+);
+const ReportsPage = lazyRoutePage(
+  () => import("@/features/reports/pages/ReportsPage"),
+  "ReportsPage",
+);
+const ClientReportPage = lazyRoutePage(
+  () => import("@/features/reports/pages/ClientReportPage"),
+  "ClientReportPage",
+);
+const AccountPage = lazyRoutePage(
+  () => import("@/features/account/pages/AccountPage"),
+  "AccountPage",
+);
+const SettingsPage = lazyRoutePage(
+  () => import("@/features/settings/pages/SettingsPage"),
+  "SettingsPage",
+);
+const ClientDashboardPage = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientDashboardPage"),
+  "ClientDashboardPage",
+);
+const ClientPostsPage = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientPostsPage"),
+  "ClientPostsPage",
+);
+const ClientAccountPage = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientAccountPage"),
+  "ClientAccountPage",
+);
 
 export const router = createBrowserRouter([
   {
