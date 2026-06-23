@@ -36,6 +36,7 @@ export function ProjectDialog({
 
   useEffect(() => {
     if (!open) {
+      // eslint-disable-next-line
       setIsConfirmOpen(false);
     }
   }, [open]);
@@ -102,7 +103,6 @@ export function ProjectDialog({
               onChange={onTeamMemberIdsChange}
               excludeMemberIds={values.managerId ? [values.managerId] : []}
               disabled={isSaving}
-              preload={open}
             />
           </div>
 

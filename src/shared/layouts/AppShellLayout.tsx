@@ -3,7 +3,7 @@ import { Link, Outlet } from "react-router";
 import { Menu, Moon, Search, Sun } from "lucide-react";
 
 import { useTheme } from "@/shared/providers/ThemeProvider";
-import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import {
   ShellMobileNavSheet,
   ShellSidebar,

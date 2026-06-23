@@ -1,5 +1,5 @@
 import { ClientPostsTable } from "@/features/client-portal/components/ClientPostsTable";
-import { useClientPortal } from "@/features/client-portal/providers/ClientPortalProvider";
+import { useClientPortal } from "@/features/client-portal/hooks/useClientPortal";
 import { PageShell } from "@/shared/components/PageShell";
 
 export function ClientPostsPage() {

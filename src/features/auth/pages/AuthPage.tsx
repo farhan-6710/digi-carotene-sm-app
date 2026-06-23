@@ -8,7 +8,7 @@ import {
 } from "@/features/auth/constants/auth";
 import { isStaffPath, isClientPath } from "@/features/auth/constants/routes";
 import { agencyMeta } from "@/features/public/constants/agency";
-import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { buildAuthUrl } from "@/features/auth/utils/authUrlParams";
 import { CenteredLoading } from "@/shared/components/LoadingSpinner";
 

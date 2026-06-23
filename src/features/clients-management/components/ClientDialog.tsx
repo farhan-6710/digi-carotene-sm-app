@@ -28,6 +28,7 @@ export function ClientDialog({
 
   useEffect(() => {
     if (!open) {
+      // eslint-disable-next-line
       setIsConfirmOpen(false);
     }
   }, [open]);

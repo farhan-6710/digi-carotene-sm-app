@@ -58,6 +58,7 @@ export function useProjectDetailQuery(projectId: string) {
   }, [projectId]);
 
   useEffect(() => {
+    // eslint-disable-next-line
     void reload();
   }, [reload]);
 

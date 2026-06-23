@@ -1,7 +1,7 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 
 import { STAFF_HOME, USER_HOME } from "@/features/auth/constants/routes";
-import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { CenteredLoading } from "@/shared/components/LoadingSpinner";
 
 export function ClientRoute() {

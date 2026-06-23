@@ -1,7 +1,7 @@
 import { AccountCredentialsList } from "@/features/account/components/AccountCredentialsList";
 import { StaffAccountDetailsCard } from "@/features/account/components/StaffAccountDetailsCard";
 import { staffAccount } from "@/features/account/constants/staffAccount";
-import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { AccountHeader } from "@/shared/components/account/AccountHeader";
 import { AccountStatsGrid } from "@/shared/components/account/AccountStatsGrid";
 import { PageHeader } from "@/shared/components/PageHeader";

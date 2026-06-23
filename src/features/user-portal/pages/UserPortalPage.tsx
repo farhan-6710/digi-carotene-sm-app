@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { agencyMeta } from "@/features/public/constants/agency";
 import { CenteredLoading } from "@/shared/components/LoadingSpinner";
 import { Button } from "@/shared/ui/button";

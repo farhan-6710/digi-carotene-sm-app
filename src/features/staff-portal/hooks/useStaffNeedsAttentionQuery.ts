@@ -29,6 +29,7 @@ export function useStaffNeedsAttentionQuery() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line
     void reload();
   }, [reload]);
 

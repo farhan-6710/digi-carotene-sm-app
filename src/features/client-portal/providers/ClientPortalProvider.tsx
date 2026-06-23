@@ -1,33 +1,22 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 
-import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import type { Client } from "@/features/clients-management/types/types";
 import { fetchClientById } from "@/features/clients-management/utils/clientsRepository";
+import {
+  ClientPortalContext,
+  type ClientPortalContextValue,
+} from "@/features/client-portal/providers/clientPortalContext";
 import type { Post } from "@/features/posts-management/types/types";
 import { fetchPostsForClientId } from "@/features/posts-management/utils/postsRepository";
 import type { ProjectListItem } from "@/features/projects-management/types/types";
 import { fetchProjectsByClientId } from "@/features/projects-management/utils/projectsRepository";
-
-type ClientPortalContextValue = {
-  client: Client | null;
-  projects: ProjectListItem[];
-  posts: Post[];
-  loading: boolean;
-  error: string | null;
-  refresh: () => Promise<void>;
-};
-
-const ClientPortalContext = createContext<ClientPortalContextValue | null>(
-  null,
-);
 
 export function ClientPortalProvider({ children }: { children: ReactNode }) {
   const { clientId } = useAuth();
@@ -81,10 +70,11 @@ export function ClientPortalProvider({ children }: { children: ReactNode }) {
   }, [clientId]);
 
   useEffect(() => {
+    // eslint-disable-next-line
     void refresh();
   }, [refresh]);
 
-  const value = useMemo(
+  const value = useMemo<ClientPortalContextValue>(
     () => ({ client, projects, posts, loading, error, refresh }),
     [client, projects, posts, loading, error, refresh],
   );
@@ -94,12 +84,4 @@ export function ClientPortalProvider({ children }: { children: ReactNode }) {
       {children}
     </ClientPortalContext.Provider>
   );
-}
-
-export function useClientPortal() {
-  const context = useContext(ClientPortalContext);
-  if (!context) {
-    throw new Error("useClientPortal must be used within ClientPortalProvider");
-  }
-  return context;
 }

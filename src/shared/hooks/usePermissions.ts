@@ -1,4 +1,4 @@
-import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { can as canForRole, type Permission } from "@/shared/utils/rbac";
 
 // Binds the centralized RBAC rules to the current user's team role.

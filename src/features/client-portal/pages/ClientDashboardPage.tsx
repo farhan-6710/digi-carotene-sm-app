@@ -2,7 +2,7 @@ import { format, parseISO } from "date-fns";
 import { Link } from "react-router";
 
 import { ClientSocialLinks } from "@/features/client-portal/components/ClientSocialLinks";
-import { useClientPortal } from "@/features/client-portal/providers/ClientPortalProvider";
+import { useClientPortal } from "@/features/client-portal/hooks/useClientPortal";
 import {
   buildClientStatCards,
   getUpcomingPosts,

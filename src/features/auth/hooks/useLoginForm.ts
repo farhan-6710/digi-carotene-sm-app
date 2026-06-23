@@ -1,6 +1,6 @@
 import { useCallback, useState, type FormEvent } from "react";
 
-import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 export function useLoginForm() {
   const { signInWithEmail } = useAuth();

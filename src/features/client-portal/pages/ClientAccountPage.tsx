@@ -1,7 +1,7 @@
 import { ClientSocialLinks } from "@/features/client-portal/components/ClientSocialLinks";
-import { useClientPortal } from "@/features/client-portal/providers/ClientPortalProvider";
+import { useClientPortal } from "@/features/client-portal/hooks/useClientPortal";
 import { buildClientStatCards } from "@/features/client-portal/utils/clientStats";
-import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { AccountHeader } from "@/shared/components/account/AccountHeader";
 import { AccountDetailsCard } from "@/shared/components/account/AccountDetailsCard";
 import type { AccountDetailRow } from "@/shared/components/account/types";

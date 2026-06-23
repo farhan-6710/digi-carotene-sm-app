@@ -1,8 +1,6 @@
 import { clientShellConfig } from "@/features/client-portal-shell/constants/shellConfig";
-import {
-  ClientPortalProvider,
-  useClientPortal,
-} from "@/features/client-portal/providers/ClientPortalProvider";
+import { ClientPortalProvider } from "@/features/client-portal/providers/ClientPortalProvider";
+import { useClientPortal } from "@/features/client-portal/hooks/useClientPortal";
 import { AppShellLayout } from "@/shared/layouts/AppShellLayout";
 
 function ClientBrandHeader() {

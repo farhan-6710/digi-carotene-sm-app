@@ -3,7 +3,7 @@ import { useState } from "react";
 import { authFormStyles } from "@/features/auth/components/authFormStyles";
 import { GoogleIcon } from "@/features/auth/components/GoogleIcon";
 import type { AuthGoogleSignInProps } from "@/features/auth/types/components";
-import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import { Button } from "@/shared/ui/button";
 

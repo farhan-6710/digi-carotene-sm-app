@@ -8,7 +8,7 @@ import {
 } from "@/features/team-management/constants/teamMemberRoles";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { Button } from "@/shared/ui/button";
-import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { cn } from "@/shared/lib/utils";
 import {
   getUserAvatarUrl,
