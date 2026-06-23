@@ -104,7 +104,7 @@ export function ProjectDialog({
           <DialogFooter className="shrink-0 border-t border-border/60 pt-4">
             {isEditing && onDelete ? (
               <Button
-                variant="destructive"
+                variant="destructive-outline"
                 onClick={() => setIsConfirmOpen(true)}
                 className="mr-auto"
                 disabled={isSaving}
