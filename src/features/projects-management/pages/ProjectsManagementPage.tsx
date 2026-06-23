@@ -5,7 +5,7 @@ import { ProjectsTable } from "@/features/projects-management/components/Project
 import { useProjectDialog } from "@/features/projects-management/hooks/useProjectDialog";
 import { useProjectsQuery } from "@/features/projects-management/hooks/useProjectsQuery";
 import { usePermissions } from "@/shared/hooks/usePermissions";
-import { ManagementPageShell } from "@/shared/components/ManagementPageShell";
+import { PageShell } from "@/shared/components/PageShell";
 import { Button } from "@/shared/ui/button";
 
 export function ProjectsManagementPage() {
@@ -17,7 +17,7 @@ export function ProjectsManagementPage() {
   });
 
   return (
-    <ManagementPageShell
+    <PageShell
       heading="Projects Management"
       description="Manage client projects, social profile URLs, and team assignments. Posts are scheduled per project."
       error={error}
@@ -41,6 +41,6 @@ export function ProjectsManagementPage() {
         canEdit={can("projects.update")}
         onEditProject={openEditDialog}
       />
-    </ManagementPageShell>
+    </PageShell>
   );
 }

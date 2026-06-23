@@ -8,7 +8,7 @@ import type { AccountDetailRow } from "@/shared/components/account/types";
 import { AccountPanelCard } from "@/shared/components/account/AccountPanelCard";
 import { AccountStatsGrid } from "@/shared/components/account/AccountStatsGrid";
 import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
-import { ClientPageShell } from "@/shared/components/ClientPageShell";
+import { PageShell } from "@/shared/components/PageShell";
 import {
   getUserAuthProvider,
   getUserEmail,
@@ -47,7 +47,7 @@ export function ClientAccountPage() {
     : "Your Digi Carotene client portal account.";
 
   return (
-    <ClientPageShell
+    <PageShell
       heading="Account"
       description="Your login, brand on file with Digi Carotene, and content performance snapshot."
       error={error && !loading ? error : null}
@@ -76,6 +76,6 @@ export function ClientAccountPage() {
           </>
         )}
       </div>
-    </ClientPageShell>
+    </PageShell>
   );
 }

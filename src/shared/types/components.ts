@@ -62,13 +62,13 @@ export type DirectoryTableProps = {
   children: ReactNode;
 };
 
-export type ManagementPageShellProps = {
+export type PageShellProps = {
   heading: string;
   description: string;
-  actions: ReactNode;
-  error: string | null;
+  actions?: ReactNode;
+  error?: string | null;
   children: ReactNode;
-  dialog: ReactNode;
+  dialog?: ReactNode;
 };
 
 export type ShellNavItem = {
@@ -117,14 +117,6 @@ export type AppShellLayoutProps = {
   headerCenter?: ReactNode;
   mobileNavDescription: string;
   scrollContainerId?: string;
-};
-
-export type ClientPageShellProps = {
-  heading: string;
-  description: string;
-  error?: string | null;
-  actions?: ReactNode;
-  children: ReactNode;
 };
 
 export type DetailPageLoadingProps = {

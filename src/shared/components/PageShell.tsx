@@ -1,15 +1,15 @@
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageHeader } from "@/shared/components/PageHeader";
-import type { ManagementPageShellProps } from "@/shared/types/components";
+import type { PageShellProps } from "@/shared/types/components";
 
-export function ManagementPageShell({
+export function PageShell({
   heading,
   description,
   actions,
-  error,
+  error = null,
   children,
   dialog,
-}: ManagementPageShellProps) {
+}: PageShellProps) {
   return (
     <section className="space-y-8">
       <PageHeader

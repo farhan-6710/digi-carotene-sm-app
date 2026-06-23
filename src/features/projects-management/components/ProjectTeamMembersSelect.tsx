@@ -1,7 +1,8 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import type { ProjectTeamMembersSelectProps } from "@/features/projects-management/types/components";
 import { fetchTeamMembers } from "@/features/team-management/utils/teamMembersRepository";
+import { useLazyEntityList } from "@/shared/hooks/useLazyEntityList";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
 
 export function ProjectTeamMembersSelect({
@@ -10,18 +11,9 @@ export function ProjectTeamMembersSelect({
   excludeMemberIds = [],
   disabled = false,
 }: ProjectTeamMembersSelectProps) {
-  const [members, setMembers] = useState<
-    Awaited<ReturnType<typeof fetchTeamMembers>>
-  >([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const loadMembers = useCallback(() => {
-    setIsLoading(true);
-    fetchTeamMembers()
-      .then(setMembers)
-      .catch(() => setMembers([]))
-      .finally(() => setIsLoading(false));
-  }, []);
+  const { items: members, isLoading, handleOpenChange } = useLazyEntityList(
+    fetchTeamMembers,
+  );
 
   const options = useMemo(
     () =>
@@ -44,11 +36,7 @@ export function ProjectTeamMembersSelect({
       emptyMessage="No team members available."
       excludeValues={excludeMemberIds}
       fallbackSelectedLabel="Team member"
-      onOpenChange={(open) => {
-        if (open && members.length === 0) {
-          loadMembers();
-        }
-      }}
+      onOpenChange={handleOpenChange}
     />
   );
 }

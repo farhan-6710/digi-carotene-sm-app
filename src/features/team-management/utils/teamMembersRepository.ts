@@ -117,8 +117,3 @@ export async function fetchProjectManagers(): Promise<TeamMember[]> {
   const members = await fetchTeamMembers();
   return members.filter((member) => isProjectManagerRole(member.team_role));
 }
-
-/** @deprecated Use fetchProjectManagers */
-export async function fetchManagers(): Promise<TeamMember[]> {
-  return fetchProjectManagers();
-}

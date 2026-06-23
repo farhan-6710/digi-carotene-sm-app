@@ -21,7 +21,6 @@ export function SignupForm() {
     setError,
     successMessage,
     isSubmitting,
-    isBusy,
     handleSubmit,
     clearMessages,
   } = useSignupForm();
@@ -42,7 +41,7 @@ export function SignupForm() {
             onChange={(event) => setName(event.target.value)}
             className={authFormStyles.input}
             required
-            disabled={isBusy}
+            disabled={isSubmitting}
           />
         </div>
 
@@ -50,7 +49,7 @@ export function SignupForm() {
           id="signup-email"
           value={email}
           onChange={setEmail}
-          disabled={isBusy}
+          disabled={isSubmitting}
         />
 
         {error ? <AuthFormAlert message={error} variant="error" /> : null}
@@ -61,7 +60,7 @@ export function SignupForm() {
         <Button
           type="submit"
           className={cn(authFormStyles.submitButton, "mt-2")}
-          disabled={isBusy}
+          disabled={isSubmitting}
         >
           {isSubmitting ? (
             <>
@@ -75,7 +74,7 @@ export function SignupForm() {
       </form>
 
       <AuthGoogleSignIn
-        disabled={isBusy}
+        disabled={isSubmitting}
         isSignup
         onError={setError}
         onBeforeSignIn={clearMessages}

@@ -70,12 +70,3 @@ export type TeamMemberAssignProjectDialogProps = {
   isSaving: boolean;
   onAssign: (projectId: string) => void | Promise<void>;
 };
-
-export type TeamMemberComboboxProps = {
-  value: string;
-  onChange: (memberId: string) => void;
-  disabled?: boolean;
-  activeMemberIds?: string[];
-  placeholder?: string;
-  preload?: boolean;
-};

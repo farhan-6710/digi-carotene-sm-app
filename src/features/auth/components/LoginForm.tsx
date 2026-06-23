@@ -19,7 +19,6 @@ export function LoginForm() {
     error,
     setError,
     isSubmitting,
-    isBusy,
     handleSubmit,
     clearError,
   } = useLoginForm();
@@ -31,7 +30,7 @@ export function LoginForm() {
           id="login-email"
           value={email}
           onChange={setEmail}
-          disabled={isBusy}
+          disabled={isSubmitting}
         />
 
         <AuthPasswordField
@@ -41,7 +40,7 @@ export function LoginForm() {
           onChange={setPassword}
           autoComplete="current-password"
           placeholder="Enter your password"
-          disabled={isBusy}
+          disabled={isSubmitting}
         />
 
         {error ? <AuthFormAlert message={error} variant="error" /> : null}
@@ -49,7 +48,7 @@ export function LoginForm() {
         <Button
           type="submit"
           className={cn(authFormStyles.submitButton, "mt-2")}
-          disabled={isBusy}
+          disabled={isSubmitting}
         >
           {isSubmitting ? (
             <>
@@ -63,7 +62,7 @@ export function LoginForm() {
       </form>
 
       <AuthGoogleSignIn
-        disabled={isBusy}
+        disabled={isSubmitting}
         onError={setError}
         onBeforeSignIn={clearError}
       />

@@ -1,14 +1,12 @@
 import { Link } from "react-router";
 
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { usePortalAccessRedirect } from "@/features/user-portal/hooks/usePortalAccessRedirect";
 import { agencyMeta } from "@/features/public/constants/agency";
 import { CenteredLoading } from "@/shared/components/LoadingSpinner";
 import { Button } from "@/shared/ui/button";
 
 export function UserPortalPage() {
   const { loading, signOut, refreshProfile } = useAuth();
-  usePortalAccessRedirect();
 
   if (loading) {
     return <CenteredLoading />;

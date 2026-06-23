@@ -5,7 +5,7 @@ import { TeamMembersTable } from "@/features/team-management/components/TeamMemb
 import { useTeamMemberDialog } from "@/features/team-management/hooks/useTeamMemberDialog";
 import { useTeamMembersQuery } from "@/features/team-management/hooks/useTeamMembersQuery";
 import { usePermissions } from "@/shared/hooks/usePermissions";
-import { ManagementPageShell } from "@/shared/components/ManagementPageShell";
+import { PageShell } from "@/shared/components/PageShell";
 import { Button } from "@/shared/ui/button";
 
 export function TeamManagementPage() {
@@ -17,7 +17,7 @@ export function TeamManagementPage() {
   });
 
   return (
-    <ManagementPageShell
+    <PageShell
       heading="Team Management"
       description="Manage your agency team. Add executives, managers, and admins with their contact details."
       error={error}
@@ -41,6 +41,6 @@ export function TeamManagementPage() {
         canEdit={can("team.update")}
         onEditMember={openEditDialog}
       />
-    </ManagementPageShell>
+    </PageShell>
   );
 }

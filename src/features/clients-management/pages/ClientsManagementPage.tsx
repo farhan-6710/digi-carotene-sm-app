@@ -5,7 +5,7 @@ import { ClientsTable } from "@/features/clients-management/components/ClientsTa
 import { useClientDialog } from "@/features/clients-management/hooks/useClientDialog";
 import { useClientsQuery } from "@/features/clients-management/hooks/useClientsQuery";
 import { usePermissions } from "@/shared/hooks/usePermissions";
-import { ManagementPageShell } from "@/shared/components/ManagementPageShell";
+import { PageShell } from "@/shared/components/PageShell";
 import { Button } from "@/shared/ui/button";
 
 export function ClientsManagementPage() {
@@ -17,7 +17,7 @@ export function ClientsManagementPage() {
   });
 
   return (
-    <ManagementPageShell
+    <PageShell
       heading="Clients Management"
       description="Manage client companies and contact details. Create projects under each client for social accounts and posts."
       error={error}
@@ -41,6 +41,6 @@ export function ClientsManagementPage() {
         canEdit={can("clients.update")}
         onEditClient={openEditDialog}
       />
-    </ManagementPageShell>
+    </PageShell>
   );
 }

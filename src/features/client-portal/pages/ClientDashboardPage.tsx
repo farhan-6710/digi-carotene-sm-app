@@ -11,7 +11,7 @@ import {
   statusColors,
   statusText,
 } from "@/features/posts-management/constants/postsManagement";
-import { ClientPageShell } from "@/shared/components/ClientPageShell";
+import { PageShell } from "@/shared/components/PageShell";
 import { LoadingSpinner, TableLoadingState } from "@/shared/components/LoadingSpinner";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { StatsCards } from "@/shared/components/StatsCards";
@@ -22,7 +22,7 @@ export function ClientDashboardPage() {
   const upcoming = getUpcomingPosts(posts);
 
   return (
-    <ClientPageShell
+    <PageShell
       heading={client?.client_name ?? "Your brand"}
       description="Overview of your content schedule, social profiles, and account with Digi Carotene."
       error={error && !loading ? error : null}
@@ -94,6 +94,6 @@ export function ClientDashboardPage() {
           </div>
         </div>
       </div>
-    </ClientPageShell>
+    </PageShell>
   );
 }

@@ -53,7 +53,6 @@ export function useSignupForm() {
     setError,
     successMessage,
     isSubmitting,
-    isBusy: isSubmitting,
     handleSubmit,
     clearMessages,
   };
