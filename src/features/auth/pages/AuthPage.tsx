@@ -47,27 +47,8 @@ export function AuthPage() {
     return <Navigate to={canonicalPath} replace />;
   }
 
-  if (loading) {
+  if (loading || (user && !profile)) {
     return <CenteredLoading />;
-  }
-
-  if (user && !profile) {
-    return (
-      <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-background px-6 text-center text-foreground">
-        <p className="text-lg font-semibold">Could not load your profile</p>
-        <p className="max-w-md text-sm text-muted-foreground">
-          You are signed in, but no profile row was found. Run{" "}
-          <code className="text-xs">scripts/migrations/001_initial_schema.sql</code> in Supabase,
-          then sign up again or ask an admin to create your profile row.
-        </p>
-        <Link
-          to="/"
-          className="text-sm font-semibold text-primary hover:underline"
-        >
-          Back to home
-        </Link>
-      </div>
-    );
   }
 
   if (user) {

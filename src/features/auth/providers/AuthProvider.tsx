@@ -55,6 +55,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authReady, setAuthReady] = useState(false);
   const [profileReady, setProfileReady] = useState(true);
 
+  const clearSession = useCallback(async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setProfile(null);
+    setTeamRole(null);
+  }, []);
+
   const loadProfile = useCallback(
     async (authUser: User, options?: { silent?: boolean }) => {
       if (!options?.silent) {
@@ -63,14 +70,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       try {
         const nextProfile = await loadProfileForUser(authUser);
+        if (!nextProfile) {
+          await clearSession();
+          return;
+        }
         setProfile(nextProfile);
       } catch {
-        setProfile(null);
+        await clearSession();
       } finally {
         setProfileReady(true);
       }
     },
-    [],
+    [clearSession],
   );
 
   const refreshProfile = useCallback(async () => {
@@ -212,10 +223,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return error;
       },
       signOut: async () => {
-        await supabase.auth.signOut();
-        setUser(null);
-        setProfile(null);
-        setTeamRole(null);
+        await clearSession();
       },
     }),
     [
@@ -231,6 +239,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       homePath,
       loading,
       refreshProfile,
+      clearSession,
     ],
   );
 
