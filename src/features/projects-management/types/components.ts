@@ -1,10 +1,12 @@
 import type { Post } from "@/features/posts-management/types/types";
+import type { TeamMember } from "@/features/team-management/types/types";
 import type {
   ProjectClient,
   ProjectListItem,
   ProjectManager,
 } from "@/features/projects-management/types/types";
 import type { ProjectFormValues } from "@/features/projects-management/utils/projectFormUtils";
+import type { ProjectPostStats } from "@/features/projects-management/utils/projectPostStatsUtils";
 
 export type ProjectFormSeeds = {
   client: ProjectClient | null;
@@ -72,8 +74,14 @@ export type ClientProjectsSectionProps = {
   isLoading: boolean;
 };
 
+export type ProjectTeamMemberAvatarsProps = {
+  members: Pick<TeamMember, "id" | "member_name">[];
+};
+
 export type ProjectProfileCardProps = {
   project: ProjectListItem;
+  postStats: ProjectPostStats;
+  teamMembers: Pick<TeamMember, "id" | "member_name">[];
 };
 
 export type ProjectPostsTableProps = {

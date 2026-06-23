@@ -85,6 +85,12 @@ export type ShellQuickAction = {
   buttonTo: string;
 };
 
+export type MemberInitialsAvatarProps = {
+  name: string;
+  size?: "sm" | "md";
+  className?: string;
+};
+
 export type ShellSidebarConfig = {
   homeLink: string;
   initials: string;

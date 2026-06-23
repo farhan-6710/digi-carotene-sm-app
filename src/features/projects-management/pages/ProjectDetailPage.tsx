@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link, useParams } from "react-router";
 import { ArrowLeft } from "lucide-react";
 
@@ -5,6 +6,7 @@ import { ProjectPostsTable } from "@/features/projects-management/components/Pro
 import { ProjectProfileCard } from "@/features/projects-management/components/ProjectProfileCard";
 import { PROJECTS_MANAGEMENT_PATH } from "@/features/projects-management/constants/routes";
 import { useProjectDetailQuery } from "@/features/projects-management/hooks/useProjectDetailQuery";
+import { buildProjectPostStats } from "@/features/projects-management/utils/projectPostStatsUtils";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageHeader } from "@/shared/components/PageHeader";
@@ -23,7 +25,9 @@ function ProjectDetailBackButton() {
 
 export function ProjectDetailPage() {
   const { projectId = "" } = useParams();
-  const { project, posts, isLoading, error } = useProjectDetailQuery(projectId);
+  const { project, posts, teamMembers, isLoading, error } =
+    useProjectDetailQuery(projectId);
+  const postStats = useMemo(() => buildProjectPostStats(posts), [posts]);
 
   if (isLoading) {
     return <DetailPageLoading backButton={<ProjectDetailBackButton />} />;
@@ -44,7 +48,11 @@ export function ProjectDetailPage() {
 
       {error ? <ErrorBanner message={error} /> : null}
 
-      <ProjectProfileCard project={project} />
+      <ProjectProfileCard
+        project={project}
+        postStats={postStats}
+        teamMembers={teamMembers}
+      />
 
       <ProjectPostsTable posts={posts} isLoading={isLoading} />
     </section>

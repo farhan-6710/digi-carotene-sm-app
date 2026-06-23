@@ -2,11 +2,17 @@ import { format } from "date-fns";
 import { Link } from "react-router";
 
 import { buildClientDetailPath } from "@/features/clients-management/constants/routes";
+import { projectProfileStatItems } from "@/features/projects-management/constants/projectProfileStats";
+import { ProjectTeamMemberAvatars } from "@/features/projects-management/components/ProjectTeamMemberAvatars";
 import type { ProjectProfileCardProps } from "@/features/projects-management/types/components";
+import { cn } from "@/shared/lib/utils";
 import { SocialPlatformButtons } from "@/shared/components/SocialPlatformButtons";
 
-export function ProjectProfileCard({ project }: ProjectProfileCardProps) {
-  const extraTeamCount = project.team_member_ids.length;
+export function ProjectProfileCard({
+  project,
+  postStats,
+  teamMembers,
+}: ProjectProfileCardProps) {
   const clientName = project.clients?.client_name ?? "—";
 
   const details = [
@@ -29,10 +35,7 @@ export function ProjectProfileCard({ project }: ProjectProfileCardProps) {
     },
     {
       label: "Team members",
-      value:
-        extraTeamCount > 0
-          ? `${extraTeamCount} additional member${extraTeamCount === 1 ? "" : "s"}`
-          : "—",
+      value: <ProjectTeamMemberAvatars members={teamMembers} />,
     },
     {
       label: "Socials",
@@ -53,6 +56,33 @@ export function ProjectProfileCard({ project }: ProjectProfileCardProps) {
         <h2 className="mt-2 text-xl font-semibold tracking-tight">
           {project.project_name}
         </h2>
+      </div>
+
+      <div className="grid grid-cols-2 border-b border-border sm:grid-cols-4">
+        {projectProfileStatItems.map((item, index) => (
+          <div
+            key={item.label}
+            className={cn(
+              "px-6 py-4",
+              index < projectProfileStatItems.length - 1 &&
+                "sm:border-r sm:border-border",
+              index % 2 === 0 && "border-r border-border sm:border-r",
+              index < 2 && "border-b border-border sm:border-b-0",
+            )}
+          >
+            <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              {item.label}
+            </p>
+            <p
+              className={cn(
+                "mt-1 text-2xl font-semibold tracking-tight",
+                item.valueClassName,
+              )}
+            >
+              {item.getValue(postStats)}
+            </p>
+          </div>
+        ))}
       </div>
 
       <div className="divide-y divide-border">

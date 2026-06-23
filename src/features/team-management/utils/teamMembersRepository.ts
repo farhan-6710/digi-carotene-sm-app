@@ -15,19 +15,6 @@ function formatTeamMemberError(error: { code?: string; message?: string }): Erro
   return new Error(error.message ?? "Failed to save team member.");
 }
 
-export async function fetchTeamMembers(): Promise<TeamMember[]> {
-  const { data, error } = await supabase
-    .from("team_members")
-    .select("*")
-    .order("member_name", { ascending: true });
-
-  if (error) {
-    throw error;
-  }
-
-  return (data ?? []).map((row) => mapDbRowToTeamMember(row));
-}
-
 export async function fetchTeamMemberById(memberId: string): Promise<TeamMember | null> {
   const { data, error } = await supabase
     .from("team_members")
@@ -44,6 +31,38 @@ export async function fetchTeamMemberById(memberId: string): Promise<TeamMember 
   }
 
   return mapDbRowToTeamMember(data);
+}
+
+export async function fetchTeamMembers(): Promise<TeamMember[]> {
+  const { data, error } = await supabase
+    .from("team_members")
+    .select("*")
+    .order("member_name", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map((row) => mapDbRowToTeamMember(row));
+}
+
+export async function fetchTeamMembersByIds(
+  memberIds: string[],
+): Promise<TeamMember[]> {
+  if (memberIds.length === 0) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("team_members")
+    .select("*")
+    .in("id", memberIds);
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map((row) => mapDbRowToTeamMember(row));
 }
 
 export type CreateTeamMemberInput = {
