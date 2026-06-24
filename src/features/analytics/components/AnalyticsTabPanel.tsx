@@ -25,7 +25,16 @@ function renderAnalyticsPanel(tab: AnalyticsTabId, panelProps: AnalyticsPanelPro
 export function AnalyticsTabPanel({
   activeTab,
   data,
+  filteredPosts,
+  filter,
+  periodLabel,
   isLoading,
 }: AnalyticsTabPanelProps) {
-  return renderAnalyticsPanel(activeTab, { data, isLoading });
+  return renderAnalyticsPanel(activeTab, {
+    data,
+    filteredPosts,
+    filter,
+    periodLabel,
+    isLoading,
+  });
 }

@@ -6,61 +6,58 @@ import { MonthlyTrendChart } from "@/features/analytics/components/MonthlyTrendC
 import { SessionActivityGraph } from "@/features/analytics/components/SessionActivityGraph";
 import { PostsTopClientsTable } from "@/features/analytics/components/PostsTopClientsTable";
 import type { AnalyticsPanelProps } from "@/features/analytics/types/components";
-import { getCurrentMonthKey, isPostInMonth } from "@/features/analytics/utils/analyticsDateUtils";
-import { buildPostsAnalyticsStatCards } from "@/features/analytics/utils/analyticsStatsUtils";
+import { resolveAnalyticsDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
 import {
   buildMonthlyTrend,
+  buildMonthlyTrendForRange,
   buildPlatformDistribution,
   buildStatusBreakdown,
 } from "@/features/analytics/utils/postsAnalyticsCompute";
-import {
-  buildPostsTopClients,
-  getPostsAnalyticsMonthRange,
-} from "@/features/analytics/utils/postsAnalyticsUtils";
-import { StatsCards } from "@/shared/components/StatsCards";
+import { buildPostsTopClients } from "@/features/analytics/utils/postsAnalyticsUtils";
 
-export function PostsAnalyticsPanel({ data, isLoading }: AnalyticsPanelProps) {
-  const { posts } = data;
-
+export function PostsAnalyticsPanel({
+  filteredPosts,
+  filter,
+  periodLabel,
+  isLoading,
+}: AnalyticsPanelProps) {
   const view = useMemo(() => {
-    const currentMonthKey = getCurrentMonthKey();
-    const { previousYear, previousMonth } = getPostsAnalyticsMonthRange();
-    const previousMonthKey = `${previousYear}-${String(previousMonth).padStart(2, "0")}`;
-
-    const currentMonthPosts = posts.filter((post) => isPostInMonth(post, currentMonthKey));
-    const previousMonthPosts = posts.filter((post) => isPostInMonth(post, previousMonthKey));
+    const resolvedRange = resolveAnalyticsDateRange(filter);
+    const trend = resolvedRange
+      ? buildMonthlyTrendForRange(filteredPosts, resolvedRange)
+      : buildMonthlyTrend(filteredPosts, 12);
 
     return {
-      stats: buildPostsAnalyticsStatCards(currentMonthPosts, previousMonthPosts),
-      topClients: buildPostsTopClients(currentMonthPosts),
-      statusBreakdown: buildStatusBreakdown(currentMonthPosts),
-      platforms: buildPlatformDistribution(currentMonthPosts),
-      trend: buildMonthlyTrend(posts, 12),
+      topClients: buildPostsTopClients(filteredPosts),
+      statusBreakdown: buildStatusBreakdown(filteredPosts),
+      platforms: buildPlatformDistribution(filteredPosts),
+      trend,
     };
-  }, [posts]);
+  }, [filteredPosts, filter]);
+
+  const scopeLabel =
+    filter.mode === "all" ? "All scheduled posts." : `Posts in ${periodLabel.toLowerCase()}.`;
 
   return (
     <div className="space-y-6">
-      <StatsCards cards={view.stats} isLoading={isLoading} />
-
       <div className="grid gap-6 lg:grid-cols-2">
         <CategoryDonutChart
-          title="This Month by Status"
-          description="Status split of posts scheduled this month."
+          title="Posts by Status"
+          description={scopeLabel}
           data={view.statusBreakdown}
           centerLabel="Posts"
         />
         <HorizontalBarChart
           title="Posts by Platform"
-          description="Where this month's content is going out."
+          description={`Platform split for ${periodLabel.toLowerCase()}.`}
           data={view.platforms}
-          emptyMessage="No platform data for this month yet."
+          emptyMessage="No platform data for this period."
         />
       </div>
 
       <MonthlyTrendChart
         title="Publishing Trend"
-        description="Posts by status over the last 12 months."
+        description={`Posts by status — ${periodLabel.toLowerCase()}.`}
         data={view.trend}
       />
 

@@ -1,3 +1,15 @@
+import type { AnalyticsQuickPeriodId } from "@/features/analytics/constants/analyticsFilters";
+
+export type AnalyticsDateFilterState =
+  | { mode: "all" }
+  | { mode: "period"; period: AnalyticsQuickPeriodId }
+  | { mode: "range"; from: Date; to: Date };
+
+export type AnalyticsResolvedDateRange = {
+  from: Date;
+  to: Date;
+};
+
 export type PostActivityLevel = 0 | 1 | 2 | 3 | 4;
 
 export type DayContribution = {

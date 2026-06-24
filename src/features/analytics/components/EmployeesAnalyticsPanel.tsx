@@ -8,40 +8,40 @@ import {
   buildManagerWorkload,
   buildManagerWorkloadChart,
   buildRoleDistribution,
-  buildTeamStatCards,
 } from "@/features/analytics/utils/teamAnalyticsCompute";
-import { StatsCards } from "@/shared/components/StatsCards";
 
-export function EmployeesAnalyticsPanel({ data, isLoading }: AnalyticsPanelProps) {
-  const { posts, projects, teamMembers } = data;
+export function EmployeesAnalyticsPanel({
+  data,
+  filteredPosts,
+  periodLabel,
+  isLoading,
+}: AnalyticsPanelProps) {
+  const { projects, teamMembers } = data;
 
   const view = useMemo(() => {
-    const workload = buildManagerWorkload(posts, projects, teamMembers);
+    const workload = buildManagerWorkload(filteredPosts, projects, teamMembers);
     return {
-      stats: buildTeamStatCards(teamMembers, projects),
       roleDistribution: buildRoleDistribution(teamMembers),
       workloadChart: buildManagerWorkloadChart(workload),
       workload,
     };
-  }, [posts, projects, teamMembers]);
+  }, [filteredPosts, projects, teamMembers]);
 
   return (
     <div className="space-y-6">
-      <StatsCards cards={view.stats} isLoading={isLoading} />
-
       <div className="grid gap-6 lg:grid-cols-2">
         <CategoryDonutChart
           title="Team by Role"
-          description="Distribution of members across roles."
+          description="Current team composition."
           data={view.roleDistribution}
           centerLabel="Members"
         />
         <HorizontalBarChart
           title="Manager Workload"
-          description="Posts on projects each manager owns."
+          description={`Posts on managed projects — ${periodLabel.toLowerCase()}.`}
           data={view.workloadChart}
           color="var(--chart-3)"
-          emptyMessage="No managed posts yet."
+          emptyMessage="No managed posts in this period."
         />
       </div>
 
@@ -50,7 +50,7 @@ export function EmployeesAnalyticsPanel({ data, isLoading }: AnalyticsPanelProps
         nameHeader="Manager"
         rows={view.workload}
         isLoading={isLoading}
-        emptyMessage="No managed posts yet."
+        emptyMessage="No managed posts in this period."
       />
     </div>
   );

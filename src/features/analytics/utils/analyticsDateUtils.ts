@@ -1,5 +1,6 @@
-import { format, subMonths } from "date-fns";
+import { eachMonthOfInterval, format, subMonths } from "date-fns";
 
+import type { AnalyticsResolvedDateRange } from "@/features/analytics/types/types";
 import type { Post } from "@/features/posts-management/types/types";
 
 /** Month bucket key like "2026-06" derived from a "YYYY-MM-DD" string. */
@@ -28,4 +29,18 @@ export function getRecentMonths(
     const date = subMonths(referenceDate, count - 1 - index);
     return { key: format(date, "yyyy-MM"), label: format(date, "MMM") };
   });
+}
+
+export function getMonthsInRange(
+  range: AnalyticsResolvedDateRange,
+): { key: string; label: string }[] {
+  const months = eachMonthOfInterval({
+    start: range.from,
+    end: range.to,
+  });
+
+  return months.map((date) => ({
+    key: format(date, "yyyy-MM"),
+    label: format(date, "MMM yyyy"),
+  }));
 }

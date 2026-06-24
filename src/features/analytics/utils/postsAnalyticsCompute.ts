@@ -1,9 +1,14 @@
 import type {
+  AnalyticsResolvedDateRange,
   CategoryDatum,
   LabeledValue,
   MonthlyTrendDatum,
 } from "@/features/analytics/types/types";
-import { getMonthKey, getRecentMonths } from "@/features/analytics/utils/analyticsDateUtils";
+import {
+  getMonthKey,
+  getMonthsInRange,
+  getRecentMonths,
+} from "@/features/analytics/utils/analyticsDateUtils";
 import { SOCIAL_PLATFORMS } from "@/features/posts-management/constants/postsManagement";
 import type { Post, StatusKey } from "@/features/posts-management/types/types";
 
@@ -38,6 +43,21 @@ export function buildMonthlyTrend(
   monthsBack = 12,
 ): MonthlyTrendDatum[] {
   const months = getRecentMonths(monthsBack);
+  return buildMonthlyTrendForMonths(posts, months);
+}
+
+export function buildMonthlyTrendForRange(
+  posts: Post[],
+  range: AnalyticsResolvedDateRange,
+): MonthlyTrendDatum[] {
+  const months = getMonthsInRange(range);
+  return buildMonthlyTrendForMonths(posts, months);
+}
+
+function buildMonthlyTrendForMonths(
+  posts: Post[],
+  months: { key: string; label: string }[],
+): MonthlyTrendDatum[] {
   const buckets = new Map<string, MonthlyTrendDatum>(
     months.map((month) => [
       month.key,
