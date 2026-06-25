@@ -6,7 +6,6 @@ import {
   ANALYTICS_QUICK_PERIODS,
   type AnalyticsQuickPeriodId,
 } from "@/features/analytics/constants/analyticsFilters";
-import type { AnalyticsDateFilterState } from "@/features/analytics/types/types";
 import {
   buildAnalyticsPeriodSearchParams,
   buildAnalyticsRangeSearchParams,
