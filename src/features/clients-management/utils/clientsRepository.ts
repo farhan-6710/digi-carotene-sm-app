@@ -1,5 +1,5 @@
 import { supabase } from "@/shared/lib/supabase";
-import { unlinkProfilesFromClient } from "@/features/auth/utils/profileRepository";
+import { unlinkProfilesFromClient, linkProfileByEmail } from "@/features/auth/utils/profileRepository";
 import type { Client } from "../types/types";
 
 function formatClientError(error: { code?: string; message?: string }): Error {
@@ -77,6 +77,14 @@ export async function createClient(input: CreateClientInput): Promise<Client> {
     throw formatClientError(error);
   }
 
+  if (input.email?.trim()) {
+    try {
+      await linkProfileByEmail(input.email);
+    } catch {
+      // Trigger should link; RPC is a fallback when triggers are missing.
+    }
+  }
+
   return data as Client;
 }
 
@@ -98,6 +106,14 @@ export async function updateClient(
 
   if (error) {
     throw formatClientError(error);
+  }
+
+  if (input.email?.trim()) {
+    try {
+      await linkProfileByEmail(input.email);
+    } catch {
+      // Trigger should link; RPC is a fallback when triggers are missing.
+    }
   }
 
   return data as Client;

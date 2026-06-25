@@ -22,6 +22,7 @@ Reference docs for the Digi Carotene service management app: database schema, DT
 | Team members | [team-portal/team-management/team-members.md](./team-portal/team-management/team-members.md) |
 | Projects | [team-portal/projects-management/projects.md](./team-portal/projects-management/projects.md) |
 | Posts | [team-portal/posts-management/posts.md](./team-portal/posts-management/posts.md) |
+| Post approvals | [team-portal/post-approvals/post-approval-requests.md](./team-portal/post-approvals/post-approval-requests.md) |
 
 ## Domain hierarchy
 

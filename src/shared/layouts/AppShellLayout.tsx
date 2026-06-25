@@ -22,6 +22,7 @@ export function AppShellLayout({
   sidebarConfig,
   accountPath,
   headerCenter,
+  headerActions,
   mobileNavDescription,
   scrollContainerId,
 }: AppShellLayoutProps) {
@@ -77,6 +78,7 @@ export function AppShellLayout({
               )}
 
               <div className="ml-auto flex items-center gap-3">
+                {headerActions}
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Sun className="size-4" aria-hidden="true" />
                   <Switch

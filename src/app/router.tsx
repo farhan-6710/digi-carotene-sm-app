@@ -87,6 +87,10 @@ const SettingsPage = lazyRoutePage(
   () => import("@/features/settings/pages/SettingsPage"),
   "SettingsPage",
 );
+const PostApprovalsPage = lazyRoutePage(
+  () => import("@/features/post-approvals/pages/PostApprovalsPage"),
+  "PostApprovalsPage",
+);
 const ClientDashboardPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientDashboardPage"),
   "ClientDashboardPage",
@@ -126,6 +130,7 @@ export const router = createBrowserRouter([
         children: [
           { path: "dashboard", element: <TeamDashboardPage /> },
           { path: "posts-management", element: <PostsManagementPage /> },
+          { path: "post-approvals", element: <PostApprovalsPage /> },
           { path: "projects-management", element: <ProjectsManagementPage /> },
           {
             path: "projects-management/:projectId",

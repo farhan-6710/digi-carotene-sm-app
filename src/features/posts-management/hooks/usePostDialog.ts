@@ -14,6 +14,7 @@ import {
   type ActiveSlot,
   type PostFormValues,
 } from "@/features/posts-management/utils/postFormUtils";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 type UsePostDialogOptions = {
   slots: Slot[];
@@ -22,6 +23,7 @@ type UsePostDialogOptions = {
 };
 
 export function usePostDialog({ slots, reload, setError }: UsePostDialogOptions) {
+  const { teamRole, teamMemberId } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeSlot, setActiveSlot] = useState<ActiveSlot | null>(null);
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
@@ -97,6 +99,8 @@ export function usePostDialog({ slots, reload, setError }: UsePostDialogOptions)
       const saved = await savePostMutation({
         values,
         editingPostId,
+        teamRole,
+        teamMemberId,
         setError,
       });
 
@@ -113,7 +117,7 @@ export function usePostDialog({ slots, reload, setError }: UsePostDialogOptions)
     } finally {
       setIsSaving(false);
     }
-  }, [activeSlot, editingPostId, handleDialogOpenChange, isSaving, reload, setError, values]);
+  }, [activeSlot, editingPostId, handleDialogOpenChange, isSaving, reload, setError, teamMemberId, teamRole, values]);
 
   const removePost = useCallback(async () => {
     if (!editingPostId || isSaving) {

@@ -122,6 +122,7 @@ export type AppShellLayoutProps = {
   sidebarConfig: ShellSidebarConfig;
   accountPath: string;
   headerCenter?: ReactNode;
+  headerActions?: ReactNode;
   mobileNavDescription: string;
   scrollContainerId?: string;
 };

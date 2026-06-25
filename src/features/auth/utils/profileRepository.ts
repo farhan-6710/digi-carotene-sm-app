@@ -46,3 +46,19 @@ export async function unlinkProfilesFromClient(
 ): Promise<void> {
   await resetProfilesForClient(clientId);
 }
+
+/** DB-side link when roster email matches an auth user (requires migration 015). */
+export async function linkProfileByEmail(email: string): Promise<void> {
+  const lookupEmail = email.trim().toLowerCase();
+  if (!lookupEmail) {
+    return;
+  }
+
+  const { error } = await supabase.rpc("link_profile_by_email", {
+    lookup_email: lookupEmail,
+  });
+
+  if (error) {
+    throw error;
+  }
+}

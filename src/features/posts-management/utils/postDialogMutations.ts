@@ -10,11 +10,16 @@ import {
   deletePost,
   updatePost,
 } from "@/features/posts-management/utils/postsRepository";
+import { createPostApprovalRequest } from "@/features/post-approvals/utils/postApprovalsRepository";
+import { requiresBackdatedPostApproval } from "@/features/post-approvals/utils/postApprovalRules";
+import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 import { showToast } from "@/shared/utils/showToast";
 
 type SavePostOptions = {
   values: PostFormValues;
   editingPostId: string | null;
+  teamRole: TeamMemberRole | null;
+  teamMemberId: string | null;
   setError: (message: string | null) => void;
 };
 
@@ -26,6 +31,8 @@ type DeletePostOptions = {
 export async function savePostMutation({
   values,
   editingPostId,
+  teamRole,
+  teamMemberId,
   setError,
 }: SavePostOptions): Promise<boolean> {
   const validationError = validatePostForm(values);
@@ -57,6 +64,19 @@ export async function savePostMutation({
 
   if (editingPostId) {
     await updatePost(editingPostId, payload);
+  } else if (
+    requiresBackdatedPostApproval(teamRole, payload.toBePostedOn)
+  ) {
+    if (!teamMemberId) {
+      showToast("error", "Your team member profile is required to request approval.");
+      return false;
+    }
+
+    await createPostApprovalRequest(payload, teamMemberId);
+    showToast(
+      "info",
+      "Approval request sent to the project manager and admins.",
+    );
   } else {
     await createPost(payload);
   }

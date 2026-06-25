@@ -25,6 +25,8 @@ Run only migrations you have **not** applied yet, in order:
 | `010_remove_portal_auto_link.sql` | Remove auto-link triggers/RPCs only (if an old 009 draft was applied) |
 | `011_auto_link_profiles_by_email.sql` | DB triggers: link profile on team member / client save or signup |
 | `012_rename_scheduled_to_to_be_posted.sql` | Rename `scheduled_date/time` → `to_be_posted_date/time`; clear stale posted fields |
+| `013_post_approval_requests.sql` | Backdated post approval requests for executives |
+| `014_fix_link_profile_team_role.sql` | Fix `link_profile_by_email` to set `profiles.role = 'team'` (not `staff`) |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

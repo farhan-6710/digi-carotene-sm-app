@@ -23,6 +23,7 @@ Run only migrations you have not applied yet (`002`–`005`), in order. Skip any
 | `projects`             | Client engagement: social profile URLs, manager, posts      |
 | `project_team_members` | Extra team on a project (assignment history via `ended_at`) |
 | `posts`                | Scheduled content (`project_id` FK)                         |
+| `post_approval_requests` | Executive backdated post approval workflow              |
 | `profiles`             | Auth user roles + portal `client_id`                        |
 
 ## Relationships

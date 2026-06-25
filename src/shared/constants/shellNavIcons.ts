@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
   CalendarClock,
+  ClipboardCheck,
   FileText,
   FolderKanban,
   LayoutDashboard,
@@ -19,6 +20,7 @@ export type ShellNavIconKey =
   | "team"
   | "analytics"
   | "reports"
+  | "approvals"
   | "account"
   | "settings";
 
@@ -30,6 +32,7 @@ export const shellNavIcons: Record<ShellNavIconKey, LucideIcon> = {
   team: UserCog,
   analytics: BarChart3,
   reports: FileText,
+  approvals: ClipboardCheck,
   account: UserRound,
   settings: Settings,
 };

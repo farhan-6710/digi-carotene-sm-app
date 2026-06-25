@@ -4,7 +4,10 @@ import {
 } from "@/features/team-management/constants/teamMemberRoles";
 import type { TeamMember } from "@/features/team-management/types/types";
 import { mapDbRowToTeamMember } from "@/features/team-management/utils/teamMemberDb";
-import { resetProfilesForTeamMember } from "@/features/auth/utils/profileRepository";
+import {
+  linkProfileByEmail,
+  resetProfilesForTeamMember,
+} from "@/features/auth/utils/profileRepository";
 import { supabase } from "@/shared/lib/supabase";
 
 function formatTeamMemberError(error: { code?: string; message?: string }): Error {
@@ -92,6 +95,12 @@ export async function createTeamMember(
     throw formatTeamMemberError(error);
   }
 
+  try {
+    await linkProfileByEmail(input.email);
+  } catch {
+    // Trigger should link; RPC is a fallback when triggers are missing.
+  }
+
   return mapDbRowToTeamMember(data);
 }
 
@@ -113,6 +122,12 @@ export async function updateTeamMember(
 
   if (error) {
     throw formatTeamMemberError(error);
+  }
+
+  try {
+    await linkProfileByEmail(input.email);
+  } catch {
+    // Trigger should link; RPC is a fallback when triggers are missing.
   }
 
   return mapDbRowToTeamMember(data);

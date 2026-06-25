@@ -22,6 +22,12 @@ export const primaryNav: NavItem[] = [
   { label: "Settings", to: `${teamBasePath}/settings`, icon: "settings" },
 ];
 
+export const approvalsNavItem: NavItem = {
+  label: "Approvals",
+  to: `${teamBasePath}/post-approvals`,
+  icon: "approvals",
+};
+
 export const appMeta = {
   name: "Digi Carotene",
   userInitials: "D",
