@@ -15,7 +15,7 @@ export const teamDirectoryColumns: DirectoryTableColumn[] = [
 
 export const teamDirectoryConfig = {
   title: "Team Directory",
-  description: "Digi Carotene staff and their roles.",
+  description: "Digi Carotene team and their roles.",
   gridClass: TEAM_DIRECTORY_GRID_CLASS,
   columns: teamDirectoryColumns,
   emptyMessage:

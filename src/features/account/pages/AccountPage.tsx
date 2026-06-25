@@ -1,6 +1,6 @@
 import { AccountCredentialsList } from "@/features/account/components/AccountCredentialsList";
-import { StaffAccountDetailsCard } from "@/features/account/components/StaffAccountDetailsCard";
-import { staffAccount } from "@/features/account/constants/staffAccount";
+import { TeamAccountDetailsCard } from "@/features/account/components/TeamAccountDetailsCard";
+import { teamAccount } from "@/features/account/constants/teamAccount";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { AccountHeader } from "@/shared/components/account/AccountHeader";
 import { AccountStatsGrid } from "@/shared/components/account/AccountStatsGrid";
@@ -13,28 +13,28 @@ export function AccountPage() {
     <section className="space-y-8">
       <PageHeader
         heading="Account"
-        description="Your Digi Carotene staff account, sign-in details, and agency performance snapshot."
+        description="Your Digi Carotene team account, sign-in details, and agency performance snapshot."
       />
 
 
       <AccountHeader
         user={user}
-        roleLabel={staffAccount.department}
-        bio={staffAccount.bio}
+        roleLabel={teamAccount.department}
+        bio={teamAccount.bio}
         teamRole={teamRole}
       />
 
-      <AccountStatsGrid stats={staffAccount.stats} />
+      <AccountStatsGrid stats={teamAccount.stats} />
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <StaffAccountDetailsCard
+        <TeamAccountDetailsCard
           user={user}
-          staffAccount={staffAccount}
+          teamAccount={teamAccount}
           teamRole={teamRole}
         />
         <AccountCredentialsList
-          credentials={staffAccount.credentials}
-          specializations={staffAccount.specializations}
+          credentials={teamAccount.credentials}
+          specializations={teamAccount.specializations}
         />
       </div>
     </section>

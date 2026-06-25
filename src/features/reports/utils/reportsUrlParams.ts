@@ -133,7 +133,7 @@ export function buildReportsListPath(searchParams: URLSearchParams): string {
   const params = getReportSearchParams(searchParams);
   const query = params.toString();
 
-  return query ? `/staff-portal/reports?${query}` : "/staff-portal/reports";
+  return query ? `/team-portal/reports?${query}` : "/team-portal/reports";
 }
 
 export function buildClientReportPath(
@@ -144,6 +144,6 @@ export function buildClientReportPath(
   const query = params.toString();
 
   return query
-    ? `/staff-portal/reports/${clientId}?${query}`
-    : `/staff-portal/reports/${clientId}`;
+    ? `/team-portal/reports/${clientId}?${query}`
+    : `/team-portal/reports/${clientId}`;
 }

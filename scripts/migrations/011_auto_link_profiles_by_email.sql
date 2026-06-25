@@ -35,7 +35,7 @@ begin
 
   if tm_id is not null then
     update public.profiles
-    set role = 'staff',
+    set role = 'team',
         team_member_id = tm_id,
         client_id = null
     where id = user_id;

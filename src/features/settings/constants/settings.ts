@@ -41,7 +41,7 @@ export const settingsSections: SettingsSection[] = [
     id: "appearance",
     title: "Appearance",
     description:
-      "Adjust how the Digi Carotene staff portal looks and feels during daily work.",
+      "Adjust how the Digi Carotene team portal looks and feels during daily work.",
     toggles: [
       {
         id: "dark-theme",

@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router";
 
 import { lazyRoutePage } from "@/app/lazyRoute";
-import { StaffRoute } from "@/features/auth/components/StaffRoute";
+import { TeamRoute } from "@/features/auth/components/TeamRoute";
 import { ClientRoute } from "@/features/auth/components/ClientRoute";
 import { UserRoute } from "@/features/auth/components/UserRoute";
 import { RouteErrorPage } from "@/shared/pages/RouteErrorPage";
@@ -10,9 +10,9 @@ const PublicLayout = lazyRoutePage(
   () => import("@/shared/layouts/PublicLayout"),
   "PublicLayout",
 );
-const StaffLayout = lazyRoutePage(
-  () => import("@/shared/layouts/StaffLayout"),
-  "StaffLayout",
+const TeamLayout = lazyRoutePage(
+  () => import("@/shared/layouts/TeamLayout"),
+  "TeamLayout",
 );
 const ClientLayout = lazyRoutePage(
   () => import("@/shared/layouts/ClientLayout"),
@@ -35,9 +35,9 @@ const UserPortalPage = lazyRoutePage(
   () => import("@/features/user-portal/pages/UserPortalPage"),
   "UserPortalPage",
 );
-const StaffDashboardPage = lazyRoutePage(
-  () => import("@/features/staff-portal/pages/StaffDashboardPage"),
-  "StaffDashboardPage",
+const TeamDashboardPage = lazyRoutePage(
+  () => import("@/features/team-portal/pages/TeamDashboardPage"),
+  "TeamDashboardPage",
 );
 const PostsManagementPage = lazyRoutePage(
   () => import("@/features/posts-management/pages/PostsManagementPage"),
@@ -117,14 +117,14 @@ export const router = createBrowserRouter([
     children: [{ index: true, element: <UserPortalPage /> }],
   },
   {
-    path: "/staff-portal",
-    element: <StaffRoute />,
+    path: "/team-portal",
+    element: <TeamRoute />,
     errorElement: <RouteErrorPage />,
     children: [
       {
-        element: <StaffLayout />,
+        element: <TeamLayout />,
         children: [
-          { path: "dashboard", element: <StaffDashboardPage /> },
+          { path: "dashboard", element: <TeamDashboardPage /> },
           { path: "posts-management", element: <PostsManagementPage /> },
           { path: "projects-management", element: <ProjectsManagementPage /> },
           {
@@ -147,7 +147,7 @@ export const router = createBrowserRouter([
           { path: "account", element: <AccountPage /> },
           {
             path: "profile",
-            element: <Navigate to="/staff-portal/account" replace />,
+            element: <Navigate to="/team-portal/account" replace />,
           },
           { path: "settings", element: <SettingsPage /> },
         ],

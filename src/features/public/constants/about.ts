@@ -16,7 +16,7 @@ export const aboutContent = {
     },
     {
       title: "How we work",
-      body: "The Digi Carotene staff portal keeps clients, projects, and posts organised — so strategists can focus on creative work while service delivery stays on track behind the scenes.",
+      body: "The Digi Carotene team portal keeps clients, projects, and posts organised — so strategists can focus on creative work while service delivery stays on track behind the scenes.",
     },
   ],
   values: [
@@ -48,7 +48,7 @@ export const aboutValuesSectionContent = {
 export const aboutCtaContent = {
   title: "Ready to work with Digi Carotene?",
   description:
-    "Get in touch for agency services, or sign in to your client or staff portal to manage content and campaigns.",
+    "Get in touch for agency services, or sign in to your client or team portal to manage content and campaigns.",
   homeCta: { label: "Back to Home", to: "/" },
   portalCta: {
     label: "Sign in",

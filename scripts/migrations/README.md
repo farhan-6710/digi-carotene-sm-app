@@ -14,7 +14,7 @@ Run only migrations you have **not** applied yet, in order:
 
 | File | When to run |
 |------|-------------|
-| `002_rename_profiles_admin_role_to_staff.sql` | `profiles.role` still contains `'admin'` |
+| `002_rename_profiles_admin_role_to_team.sql` | `profiles.role` still contains `'admin'` |
 | `003_rename_team_members_role_column.sql` | `team_members` still has column `role` (not `admin_team_role`) |
 | `004_is_team_member_email_function.sql` | `is_team_member_email()` does not exist |
 | `005_signup_default_user_role.sql` | Signup still creates `profiles.role = 'client'` |

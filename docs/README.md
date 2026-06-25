@@ -1,6 +1,6 @@
 # Digi Carotene — Documentation
 
-Reference docs for the Digi Carotene service management app: database schema, DTOs, and feature behavior for staff and client portals.
+Reference docs for the Digi Carotene service management app: database schema, DTOs, and feature behavior for team and client portals.
 
 ## Database setup
 
@@ -13,15 +13,15 @@ Reference docs for the Digi Carotene service management app: database schema, DT
 - New project: [`scripts/migrations/001_initial_schema.sql`](../scripts/migrations/001_initial_schema.sql)
 - Existing project: see [`scripts/migrations/README.md`](../scripts/migrations/README.md)
 
-## Staff portal features
+## Team portal features
 
 | Feature | Doc |
 |---------|-----|
-| Auth / profiles | [staff-portal/auth/profiles.md](./staff-portal/auth/profiles.md) |
-| Clients | [staff-portal/clients-management/clients.md](./staff-portal/clients-management/clients.md) |
-| Team members | [staff-portal/team-management/team-members.md](./staff-portal/team-management/team-members.md) |
-| Projects | [staff-portal/projects-management/projects.md](./staff-portal/projects-management/projects.md) |
-| Posts | [staff-portal/posts-management/posts.md](./staff-portal/posts-management/posts.md) |
+| Auth / profiles | [team-portal/auth/profiles.md](./team-portal/auth/profiles.md) |
+| Clients | [team-portal/clients-management/clients.md](./team-portal/clients-management/clients.md) |
+| Team members | [team-portal/team-management/team-members.md](./team-portal/team-management/team-members.md) |
+| Projects | [team-portal/projects-management/projects.md](./team-portal/projects-management/projects.md) |
+| Posts | [team-portal/posts-management/posts.md](./team-portal/posts-management/posts.md) |
 
 ## Domain hierarchy
 
@@ -29,7 +29,7 @@ Reference docs for the Digi Carotene service management app: database schema, DT
 clients (company)
   └── projects (social URLs, manager, team)
         └── posts (schedule, platform tags, post links)
-team_members (internal staff)
+team_members (internal team)
 profiles (auth roles + portal client_id)
 ```
 

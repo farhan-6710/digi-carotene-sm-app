@@ -8,8 +8,8 @@ export type AccountCredential = {
   year: string;
 };
 
-/** Mock admin staff account content shown on /admin/account */
-export type StaffAccount = {
+/** Mock admin team account content shown on /admin/account */
+export type TeamAccount = {
   name: string;
   role: string;
   department: string;

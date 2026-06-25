@@ -82,7 +82,7 @@ export function SignupForm() {
 
       <p className="text-center text-xs text-muted-foreground">
         After sign-in you may need to wait until Digi Carotene Management grants
-        staff or client portal access.
+        team or client portal access.
       </p>
     </div>
   );

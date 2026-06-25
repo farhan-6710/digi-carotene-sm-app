@@ -19,7 +19,7 @@ Run only migrations you have not applied yet (`002`–`005`), in order. Skip any
 | Table                  | Purpose                                                     |
 | ---------------------- | ----------------------------------------------------------- |
 | `clients`              | Company / brand owner (contact only — no social URLs)       |
-| `team_members`         | Internal staff                                              |
+| `team_members`         | Internal team                                              |
 | `projects`             | Client engagement: social profile URLs, manager, posts      |
 | `project_team_members` | Extra team on a project (assignment history via `ended_at`) |
 | `posts`                | Scheduled content (`project_id` FK)                         |
@@ -46,27 +46,27 @@ projects ──1:N── posts
 
 ## RLS summary (from 001_initial_schema.sql)
 
-| Table                  | Staff (authenticated)              | Client portal (client role)                   |
+| Table                  | Team (authenticated)              | Client portal (client role)                   |
 | ---------------------- | ---------------------------------- | --------------------------------------------- |
 | `clients`              | Full CRUD                          | SELECT own row (`profiles.client_id`)         |
 | `team_members`         | Full CRUD                          | —                                             |
 | `projects`             | Full CRUD                          | —                                             |
 | `project_team_members` | Full CRUD                          | —                                             |
 | `posts`                | Full CRUD                          | SELECT posts for projects under linked client |
-| `profiles`             | Read/update own; staff update any  | Read/update own                               |
+| `profiles`             | Read/update own; team update any  | Read/update own                               |
 
 ## After setup
 
 1. Sign up at `/auth?form-type=signup` — default role is `user` (pending access at `/user-portal`).
-2. To grant staff access: add the user's email in **Team Management**, then they refresh → staff portal.
+2. To grant team access: add the user's email in **Team Management**, then they refresh → team portal.
 3. Add **clients** (companies).
 4. Add **team members** (at least one with role **manager**).
 5. Add **projects** (client + manager + social URLs).
 6. Add **posts** (each post requires a project).
 
-**Client portal users:** staff links `profiles.client_id` after signup (see [staff-portal/auth/profiles.md](./staff-portal/auth/profiles.md)).
+**Client portal users:** team links `profiles.client_id` after signup (see [team-portal/auth/profiles.md](./team-portal/auth/profiles.md)).
 
-Suggested staff nav / setup order: Clients → Team → Projects → Posts.
+Suggested team nav / setup order: Clients → Team → Projects → Posts.
 
 ## Feature docs
 

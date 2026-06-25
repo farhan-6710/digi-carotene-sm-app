@@ -1,4 +1,4 @@
-export type UserRole = "staff" | "client" | "user";
+export type UserRole = "team" | "client" | "user";
 
 export type Profile = {
   id: string;
@@ -7,8 +7,8 @@ export type Profile = {
   team_member_id: string | null;
 };
 
-export function isStaffRole(role: UserRole): boolean {
-  return role === "staff";
+export function isTeamRole(role: UserRole): boolean {
+  return role === "team";
 }
 
 export function isClientRole(role: UserRole): boolean {
@@ -19,10 +19,10 @@ export function isUserRole(role: UserRole): boolean {
   return role === "user";
 }
 
-export function hasStaffPortalAccess(profile: Profile | null): boolean {
+export function hasTeamPortalAccess(profile: Profile | null): boolean {
   return (
     profile !== null &&
-    isStaffRole(profile.role) &&
+    isTeamRole(profile.role) &&
     profile.team_member_id !== null
   );
 }
@@ -41,5 +41,5 @@ export function isPendingAccess(profile: Profile | null): boolean {
     return true;
   }
 
-  return !hasStaffPortalAccess(profile) && !hasClientPortalAccess(profile);
+  return !hasTeamPortalAccess(profile) && !hasClientPortalAccess(profile);
 }

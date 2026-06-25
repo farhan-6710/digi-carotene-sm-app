@@ -16,7 +16,7 @@ import {
 import type { Profile } from "@/features/auth/types/profile";
 import {
   hasClientPortalAccess,
-  hasStaffPortalAccess,
+  hasTeamPortalAccess,
   isPendingAccess,
 } from "@/features/auth/types/profile";
 import { buildAuthUrl } from "@/features/auth/utils/authUrlParams";
@@ -157,7 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const role = profile?.role ?? null;
   const clientId = profile?.client_id ?? null;
   const teamMemberId = profile?.team_member_id ?? null;
-  const isStaff = hasStaffPortalAccess(profile);
+  const isTeam = hasTeamPortalAccess(profile);
   const isClient = hasClientPortalAccess(profile);
   const isPending = isPendingAccess(profile);
   const homePath = getHomePathForProfile(profile);
@@ -170,7 +170,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       teamRole,
       clientId,
       teamMemberId,
-      isStaff,
+      isTeam,
       isClient,
       isPending,
       homePath,
@@ -216,7 +216,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       teamRole,
       clientId,
       teamMemberId,
-      isStaff,
+      isTeam,
       isClient,
       isPending,
       homePath,

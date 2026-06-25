@@ -19,7 +19,7 @@ export function TeamManagementPage() {
   return (
     <PageShell
       heading="Team Management"
-      description="Manage Digi Carotene specialists — executives, managers, and staff — with roles and contact details."
+      description="Manage Digi Carotene specialists — executives, managers, and team — with roles and contact details."
       error={error}
       actions={
         can("team.create") ? (

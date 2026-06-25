@@ -1,10 +1,10 @@
 import type { Profile } from "@/features/auth/types/profile";
 import {
   hasClientPortalAccess,
-  hasStaffPortalAccess,
+  hasTeamPortalAccess,
 } from "@/features/auth/types/profile";
 
-export const STAFF_HOME = "/staff-portal/dashboard";
+export const TEAM_HOME = "/team-portal/dashboard";
 export const CLIENT_HOME = "/client-portal/dashboard";
 export const USER_HOME = "/user-portal";
 
@@ -13,8 +13,8 @@ export function getHomePathForProfile(profile: Profile | null): string {
     return USER_HOME;
   }
 
-  if (hasStaffPortalAccess(profile)) {
-    return STAFF_HOME;
+  if (hasTeamPortalAccess(profile)) {
+    return TEAM_HOME;
   }
 
   if (hasClientPortalAccess(profile)) {
@@ -24,8 +24,8 @@ export function getHomePathForProfile(profile: Profile | null): string {
   return USER_HOME;
 }
 
-export function isStaffPath(pathname: string): boolean {
-  return pathname.startsWith("/staff-portal");
+export function isTeamPath(pathname: string): boolean {
+  return pathname.startsWith("/team-portal");
 }
 
 export function isClientPath(pathname: string): boolean {

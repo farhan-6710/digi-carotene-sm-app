@@ -1,0 +1,18 @@
+export const teamPublishingComparisonData = [
+  { day: "Day 1", currentMonth: 4, previousMonth: 3 },
+  { day: "Day 3", currentMonth: 6, previousMonth: 5 },
+  { day: "Day 5", currentMonth: 3, previousMonth: 4 },
+  { day: "Day 7", currentMonth: 7, previousMonth: 6 },
+  { day: "Day 9", currentMonth: 8, previousMonth: 5 },
+  { day: "Day 11", currentMonth: 5, previousMonth: 7 },
+  { day: "Day 13", currentMonth: 9, previousMonth: 6 },
+  { day: "Day 15", currentMonth: 11, previousMonth: 8 },
+  { day: "Day 17", currentMonth: 8, previousMonth: 9 },
+  { day: "Day 19", currentMonth: 12, previousMonth: 7 },
+  { day: "Day 21", currentMonth: 10, previousMonth: 11 },
+  { day: "Day 23", currentMonth: 14, previousMonth: 9 },
+  { day: "Day 25", currentMonth: 11, previousMonth: 10 },
+  { day: "Day 27", currentMonth: 15, previousMonth: 12 },
+  { day: "Day 29", currentMonth: 13, previousMonth: 11 },
+  { day: "Day 31", currentMonth: 16, previousMonth: 13 },
+];

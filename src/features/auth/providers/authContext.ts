@@ -11,7 +11,7 @@ export type AuthContextValue = {
   teamRole: TeamMemberRole | null;
   clientId: string | null;
   teamMemberId: string | null;
-  isStaff: boolean;
+  isTeam: boolean;
   isClient: boolean;
   isPending: boolean;
   homePath: string;

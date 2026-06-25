@@ -1,5 +1,5 @@
 -- Migration 005 — existing databases only.
--- New signups get profiles.role = 'user' until staff or client access is granted.
+-- New signups get profiles.role = 'user' until team or client access is granted.
 -- Skip if you ran 001_initial_schema.sql (trigger already uses 'user').
 
 create or replace function public.handle_new_user()
@@ -24,4 +24,4 @@ alter table public.profiles
 
 alter table public.profiles
   add constraint profiles_role_check
-  check (role in ('staff', 'client', 'user'));
+  check (role in ('team', 'client', 'user'));

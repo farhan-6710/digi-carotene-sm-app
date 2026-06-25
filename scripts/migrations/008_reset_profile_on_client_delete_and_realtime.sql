@@ -1,5 +1,5 @@
 -- Migration 008 — reset profiles when a client is deleted + enable realtime on profiles.
--- Run after 007. Realtime lets revoked users leave staff/client portal immediately.
+-- Run after 007. Realtime lets revoked users leave team/client portal immediately.
 
 create or replace function public.handle_client_deleted()
 returns trigger

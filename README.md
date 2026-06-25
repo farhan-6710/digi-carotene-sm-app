@@ -4,17 +4,17 @@ Service management app for **Digi Carotene**, a digital marketing agency.
 
 ![Dashboard](public/image.png)
 
-**Staff Portal** (`/staff-portal`) — manage clients, projects, posts, team, analytics, and reports.
+**Team Portal** (`/team-portal`) — manage clients, projects, posts, team, analytics, and reports.
 **Client Portal** (`/client-portal`) — read-only view of a brand’s posts and account.
 
 **Domain:** `clients → projects → posts` (social URLs and team live on projects).
 
-## Features (staff)
+## Features (team)
 
 | Area | What |
 |------|------|
 | Dashboard | Workload, publishing chart, posts needing attention |
-| Team | Staff roles, contact details, project history |
+| Team | Team roles, contact details, project history |
 | Clients | Company registry |
 | Projects | Social links, manager, team assignments |
 | Posts | Month calendar — `Not posted`, `Scheduled`, `Posted` |
@@ -46,7 +46,7 @@ React · React Router v7 · Tailwind CSS · Shadcn UI · Recharts · Supabase (P
 ```
 src/
   app/         Router, App shell
-  features/    staff-portal, client-portal, public, team-management, …
+  features/    team-portal, client-portal, public, team-management, …
   shared/      UI, layouts, utils
 docs/          Schema, RLS, per-feature docs
 scripts/migrations/   Numbered SQL migrations

@@ -3,13 +3,13 @@ import { useEffect } from "react";
 import {
   CLIENT_HOME,
   isClientPath,
-  isStaffPath,
-  STAFF_HOME,
+  isTeamPath,
+  TEAM_HOME,
   USER_HOME,
 } from "@/features/auth/constants/routes";
 import {
   hasClientPortalAccess,
-  hasStaffPortalAccess,
+  hasTeamPortalAccess,
 } from "@/features/auth/types/profile";
 import type { Profile } from "@/features/auth/types/profile";
 import { supabase } from "@/shared/lib/supabase";
@@ -35,10 +35,10 @@ function redirectForPortalAccess(profile: Profile | null) {
   }
 
   const pathname = window.location.pathname;
-  const staffAccess = hasStaffPortalAccess(profile);
+  const teamAccess = hasTeamPortalAccess(profile);
   const clientAccess = hasClientPortalAccess(profile);
 
-  if (isStaffPath(pathname) && !staffAccess) {
+  if (isTeamPath(pathname) && !teamAccess) {
     replacePath(USER_HOME);
     return;
   }
@@ -48,8 +48,8 @@ function redirectForPortalAccess(profile: Profile | null) {
     return;
   }
 
-  if (pathname.startsWith(USER_HOME) && staffAccess) {
-    replacePath(STAFF_HOME);
+  if (pathname.startsWith(USER_HOME) && teamAccess) {
+    replacePath(TEAM_HOME);
     return;
   }
 

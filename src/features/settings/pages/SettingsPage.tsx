@@ -10,7 +10,7 @@ export function SettingsPage() {
     <section className="space-y-8">
       <PageHeader
         heading="Settings"
-        description="Manage notifications, appearance, and workflow preferences for the Digi Carotene staff portal."
+        description="Manage notifications, appearance, and workflow preferences for the Digi Carotene team portal."
       />
 
       <div className="grid gap-6 lg:grid-cols-2">

@@ -3,7 +3,7 @@ export const agencyMeta = {
   tagline: "Digital Marketing Agency",
   description:
     "Full-service digital marketing with a unified workspace to manage clients, projects, content calendars, and publishing.",
-  staffPortalLabel: "Staff Portal",
+  teamPortalLabel: "Team Portal",
   clientPortalLabel: "Client Portal",
 } as const;
 

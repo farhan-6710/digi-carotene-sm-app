@@ -10,10 +10,10 @@ drop function if exists public.handle_client_portal_link();
 drop function if exists public.link_profile_by_email(text);
 drop function if exists public.ensure_my_profile();
 
-drop function if exists public.grant_staff_access_by_email(text, uuid);
+drop function if exists public.grant_team_access_by_email(text, uuid);
 drop function if exists public.grant_client_access_by_email(text, uuid);
 drop function if exists public.sync_my_portal_access();
-drop function if exists public.is_staff_caller();
+drop function if exists public.is_team_caller();
 
 create or replace function public.handle_new_user()
 returns trigger

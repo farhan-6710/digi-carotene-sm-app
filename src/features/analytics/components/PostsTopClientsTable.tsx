@@ -14,7 +14,7 @@ export function PostsTopClientsTable({
           Clients With Most Posts
         </div>
         <Link
-          to="/staff-portal/posts-management"
+          to="/team-portal/posts-management"
           className="text-sm font-medium text-primary hover:underline"
         >
           View posts <span aria-hidden="true">↗</span>

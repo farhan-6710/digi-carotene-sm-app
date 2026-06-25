@@ -7,7 +7,7 @@ export const portalsSectionContent = {
   badge: "Portals",
   title: "Dedicated workspaces for everyone",
   description:
-    "Registered brands use the client portal to follow their content schedule. Digi Carotene staff use the staff portal to manage clients, projects, and posts.",
+    "Registered brands use the client portal to follow their content schedule. Digi Carotene team use the team portal to manage clients, projects, and posts.",
 } as const;
 
 export const portalCards: PortalCardItem[] = [
@@ -27,9 +27,9 @@ export const portalCards: PortalCardItem[] = [
     variant: "primary",
   },
   {
-    id: "staff",
-    title: agencyMeta.staffPortalLabel,
-    subtitle: "For Digi Carotene staff",
+    id: "team",
+    title: agencyMeta.teamPortalLabel,
+    subtitle: "For Digi Carotene team",
     description:
       "Manage clients and projects, schedule posts, assign team members, and run analytics and reports across the agency.",
     features: [

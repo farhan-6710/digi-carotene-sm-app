@@ -1,13 +1,13 @@
 # Agent guidelines — Digi Carotene
 
-Service management app for the Digi Carotene digital marketing agency (staff portal + client portal). Follow these conventions when adding or changing code in this repo.
+Service management app for the Digi Carotene digital marketing agency (team portal + client portal). Follow these conventions when adding or changing code in this repo.
 
 ## Top-level layout
 
 ```
 src/
   app/              Router, App shell
-  features/         Feature modules (staff-portal, client-portal, public)
+  features/         Feature modules (team-portal, client-portal, public)
   shared/           Cross-feature UI, layouts, utils
 ```
 
@@ -58,7 +58,7 @@ Shared account UI types live in `src/shared/components/account/types.ts`. Shared
 ## UI & UX standards
 
 - Use **shadcn UI** components from `src/shared/ui/` for consistency.
-- Use **`PageHeader`** (`src/shared/components/PageHeader.tsx`) for staff portal page titles, descriptions, back buttons (left-aligned), and right-side actions. Avoid thin wrapper components around `PageHeader`.
+- Use **`PageHeader`** (`src/shared/components/PageHeader.tsx`) for team portal page titles, descriptions, back buttons (left-aligned), and right-side actions. Avoid thin wrapper components around `PageHeader`.
 - Use **`ConfirmationModal`** for all confirmation flows (delete, end assignment, sign-out, etc.).
 - Use **Sonner** for notifications via **`showToast(type, message)`** in `src/shared/utils/showToast.ts` (`success` | `error` | `info` with Lucide icons).
 - Show toasts for important actions: create, update, delete, API success/failure across team members, clients, posts, etc.
@@ -71,17 +71,17 @@ Shared account UI types live in `src/shared/components/account/types.ts`. Shared
 
 | Area   | Pattern              | Example                    |
 |--------|----------------------|----------------------------|
-| Staff  | `Staff*Page` or `*ManagementPage` | `StaffDashboardPage`, `ClientsManagementPage`, `TeamManagementPage` |
+| Team  | `Team*Page` or `*ManagementPage` | `TeamDashboardPage`, `ClientsManagementPage`, `TeamManagementPage` |
 | Client | `Client*Page`        | `ClientDashboardPage`      |
 | Public | descriptive name     | `HomePage`, `AboutPage`    |
 
-File name must match the exported component: `StaffDashboardPage.tsx` exports `StaffDashboardPage`.
+File name must match the exported component: `TeamDashboardPage.tsx` exports `TeamDashboardPage`.
 
 ### Components
 
 - **PascalCase** file and export names: `PostsManagementWeeksTable.tsx` → `PostsManagementWeeksTable`.
 - Prefer **named exports** over default exports.
-- Prefix client-portal-only components with `Client` when they mirror staff patterns (e.g. `ClientPostsTable`, `ClientSocialLinks`).
+- Prefix client-portal-only components with `Client` when they mirror team patterns (e.g. `ClientPostsTable`, `ClientSocialLinks`).
 
 ### Constants & types
 
@@ -89,18 +89,18 @@ File name must match the exported component: `StaffDashboardPage.tsx` exports `S
 - Types/interfaces: **PascalCase** (`PostDialogProps`, `PostsStatCard`).
 - Props types suffix: `*Props`.
 
-## Staff portal vs client portal
+## Team portal vs client portal
 
-- Staff routes: `/staff-portal/*` — shell in `staff-portal-shell`, layout `StaffLayout`.
+- Team routes: `/team-portal/*` — shell in `team-portal-shell`, layout `TeamLayout`.
 - Client routes: `/client-portal/*` — shell in `client-portal-shell`, layout `ClientLayout`.
-- Keep naming symmetric between the two (`StaffDashboardPage` / `ClientDashboardPage`, `StaffLayout` / `ClientLayout`).
+- Keep naming symmetric between the two (`TeamDashboardPage` / `ClientDashboardPage`, `TeamLayout` / `ClientLayout`).
 
 ## Supabase & migrations
 
 - **Setup:** new projects run `scripts/migrations/001_initial_schema.sql`; existing DBs run only unapplied files from `scripts/migrations/` (see README there). Never edit old migrations — add a new numbered file.
 - **Docs:** all schema, RLS, and DTOs live under `docs/` — start at [docs/README.md](./docs/README.md).
   - `docs/database.md` — reset, setup, domain model
-  - `docs/staff-portal/<feature>/` — per-feature tables, DTOs, UI flows
+  - `docs/team-portal/<feature>/` — per-feature tables, DTOs, UI flows
 - Repositories in `utils/*Repository.ts` map camelCase TS fields to snake_case DB columns.
 - **Domain:** `clients` (company) → `projects` (socials, manager, team) → `posts` (`project_id`).
 - **Project team:** required `projects.manager_id`; extra members in `project_team_members` with `started_at` / `ended_at` (active when `ended_at IS NULL`).
@@ -108,7 +108,7 @@ File name must match the exported component: `StaffDashboardPage.tsx` exports `S
 
 ## Imports
 
-- Use `@/` path alias (e.g. `@/features/staff-dashboard/pages/StaffDashboardPage`).
+- Use `@/` path alias (e.g. `@/features/team-dashboard/pages/TeamDashboardPage`).
 - Import types with `import type { ... }`.
 - shadcn UI components live in `src/shared/ui/`; configure `components.json` with `src/shared/...` paths (not literal `@/` folders).
 

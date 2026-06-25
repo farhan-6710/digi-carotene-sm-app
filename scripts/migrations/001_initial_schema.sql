@@ -36,7 +36,7 @@ create policy "Authenticated users manage clients"
   on public.clients for all to authenticated
   using (true) with check (true);
 
--- Team members (internal staff)
+-- Team members (internal team)
 create table public.team_members (
   id uuid primary key default gen_random_uuid(),
   member_name text not null,
@@ -134,7 +134,7 @@ create policy "Authenticated users manage posts"
 create table public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   role text not null default 'user'
-    check (role in ('staff', 'client', 'user')),
+    check (role in ('team', 'client', 'user')),
   client_id uuid references public.clients (id) on delete set null,
   team_member_id uuid references public.team_members (id) on delete set null
 );
@@ -149,12 +149,12 @@ create policy "Users update own profile"
   on public.profiles for update to authenticated
   using (id = auth.uid()) with check (id = auth.uid());
 
-create policy "Staff update any profile"
+create policy "Team update any profile"
   on public.profiles for update to authenticated
   using (
     exists (
       select 1 from public.profiles p
-      where p.id = auth.uid() and p.role = 'staff'
+      where p.id = auth.uid() and p.role = 'team'
     )
   );
 
@@ -231,7 +231,7 @@ begin
 
   if tm_id is not null then
     update public.profiles
-    set role = 'staff',
+    set role = 'team',
         team_member_id = tm_id,
         client_id = null
     where id = user_id;

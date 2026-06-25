@@ -28,7 +28,7 @@ export function UserPortalPage() {
           <h1 className="text-lg font-semibold tracking-tight">Access pending</h1>
           <p className="mt-3 text-sm text-muted-foreground">
             Your account is active, but portal access has not been configured yet.
-            Please contact Digi Carotene to have staff or client portal access
+            Please contact Digi Carotene to have team or client portal access
             assigned to your email.
           </p>
           <p className="mt-3 text-xs text-muted-foreground">

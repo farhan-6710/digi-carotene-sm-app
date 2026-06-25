@@ -6,14 +6,14 @@ import {
   AUTH_FORM_TYPE_PARAM,
   AUTH_FORM_TYPES,
 } from "@/features/auth/constants/auth";
-import { isStaffPath, isClientPath } from "@/features/auth/constants/routes";
+import { isTeamPath, isClientPath } from "@/features/auth/constants/routes";
 import { agencyMeta } from "@/features/public/constants/agency";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { buildAuthUrl } from "@/features/auth/utils/authUrlParams";
 import { CenteredLoading } from "@/shared/components/LoadingSpinner";
 
 export function AuthPage() {
-  const { user, loading, profile, homePath, isStaff, isClient } = useAuth();
+  const { user, loading, profile, homePath, isTeam, isClient } = useAuth();
   const location = useLocation();
   const [searchParams] = useSearchParams();
 
@@ -36,7 +36,7 @@ export function AuthPage() {
 
   let redirectPath = homePath;
   if (requestedPath) {
-    if (isStaff && isStaffPath(requestedPath)) {
+    if (isTeam && isTeamPath(requestedPath)) {
       redirectPath = requestedPath;
     } else if (isClient && isClientPath(requestedPath)) {
       redirectPath = requestedPath;
@@ -79,7 +79,7 @@ export function AuthPage() {
             <p className="mt-1 text-sm text-muted-foreground">
               {isSignup
                 ? "Sign up with your email — no password needed."
-                : "Sign in to the Digi Carotene staff or client portal."}
+                : "Sign in to the Digi Carotene team or client portal."}
             </p>
           </div>
 

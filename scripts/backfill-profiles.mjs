@@ -151,7 +151,7 @@ async function main() {
   console.log(
     "Portal login still needs client_id set to a row in public.clients for each user.",
   );
-  console.log("Set specific staff manually: update profiles set role = 'staff' where id = '...';");
+  console.log("Set specific team manually: update profiles set role = 'team' where id = '...';");
 }
 
 main().catch((err) => {

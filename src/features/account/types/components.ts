@@ -2,7 +2,7 @@ import type { User } from "@supabase/supabase-js";
 
 import type {
   AccountCredential,
-  StaffAccount,
+  TeamAccount,
 } from "@/features/account/types/types";
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 
@@ -11,8 +11,8 @@ export type AccountCredentialsListProps = {
   specializations: string[];
 };
 
-export type StaffAccountDetailsCardProps = {
+export type TeamAccountDetailsCardProps = {
   user: User | null;
-  staffAccount: StaffAccount;
+  teamAccount: TeamAccount;
   teamRole: TeamMemberRole | null;
 };
