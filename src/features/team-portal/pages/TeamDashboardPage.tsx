@@ -1,4 +1,5 @@
 import { TeamNeedsAttention } from "@/features/team-portal/components/TeamNeedsAttention";
+import { TeamTodaysPosts } from "@/features/team-portal/components/TeamTodaysPosts";
 import { TeamPostingChart } from "@/features/team-portal/components/TeamPostingChart";
 import { useTeamDashboardQuery } from "@/features/team-portal/hooks/useTeamDashboardQuery";
 import { PostsTopClientsTable } from "@/features/analytics/components/PostsTopClientsTable";
@@ -27,7 +28,8 @@ export function TeamDashboardPage() {
           <PostsTopClientsTable clients={topClients} isLoading={isPostsLoading} />
         </div>
 
-        <div className="lg:col-span-1">
+        <div className="space-y-6 lg:col-span-1">
+          <TeamTodaysPosts />
           <TeamNeedsAttention />
         </div>
       </div>

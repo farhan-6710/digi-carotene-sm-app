@@ -1,0 +1,5 @@
+export const TEAM_DASHBOARD_POST_LIST_MAX_HEIGHT = "max-h-72";
+
+export const TEAM_TODAYS_POSTS_LIMIT = 20;
+
+export const TEAM_NEEDS_ATTENTION_LIMIT = 8;

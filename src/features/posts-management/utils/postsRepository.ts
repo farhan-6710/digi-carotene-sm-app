@@ -8,6 +8,7 @@ import type {
   StatusKey,
   PostLinks,
 } from "@/features/posts-management/types/types";
+import { getPostStatusUpdateFields } from "@/features/posts-management/utils/postStatusUtils";
 import { getDayLabel } from "@/features/posts-management/utils/calendarUtils";
 import { toPostDateString, comparePostTimes } from "@/features/posts-management/utils/postScheduleUtils";
 
@@ -228,6 +229,30 @@ export async function updatePost(
   return mapPostRow(data as unknown as PostRow);
 }
 
+export async function updatePostStatus(
+  postId: string,
+  status: StatusKey,
+): Promise<Post> {
+  const { postedDate, postedTime } = getPostStatusUpdateFields(status);
+
+  const { data, error } = await supabase
+    .from("posts")
+    .update({
+      status,
+      posted_date: postedDate,
+      posted_time: postedTime,
+    })
+    .eq("id", postId)
+    .select(postSelect)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return mapPostRow(data as unknown as PostRow);
+}
+
 export async function deletePost(postId: string): Promise<void> {
   const { error } = await supabase.from("posts").delete().eq("id", postId);
 
@@ -273,6 +298,24 @@ export async function fetchPostsForProjectId(projectId: string): Promise<Post[]>
     .eq("project_id", projectId)
     .order("to_be_posted_date", { ascending: false })
     .order("to_be_posted_time", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map((row) => mapPostRow(row as unknown as PostRow));
+}
+
+function getTodayDateString(): string {
+  return format(new Date(), "yyyy-MM-dd");
+}
+
+export async function fetchTodayPosts(): Promise<Post[]> {
+  const { data, error } = await supabase
+    .from("posts")
+    .select(postSelect)
+    .eq("to_be_posted_date", getTodayDateString())
+    .order("to_be_posted_time", { ascending: true });
 
   if (error) {
     throw error;
