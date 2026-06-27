@@ -34,19 +34,30 @@ export async function signInWithEmail(
   return error;
 }
 
-export async function signUpWithOtp(
+export async function signUpWithEmail(
   email: string,
+  password: string,
   fullName: string,
 ): Promise<AuthError | null> {
-  const { error } = await supabase.auth.signInWithOtp({
+  const { data, error } = await supabase.auth.signUp({
     email,
-    options: {
-      shouldCreateUser: true,
-      data: { full_name: fullName },
-      emailRedirectTo: redirectUrl(AUTH_FORM_TYPES.login),
-    },
+    password,
+    options: { data: { full_name: fullName } },
   });
-  return error;
+
+  if (error) {
+    return error;
+  }
+
+  if (data.session) {
+    return null;
+  }
+
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  return signInError;
 }
 
 export async function signInWithGoogle(isSignup: boolean): Promise<AuthError | null> {

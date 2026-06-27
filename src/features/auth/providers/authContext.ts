@@ -18,7 +18,11 @@ export type AuthContextValue = {
   loading: boolean;
   refreshProfile: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<AuthError | null>;
-  signUpWithOtp: (email: string, fullName: string) => Promise<AuthError | null>;
+  signUpWithEmail: (
+    email: string,
+    password: string,
+    fullName: string,
+  ) => Promise<AuthError | null>;
   signInWithGoogle: (options?: { isSignup?: boolean }) => Promise<AuthError | null>;
   signOut: () => Promise<void>;
 };

@@ -1,47 +1,49 @@
 import { useCallback, useState, type FormEvent } from "react";
 
+import { MIN_AUTH_PASSWORD_LENGTH } from "@/features/auth/constants/auth";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
 export function useSignupForm() {
-  const { signUpWithOtp } = useAuth();
+  const { signUpWithEmail } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const clearMessages = useCallback(() => {
+  const clearError = useCallback(() => {
     setError(null);
-    setSuccessMessage(null);
   }, []);
 
   const handleSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       setError(null);
-      setSuccessMessage(null);
 
       if (!name.trim()) {
         setError("Name is required.");
         return;
       }
 
+      if (password.length < MIN_AUTH_PASSWORD_LENGTH) {
+        setError(`Password must be at least ${MIN_AUTH_PASSWORD_LENGTH} characters.`);
+        return;
+      }
+
       setIsSubmitting(true);
 
-      const authError = await signUpWithOtp(email.trim(), name.trim());
+      const authError = await signUpWithEmail(
+        email.trim(),
+        password,
+        name.trim(),
+      );
       if (authError) {
         setError(authError.message);
-      } else {
-        setSuccessMessage(
-          "Check your email for a sign-in link to finish creating your account.",
-        );
-        setName("");
-        setEmail("");
       }
 
       setIsSubmitting(false);
     },
-    [email, name, signUpWithOtp],
+    [email, name, password, signUpWithEmail],
   );
 
   return {
@@ -49,11 +51,12 @@ export function useSignupForm() {
     setName,
     email,
     setEmail,
+    password,
+    setPassword,
     error,
     setError,
-    successMessage,
     isSubmitting,
     handleSubmit,
-    clearMessages,
+    clearError,
   };
 }

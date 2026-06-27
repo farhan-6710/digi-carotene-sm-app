@@ -19,7 +19,7 @@ import {
   signInWithEmail,
   signInWithGoogle,
   signOut,
-  signUpWithOtp,
+  signUpWithEmail,
 } from "@/services/authService";
 import { fetchProfile, fetchTeamRole } from "@/services/profilesService";
 
@@ -101,7 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       refreshProfile,
       signInWithEmail,
-      signUpWithOtp,
+      signUpWithEmail,
       signInWithGoogle: (options) => signInWithGoogle(options?.isSignup ?? false),
       signOut: handleSignOut,
     };

@@ -78,7 +78,7 @@ export function AuthPage() {
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               {isSignup
-                ? "Sign up with your email — no password needed."
+                ? "Create your account with email and password."
                 : "Sign in to the Digi Carotene team or client portal."}
             </p>
           </div>

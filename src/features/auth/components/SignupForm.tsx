@@ -1,6 +1,7 @@
 import {
   AuthEmailField,
   AuthFormAlert,
+  AuthPasswordField,
 } from "@/features/auth/components/AuthFormFields";
 import { AuthGoogleSignIn } from "@/features/auth/components/AuthGoogleSignIn";
 import { authFormStyles } from "@/features/auth/components/authFormStyles";
@@ -17,12 +18,13 @@ export function SignupForm() {
     setName,
     email,
     setEmail,
+    password,
+    setPassword,
     error,
     setError,
-    successMessage,
     isSubmitting,
     handleSubmit,
-    clearMessages,
+    clearError,
   } = useSignupForm();
 
   return (
@@ -52,10 +54,17 @@ export function SignupForm() {
           disabled={isSubmitting}
         />
 
+        <AuthPasswordField
+          id="signup-password"
+          label="Password"
+          value={password}
+          onChange={setPassword}
+          autoComplete="new-password"
+          placeholder="Create a password"
+          disabled={isSubmitting}
+        />
+
         {error ? <AuthFormAlert message={error} variant="error" /> : null}
-        {successMessage ? (
-          <AuthFormAlert message={successMessage} variant="success" />
-        ) : null}
 
         <Button
           type="submit"
@@ -65,10 +74,10 @@ export function SignupForm() {
           {isSubmitting ? (
             <>
               <LoadingSpinner size="sm" />
-              Sending link...
+              Creating account...
             </>
           ) : (
-            "Send sign-in link"
+            "Create account"
           )}
         </Button>
       </form>
@@ -77,11 +86,11 @@ export function SignupForm() {
         disabled={isSubmitting}
         isSignup
         onError={setError}
-        onBeforeSignIn={clearMessages}
+        onBeforeSignIn={clearError}
       />
 
       <p className="text-center text-xs text-muted-foreground">
-        After sign-in you may need to wait until Digi Carotene Management grants
+        After sign-up you may need to wait until Digi Carotene Management grants
         team or client portal access.
       </p>
     </div>

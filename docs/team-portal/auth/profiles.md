@@ -44,10 +44,13 @@ After creating or updating a team member or client, the app calls the `link_prof
 
 ### Signup flow (V1)
 
-1. User signs up at `/auth?form-type=signup` with **email magic link** or **Google** (no password).
-2. Profile created with `role = user` → redirected to `/user-portal` (pending).
-3. Team creates a **team member** or **client** with that email → DB links profile automatically (or links on signup if roster row already existed).
-4. User refreshes → correct portal.
+1. User signs up at `/auth?form-type=signup` with **email + password** or **Google**.
+2. Account is created and the user is signed in immediately (no email verification in V1).
+3. Profile created with `role = user` → redirected to `/user-portal` (pending).
+4. Team creates a **team member** or **client** with that email → DB links profile automatically (or links on signup if roster row already existed).
+5. User refreshes → correct portal.
+
+**Supabase:** disable **Confirm email** under Authentication → Providers → Email so `signUp` returns a session without a verification mail.
 
 ### Signup trigger
 
