@@ -6,7 +6,7 @@ import { postApprovalsDirectoryConfig } from "@/features/post-approvals/constant
 import { usePostApprovalsQuery } from "@/features/post-approvals/hooks/usePostApprovalsQuery";
 import type { PostApprovalRequest } from "@/features/post-approvals/types/types";
 import { canAccessApprovalsNav } from "@/features/post-approvals/utils/postApprovalRules";
-import { managesAnyProject } from "@/features/post-approvals/utils/postApprovalsRepository";
+import { managesAnyProject } from "@/services/postApprovalsService";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { PageShell } from "@/shared/components/PageShell";
 import { CenteredLoading } from "@/shared/components/LoadingSpinner";

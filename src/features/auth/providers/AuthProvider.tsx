@@ -1,15 +1,7 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import type { User } from "@supabase/supabase-js";
 
-import { AUTH_FORM_TYPES, type AuthFormType } from "@/features/auth/constants/auth";
 import { getHomePathForProfile } from "@/features/auth/constants/routes";
-import { useProfileAccessSync } from "@/features/auth/hooks/useProfileAccessSync";
 import {
   AuthContext,
   type AuthContextValue,
@@ -20,202 +12,100 @@ import {
   hasTeamPortalAccess,
   isPendingAccess,
 } from "@/features/auth/types/profile";
-import { buildAuthUrl } from "@/features/auth/utils/authUrlParams";
-import { loadProfileForUser } from "@/features/auth/utils/profileRoleSync";
-import { fetchTeamRoleByMemberId } from "@/features/auth/utils/teamRoleRepository";
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
-import { supabase } from "@/shared/lib/supabase";
-import type { User } from "@supabase/supabase-js";
-
-const authRedirectUrl = (formType: AuthFormType = AUTH_FORM_TYPES.login) =>
-  `${window.location.origin}${buildAuthUrl(formType)}`;
+import {
+  getCurrentUser,
+  onAuthChange,
+  signInWithEmail,
+  signInWithGoogle,
+  signOut,
+  signUpWithOtp,
+} from "@/services/authService";
+import { fetchProfile, fetchTeamRole } from "@/services/profilesService";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [teamRole, setTeamRole] = useState<TeamMemberRole | null>(null);
-  const [authReady, setAuthReady] = useState(false);
-  const userRef = useRef<User | null>(null);
-  const profileLoadUserIdRef = useRef<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  userRef.current = user;
+  // Load the profile for a user, plus their team role when they are team staff.
+  const loadProfile = useCallback(async (currentUser: User) => {
+    const nextProfile = await fetchProfile(currentUser.id);
+    setProfile(nextProfile);
 
-  const clearSession = useCallback(async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setProfile(null);
-    setTeamRole(null);
-    profileLoadUserIdRef.current = null;
+    if (nextProfile?.team_member_id) {
+      setTeamRole(await fetchTeamRole(nextProfile.team_member_id));
+    } else {
+      setTeamRole(null);
+    }
   }, []);
 
-  const loadProfile = useCallback(
-    async (authUser: User, options?: { force?: boolean }) => {
-      if (!options?.force && profileLoadUserIdRef.current === authUser.id) {
-        return;
-      }
-
-      try {
-        const nextProfile = await loadProfileForUser(authUser);
-        if (!nextProfile) {
-          await clearSession();
-          return;
-        }
-
-        profileLoadUserIdRef.current = authUser.id;
-        setProfile(nextProfile);
-      } catch {
-        await clearSession();
-      }
-    },
-    [clearSession],
-  );
-
   const refreshProfile = useCallback(async () => {
-    const authUser = userRef.current;
-    if (!authUser) {
-      return;
+    if (user) {
+      await loadProfile(user);
     }
-
-    await loadProfile(authUser, { force: true });
-  }, [loadProfile]);
+  }, [user, loadProfile]);
 
   useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setAuthReady(true);
+    let active = true;
+
+    // 1. Load the current session once on startup.
+    void getCurrentUser().then(async (currentUser) => {
+      if (!active) {
+        return;
+      }
+      setUser(currentUser);
+      if (currentUser) {
+        await loadProfile(currentUser);
+      }
+      setLoading(false);
+    });
+
+    // 2. React to later sign in / sign out.
+    const unsubscribe = onAuthChange((nextUser) => {
+      setUser(nextUser);
+      if (nextUser) {
+        void loadProfile(nextUser);
+      } else {
+        setProfile(null);
+        setTeamRole(null);
+      }
     });
 
     return () => {
-      subscription.unsubscribe();
+      active = false;
+      unsubscribe();
     };
+  }, [loadProfile]);
+
+  const handleSignOut = useCallback(async () => {
+    await signOut();
+    setUser(null);
+    setProfile(null);
+    setTeamRole(null);
   }, []);
 
-  useEffect(() => {
-    const userId = user?.id ?? null;
-
-    if (!userId) {
-      profileLoadUserIdRef.current = null;
-      setProfile(null);
-      setTeamRole(null);
-      return;
-    }
-
-    const authUser = userRef.current;
-    if (!authUser) {
-      return;
-    }
-
-    void loadProfile(authUser);
-  }, [user?.id, loadProfile]);
-
-  useEffect(() => {
-    const teamMemberId = profile?.team_member_id;
-    if (!teamMemberId) {
-      setTeamRole(null);
-      return;
-    }
-
-    let isMounted = true;
-
-    void fetchTeamRoleByMemberId(teamMemberId)
-      .then((role) => {
-        if (isMounted) {
-          setTeamRole(role);
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          setTeamRole(null);
-        }
-      });
-
-    return () => {
-      isMounted = false;
+  const value = useMemo<AuthContextValue>(() => {
+    return {
+      user,
+      profile,
+      role: profile?.role ?? null,
+      teamRole,
+      clientId: profile?.client_id ?? null,
+      teamMemberId: profile?.team_member_id ?? null,
+      isTeam: hasTeamPortalAccess(profile),
+      isClient: hasClientPortalAccess(profile),
+      isPending: isPendingAccess(profile),
+      homePath: getHomePathForProfile(profile),
+      loading,
+      refreshProfile,
+      signInWithEmail,
+      signUpWithOtp,
+      signInWithGoogle: (options) => signInWithGoogle(options?.isSignup ?? false),
+      signOut: handleSignOut,
     };
-  }, [profile?.team_member_id]);
-
-  const loading = !authReady || (user !== null && profile === null);
-
-  useProfileAccessSync({
-    userId: user?.id,
-    loading,
-    profile,
-    refreshProfile,
-  });
-
-  const role = profile?.role ?? null;
-  const clientId = profile?.client_id ?? null;
-  const teamMemberId = profile?.team_member_id ?? null;
-  const isTeam = hasTeamPortalAccess(profile);
-  const isClient = hasClientPortalAccess(profile);
-  const isPending = isPendingAccess(profile);
-  const homePath = getHomePathForProfile(profile);
-
-  const value = useMemo<AuthContextValue>(
-    () => ({
-      user,
-      profile,
-      role,
-      teamRole,
-      clientId,
-      teamMemberId,
-      isTeam,
-      isClient,
-      isPending,
-      homePath,
-      loading,
-      refreshProfile,
-      signInWithEmail: async (email, password) => {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        return error;
-      },
-      signUpWithOtp: async (email, fullName) => {
-        const { error } = await supabase.auth.signInWithOtp({
-          email,
-          options: {
-            shouldCreateUser: true,
-            data: { full_name: fullName },
-            emailRedirectTo: authRedirectUrl(AUTH_FORM_TYPES.login),
-          },
-        });
-        return error;
-      },
-      signInWithGoogle: async (options) => {
-        const formType = options?.isSignup
-          ? AUTH_FORM_TYPES.signup
-          : AUTH_FORM_TYPES.login;
-
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: "google",
-          options: { redirectTo: authRedirectUrl(formType) },
-        });
-        return error;
-      },
-      signOut: async () => {
-        await clearSession();
-      },
-    }),
-    [
-      user,
-      profile,
-      role,
-      teamRole,
-      clientId,
-      teamMemberId,
-      isTeam,
-      isClient,
-      isPending,
-      homePath,
-      loading,
-      refreshProfile,
-      clearSession,
-    ],
-  );
+  }, [user, profile, teamRole, loading, refreshProfile, handleSignOut]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

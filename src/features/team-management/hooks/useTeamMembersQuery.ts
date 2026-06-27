@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import type { TeamMember } from "@/features/team-management/types/types";
-import { fetchTeamMembers } from "@/features/team-management/utils/teamMembersRepository";
+import { fetchTeamMembers } from "@/services/teamMembersService";
 
 export function useTeamMembersQuery() {
   const [members, setMembers] = useState<TeamMember[]>([]);

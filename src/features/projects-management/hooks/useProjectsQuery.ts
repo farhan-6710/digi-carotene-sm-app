@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import type { ProjectListItem } from "@/features/projects-management/types/types";
-import { fetchProjects } from "@/features/projects-management/utils/projectsRepository";
+import { fetchProjects } from "@/services/projectsService";
 
 export function useProjectsQuery() {
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
@@ -24,6 +24,7 @@ export function useProjectsQuery() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line
     void reload();
   }, [reload]);
 

@@ -2,7 +2,7 @@ import { User } from "lucide-react";
 import { useMemo } from "react";
 
 import type { ClientComboboxProps } from "@/features/clients-management/types/components";
-import { fetchClients } from "@/features/clients-management/utils/clientsRepository";
+import { fetchClients } from "@/services/clientsService";
 import { useLazyEntityList } from "@/shared/hooks/useLazyEntityList";
 import { mergeOptionsByValue } from "@/shared/utils/mergeOptionsByValue";
 import { ComboBox } from "@/shared/ui/ComboBox";

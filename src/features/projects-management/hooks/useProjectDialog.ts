@@ -6,7 +6,7 @@ import {
   createProject,
   deleteProject,
   updateProject,
-} from "@/features/projects-management/utils/projectsRepository";
+} from "@/services/projectsService";
 import {
   emptyProjectFormValues,
   projectToFormValues,

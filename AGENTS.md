@@ -7,6 +7,7 @@ Service management app for the Digi Carotene digital marketing agency (team port
 ```
 src/
   app/              Router, App shell
+  services/         API layer: Supabase client + all data calls
   features/         Feature modules (team-portal, client-portal, public)
   shared/           Cross-feature UI, layouts, utils
 ```
@@ -48,7 +49,7 @@ features/<feature-name>/
   - `useClientDialog` / `useTeamMemberDialog` — dialog form + mutations
   - `useClientsManagement` / `useTeamManagement` — thin composer that wires the above
   - `useAnalyticsTab` — URL-synced tab state; panel components stay presentational
-- **Utils** hold pure transforms, validation, and form mappers (e.g. `clientFormUtils.ts`, `postsAnalyticsUtils.ts`).
+- **Utils** hold pure transforms, validation, and form mappers (e.g. `clientFormUtils.ts`, `postsAnalyticsUtils.ts`). Utils must **not** call Supabase — data calls live in `src/services/`.
 - When a dialog has many fields, pass a **`values` object + `onFieldChange` / `patchValues`** instead of one prop per field.
 - Extract child components when JSX blocks repeat or a file grows past the limit.
 - Destructive actions in dialogs use nested **`ConfirmationModal`** (see `ClientDialog`, `TeamMemberDialog`).
@@ -95,13 +96,23 @@ File name must match the exported component: `TeamDashboardPage.tsx` exports `Te
 - Client routes: `/client-portal/*` — shell in `client-portal-shell`, layout `ClientLayout`.
 - Keep naming symmetric between the two (`TeamDashboardPage` / `ClientDashboardPage`, `TeamLayout` / `ClientLayout`).
 
+## Services (API layer)
+
+All Supabase access lives in `src/services/` — keep it simple and beginner-friendly.
+
+- `supabaseClient.ts` — the single Supabase client (base connection).
+- `db.ts` — the `DB` constants map: every table name + its select string (`DB.POSTS.TABLE`, `DB.POSTS.SELECT`). Add new tables here, not inline.
+- One service file per domain (`postsService.ts`, `clientsService.ts`, `teamMembersService.ts`, `projectsService.ts`, `projectTeamMembersService.ts`, `postApprovalsService.ts`, `reportsService.ts`, `dashboardService.ts`, `authService.ts`, `profilesService.ts`).
+- A service function does **one** job: build the query, run it, throw on error, map the row to a domain type. No caching, no dedupe, no realtime — keep it plain async/await.
+- Services map camelCase TS fields to snake_case DB columns.
+- Hooks/providers/components import from `@/services/*`; they never call `supabase` directly.
+
 ## Supabase & migrations
 
 - **Setup:** new projects run `scripts/migrations/001_initial_schema.sql`; existing DBs run only unapplied files from `scripts/migrations/` (see README there). Never edit old migrations — add a new numbered file.
 - **Docs:** all schema, RLS, and DTOs live under `docs/` — start at [docs/README.md](./docs/README.md).
   - `docs/database.md` — reset, setup, domain model
   - `docs/team-portal/<feature>/` — per-feature tables, DTOs, UI flows
-- Repositories in `utils/*Repository.ts` map camelCase TS fields to snake_case DB columns.
 - **Domain:** `clients` (company) → `projects` (socials, manager, team) → `posts` (`project_id`).
 - **Project team:** required `projects.manager_id`; extra members in `project_team_members` with `started_at` / `ended_at` (active when `ended_at IS NULL`).
 - Keep **backend V1 simple**. Avoid unnecessary abstractions and complex SQL.
@@ -116,7 +127,7 @@ File name must match the exported component: `TeamDashboardPage.tsx` exports `Te
 
 - No types/constants buried in `.tsx` files (except short-lived locals inside a function).
 - No default-export page components when a named export is used elsewhere.
-- No new folders like `services/`, `models/`, `interfaces/` — use the structure above.
+- No `supabase` calls outside `src/services/`; no new folders like `models/`, `interfaces/`.
 - No drive-by refactors or extra abstractions beyond the task scope.
 - No one-line wrapper components that only forward props to a shared component.
 

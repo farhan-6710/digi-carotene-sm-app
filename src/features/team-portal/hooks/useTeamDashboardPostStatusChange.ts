@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
 import type { StatusKey } from "@/features/posts-management/types/types";
-import { updatePostStatus } from "@/features/posts-management/utils/postsRepository";
+import { updatePostStatus } from "@/services/postsService";
 import { showToast } from "@/shared/utils/showToast";
 
 type StatusChangeSuccessHandler = (

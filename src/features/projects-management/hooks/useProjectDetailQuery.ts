@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 
 import type { Post } from "@/features/posts-management/types/types";
-import { fetchPostsForProjectId } from "@/features/posts-management/utils/postsRepository";
+import { fetchPostsForProjectId } from "@/services/postsService";
 import type { TeamMember } from "@/features/team-management/types/types";
 import { orderTeamMembersByIds } from "@/features/team-management/utils/teamMemberDisplayUtils";
-import { fetchTeamMembersByIds } from "@/features/team-management/utils/teamMembersRepository";
+import { fetchTeamMembersByIds } from "@/services/teamMembersService";
 import type { ProjectListItem } from "@/features/projects-management/types/types";
-import { fetchProjectById } from "@/features/projects-management/utils/projectsRepository";
+import { fetchProjectById } from "@/services/projectsService";
 
 export function useProjectDetailQuery(projectId: string) {
   const [project, setProject] = useState<ProjectListItem | null>(null);

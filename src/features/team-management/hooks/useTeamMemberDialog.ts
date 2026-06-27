@@ -14,7 +14,7 @@ import {
   createTeamMember,
   deleteTeamMember,
   updateTeamMember,
-} from "@/features/team-management/utils/teamMembersRepository";
+} from "@/services/teamMembersService";
 import { showToast } from "@/shared/utils/showToast";
 
 type UseTeamMemberDialogOptions = {
@@ -124,7 +124,7 @@ export function useTeamMemberDialog({ reload, setError }: UseTeamMemberDialogOpt
     } finally {
       setIsSaving(false);
     }
-  }, [editingMemberId, handleDialogOpenChange, isSaving, reload, setError]);
+  }, [editingMemberId, handleDialogOpenChange, isSaving, reload, setError, values.memberName]);
 
   return {
     openAddDialog,

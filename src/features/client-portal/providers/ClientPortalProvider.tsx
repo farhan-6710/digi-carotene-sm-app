@@ -8,15 +8,15 @@ import {
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import type { Client } from "@/features/clients-management/types/types";
-import { fetchClientById } from "@/features/clients-management/utils/clientsRepository";
+import { fetchClientById } from "@/services/clientsService";
 import {
   ClientPortalContext,
   type ClientPortalContextValue,
 } from "@/features/client-portal/providers/clientPortalContext";
 import type { Post } from "@/features/posts-management/types/types";
-import { fetchPostsForClientId } from "@/features/posts-management/utils/postsRepository";
+import { fetchPostsForClientId } from "@/services/postsService";
 import type { ProjectListItem } from "@/features/projects-management/types/types";
-import { fetchProjectsByClientId } from "@/features/projects-management/utils/projectsRepository";
+import { fetchProjectsByClientId } from "@/services/projectsService";
 
 export function ClientPortalProvider({ children }: { children: ReactNode }) {
   const { clientId } = useAuth();

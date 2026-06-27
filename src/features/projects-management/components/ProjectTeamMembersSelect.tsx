@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 import type { ProjectTeamMembersSelectProps } from "@/features/projects-management/types/components";
-import { fetchTeamMembers } from "@/features/team-management/utils/teamMembersRepository";
+import { fetchTeamMembers } from "@/services/teamMembersService";
 import { useLazyEntityList } from "@/shared/hooks/useLazyEntityList";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
 

@@ -34,15 +34,13 @@ One function — `link_profile_by_email(email)` — plus triggers:
 | Team saves team member | `on_team_member_portal_link` |
 | Team saves client (with email) | `on_client_portal_link` |
 
-Team member email wins if both match. Lookup is by indexed email on `auth.users` — one profile row updated, no table scan. Realtime on `profiles` picks up changes for logged-in users.
+Team member email wins if both match. Lookup is by indexed email on `auth.users` — one profile row updated, no table scan.
 
 Requires `clients.email` (migration 009). If linking still fails after the staff → team rename, run `014_fix_link_profile_team_role.sql` and `015_ensure_profile_link_triggers.sql`.
 
-### App fallback sync
+### App fallback link
 
-`loadProfileForUser` also runs `syncProfileAccessForUser` — on login/refresh, the signed-in user’s email is matched to `team_members` / `clients` and their own `profiles` row is updated if out of sync.
-
-After creating or updating a team member, the app calls `link_profile_by_email` RPC (migration 015 grants execute) as a fallback when DB triggers are missing.
+After creating or updating a team member or client, the app calls the `link_profile_by_email` RPC (migration 015 grants execute) from `services/profilesService.ts` as a fallback when DB triggers are missing. There is no realtime/visibility sync — a pending user signs in and **refreshes** (or uses the "Refresh access" button on `/user-portal`) to pick up new access.
 
 ### Signup flow (V1)
 

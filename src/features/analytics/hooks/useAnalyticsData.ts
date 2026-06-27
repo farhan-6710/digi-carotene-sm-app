@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 
 import type { AnalyticsDataset } from "@/features/analytics/types/types";
-import { fetchClients } from "@/features/clients-management/utils/clientsRepository";
-import { fetchAllPosts } from "@/features/posts-management/utils/postsRepository";
-import { fetchProjects } from "@/features/projects-management/utils/projectsRepository";
-import { fetchTeamMembers } from "@/features/team-management/utils/teamMembersRepository";
+import { fetchClients } from "@/services/clientsService";
+import { fetchAllPosts } from "@/services/postsService";
+import { fetchProjects } from "@/services/projectsService";
+import { fetchTeamMembers } from "@/services/teamMembersService";
 
 const EMPTY_DATASET: AnalyticsDataset = {
   posts: [],

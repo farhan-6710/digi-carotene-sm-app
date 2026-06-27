@@ -15,7 +15,7 @@ import {
   createClient,
   deleteClient,
   updateClient,
-} from "@/features/clients-management/utils/clientsRepository";
+} from "@/services/clientsService";
 import { showToast } from "@/shared/utils/showToast";
 
 type UseClientDialogOptions = {
@@ -124,7 +124,7 @@ export function useClientDialog({ reload, setError }: UseClientDialogOptions) {
     } finally {
       setIsSaving(false);
     }
-  }, [editingClientId, handleDialogOpenChange, isSaving, reload, setError]);
+  }, [editingClientId, handleDialogOpenChange, isSaving, reload, setError, values.clientName]);
 
   return {
     openAddDialog,

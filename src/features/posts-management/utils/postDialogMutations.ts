@@ -1,4 +1,4 @@
-import { fetchProjects } from "@/features/projects-management/utils/projectsRepository";
+import { fetchProjects } from "@/services/projectsService";
 import { findRegisteredProject } from "@/features/posts-management/utils/projectValidationUtils";
 import {
   postFormToPayload,
@@ -9,8 +9,8 @@ import {
   createPost,
   deletePost,
   updatePost,
-} from "@/features/posts-management/utils/postsRepository";
-import { createPostApprovalRequest } from "@/features/post-approvals/utils/postApprovalsRepository";
+} from "@/services/postsService";
+import { createPostApprovalRequest } from "@/services/postApprovalsService";
 import { requiresBackdatedPostApproval } from "@/features/post-approvals/utils/postApprovalRules";
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 import { showToast } from "@/shared/utils/showToast";

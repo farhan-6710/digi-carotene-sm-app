@@ -1,24 +1,9 @@
+import { DB } from "@/services/db";
+import { supabase } from "@/services/supabaseClient";
 import type {
   ManagedProject,
   ProjectTeamAssignment,
 } from "@/features/projects-management/types/types";
-import { supabase } from "@/shared/lib/supabase";
-
-const assignmentSelect = `
-  id,
-  project_id,
-  member_id,
-  started_at,
-  ended_at,
-  created_at,
-  updated_at,
-  projects (
-    id,
-    project_name,
-    client_id,
-    clients ( id, client_name )
-  )
-`;
 
 type AssignmentRow = ProjectTeamAssignment & {
   projects: ProjectTeamAssignment["projects"] | ProjectTeamAssignment["projects"][];
@@ -26,27 +11,15 @@ type AssignmentRow = ProjectTeamAssignment & {
 
 function normalizeAssignment(row: AssignmentRow): ProjectTeamAssignment {
   const project = Array.isArray(row.projects) ? row.projects[0] ?? null : row.projects;
-
-  return {
-    ...row,
-    projects: project,
-  };
-}
-
-function formatAssignmentError(error: { code?: string; message?: string }): Error {
-  if (error.code === "23505") {
-    return new Error("This team member is already actively assigned to this project.");
-  }
-
-  return new Error(error.message ?? "Failed to save assignment.");
+  return { ...row, projects: project };
 }
 
 export async function fetchMemberProjectAssignments(
   memberId: string,
 ): Promise<ProjectTeamAssignment[]> {
   const { data, error } = await supabase
-    .from("project_team_members")
-    .select(assignmentSelect)
+    .from(DB.PROJECT_TEAM_MEMBERS.TABLE)
+    .select(DB.PROJECT_TEAM_MEMBERS.SELECT)
     .eq("member_id", memberId)
     .order("started_at", { ascending: false });
 
@@ -57,16 +30,12 @@ export async function fetchMemberProjectAssignments(
   return (data ?? []).map((row) => normalizeAssignment(row as unknown as AssignmentRow));
 }
 
-export async function fetchManagedProjects(memberId: string): Promise<ManagedProject[]> {
+export async function fetchManagedProjects(
+  memberId: string,
+): Promise<ManagedProject[]> {
   const { data, error } = await supabase
-    .from("projects")
-    .select(`
-      id,
-      project_name,
-      client_id,
-      manager_id,
-      clients ( id, client_name )
-    `)
+    .from(DB.PROJECTS.TABLE)
+    .select("id, project_name, client_id, manager_id, clients ( id, client_name )")
     .eq("manager_id", memberId)
     .order("project_name", { ascending: true });
 
@@ -91,7 +60,7 @@ export async function assignMemberToProject(
   projectId: string,
 ): Promise<ProjectTeamAssignment> {
   const { data: project, error: projectError } = await supabase
-    .from("projects")
+    .from(DB.PROJECTS.TABLE)
     .select("manager_id")
     .eq("id", projectId)
     .maybeSingle();
@@ -109,16 +78,16 @@ export async function assignMemberToProject(
   }
 
   const { data, error } = await supabase
-    .from("project_team_members")
-    .insert({
-      project_id: projectId,
-      member_id: memberId,
-    })
-    .select(assignmentSelect)
+    .from(DB.PROJECT_TEAM_MEMBERS.TABLE)
+    .insert({ project_id: projectId, member_id: memberId })
+    .select(DB.PROJECT_TEAM_MEMBERS.SELECT)
     .single();
 
   if (error) {
-    throw formatAssignmentError(error);
+    if (error.code === "23505") {
+      throw new Error("This team member is already actively assigned to this project.");
+    }
+    throw new Error(error.message ?? "Failed to save assignment.");
   }
 
   return normalizeAssignment(data as unknown as AssignmentRow);
@@ -126,7 +95,7 @@ export async function assignMemberToProject(
 
 export async function endProjectTeamAssignment(assignmentId: string): Promise<void> {
   const { error } = await supabase
-    .from("project_team_members")
+    .from(DB.PROJECT_TEAM_MEMBERS.TABLE)
     .update({ ended_at: new Date().toISOString() })
     .eq("id", assignmentId)
     .is("ended_at", null);
@@ -134,20 +103,4 @@ export async function endProjectTeamAssignment(assignmentId: string): Promise<vo
   if (error) {
     throw new Error(error.message ?? "Failed to end assignment.");
   }
-}
-
-export async function fetchProjectTeamAssignments(
-  projectId: string,
-): Promise<ProjectTeamAssignment[]> {
-  const { data, error } = await supabase
-    .from("project_team_members")
-    .select(assignmentSelect)
-    .eq("project_id", projectId)
-    .order("started_at", { ascending: false });
-
-  if (error) {
-    throw error;
-  }
-
-  return (data ?? []).map((row) => normalizeAssignment(row as unknown as AssignmentRow));
 }

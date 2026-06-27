@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 
 import type { Slot } from "@/features/posts-management/types/types";
-import {
-  fetchPostsForMonth,
-  postsToSlots,
-} from "@/features/posts-management/utils/postsRepository";
+import { fetchPostsForMonth } from "@/services/postsService";
+import { postsToSlots } from "@/features/posts-management/utils/postsSlots";
 
 export function usePostsQuery(year: number, month: number) {
   const [slots, setSlots] = useState(() => postsToSlots([], year, month));

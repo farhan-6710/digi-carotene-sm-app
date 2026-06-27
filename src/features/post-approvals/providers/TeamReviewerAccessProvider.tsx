@@ -5,7 +5,7 @@ import { canAccessApprovalsNav } from "@/features/post-approvals/utils/postAppro
 import {
   countPendingApprovalsForReviewer,
   managesAnyProject,
-} from "@/features/post-approvals/utils/postApprovalsRepository";
+} from "@/services/postApprovalsService";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
 type TeamReviewerAccessContextValue = {

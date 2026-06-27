@@ -2,8 +2,8 @@ import { useCallback, useState } from "react";
 
 import {
   assignMemberToProject,
-  endMemberAssignment,
-} from "@/features/team-management/utils/teamMemberAssignmentsRepository";
+  endProjectTeamAssignment,
+} from "@/services/projectTeamMembersService";
 import { showToast } from "@/shared/utils/showToast";
 
 type UseTeamMemberProjectActionsOptions = {
@@ -54,7 +54,7 @@ export function useTeamMemberProjectActions({
       setError(null);
 
       try {
-        await endMemberAssignment(assignmentId);
+        await endProjectTeamAssignment(assignmentId);
         await reload();
         showToast("success", "Project assignment ended successfully.");
       } catch (err) {

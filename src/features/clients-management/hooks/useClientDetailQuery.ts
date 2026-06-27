@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 
 import type { Client } from "@/features/clients-management/types/types";
-import { fetchClientById } from "@/features/clients-management/utils/clientsRepository";
+import { fetchClientById } from "@/services/clientsService";
 import type { ProjectListItem } from "@/features/projects-management/types/types";
-import { fetchProjectsByClientId } from "@/features/projects-management/utils/projectsRepository";
+import { fetchProjectsByClientId } from "@/services/projectsService";
 
 export function useClientDetailQuery(clientId: string) {
   const [client, setClient] = useState<Client | null>(null);

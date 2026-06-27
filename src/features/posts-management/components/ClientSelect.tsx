@@ -1,7 +1,7 @@
 import { User } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
-import { fetchClients } from "@/features/clients-management/utils/clientsRepository";
+import { fetchClients } from "@/services/clientsService";
 import type { ClientSelectProps } from "@/features/posts-management/types/components";
 import { ComboBox } from "@/shared/ui/ComboBox";
 

@@ -5,7 +5,7 @@ import {
   approvePostApprovalRequest,
   fetchPendingApprovalsForReviewer,
   rejectPostApprovalRequest,
-} from "@/features/post-approvals/utils/postApprovalsRepository";
+} from "@/services/postApprovalsService";
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 import { showToast } from "@/shared/utils/showToast";
 

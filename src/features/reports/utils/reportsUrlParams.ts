@@ -5,7 +5,7 @@ import type { StatusKey } from "@/features/posts-management/types/types";
 import { parseUrlDateParam } from "@/shared/utils/urlDateParams";
 import type { PostStatusFilterState } from "@/shared/utils/postStatusFilterUtils";
 
-import { toReportDateString } from "./reportsRepository";
+import { toReportDateString } from "./reportsFormat";
 
 export const REPORT_FROM_PARAM = "from";
 export const REPORT_TO_PARAM = "to";

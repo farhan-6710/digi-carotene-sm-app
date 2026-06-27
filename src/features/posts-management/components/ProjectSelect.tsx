@@ -1,7 +1,7 @@
 import { FolderKanban } from "lucide-react";
 import { useMemo } from "react";
 
-import { fetchProjects } from "@/features/projects-management/utils/projectsRepository";
+import { fetchProjects } from "@/services/projectsService";
 import { getProjectDisplayLabel } from "@/features/projects-management/utils/projectFormUtils";
 import type { ProjectSelectProps } from "@/features/posts-management/types/components";
 import { useLazyEntityList } from "@/shared/hooks/useLazyEntityList";

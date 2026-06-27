@@ -6,11 +6,11 @@ import type {
   TeamMember,
 } from "@/features/team-management/types/types";
 import {
-  fetchManagedProjectsForMember,
-  fetchMemberAssignments,
-} from "@/features/team-management/utils/teamMemberAssignmentsRepository";
+  fetchManagedProjects,
+  fetchMemberProjectAssignments,
+} from "@/services/projectTeamMembersService";
 import { splitMemberAssignments } from "@/features/team-management/utils/teamMemberAssignmentUtils";
-import { fetchTeamMemberById } from "@/features/team-management/utils/teamMembersRepository";
+import { fetchTeamMemberById } from "@/services/teamMembersService";
 
 export function useTeamMemberDetailQuery(memberId: string) {
   const [member, setMember] = useState<TeamMember | null>(null);
@@ -34,8 +34,8 @@ export function useTeamMemberDetailQuery(memberId: string) {
     try {
       const [memberRow, assignmentRows, managedRows] = await Promise.all([
         fetchTeamMemberById(memberId),
-        fetchMemberAssignments(memberId),
-        fetchManagedProjectsForMember(memberId),
+        fetchMemberProjectAssignments(memberId),
+        fetchManagedProjects(memberId),
       ]);
 
       setMember(memberRow);

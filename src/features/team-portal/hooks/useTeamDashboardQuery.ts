@@ -13,7 +13,7 @@ import type {
   TeamTodaysPostItem,
 } from "@/features/team-portal/types/types";
 import { buildTodaysPostScheduleLabel } from "@/features/team-portal/utils/teamDashboardPostUtils";
-import { fetchTeamDashboardPostsBundle } from "@/features/team-portal/utils/teamDashboardRepository";
+import { fetchTeamDashboardPostsBundle } from "@/services/dashboardService";
 import { mapNotPostedPostsToNeedsAttention } from "@/features/team-portal/utils/teamNeedsAttentionUtils";
 import { mapPostsToTodaysPosts } from "@/features/team-portal/utils/teamTodaysPostsUtils";
 import { buildTeamStatCards } from "@/features/team-portal/utils/teamStatsUtils";

@@ -6,11 +6,11 @@ import type {
   ReportPostRow,
   ReportStatCard,
 } from "@/features/reports/types/types";
+import { fetchPostsForDateRange } from "@/services/reportsService";
 import {
-  fetchPostsForDateRange,
   formatReportDateRangeLabel,
   toReportDateString,
-} from "@/features/reports/utils/reportsRepository";
+} from "@/features/reports/utils/reportsFormat";
 import {
   buildClientReportSummaries,
   buildReportStatCards,

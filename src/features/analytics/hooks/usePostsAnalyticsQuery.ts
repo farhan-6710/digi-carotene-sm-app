@@ -6,7 +6,7 @@ import {
   buildPostsTopClients,
   getPostsAnalyticsMonthRange,
 } from "@/features/analytics/utils/postsAnalyticsUtils";
-import { fetchPostsForMonth } from "@/features/posts-management/utils/postsRepository";
+import { fetchPostsForMonth } from "@/services/postsService";
 import type { StatCardItem } from "@/shared/types/statsCards";
 
 export function usePostsAnalyticsQuery() {

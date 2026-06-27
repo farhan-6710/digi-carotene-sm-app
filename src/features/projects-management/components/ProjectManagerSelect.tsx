@@ -2,7 +2,7 @@ import { UserRound } from "lucide-react";
 import { useMemo } from "react";
 
 import type { ProjectManagerSelectProps } from "@/features/projects-management/types/components";
-import { fetchProjectManagers } from "@/features/team-management/utils/teamMembersRepository";
+import { fetchProjectManagers } from "@/services/teamMembersService";
 import { useLazyEntityList } from "@/shared/hooks/useLazyEntityList";
 import { mergeOptionsByValue } from "@/shared/utils/mergeOptionsByValue";
 import { ComboBox } from "@/shared/ui/ComboBox";
