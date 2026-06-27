@@ -4,6 +4,7 @@ import {
   assignMemberToProject,
   endMemberAssignment,
 } from "@/features/team-management/utils/teamMemberAssignmentsRepository";
+import { showToast } from "@/shared/utils/showToast";
 
 type UseTeamMemberProjectActionsOptions = {
   memberId: string;
@@ -30,10 +31,12 @@ export function useTeamMemberProjectActions({
       try {
         await assignMemberToProject(memberId, projectId);
         await reload();
+        showToast("success", "Project assigned successfully.");
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to assign project.",
-        );
+        const message =
+          err instanceof Error ? err.message : "Failed to assign project.";
+        setError(message);
+        showToast("error", message);
       } finally {
         setIsSaving(false);
       }
@@ -53,10 +56,12 @@ export function useTeamMemberProjectActions({
       try {
         await endMemberAssignment(assignmentId);
         await reload();
+        showToast("success", "Project assignment ended successfully.");
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to end assignment.",
-        );
+        const message =
+          err instanceof Error ? err.message : "Failed to end assignment.";
+        setError(message);
+        showToast("error", message);
       } finally {
         setIsSaving(false);
       }

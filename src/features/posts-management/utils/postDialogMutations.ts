@@ -62,8 +62,11 @@ export async function savePostMutation({
     projectId: registeredProject.id,
   };
 
+  const postLabel = values.postTitle.trim() || "Post";
+
   if (editingPostId) {
     await updatePost(editingPostId, payload);
+    showToast("success", `"${postLabel}" updated successfully.`);
   } else if (
     requiresBackdatedPostApproval(teamRole, payload.toBePostedOn)
   ) {
@@ -79,6 +82,7 @@ export async function savePostMutation({
     );
   } else {
     await createPost(payload);
+    showToast("success", `"${postLabel}" added successfully.`);
   }
 
   return true;
@@ -89,6 +93,16 @@ export async function deletePostMutation({
   setError,
 }: DeletePostOptions): Promise<boolean> {
   setError(null);
-  await deletePost(editingPostId);
-  return true;
+
+  try {
+    await deletePost(editingPostId);
+    showToast("success", "Post removed successfully.");
+    return true;
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "Failed to delete this post.";
+    setError(message);
+    showToast("error", message);
+    return false;
+  }
 }

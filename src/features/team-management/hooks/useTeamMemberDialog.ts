@@ -15,6 +15,7 @@ import {
   deleteTeamMember,
   updateTeamMember,
 } from "@/features/team-management/utils/teamMembersRepository";
+import { showToast } from "@/shared/utils/showToast";
 
 type UseTeamMemberDialogOptions = {
   reload: () => Promise<void>;
@@ -79,16 +80,23 @@ export function useTeamMemberDialog({ reload, setError }: UseTeamMemberDialogOpt
         teamRole: values.teamRole,
       };
 
+      const memberName = values.memberName.trim();
+
       if (editingMemberId) {
         await updateTeamMember(editingMemberId, payload);
+        showToast("success", `"${memberName}" updated successfully.`);
       } else {
         await createTeamMember(payload);
+        showToast("success", `"${memberName}" added successfully.`);
       }
 
       await reload();
       handleDialogOpenChange(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save team member.");
+      const message =
+        err instanceof Error ? err.message : "Failed to save team member.";
+      setError(message);
+      showToast("error", message);
     } finally {
       setIsSaving(false);
     }
@@ -103,11 +111,16 @@ export function useTeamMemberDialog({ reload, setError }: UseTeamMemberDialogOpt
     setError(null);
 
     try {
+      const memberName = values.memberName.trim();
       await deleteTeamMember(editingMemberId);
       await reload();
       handleDialogOpenChange(false);
+      showToast("success", `"${memberName}" removed successfully.`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete team member.");
+      const message =
+        err instanceof Error ? err.message : "Failed to delete team member.";
+      setError(message);
+      showToast("error", message);
     } finally {
       setIsSaving(false);
     }

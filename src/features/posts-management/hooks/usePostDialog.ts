@@ -15,6 +15,7 @@ import {
   type PostFormValues,
 } from "@/features/posts-management/utils/postFormUtils";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { showToast } from "@/shared/utils/showToast";
 
 type UsePostDialogOptions = {
   slots: Slot[];
@@ -111,9 +112,10 @@ export function usePostDialog({ slots, reload, setError }: UsePostDialogOptions)
       await reload();
       handleDialogOpenChange(false);
     } catch (saveError) {
-      setError(
-        saveError instanceof Error ? saveError.message : "Failed to save this post.",
-      );
+      const message =
+        saveError instanceof Error ? saveError.message : "Failed to save this post.";
+      setError(message);
+      showToast("error", message);
     } finally {
       setIsSaving(false);
     }
@@ -127,15 +129,13 @@ export function usePostDialog({ slots, reload, setError }: UsePostDialogOptions)
     setIsSaving(true);
 
     try {
-      await deletePostMutation({ editingPostId, setError });
+      const deleted = await deletePostMutation({ editingPostId, setError });
+      if (!deleted) {
+        return;
+      }
+
       await reload();
       handleDialogOpenChange(false);
-    } catch (deleteError) {
-      setError(
-        deleteError instanceof Error
-          ? deleteError.message
-          : "Failed to delete this post.",
-      );
     } finally {
       setIsSaving(false);
     }
