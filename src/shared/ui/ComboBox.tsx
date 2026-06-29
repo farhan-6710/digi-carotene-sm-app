@@ -65,6 +65,9 @@ export function ComboBox({
   const [query, setQuery] = useState("");
 
   const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen && mode === "value") {
+      setQuery("");
+    }
     setOpen(nextOpen);
     onOpenChange?.(nextOpen);
   };
@@ -76,13 +79,16 @@ export function ComboBox({
 
   const filterText = mode === "text" ? value : query;
 
-  const filteredOptions = useMemo(
-    () =>
-      options.filter((option) =>
-        option.label.toLowerCase().includes(filterText.toLowerCase()),
-      ),
-    [filterText, options],
-  );
+  const filteredOptions = useMemo(() => {
+    const search = filterText.trim().toLowerCase();
+    if (mode === "value" && search === "") {
+      return options;
+    }
+
+    return options.filter((option) =>
+      option.label.toLowerCase().includes(search),
+    );
+  }, [filterText, mode, options]);
 
   const inputValue =
     mode === "text"
@@ -111,9 +117,6 @@ export function ComboBox({
               handleOpenChange(true);
             }}
             onFocus={() => {
-              if (mode === "value") {
-                setQuery(selectedOption?.label ?? query);
-              }
               handleOpenChange(true);
             }}
             placeholder={placeholder}

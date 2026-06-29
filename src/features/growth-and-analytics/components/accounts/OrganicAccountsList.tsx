@@ -12,6 +12,7 @@ const GRID_CLASS = "grid-cols-[1.4fr_1fr_1fr_0.8fr_0.5fr]";
 
 export function OrganicAccountsList({
   accounts,
+  isLoading = false,
   onAdd,
   onEdit,
 }: OrganicAccountsListProps) {
@@ -27,7 +28,7 @@ export function OrganicAccountsList({
         { label: "STATUS" },
         { label: "", align: "right" },
       ]}
-      isLoading={false}
+      isLoading={isLoading}
       isEmpty={accounts.length === 0}
       emptyMessage="No organic accounts connected yet."
       headerAside={

@@ -25,6 +25,12 @@ Run only the migrations you have not applied yet, in order (`002` onward). See [
 | `posts`                | Scheduled content (`project_id` FK)                         |
 | `post_approval_requests` | Executive backdated post approval workflow              |
 | `profiles`             | Auth user roles + portal `client_id`                        |
+| `growth_organic_accounts` | Connected Instagram/Facebook profiles (Meta token + followers) |
+| `growth_ad_accounts`   | Connected Meta ad accounts                                  |
+| `growth_daily_metrics` | Daily organic metrics per account (followers, reach, engagement) |
+| `growth_posts`         | Content posts per account (reach, likes, comments, saves)   |
+| `growth_campaign_metrics` | Daily campaign metrics per ad account (spend, clicks, conversions) |
+| `growth_reports`       | Saved report listing for the Reports page                   |
 
 ## Relationships
 

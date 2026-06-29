@@ -10,6 +10,8 @@ export function GrowthManageAccountsPage() {
   const {
     organic,
     ads,
+    isOrganicLoading,
+    isAdsLoading,
     organicDialog,
     adDialog,
     openOrganicCreate,
@@ -27,11 +29,17 @@ export function GrowthManageAccountsPage() {
 
       <OrganicAccountsList
         accounts={organic}
+        isLoading={isOrganicLoading}
         onAdd={openOrganicCreate}
         onEdit={openOrganicEdit}
       />
 
-      <AdAccountsList accounts={ads} onAdd={openAdCreate} onEdit={openAdEdit} />
+      <AdAccountsList
+        accounts={ads}
+        isLoading={isAdsLoading}
+        onAdd={openAdCreate}
+        onEdit={openAdEdit}
+      />
 
       <OrganicAccountDialog {...organicDialog} />
       <AdAccountDialog {...adDialog} />

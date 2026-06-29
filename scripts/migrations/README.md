@@ -27,6 +27,7 @@ Run only migrations you have **not** applied yet, in order:
 | `012_rename_scheduled_to_to_be_posted.sql` | Rename `scheduled_date/time` → `to_be_posted_date/time`; clear stale posted fields |
 | `013_post_approval_requests.sql` | Backdated post approval requests for executives |
 | `015_ensure_profile_link_triggers.sql` | Re-create profile auto-link triggers + signup hook; ensure `link_profile_by_email` sets `profiles.role = 'team'` and grant its execute (idempotent) |
+| `016_growth_and_analytics.sql` | Growth & Analytics tables (schema only, no seed data) with anon-accessible RLS |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

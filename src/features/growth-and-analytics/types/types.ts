@@ -1,5 +1,54 @@
 export type GrowthPlatform = "instagram" | "facebook";
 
+// `from`/`to` are `yyyy-MM-dd`; omit both for "all time".
+export type GrowthDateRange = { from?: string; to?: string };
+
+export type MetaOrganicInfo = {
+  accountName: string;
+  followers: number;
+  profilePicture: string | null;
+};
+
+export type MetaAdInfo = {
+  accountName: string;
+  currency: string;
+};
+
+// Raw rows returned by the analytics service before aggregation.
+export type DailyMetricRow = {
+  accountId: string;
+  accountName: string;
+  platform: GrowthPlatform;
+  date: string;
+  followers: number;
+  newFollowers: number;
+  reach: number;
+  impressions: number;
+  engagement: number;
+};
+
+export type PostRow = {
+  id: string;
+  caption: string;
+  mediaType: ContentPostRow["mediaType"];
+  reach: number;
+  likes: number;
+  comments: number;
+  saves: number;
+  engagementRate: number;
+  postedAt: string;
+};
+
+export type CampaignMetricRow = {
+  campaignName: string;
+  status: CampaignRow["status"];
+  spend: number;
+  impressions: number;
+  clicks: number;
+  conversions: number;
+  date: string;
+};
+
 export type TrendPoint = {
   label: string;
   followers: number;

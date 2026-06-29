@@ -20,3 +20,18 @@ export function formatCurrency(value: number, currency = "INR"): string {
     maximumFractionDigits: 0,
   }).format(value);
 }
+
+// `yyyy-MM-dd` → "Jan" (parsed as local time to avoid timezone drift).
+export function monthLabel(dateStr: string): string {
+  return new Date(`${dateStr}T00:00:00`).toLocaleString("en-US", {
+    month: "short",
+  });
+}
+
+// `yyyy-MM-dd` → "Jan 5".
+export function dayLabel(dateStr: string): string {
+  return new Date(`${dateStr}T00:00:00`).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}

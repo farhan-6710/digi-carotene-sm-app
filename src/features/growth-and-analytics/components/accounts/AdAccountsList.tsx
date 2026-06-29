@@ -9,7 +9,12 @@ import type { AdAccountsListProps } from "../../types/components";
 
 const GRID_CLASS = "grid-cols-[1.4fr_1.2fr_1fr_0.6fr_0.5fr]";
 
-export function AdAccountsList({ accounts, onAdd, onEdit }: AdAccountsListProps) {
+export function AdAccountsList({
+  accounts,
+  isLoading = false,
+  onAdd,
+  onEdit,
+}: AdAccountsListProps) {
   return (
     <DirectoryTable
       title="Ad Accounts"
@@ -22,7 +27,7 @@ export function AdAccountsList({ accounts, onAdd, onEdit }: AdAccountsListProps)
         { label: "CURRENCY" },
         { label: "", align: "right" },
       ]}
-      isLoading={false}
+      isLoading={isLoading}
       isEmpty={accounts.length === 0}
       emptyMessage="No ad accounts connected yet."
       headerAside={

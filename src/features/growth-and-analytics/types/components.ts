@@ -76,12 +76,14 @@ export type GrowthReportTabsProps = {
 
 export type OrganicAccountsListProps = {
   accounts: OrganicAccount[];
+  isLoading?: boolean;
   onAdd: () => void;
   onEdit: (account: OrganicAccount) => void;
 };
 
 export type AdAccountsListProps = {
   accounts: AdAccount[];
+  isLoading?: boolean;
   onAdd: () => void;
   onEdit: (account: AdAccount) => void;
 };
@@ -90,6 +92,7 @@ export type OrganicAccountDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isEditing: boolean;
+  isSaving?: boolean;
   values: OrganicAccountForm;
   onFieldChange: <Field extends keyof OrganicAccountForm>(
     field: Field,
@@ -103,6 +106,7 @@ export type AdAccountDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isEditing: boolean;
+  isSaving?: boolean;
   values: AdAccountForm;
   onFieldChange: <Field extends keyof AdAccountForm>(
     field: Field,

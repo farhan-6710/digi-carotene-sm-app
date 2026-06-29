@@ -1,17 +1,8 @@
-import { useState } from "react";
-
 import { GrowthAccountComboBox } from "../components/GrowthAccountComboBox";
 import { GrowthBarChart } from "../components/charts/GrowthBarChart";
 import { GrowthDonutChart } from "../components/charts/GrowthDonutChart";
 import { ContentPostsTable } from "../components/tables/ContentPostsTable";
-import {
-  contentAccountOptions,
-  contentPosts,
-  contentStatCards,
-  contentTypeSplit,
-  engagementByType,
-} from "../constants/contentPerformanceData";
-import { useAnalyticsFilters } from "@/features/analytics/hooks/useAnalyticsFilters";
+import { useGrowthContentPerformance } from "../hooks/useGrowthContentPerformance";
 import { generateGrowthReport } from "../utils/generateReport";
 import { DateFilters } from "@/shared/components/DateFilters";
 import { PageContent } from "@/shared/components/PageContent";
@@ -20,8 +11,18 @@ import { StatsCards } from "@/shared/components/StatsCards";
 import { Button } from "@/shared/ui/button";
 
 export function GrowthContentPerformancePage() {
-  const [accountId, setAccountId] = useState(contentAccountOptions[0].value);
-  const { periodLabel, dateFilterProps } = useAnalyticsFilters();
+  const {
+    accountOptions,
+    accountId,
+    setAccountId,
+    statCards,
+    typeSplit,
+    engagementByType,
+    postRows,
+    isLoading,
+    dateFilterProps,
+    periodLabel,
+  } = useGrowthContentPerformance();
 
   return (
     <PageContent>
@@ -44,18 +45,18 @@ export function GrowthContentPerformancePage() {
       <GrowthAccountComboBox
         label="Account"
         value={accountId}
-        options={contentAccountOptions}
+        options={accountOptions}
         onChange={setAccountId}
         placeholder="Select account"
       />
 
-      <StatsCards cards={contentStatCards} />
+      <StatsCards cards={statCards} isLoading={isLoading} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <GrowthDonutChart
           title="Posts by Content Type"
           description="Distribution of published formats."
-          data={contentTypeSplit}
+          data={typeSplit}
           centerLabel="Posts"
         />
         <GrowthBarChart
@@ -66,7 +67,7 @@ export function GrowthContentPerformancePage() {
         />
       </div>
 
-      <ContentPostsTable rows={contentPosts} />
+      <ContentPostsTable rows={postRows} />
     </PageContent>
   );
 }

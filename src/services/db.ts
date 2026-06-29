@@ -98,4 +98,32 @@ export const DB = {
     TABLE: "post_approval_requests",
     SELECT: APPROVAL_SELECT,
   },
+  GROWTH_ORGANIC_ACCOUNTS: {
+    TABLE: "growth_organic_accounts",
+    SELECT:
+      "id, platform, account_name, account_id, followers, profile_picture, is_active, created_at",
+  },
+  GROWTH_AD_ACCOUNTS: {
+    TABLE: "growth_ad_accounts",
+    SELECT: "id, client_name, account_name, ad_account_id, currency, created_at",
+  },
+  GROWTH_DAILY_METRICS: {
+    TABLE: "growth_daily_metrics",
+    SELECT:
+      "account_id, metric_date, followers, new_followers, reach, impressions, engagement",
+  },
+  GROWTH_POSTS: {
+    TABLE: "growth_posts",
+    SELECT:
+      "id, account_id, caption, media_type, reach, likes, comments, saves, engagement_rate, posted_at",
+  },
+  GROWTH_CAMPAIGN_METRICS: {
+    TABLE: "growth_campaign_metrics",
+    SELECT:
+      "ad_account_id, campaign_name, status, spend, impressions, clicks, conversions, metric_date",
+  },
+  GROWTH_REPORTS: {
+    TABLE: "growth_reports",
+    SELECT: "id, title, type, platform, period_start, period_end, created_at",
+  },
 } as const;
