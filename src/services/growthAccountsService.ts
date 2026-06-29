@@ -47,6 +47,43 @@ function mapAd(row: AdRow): AdAccount {
   };
 }
 
+function normalizeAdAccountId(adAccountId: string): string {
+  const trimmed = adAccountId.trim();
+  return trimmed.startsWith("act_") ? trimmed : `act_${trimmed}`;
+}
+
+function isDuplicateAccountError(message: string): boolean {
+  return message.includes("growth_organic_accounts_platform_account_id_key")
+    || message.includes("growth_ad_accounts_ad_account_id_key")
+    || message.includes("duplicate key");
+}
+
+async function findOrganicByMetaId(
+  platform: OrganicAccount["platform"],
+  metaAccountId: string,
+): Promise<OrganicAccount | null> {
+  const { data, error } = await supabase
+    .from(DB.GROWTH_ORGANIC_ACCOUNTS.TABLE)
+    .select(DB.GROWTH_ORGANIC_ACCOUNTS.SELECT)
+    .eq("platform", platform)
+    .eq("account_id", metaAccountId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  return data ? mapOrganic(data as OrganicRow) : null;
+}
+
+async function findAdByMetaId(metaAdAccountId: string): Promise<AdAccount | null> {
+  const { data, error } = await supabase
+    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
+    .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
+    .eq("ad_account_id", metaAdAccountId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  return data ? mapAd(data as AdRow) : null;
+}
+
 export async function fetchOrganicAccounts(): Promise<OrganicAccount[]> {
   const { data, error } = await supabase
     .from(DB.GROWTH_ORGANIC_ACCOUNTS.TABLE)
@@ -76,6 +113,13 @@ export async function connectOrganicAccount(
   }
 
   const metaAccountId = form.accountId.trim();
+  const existing = await findOrganicByMetaId(form.platform, metaAccountId);
+  if (existing) {
+    throw new Error(
+      `"${existing.accountName}" is already connected. Edit it from the list to refresh the token.`,
+    );
+  }
+
   const info = await fetchMetaOrganicInfo(form.platform, metaAccountId, token);
 
   const { data, error } = await supabase
@@ -92,16 +136,31 @@ export async function connectOrganicAccount(
     .select(DB.GROWTH_ORGANIC_ACCOUNTS.SELECT)
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (isDuplicateAccountError(error.message)) {
+      throw new Error("This account is already connected.");
+    }
+    throw new Error(error.message);
+  }
 
   const account = mapOrganic(data as OrganicRow);
-  await syncOrganicFromMeta(
-    form.platform,
-    metaAccountId,
-    token,
-    account.id,
-    info.followers,
-  );
+
+  try {
+    await syncOrganicFromMeta(
+      form.platform,
+      metaAccountId,
+      token,
+      account.id,
+      info.followers,
+    );
+  } catch (syncError) {
+    const message =
+      syncError instanceof Error ? syncError.message : "Could not sync metrics from Meta.";
+    throw new Error(
+      `Account connected, but initial data sync failed: ${message} Edit the account to retry.`,
+      { cause: syncError },
+    );
+  }
 
   return account;
 }
@@ -165,7 +224,14 @@ export async function connectAdAccount(form: AdAccountForm): Promise<AdAccount> 
     throw new Error("Paste the access token so we can fetch the ad account from Meta.");
   }
 
-  const metaAdAccountId = form.adAccountId.trim();
+  const metaAdAccountId = normalizeAdAccountId(form.adAccountId);
+  const existing = await findAdByMetaId(metaAdAccountId);
+  if (existing) {
+    throw new Error(
+      `"${existing.accountName}" is already connected. Edit it from the list to refresh the token.`,
+    );
+  }
+
   const info = await fetchMetaAdInfo(metaAdAccountId, token);
 
   const { data, error } = await supabase
@@ -180,10 +246,26 @@ export async function connectAdAccount(form: AdAccountForm): Promise<AdAccount> 
     .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (isDuplicateAccountError(error.message)) {
+      throw new Error("This ad account is already connected.");
+    }
+    throw new Error(error.message);
+  }
 
   const account = mapAd(data as AdRow);
-  await syncAdFromMeta(metaAdAccountId, token, account.id);
+
+  try {
+    await syncAdFromMeta(metaAdAccountId, token, account.id);
+  } catch (syncError) {
+    const message =
+      syncError instanceof Error ? syncError.message : "Could not sync metrics from Meta.";
+    throw new Error(
+      `Ad account connected, but initial data sync failed: ${message} Edit the account to retry.`,
+      { cause: syncError },
+    );
+  }
+
   return account;
 }
 

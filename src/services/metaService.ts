@@ -105,33 +105,60 @@ export async function fetchMetaAdInfo(
   };
 }
 
-// Instagram account insights (daily): follower_count, reach, total_interactions.
-export async function fetchInstagramDailyInsights(
+type IgInsightMetric = {
+  name?: string;
+  values?: Array<{ value?: number; end_time?: string }>;
+};
+
+async function fetchInstagramInsightMetrics(
   accountId: string,
   accessToken: string,
   range: MetaSyncRange,
-) {
-  const version = META_API_VERSION.instagram;
-  const base = { period: "day", since: range.sinceUnix, until: range.untilUnix, access_token: accessToken };
+  metric: string,
+  extraParams: Record<string, string> = {},
+): Promise<IgInsightMetric[]> {
+  const data = (await graphGet(META_API_VERSION.instagram, `${accountId}/insights`, {
+    period: "day",
+    since: range.sinceUnix,
+    until: range.untilUnix,
+    metric,
+    access_token: accessToken,
+    ...extraParams,
+  })) as { data?: IgInsightMetric[] };
 
-  const simple = (await graphGet(version, `${accountId}/insights`, {
-    ...base,
-    metric: "follower_count,reach",
-  })) as { data?: Array<{ name?: string; values?: Array<{ value?: number; end_time?: string }> }> };
+  return data.data ?? [];
+}
 
-  let interactionMetrics: typeof simple.data = [];
+/** follower_count only supports the last 30 days excluding today — fetch separately. */
+export async function fetchInstagramFollowerInsights(
+  accountId: string,
+  accessToken: string,
+  range: MetaSyncRange,
+): Promise<IgInsightMetric[]> {
+  return fetchInstagramInsightMetrics(accountId, accessToken, range, "follower_count");
+}
+
+export async function fetchInstagramReachInsights(
+  accountId: string,
+  accessToken: string,
+  range: MetaSyncRange,
+): Promise<IgInsightMetric[]> {
+  const reach = await fetchInstagramInsightMetrics(accountId, accessToken, range, "reach");
+
+  let interactionMetrics: IgInsightMetric[] = [];
   try {
-    const interactions = (await graphGet(version, `${accountId}/insights`, {
-      ...base,
-      metric: "total_interactions",
-      metric_type: "total_value",
-    })) as typeof simple;
-    interactionMetrics = interactions.data ?? [];
+    interactionMetrics = await fetchInstagramInsightMetrics(
+      accountId,
+      accessToken,
+      range,
+      "total_interactions",
+      { metric_type: "total_value" },
+    );
   } catch {
     // Some accounts may not expose this metric.
   }
 
-  return [...(simple.data ?? []), ...interactionMetrics];
+  return [...reach, ...interactionMetrics];
 }
 
 export type IgMediaItem = {

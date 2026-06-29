@@ -27,3 +27,9 @@ export const META_ACCOUNT_FIELDS = {
 
 // How many days of history to pull from Meta when an account is connected.
 export const META_SYNC_DAYS = 90;
+
+// Meta insights endpoints reject ranges wider than 30 days between since/until.
+export const META_INSIGHTS_WINDOW_DAYS = 28;
+
+// follower_count only supports the last 30 days, excluding today.
+export const META_FOLLOWER_COUNT_DAYS = 30;

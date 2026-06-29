@@ -13,6 +13,7 @@ import {
 } from "../utils/campaignMetrics";
 import { saveGrowthReport } from "../utils/generateReport";
 import { resolveGrowthReportPeriod } from "../utils/reportPeriod";
+import { useGrowthAccountsUpdated } from "./useGrowthAccountsUpdated";
 import { useGrowthDateRange } from "./useGrowthDateRange";
 
 const NO_ACCOUNTS: AdAccount[] = [];
@@ -22,7 +23,10 @@ export function useGrowthCampaigns() {
   const { range, dateFilterProps, periodLabel } = useGrowthDateRange();
 
   const loadAccounts = useCallback(() => fetchAdAccounts(), []);
-  const { data: accounts } = useFetch<AdAccount[]>(loadAccounts, NO_ACCOUNTS);
+  const { data: accounts, reload: reloadAccounts } = useFetch<AdAccount[]>(
+    loadAccounts,
+    NO_ACCOUNTS,
+  );
 
   const [selectedId, setSelectedId] = useState("");
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
@@ -42,7 +46,13 @@ export function useGrowthCampaigns() {
     data: metrics,
     isLoading,
     error,
+    reload: reloadMetrics,
   } = useFetch<CampaignMetricRow[]>(loadCampaigns, NO_METRICS);
+
+  useGrowthAccountsUpdated(async () => {
+    await reloadAccounts();
+    await reloadMetrics();
+  });
 
   const accountOptions = useMemo(
     () =>

@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 
+import { notifyGrowthAccountsUpdated } from "../constants/growthAccountsEvents";
 import {
   connectAdAccount,
   connectOrganicAccount,
@@ -98,8 +99,15 @@ export function useManageAccounts() {
       }
       setIsOrganicOpen(false);
       await reloadOrganic();
+      notifyGrowthAccountsUpdated();
     } catch (error) {
-      showToast("error", errorMessage(error, "Failed to save organic account."));
+      const message = errorMessage(error, "Failed to save organic account.");
+      showToast("error", message);
+      if (message.startsWith("Account connected,")) {
+        setIsOrganicOpen(false);
+        await reloadOrganic();
+        notifyGrowthAccountsUpdated();
+      }
     } finally {
       setIsOrganicSaving(false);
     }
@@ -113,6 +121,7 @@ export function useManageAccounts() {
       showToast("success", "Organic account removed.");
       setIsOrganicOpen(false);
       await reloadOrganic();
+      notifyGrowthAccountsUpdated();
     } catch (error) {
       showToast("error", errorMessage(error, "Failed to remove organic account."));
     } finally {
@@ -163,8 +172,15 @@ export function useManageAccounts() {
       }
       setIsAdOpen(false);
       await reloadAds();
+      notifyGrowthAccountsUpdated();
     } catch (error) {
-      showToast("error", errorMessage(error, "Failed to save ad account."));
+      const message = errorMessage(error, "Failed to save ad account.");
+      showToast("error", message);
+      if (message.startsWith("Ad account connected,")) {
+        setIsAdOpen(false);
+        await reloadAds();
+        notifyGrowthAccountsUpdated();
+      }
     } finally {
       setIsAdSaving(false);
     }
@@ -178,6 +194,7 @@ export function useManageAccounts() {
       showToast("success", "Ad account removed.");
       setIsAdOpen(false);
       await reloadAds();
+      notifyGrowthAccountsUpdated();
     } catch (error) {
       showToast("error", errorMessage(error, "Failed to remove ad account."));
     } finally {

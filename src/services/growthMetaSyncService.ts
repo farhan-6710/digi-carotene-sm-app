@@ -5,10 +5,10 @@ import {
   fetchFacebookInsightMetric,
   fetchFacebookPostEngagement,
   fetchFacebookPosts,
-  fetchInstagramDailyInsights,
+  fetchInstagramFollowerInsights,
+  fetchInstagramReachInsights,
   fetchInstagramMedia,
   fetchInstagramMediaInsights,
-  getDefaultSyncRange,
   mapIgMediaType,
 } from "@/services/metaService";
 import { supabase } from "@/services/supabaseClient";
@@ -16,6 +16,9 @@ import type { GrowthPlatform } from "@/features/growth-and-analytics/types/types
 import {
   buildDailyMetricRows,
   flattenInsightMetrics,
+  getMetaFollowerCountSyncRange,
+  getMetaInsightSyncChunks,
+  getMetaSyncDateSpan,
   mapCampaignStatus,
   parseConversions,
   parseSpend,
@@ -39,9 +42,30 @@ async function syncInstagram(
   dbAccountId: string,
   followers: number,
 ): Promise<void> {
-  const range = getDefaultSyncRange();
-  const insights = await fetchInstagramDailyInsights(metaAccountId, accessToken, range);
-  const byDate = flattenInsightMetrics(insights);
+  const dateSpan = getMetaSyncDateSpan();
+  const byDate = new Map<string, Record<string, number>>();
+
+  const followerInsights = await fetchInstagramFollowerInsights(
+    metaAccountId,
+    accessToken,
+    getMetaFollowerCountSyncRange(),
+  );
+  for (const [date, values] of flattenInsightMetrics(followerInsights)) {
+    byDate.set(date, { ...(byDate.get(date) ?? {}), ...values });
+  }
+
+  for (const range of getMetaInsightSyncChunks()) {
+    const insights = await fetchInstagramReachInsights(
+      metaAccountId,
+      accessToken,
+      range,
+    );
+    const chunk = flattenInsightMetrics(insights);
+    for (const [date, values] of chunk) {
+      byDate.set(date, { ...(byDate.get(date) ?? {}), ...values });
+    }
+  }
+
   const dailyRows = buildDailyMetricRows(byDate, followers).map((row) => ({
     account_id: dbAccountId,
     ...row,
@@ -55,7 +79,7 @@ async function syncInstagram(
   const media = await fetchInstagramMedia(metaAccountId, accessToken);
   const inRange = media.filter((item) => {
     const date = item.timestamp?.slice(0, 10);
-    return date && date >= range.from && date <= range.to;
+    return date && date >= dateSpan.from && date <= dateSpan.to;
   });
 
   const postRows = [];
@@ -92,14 +116,21 @@ async function syncFacebook(
   dbAccountId: string,
   followers: number,
 ): Promise<void> {
-  const range = getDefaultSyncRange();
-  const metrics = await Promise.all([
-    fetchFacebookInsightMetric(pageId, accessToken, "page_impressions", range),
-    fetchFacebookInsightMetric(pageId, accessToken, "page_post_engagements", range),
-    fetchFacebookInsightMetric(pageId, accessToken, "page_fan_adds", range),
-  ]);
+  const dateSpan = getMetaSyncDateSpan();
+  const byDate = new Map<string, Record<string, number>>();
 
-  const byDate = flattenInsightMetrics(metrics.flat());
+  for (const range of getMetaInsightSyncChunks()) {
+    const metrics = await Promise.all([
+      fetchFacebookInsightMetric(pageId, accessToken, "page_impressions", range),
+      fetchFacebookInsightMetric(pageId, accessToken, "page_post_engagements", range),
+      fetchFacebookInsightMetric(pageId, accessToken, "page_fan_adds", range),
+    ]);
+    const chunk = flattenInsightMetrics(metrics.flat());
+    for (const [date, values] of chunk) {
+      byDate.set(date, { ...(byDate.get(date) ?? {}), ...values });
+    }
+  }
+
   const dailyRows = buildDailyMetricRows(byDate, followers).map((row) => ({
     account_id: dbAccountId,
     ...row,
@@ -113,7 +144,7 @@ async function syncFacebook(
   const posts = await fetchFacebookPosts(pageId, accessToken);
   const inRange = posts.filter((post) => {
     const date = post.created_time?.slice(0, 10);
-    return date && date >= range.from && date <= range.to;
+    return date && date >= dateSpan.from && date <= dateSpan.to;
   });
 
   const postRows = [];
@@ -166,12 +197,14 @@ export async function syncAdFromMeta(
   dbAdAccountId: string,
 ): Promise<void> {
   await clearAdMetrics(dbAdAccountId);
-  const range = getDefaultSyncRange();
 
-  const [dailyInsights, campaigns] = await Promise.all([
-    fetchAdDailyInsights(metaAdAccountId, accessToken, range),
-    fetchAdCampaignStatuses(metaAdAccountId, accessToken),
-  ]);
+  const dailyInsights = [];
+  for (const range of getMetaInsightSyncChunks()) {
+    const chunk = await fetchAdDailyInsights(metaAdAccountId, accessToken, range);
+    dailyInsights.push(...chunk);
+  }
+
+  const campaigns = await fetchAdCampaignStatuses(metaAdAccountId, accessToken);
 
   const statusById = new Map(
     campaigns.map((campaign) => [campaign.id, mapCampaignStatus(campaign.status)]),

@@ -1,6 +1,10 @@
-import { subDays } from "date-fns";
+import { startOfDay, subDays } from "date-fns";
 
-import { META_SYNC_DAYS } from "@/features/growth-and-analytics/constants/metaConfig";
+import {
+  META_FOLLOWER_COUNT_DAYS,
+  META_INSIGHTS_WINDOW_DAYS,
+  META_SYNC_DAYS,
+} from "@/features/growth-and-analytics/constants/metaConfig";
 import { serializeUrlDate } from "@/shared/utils/urlDateParams";
 
 export type MetaSyncRange = {
@@ -10,17 +14,76 @@ export type MetaSyncRange = {
   untilUnix: string;
 };
 
-export function getMetaSyncRange(): MetaSyncRange {
-  const toDate = new Date();
-  const fromDate = subDays(toDate, META_SYNC_DAYS);
-  const sinceUnix = String(Math.floor(fromDate.getTime() / 1000));
-  const untilUnix = String(Math.floor(toDate.getTime() / 1000) + 86400);
+/** Meta daily insights exclude the current calendar day. */
+export function getMetaInsightsUntilDate(): Date {
+  return startOfDay(subDays(new Date(), 1));
+}
+
+function toMetaSyncRange(fromDate: Date, toDate: Date): MetaSyncRange {
+  const from = startOfDay(fromDate);
+  const to = startOfDay(toDate);
+
+  return {
+    from: serializeUrlDate(from),
+    to: serializeUrlDate(to),
+    sinceUnix: String(Math.floor(from.getTime() / 1000)),
+    untilUnix: String(Math.floor(to.getTime() / 1000)),
+  };
+}
+
+export function getMetaSyncDateSpan(): { from: string; to: string } {
+  const toDate = getMetaInsightsUntilDate();
+  const fromDate = subDays(toDate, META_SYNC_DAYS - 1);
 
   return {
     from: serializeUrlDate(fromDate),
     to: serializeUrlDate(toDate),
-    sinceUnix,
-    untilUnix,
+  };
+}
+
+/** Window for Instagram follower_count (max 30 days, excluding today). */
+export function getMetaFollowerCountSyncRange(): MetaSyncRange {
+  const toDate = getMetaInsightsUntilDate();
+  const fromDate = subDays(toDate, META_FOLLOWER_COUNT_DAYS - 1);
+
+  return toMetaSyncRange(fromDate, toDate);
+}
+
+/** Chunks a long sync window into Meta-safe insight ranges (max 30 days each). */
+export function getMetaInsightSyncChunks(): MetaSyncRange[] {
+  const toDate = getMetaInsightsUntilDate();
+  const totalStart = subDays(toDate, META_SYNC_DAYS - 1);
+  const chunks: MetaSyncRange[] = [];
+
+  let chunkEnd = toDate;
+
+  while (chunkEnd >= totalStart) {
+    let chunkStart = subDays(chunkEnd, META_INSIGHTS_WINDOW_DAYS - 1);
+    if (chunkStart < totalStart) {
+      chunkStart = totalStart;
+    }
+
+    chunks.push(toMetaSyncRange(chunkStart, chunkEnd));
+
+    if (chunkStart.getTime() <= totalStart.getTime()) {
+      break;
+    }
+
+    chunkEnd = subDays(chunkStart, 1);
+  }
+
+  return chunks.reverse();
+}
+
+export function getMetaSyncRange(): MetaSyncRange {
+  const span = getMetaSyncDateSpan();
+  const toDate = getMetaInsightsUntilDate();
+  const fromDate = subDays(toDate, META_SYNC_DAYS - 1);
+
+  return {
+    ...span,
+    sinceUnix: String(Math.floor(startOfDay(fromDate).getTime() / 1000)),
+    untilUnix: String(Math.floor(toDate.getTime() / 1000)),
   };
 }
 

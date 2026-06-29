@@ -14,6 +14,7 @@ import {
 } from "../utils/contentMetrics";
 import { saveGrowthReport } from "../utils/generateReport";
 import { resolveGrowthReportPeriod } from "../utils/reportPeriod";
+import { useGrowthAccountsUpdated } from "./useGrowthAccountsUpdated";
 import { useGrowthDateRange } from "./useGrowthDateRange";
 
 const NO_ACCOUNTS: OrganicAccount[] = [];
@@ -27,7 +28,12 @@ export function useGrowthContentPerformance() {
   const { range, dateFilterProps, periodLabel } = useGrowthDateRange();
 
   const loadAccounts = useCallback(() => fetchOrganicAccounts(), []);
-  const { data: accounts } = useFetch<OrganicAccount[]>(loadAccounts, NO_ACCOUNTS);
+  const { data: accounts, reload: reloadAccounts } = useFetch<OrganicAccount[]>(
+    loadAccounts,
+    NO_ACCOUNTS,
+  );
+
+  useGrowthAccountsUpdated(reloadAccounts);
 
   const [selectedId, setSelectedId] = useState("");
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
@@ -39,7 +45,15 @@ export function useGrowthContentPerformance() {
     () => (accountId ? fetchPosts(accountId, range) : Promise.resolve(NO_POSTS)),
     [accountId, range],
   );
-  const { data: posts, isLoading, error } = useFetch<PostRow[]>(loadPosts, NO_POSTS);
+  const { data: posts, isLoading, error, reload: reloadPosts } = useFetch<PostRow[]>(
+    loadPosts,
+    NO_POSTS,
+  );
+
+  useGrowthAccountsUpdated(async () => {
+    await reloadAccounts();
+    await reloadPosts();
+  });
 
   const accountOptions = useMemo(
     () =>

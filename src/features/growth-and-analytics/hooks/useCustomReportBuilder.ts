@@ -12,6 +12,7 @@ import { buildCustomReportInput } from "../utils/customReportMeta";
 import { saveGrowthReport } from "../utils/generateReport";
 import { resolveGrowthReportPeriod } from "../utils/reportPeriod";
 import { buildReportableAccounts } from "../utils/reportableAccounts";
+import { useGrowthAccountsUpdated } from "./useGrowthAccountsUpdated";
 
 const NO_ACCOUNTS: ReportableAccount[] = [];
 
@@ -36,7 +37,10 @@ export function useCustomReportBuilder() {
     data: reportableAccounts,
     isLoading: isAccountsLoading,
     error: accountsError,
+    reload: reloadAccounts,
   } = useFetch<ReportableAccount[]>(loadAccounts, NO_ACCOUNTS);
+
+  useGrowthAccountsUpdated(reloadAccounts);
 
   const [localValues, setLocalValues] = useState(() => ({
     selectedAccountIds: defaultCustomReportForm.selectedAccountIds,
