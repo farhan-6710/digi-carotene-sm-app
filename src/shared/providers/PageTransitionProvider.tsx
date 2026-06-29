@@ -73,7 +73,7 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
       setIsVisible(true);
       setActivePath(location.pathname);
     }
-  }, [location.key, location.pathname]);
+  }, [location.pathname]);
 
   const navValue = useMemo<PageTransitionContextValue>(
     () => ({ navigateWithTransition, activePath }),
@@ -101,7 +101,7 @@ export function PageTransitionMain({
   mainRef: RefObject<HTMLElement | null>;
   className?: string;
 }) {
-  const { pathname, key: locationKey } = useLocation();
+  const { pathname } = useLocation();
   const animation = useContext(PageTransitionAnimationContext);
   if (!animation) {
     throw new Error(
@@ -119,7 +119,7 @@ export function PageTransitionMain({
     <main ref={mainRef} className={className}>
       <AnimatePresence mode="wait" onExitComplete={onExitComplete}>
         {isVisible ? (
-          <motion.div key={locationKey} {...PAGE_MAIN_MOTION}>
+          <motion.div key={pathname} {...PAGE_MAIN_MOTION}>
             <Outlet />
           </motion.div>
         ) : null}
