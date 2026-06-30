@@ -4,6 +4,7 @@ import {
   META_GRAPH_BASE_URL,
 } from "@/features/growth-and-analytics/constants/metaConfig";
 import {
+  getFollowerInsightRange,
   getMetaSyncRange,
   mapIgMediaType,
   type MetaSyncRange,
@@ -130,36 +131,38 @@ async function fetchInstagramInsightMetrics(
   return data.data ?? [];
 }
 
-/** follower_count only supports the last 30 days excluding today — fetch separately. */
-export async function fetchInstagramFollowerInsights(
+/** Dashboard: reach always; follower_count only inside Meta's 30-day window. */
+export async function fetchInstagramDashboardInsights(
   accountId: string,
   accessToken: string,
   range: MetaSyncRange,
 ): Promise<IgInsightMetric[]> {
-  return fetchInstagramInsightMetrics(accountId, accessToken, range, "follower_count");
-}
+  const followerRange = getFollowerInsightRange(range);
 
-export async function fetchInstagramReachInsights(
-  accountId: string,
-  accessToken: string,
-  range: MetaSyncRange,
-): Promise<IgInsightMetric[]> {
-  const reach = await fetchInstagramInsightMetrics(accountId, accessToken, range, "reach");
-
-  let interactionMetrics: IgInsightMetric[] = [];
-  try {
-    interactionMetrics = await fetchInstagramInsightMetrics(
+  const requests: Promise<IgInsightMetric[]>[] = [
+    fetchInstagramInsightMetrics(accountId, accessToken, range, "reach"),
+    fetchInstagramInsightMetrics(
       accountId,
       accessToken,
       range,
       "total_interactions",
       { metric_type: "total_value" },
+    ).catch(() => [] as IgInsightMetric[]),
+  ];
+
+  if (followerRange) {
+    requests.push(
+      fetchInstagramInsightMetrics(
+        accountId,
+        accessToken,
+        followerRange,
+        "follower_count",
+      ),
     );
-  } catch {
-    // Some accounts may not expose this metric.
   }
 
-  return [...reach, ...interactionMetrics];
+  const results = await Promise.all(requests);
+  return results.flat();
 }
 
 export type IgMediaItem = {
@@ -209,15 +212,15 @@ export async function fetchInstagramMediaInsights(
   }
 }
 
-// Facebook page insights — one metric per call, merged by the sync layer.
-export async function fetchFacebookInsightMetric(
+/** Dashboard: impressions, engagement, and fan adds in one Graph request. */
+export async function fetchFacebookDashboardInsights(
   pageId: string,
   accessToken: string,
-  metric: string,
   range: MetaSyncRange,
 ) {
   const data = (await graphGet(META_API_VERSION.facebook, `${pageId}/insights`, {
-    metric,
+    metric: "page_impressions,page_post_engagements,page_fan_adds",
+    period: "day",
     since: range.sinceUnix,
     until: range.untilUnix,
     access_token: accessToken,

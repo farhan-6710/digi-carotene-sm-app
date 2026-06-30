@@ -7,7 +7,6 @@ import type {
   DailyMetricRow,
   GrowthPlatform,
   OrganicAccount,
-  TopAccountRow,
   TrendPoint,
 } from "../types/types";
 import { formatCompact, formatPercent, monthLabel } from "./formatters";
@@ -22,31 +21,23 @@ const PLATFORM_COLOR: Record<GrowthPlatform, string> = {
   facebook: "var(--chart-3)",
 };
 
-// Rows arrive date-ascending, so the last write per account is the latest day.
-function latestPerAccount(rows: DailyMetricRow[]): DailyMetricRow[] {
-  const byAccount = new Map<string, DailyMetricRow>();
-  for (const row of rows) {
-    byAccount.set(row.accountId, row);
-  }
-  return [...byAccount.values()];
-}
-
 export function buildDashboardStatCards(
   rows: DailyMetricRow[],
-  accounts: OrganicAccount[],
+  account?: OrganicAccount,
 ): StatCardItem[] {
-  const totalFollowers = accounts.reduce((sum, account) => sum + account.followers, 0);
+  const totalFollowers = account?.followers ?? 0;
   const totalReach = rows.reduce((sum, row) => sum + row.reach, 0);
   const totalEngagement = rows.reduce((sum, row) => sum + row.engagement, 0);
   const netNew = rows.reduce((sum, row) => sum + row.newFollowers, 0);
   const engagementRate = totalReach ? (totalEngagement / totalReach) * 100 : 0;
+  const accountLabel = account?.accountName ?? "Selected account";
 
   return [
     {
       id: "followers",
       label: "Total Followers",
       value: formatCompact(totalFollowers),
-      description: `Across ${accounts.length} connected accounts`,
+      description: accountLabel,
       icon: Users,
     },
     {
@@ -121,61 +112,15 @@ export function buildTrend(rows: DailyMetricRow[]): TrendPoint[] {
   }));
 }
 
-export function buildPlatformSplit(
-  rows: DailyMetricRow[],
-  accounts: OrganicAccount[],
-): CategoryDatum[] {
-  const byPlatform = new Map<GrowthPlatform, number>();
-  for (const account of accounts) {
-    byPlatform.set(
-      account.platform,
-      (byPlatform.get(account.platform) ?? 0) + account.followers,
-    );
-  }
+export function buildPlatformSplit(account?: OrganicAccount): CategoryDatum[] {
+  if (!account) return [];
 
-  if (byPlatform.size === 0) {
-    for (const row of latestPerAccount(rows)) {
-      byPlatform.set(row.platform, (byPlatform.get(row.platform) ?? 0) + row.followers);
-    }
-  }
-
-  return [...byPlatform.entries()].map(([platform, value]) => ({
-    key: platform,
-    label: PLATFORM_LABEL[platform],
-    value,
-    color: PLATFORM_COLOR[platform],
-  }));
-}
-
-export function buildTopAccounts(
-  rows: DailyMetricRow[],
-  accounts: OrganicAccount[],
-): TopAccountRow[] {
-  const followersByAccount = new Map(
-    accounts.map((account) => [account.id, account.followers]),
-  );
-  const totals = new Map<string, { reach: number; engagement: number }>();
-  for (const row of rows) {
-    const current = totals.get(row.accountId) ?? { reach: 0, engagement: 0 };
-    current.reach += row.reach;
-    current.engagement += row.engagement;
-    totals.set(row.accountId, current);
-  }
-
-  return latestPerAccount(rows)
-    .map((row) => {
-      const agg = totals.get(row.accountId) ?? { reach: 0, engagement: 0 };
-      return {
-        id: row.accountId,
-        name: row.accountName,
-        platform: row.platform,
-        followers: followersByAccount.get(row.accountId) ?? row.followers,
-        engagementRate: agg.reach
-          ? Number(((agg.engagement / agg.reach) * 100).toFixed(1))
-          : 0,
-        reach: agg.reach,
-      };
-    })
-    .sort((a, b) => b.followers - a.followers)
-    .slice(0, 5);
+  return [
+    {
+      key: account.platform,
+      label: PLATFORM_LABEL[account.platform],
+      value: account.followers,
+      color: PLATFORM_COLOR[account.platform],
+    },
+  ];
 }

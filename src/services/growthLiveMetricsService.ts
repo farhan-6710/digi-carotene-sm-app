@@ -2,11 +2,10 @@ import { DB } from "@/services/db";
 import {
   fetchAdCampaignStatuses,
   fetchAdDailyInsights,
-  fetchFacebookInsightMetric,
+  fetchFacebookDashboardInsights,
   fetchFacebookPosts,
-  fetchInstagramFollowerInsights,
+  fetchInstagramDashboardInsights,
   fetchInstagramMedia,
-  fetchInstagramReachInsights,
 } from "@/services/metaService";
 import { supabase } from "@/services/supabaseClient";
 import { META_INITIAL_POST_SYNC_LIMIT } from "@/features/growth-and-analytics/constants/metaConfig";
@@ -21,7 +20,6 @@ import { formatMetaApiError } from "@/features/growth-and-analytics/utils/metaAp
 import {
   buildDailyMetricRows,
   flattenInsightMetrics,
-  getFollowerInsightRange,
   getMetaInsightChunksForSpan,
   mapCampaignStatus,
   mapIgMediaType as mapMediaType,
@@ -44,16 +42,6 @@ type AdLiveRow = {
   ad_account_id: string;
   access_token: string | null;
 };
-
-async function fetchOrganicLiveRows(): Promise<OrganicLiveRow[]> {
-  const { data, error } = await supabase
-    .from(DB.GROWTH_ORGANIC_ACCOUNTS.TABLE)
-    .select("id, platform, account_name, account_id, access_token, followers")
-    .eq("is_active", true);
-
-  if (error) throw new Error(error.message);
-  return (data ?? []) as OrganicLiveRow[];
-}
 
 async function fetchOrganicLiveRow(dbAccountId: string): Promise<OrganicLiveRow | null> {
   const { data, error } = await supabase
@@ -81,42 +69,38 @@ function inSpan(date: string, span: { from: string; to: string }): boolean {
   return date >= span.from && date <= span.to;
 }
 
+function mergeInsightChunks(
+  byDate: Map<string, Record<string, number>>,
+  metrics: Array<{ name?: string; values?: Array<{ value?: number; end_time?: string }> }>,
+  span: { from: string; to: string },
+): void {
+  for (const [date, values] of flattenInsightMetrics(metrics)) {
+    if (inSpan(date, span)) {
+      byDate.set(date, { ...(byDate.get(date) ?? {}), ...values });
+    }
+  }
+}
+
 async function fetchInstagramMetricsForRange(
   account: OrganicLiveRow,
   span: { from: string; to: string },
 ): Promise<DailyMetricRow[]> {
   const token = account.access_token!;
   const byDate = new Map<string, Record<string, number>>();
+  const chunks = getMetaInsightChunksForSpan(span.from, span.to);
 
-  const followerRange = getFollowerInsightRange(span);
-  if (followerRange) {
-    const followerInsights = await fetchInstagramFollowerInsights(
-      account.account_id,
-      token,
-      followerRange,
-    );
-    for (const [date, values] of flattenInsightMetrics(followerInsights)) {
-      if (inSpan(date, span)) {
-        byDate.set(date, { ...(byDate.get(date) ?? {}), ...values });
-      }
-    }
-  }
+  const chunkMetrics = await Promise.all(
+    chunks.map((chunk) =>
+      fetchInstagramDashboardInsights(account.account_id, token, chunk),
+    ),
+  );
 
-  for (const chunk of getMetaInsightChunksForSpan(span.from, span.to)) {
-    const insights = await fetchInstagramReachInsights(
-      account.account_id,
-      token,
-      chunk,
-    );
-    for (const [date, values] of flattenInsightMetrics(insights)) {
-      if (inSpan(date, span)) {
-        byDate.set(date, { ...(byDate.get(date) ?? {}), ...values });
-      }
-    }
+  for (const metrics of chunkMetrics) {
+    mergeInsightChunks(byDate, metrics, span);
   }
 
   return buildDailyMetricRows(byDate, account.followers, {
-    followerCountIsDailyDelta: Boolean(followerRange),
+    followerCountIsDailyDelta: true,
   }).map((row) => ({
     accountId: account.id,
     accountName: account.account_name,
@@ -136,18 +120,16 @@ async function fetchFacebookMetricsForRange(
 ): Promise<DailyMetricRow[]> {
   const token = account.access_token!;
   const byDate = new Map<string, Record<string, number>>();
+  const chunks = getMetaInsightChunksForSpan(span.from, span.to);
 
-  for (const chunk of getMetaInsightChunksForSpan(span.from, span.to)) {
-    const metrics = await Promise.all([
-      fetchFacebookInsightMetric(account.account_id, token, "page_impressions", chunk),
-      fetchFacebookInsightMetric(account.account_id, token, "page_post_engagements", chunk),
-      fetchFacebookInsightMetric(account.account_id, token, "page_fan_adds", chunk),
-    ]);
-    for (const [date, values] of flattenInsightMetrics(metrics.flat())) {
-      if (inSpan(date, span)) {
-        byDate.set(date, { ...(byDate.get(date) ?? {}), ...values });
-      }
-    }
+  const chunkMetrics = await Promise.all(
+    chunks.map((chunk) =>
+      fetchFacebookDashboardInsights(account.account_id, token, chunk),
+    ),
+  );
+
+  for (const metrics of chunkMetrics) {
+    mergeInsightChunks(byDate, metrics, span);
   }
 
   return buildDailyMetricRows(byDate, account.followers).map((row) => ({
@@ -163,36 +145,24 @@ async function fetchFacebookMetricsForRange(
   }));
 }
 
-/** Dashboard: Meta insights for the selected range only — no DB writes. */
-export async function fetchLiveDailyMetrics(
+/** Dashboard: Meta insights for one account in the selected range — no DB writes. */
+export async function fetchLiveDailyMetricsForAccount(
+  dbAccountId: string,
   range: GrowthDateRange,
 ): Promise<DailyMetricRow[]> {
+  const account = await fetchOrganicLiveRow(dbAccountId);
+  if (!account?.access_token) return [];
+
   const span = resolveGrowthMetaSpan(range);
-  const accounts = await fetchOrganicLiveRows();
-  const rows: DailyMetricRow[] = [];
-  const errors: string[] = [];
 
-  for (const account of accounts) {
-    if (!account.access_token) continue;
-
-    try {
-      const accountRows =
-        account.platform === "instagram"
-          ? await fetchInstagramMetricsForRange(account, span)
-          : await fetchFacebookMetricsForRange(account, span);
-
-      rows.push(...accountRows);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Could not load metrics.";
-      errors.push(formatMetaApiError(message, account.account_name));
-    }
+  try {
+    return account.platform === "instagram"
+      ? await fetchInstagramMetricsForRange(account, span)
+      : await fetchFacebookMetricsForRange(account, span);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Could not load metrics.";
+    throw new Error(formatMetaApiError(message, account.account_name), { cause: error });
   }
-
-  if (errors.length > 0 && rows.length === 0) {
-    throw new Error(errors.join(" "));
-  }
-
-  return rows;
 }
 
 /** Content page: one media/posts list call, filtered to the selected range. */
