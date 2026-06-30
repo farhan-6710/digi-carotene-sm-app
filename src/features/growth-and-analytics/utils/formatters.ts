@@ -1,8 +1,7 @@
+import { roundOff } from "@/shared/utils/roundOff";
+
 export function formatCompact(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(value);
+  return roundOff(value);
 }
 
 export function formatNumber(value: number): string {

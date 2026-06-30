@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { fetchAdAccounts } from "@/services/growthAccountsService";
-import { fetchCampaignMetrics } from "@/services/growthAnalyticsService";
+import { fetchLiveCampaignMetrics } from "@/services/growthLiveMetricsService";
 import { useFetch } from "@/shared/hooks/useFetch";
 import { showToast } from "@/shared/utils/showToast";
 
@@ -38,7 +38,7 @@ export function useGrowthCampaigns() {
   const loadCampaigns = useCallback(
     () =>
       adAccountId
-        ? fetchCampaignMetrics(adAccountId, range)
+        ? fetchLiveCampaignMetrics(adAccountId, range)
         : Promise.resolve(NO_METRICS),
     [adAccountId, range],
   );

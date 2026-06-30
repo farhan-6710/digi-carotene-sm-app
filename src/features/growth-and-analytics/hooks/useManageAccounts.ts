@@ -89,25 +89,19 @@ export function useManageAccounts() {
         showToast(
           "success",
           organicForm.accessToken.trim()
-            ? "Account updated and data re-synced from Meta."
+            ? "Account updated. Cached metrics cleared — open Growth pages to reload."
             : "Organic account updated.",
         );
       } else {
-        showToast("info", "Connecting account and syncing data from Meta…");
+        showToast("info", "Validating account with Meta…");
         await connectOrganicAccount(organicForm);
-        showToast("success", "Account connected. Dashboard data is ready.");
+        showToast("success", "Account connected. Open Dashboard or Content to load metrics.");
       }
       setIsOrganicOpen(false);
       await reloadOrganic();
       notifyGrowthAccountsUpdated();
     } catch (error) {
-      const message = errorMessage(error, "Failed to save organic account.");
-      showToast("error", message);
-      if (message.startsWith("Account connected,")) {
-        setIsOrganicOpen(false);
-        await reloadOrganic();
-        notifyGrowthAccountsUpdated();
-      }
+      showToast("error", errorMessage(error, "Failed to save organic account."));
     } finally {
       setIsOrganicSaving(false);
     }
@@ -162,25 +156,19 @@ export function useManageAccounts() {
         showToast(
           "success",
           adForm.accessToken.trim()
-            ? "Ad account updated and data re-synced from Meta."
+            ? "Ad account updated. Cached metrics cleared — open Campaign Analytics to reload."
             : "Ad account updated.",
         );
       } else {
-        showToast("info", "Connecting ad account and syncing data from Meta…");
+        showToast("info", "Validating ad account with Meta…");
         await connectAdAccount(adForm);
-        showToast("success", "Ad account connected. Campaign data is ready.");
+        showToast("success", "Ad account connected. Open Campaign Analytics to load metrics.");
       }
       setIsAdOpen(false);
       await reloadAds();
       notifyGrowthAccountsUpdated();
     } catch (error) {
-      const message = errorMessage(error, "Failed to save ad account.");
-      showToast("error", message);
-      if (message.startsWith("Ad account connected,")) {
-        setIsAdOpen(false);
-        await reloadAds();
-        notifyGrowthAccountsUpdated();
-      }
+      showToast("error", errorMessage(error, "Failed to save ad account."));
     } finally {
       setIsAdSaving(false);
     }

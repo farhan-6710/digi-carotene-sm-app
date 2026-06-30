@@ -5,7 +5,8 @@ import {
   META_INSIGHTS_WINDOW_DAYS,
   META_SYNC_DAYS,
 } from "@/features/growth-and-analytics/constants/metaConfig";
-import { serializeUrlDate } from "@/shared/utils/urlDateParams";
+import type { GrowthDateRange } from "@/features/growth-and-analytics/types/types";
+import { parseUrlDateParam, serializeUrlDate } from "@/shared/utils/urlDateParams";
 
 export type MetaSyncRange = {
   from: string;
@@ -49,13 +50,15 @@ export function getMetaFollowerCountSyncRange(): MetaSyncRange {
   return toMetaSyncRange(fromDate, toDate);
 }
 
-/** Chunks a long sync window into Meta-safe insight ranges (max 30 days each). */
-export function getMetaInsightSyncChunks(): MetaSyncRange[] {
-  const toDate = getMetaInsightsUntilDate();
-  const totalStart = subDays(toDate, META_SYNC_DAYS - 1);
-  const chunks: MetaSyncRange[] = [];
+/** Chunks a date span into Meta-safe insight ranges (max 28 days each). */
+export function getMetaInsightChunksForSpan(from: string, to: string): MetaSyncRange[] {
+  const fromDate = parseUrlDateParam(from);
+  const toDate = parseUrlDateParam(to);
+  if (!fromDate || !toDate) return [];
 
-  let chunkEnd = toDate;
+  const totalStart = startOfDay(fromDate);
+  const chunks: MetaSyncRange[] = [];
+  let chunkEnd = startOfDay(toDate);
 
   while (chunkEnd >= totalStart) {
     let chunkStart = subDays(chunkEnd, META_INSIGHTS_WINDOW_DAYS - 1);
@@ -73,6 +76,53 @@ export function getMetaInsightSyncChunks(): MetaSyncRange[] {
   }
 
   return chunks.reverse();
+}
+
+/** Chunks a long sync window into Meta-safe insight ranges (max 30 days each). */
+export function getMetaInsightSyncChunks(): MetaSyncRange[] {
+  const span = getMetaSyncDateSpan();
+  return getMetaInsightChunksForSpan(span.from, span.to);
+}
+
+/** Maps UI date filters to a Meta-queryable span (capped at 90 days, excludes today). */
+export function resolveGrowthMetaSpan(range: GrowthDateRange): { from: string; to: string } {
+  const metaUntil = getMetaInsightsUntilDate();
+  const earliest = subDays(metaUntil, META_SYNC_DAYS - 1);
+
+  if (!range.from || !range.to) {
+    return {
+      from: serializeUrlDate(earliest),
+      to: serializeUrlDate(metaUntil),
+    };
+  }
+
+  let toDate = parseUrlDateParam(range.to) ?? metaUntil;
+  let fromDate = parseUrlDateParam(range.from) ?? earliest;
+
+  if (toDate > metaUntil) toDate = metaUntil;
+  if (fromDate > toDate) fromDate = toDate;
+  if (fromDate < earliest) fromDate = earliest;
+
+  return {
+    from: serializeUrlDate(fromDate),
+    to: serializeUrlDate(toDate),
+  };
+}
+
+/** Intersection of a span with Instagram's follower_count window (last 30 days). */
+export function getFollowerInsightRange(
+  span: { from: string; to: string },
+): MetaSyncRange | null {
+  const followerWindow = getMetaFollowerCountSyncRange();
+  const from = span.from > followerWindow.from ? span.from : followerWindow.from;
+  const to = span.to < followerWindow.to ? span.to : followerWindow.to;
+  if (from > to) return null;
+
+  const fromDate = parseUrlDateParam(from);
+  const toDate = parseUrlDateParam(to);
+  if (!fromDate || !toDate) return null;
+
+  return toMetaSyncRange(fromDate, toDate);
 }
 
 export function getMetaSyncRange(): MetaSyncRange {
@@ -110,7 +160,8 @@ export function flattenInsightMetrics(
 
 export function buildDailyMetricRows(
   byDate: Map<string, Record<string, number>>,
-  followerFallback: number,
+  currentFollowerTotal: number,
+  options?: { followerCountIsDailyDelta?: boolean },
 ): Array<{
   metric_date: string;
   followers: number;
@@ -120,7 +171,7 @@ export function buildDailyMetricRows(
   engagement: number;
 }> {
   const dates = [...byDate.keys()].sort();
-  let prevFollowers = followerFallback;
+  let prevFollowers = currentFollowerTotal;
   const rows: Array<{
     metric_date: string;
     followers: number;
@@ -130,11 +181,10 @@ export function buildDailyMetricRows(
     engagement: number;
   }> = [];
 
+  const followerCountIsDailyDelta = options?.followerCountIsDailyDelta ?? false;
+
   for (const date of dates) {
     const values = byDate.get(date) ?? {};
-    const followers = Math.round(
-      values.follower_count ?? values.followers ?? prevFollowers,
-    );
     const reach = Math.round(values.reach ?? 0);
     const engagement = Math.round(
       values.total_interactions ??
@@ -145,10 +195,24 @@ export function buildDailyMetricRows(
     const impressions = Math.round(
       values.impressions ?? values.page_impressions ?? values.views ?? reach * 1.3,
     );
-    const newFollowers = Math.max(
-      0,
-      Math.round(values.page_fan_adds ?? followers - prevFollowers),
-    );
+
+    let newFollowers: number;
+    let followers: number;
+
+    if (followerCountIsDailyDelta) {
+      // Instagram follower_count with period=day is net new followers that day, not a total.
+      newFollowers = Math.round(values.follower_count ?? 0);
+      followers = 0;
+    } else {
+      followers = Math.round(
+        values.follower_count ?? values.followers ?? prevFollowers,
+      );
+      newFollowers = Math.max(
+        0,
+        Math.round(values.page_fan_adds ?? followers - prevFollowers),
+      );
+      prevFollowers = followers;
+    }
 
     rows.push({
       metric_date: date,
@@ -158,7 +222,14 @@ export function buildDailyMetricRows(
       impressions,
       engagement,
     });
-    prevFollowers = followers;
+  }
+
+  if (followerCountIsDailyDelta && rows.length > 0) {
+    let runningTotal = currentFollowerTotal;
+    for (const row of [...rows].sort((a, b) => b.metric_date.localeCompare(a.metric_date))) {
+      row.followers = runningTotal;
+      runningTotal -= row.new_followers;
+    }
   }
 
   return rows;

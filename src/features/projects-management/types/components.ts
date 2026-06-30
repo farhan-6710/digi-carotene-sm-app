@@ -11,6 +11,7 @@ import type { ProjectPostStats } from "@/features/projects-management/utils/proj
 export type ProjectFormSeeds = {
   client: ProjectClient | null;
   manager: ProjectManager | null;
+  teamMembers: Pick<TeamMember, "id" | "member_name">[];
 };
 
 export type ProjectsTableRowProps = {
@@ -67,6 +68,7 @@ export type ProjectTeamMembersSelectProps = {
   excludeMemberIds?: string[];
   disabled?: boolean;
   preload?: boolean;
+  seedMembers?: Pick<TeamMember, "id" | "member_name">[];
 };
 
 export type ClientProjectsSectionProps = {

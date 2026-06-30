@@ -13,6 +13,7 @@ import type {
   MetaAdInfo,
   MetaOrganicInfo,
 } from "@/features/growth-and-analytics/types/types";
+import { formatMetaApiError } from "@/features/growth-and-analytics/utils/metaApiErrors";
 
 type GraphList<T> = { data?: T[]; paging?: { next?: string } };
 
@@ -36,7 +37,7 @@ async function graphGet(
 
   const error = json.error as { message?: string } | undefined;
   if (error) {
-    throw new Error(error.message ?? "Meta rejected the request.");
+    throw new Error(formatMetaApiError(error.message ?? "Meta rejected the request."));
   }
 
   return json;

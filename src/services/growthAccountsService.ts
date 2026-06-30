@@ -1,5 +1,8 @@
 import { DB } from "@/services/db";
-import { syncAdFromMeta, syncOrganicFromMeta } from "@/services/growthMetaSyncService";
+import {
+  clearAdCachedMetrics,
+  clearOrganicCachedMetrics,
+} from "@/services/growthMetaSyncService";
 import { fetchMetaAdInfo, fetchMetaOrganicInfo } from "@/services/metaService";
 import { supabase } from "@/services/supabaseClient";
 import type {
@@ -143,26 +146,7 @@ export async function connectOrganicAccount(
     throw new Error(error.message);
   }
 
-  const account = mapOrganic(data as OrganicRow);
-
-  try {
-    await syncOrganicFromMeta(
-      form.platform,
-      metaAccountId,
-      token,
-      account.id,
-      info.followers,
-    );
-  } catch (syncError) {
-    const message =
-      syncError instanceof Error ? syncError.message : "Could not sync metrics from Meta.";
-    throw new Error(
-      `Account connected, but initial data sync failed: ${message} Edit the account to retry.`,
-      { cause: syncError },
-    );
-  }
-
-  return account;
+  return mapOrganic(data as OrganicRow);
 }
 
 export async function updateOrganicAccount(
@@ -177,13 +161,11 @@ export async function updateOrganicAccount(
     account_id: metaAccountId,
   };
 
-  let followers = 0;
   if (token) {
     const info = await fetchMetaOrganicInfo(form.platform, metaAccountId, token);
     columns.access_token = token;
     columns.followers = info.followers;
     columns.profile_picture = info.profilePicture;
-    followers = info.followers;
   }
 
   const { data, error } = await supabase
@@ -197,13 +179,7 @@ export async function updateOrganicAccount(
 
   const account = mapOrganic(data as OrganicRow);
   if (token) {
-    await syncOrganicFromMeta(
-      form.platform,
-      metaAccountId,
-      token,
-      id,
-      followers || account.followers,
-    );
+    await clearOrganicCachedMetrics(id);
   }
 
   return account;
@@ -253,20 +229,7 @@ export async function connectAdAccount(form: AdAccountForm): Promise<AdAccount> 
     throw new Error(error.message);
   }
 
-  const account = mapAd(data as AdRow);
-
-  try {
-    await syncAdFromMeta(metaAdAccountId, token, account.id);
-  } catch (syncError) {
-    const message =
-      syncError instanceof Error ? syncError.message : "Could not sync metrics from Meta.";
-    throw new Error(
-      `Ad account connected, but initial data sync failed: ${message} Edit the account to retry.`,
-      { cause: syncError },
-    );
-  }
-
-  return account;
+  return mapAd(data as AdRow);
 }
 
 export async function updateAdAccount(
@@ -297,7 +260,7 @@ export async function updateAdAccount(
 
   const account = mapAd(data as AdRow);
   if (token) {
-    await syncAdFromMeta(metaAdAccountId, token, id);
+    await clearAdCachedMetrics(id);
   }
 
   return account;

@@ -103,6 +103,8 @@ export function ProjectDialog({
               onChange={onTeamMemberIdsChange}
               excludeMemberIds={values.managerId ? [values.managerId] : []}
               disabled={isSaving}
+              preload={open}
+              seedMembers={formSeeds?.teamMembers ?? []}
             />
           </div>
 

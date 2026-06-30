@@ -7,6 +7,7 @@ import {
   deleteProject,
   updateProject,
 } from "@/services/projectsService";
+import { fetchTeamMembersByIds } from "@/services/teamMembersService";
 import {
   emptyProjectFormValues,
   projectToFormValues,
@@ -76,8 +77,25 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
     setFormSeeds({
       client: project.clients,
       manager: project.team_members,
+      teamMembers: [],
     });
     setIsDialogOpen(true);
+
+    if (project.team_member_ids.length > 0) {
+      void fetchTeamMembersByIds(project.team_member_ids).then((members) => {
+        setFormSeeds((current) =>
+          current
+            ? {
+                ...current,
+                teamMembers: members.map(({ id, member_name }) => ({
+                  id,
+                  member_name,
+                })),
+              }
+            : null,
+        );
+      });
+    }
   }, []);
 
   const saveProject = useCallback(async () => {

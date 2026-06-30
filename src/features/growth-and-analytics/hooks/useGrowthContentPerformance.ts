@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { fetchOrganicAccounts } from "@/services/growthAccountsService";
-import { fetchPosts } from "@/services/growthAnalyticsService";
+import { fetchLivePosts } from "@/services/growthLiveMetricsService";
 import { useFetch } from "@/shared/hooks/useFetch";
 import { showToast } from "@/shared/utils/showToast";
 
@@ -42,7 +42,7 @@ export function useGrowthContentPerformance() {
   const accountId = activeAccount?.id ?? "";
 
   const loadPosts = useCallback(
-    () => (accountId ? fetchPosts(accountId, range) : Promise.resolve(NO_POSTS)),
+    () => (accountId ? fetchLivePosts(accountId, range) : Promise.resolve(NO_POSTS)),
     [accountId, range],
   );
   const { data: posts, isLoading, error, reload: reloadPosts } = useFetch<PostRow[]>(

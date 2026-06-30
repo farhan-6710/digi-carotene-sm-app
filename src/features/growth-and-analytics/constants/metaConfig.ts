@@ -33,3 +33,6 @@ export const META_INSIGHTS_WINDOW_DAYS = 28;
 
 // follower_count only supports the last 30 days, excluding today.
 export const META_FOLLOWER_COUNT_DAYS = 30;
+
+// Cap post sync on connect — each post insight call is a separate Graph API request.
+export const META_INITIAL_POST_SYNC_LIMIT = 10;

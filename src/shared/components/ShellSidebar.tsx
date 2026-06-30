@@ -38,7 +38,9 @@ export function ShellSidebarContent({
       >
         <div
           className={
-            collapsed ? "flex items-center justify-center" : "flex items-center justify-center gap-3"
+            collapsed
+              ? "flex items-center justify-center"
+              : "flex items-center justify-center gap-3"
           }
         >
           <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-lg font-bold text-primary-foreground shadow-sm">
@@ -164,7 +166,9 @@ export function ShellMobileNavSheet({
         className="w-64 max-w-[85vw] gap-0 border-sidebar-border/80 bg-sidebar p-0 text-sidebar-foreground sm:max-w-xs"
       >
         <SheetTitle className="sr-only">Navigation menu</SheetTitle>
-        <SheetDescription className="sr-only">{sheetDescription}</SheetDescription>
+        <SheetDescription className="sr-only">
+          {sheetDescription}
+        </SheetDescription>
         <TooltipProvider>
           <ShellSidebarContent
             config={config}

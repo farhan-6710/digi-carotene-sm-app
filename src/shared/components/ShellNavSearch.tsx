@@ -60,7 +60,7 @@ export function ShellNavSearch({
               }
             }}
             placeholder={placeholder}
-            className="h-9 rounded-full border-muted-foreground/30 bg-muted/40 pl-9 shadow-none focus-visible:ring-primary/10"
+            className="h-9 rounded-full border-ring/40 bg-muted/40 pl-9 shadow-none focus-visible:ring-primary/10"
             aria-label={placeholder}
             aria-expanded={showResults}
             aria-controls="shell-nav-search-results"
