@@ -32,6 +32,7 @@ Run only migrations you have **not** applied yet, in order:
 | `018_instagram_growth_phase1.sql` | Drops legacy growth metric tables; adds `instagram_profiles` + `past_posts_metrics` |
 | `019_past_posts_reposts.sql` | Adds `reposts` column to `past_posts_metrics` |
 | `020_past_posts_thumbnail.sql` | Adds `post_thumbnail` column to `past_posts_metrics` |
+| `021_instagram_daily_followers.sql` | Daily follower gain per Instagram profile (backfill + cron) |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

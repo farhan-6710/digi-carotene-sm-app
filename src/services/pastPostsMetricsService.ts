@@ -156,6 +156,32 @@ export async function replacePastPostsForProfile(
   if (insertError) throw new Error(insertError.message);
 }
 
+export async function upsertPastPost(
+  profileId: string,
+  post: PastPostInsert,
+): Promise<void> {
+  const { error } = await supabase.from(DB.PAST_POSTS_METRICS.TABLE).upsert(
+    {
+      account_id: profileId,
+      post_id: post.postId,
+      caption: post.caption,
+      media_type: post.mediaType,
+      created_at: post.createdAt,
+      reach: post.reach,
+      impressions: post.impressions,
+      likes: post.likes,
+      comments: post.comments,
+      saves: post.saves,
+      shares: post.shares,
+      reposts: post.reposts,
+      post_thumbnail: post.postThumbnail,
+    },
+    { onConflict: "account_id,post_id" },
+  );
+
+  if (error) throw new Error(error.message);
+}
+
 export async function clearPastPostsForOrganicAccount(
   organicAccountId: string,
 ): Promise<void> {

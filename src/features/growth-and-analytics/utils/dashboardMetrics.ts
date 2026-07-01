@@ -25,6 +25,7 @@ export function buildDashboardStatCards(
   rows: DailyMetricRow[],
   account?: OrganicAccount,
   interactionTotals?: InteractionTotals,
+  followersGained?: number,
 ): StatCardItem[] {
   const totalFollowers = account?.followers ?? 0;
   const totalReach = rows.reduce((sum, row) => sum + row.reach, 0);
@@ -36,7 +37,9 @@ export function buildDashboardStatCards(
   const totalViews = interactionTotals?.views ?? 0;
   const totalEngagement =
     totalLikes + totalComments + totalSaves + totalShares + totalReposts;
-  const netNew = rows.reduce((sum, row) => sum + row.newFollowers, 0);
+  const netNew =
+    followersGained ??
+    rows.reduce((sum, row) => sum + row.newFollowers, 0);
 
   const interactionDescription = [
     `${formatCompact(totalLikes)} likes`,
@@ -85,7 +88,7 @@ export function buildDashboardStatCards(
       label: "Followers Gained",
       value: formatCompact(netNew),
       description:
-        netNew > 0 ? "In selected range" : "Available in Phase 2 daily sync",
+        netNew > 0 ? "In selected range" : "No follower gain in selected range",
       icon: TrendingUp,
     },
   ];

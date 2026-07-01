@@ -31,3 +31,6 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
+
+# GoDaddy PHP cron — do not commit after adding service role key
+scripts/growth-and-analytics/php/config.php

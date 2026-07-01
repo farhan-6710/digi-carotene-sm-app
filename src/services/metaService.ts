@@ -491,4 +491,35 @@ export async function fetchInstagramBackfillPostInsights(
   return { reach, impressions: views, saves, shares, reposts };
 }
 
+export async function fetchInstagramBackfillFollowerGainByDay(
+  instagramId: string,
+  accessToken: string,
+  range: MetaSyncRange,
+): Promise<Array<{ date: string; gained: number }>> {
+  const data = (await graphGet(
+    META_API_VERSION.instagramBackfill,
+    `${instagramId}/insights`,
+    {
+      period: "day",
+      since: range.sinceUnix,
+      until: range.untilUnix,
+      metric: "follower_count",
+      access_token: accessToken,
+    },
+  )) as { data?: IgInsightMetric[] };
+
+  const metric = (data.data ?? []).find((item) => item.name === "follower_count");
+  const rows: Array<{ date: string; gained: number }> = [];
+
+  for (const point of metric?.values ?? []) {
+    if (!point.end_time) continue;
+    rows.push({
+      date: point.end_time.slice(0, 10),
+      gained: Math.round(parseMetaMetricValue(point.value)),
+    });
+  }
+
+  return rows;
+}
+
 export { mapIgMediaType };

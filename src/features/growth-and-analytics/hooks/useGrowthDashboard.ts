@@ -1,6 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { fetchInstagramProfiles } from "@/services/instagramProfilesService";
+import {
+  fetchDailyFollowersForProfile,
+  sumFollowersGained,
+} from "@/services/instagramDailyFollowersService";
 import { fetchPastPostsForProfile } from "@/services/pastPostsMetricsService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
@@ -48,9 +52,24 @@ export function useGrowthDashboard() {
     reload: reloadPosts,
   } = useFetch(loadPosts, []);
 
+  const loadFollowers = useCallback(
+    () =>
+      profileId
+        ? fetchDailyFollowersForProfile(profileId, range)
+        : Promise.resolve([]),
+    [profileId, range],
+  );
+  const {
+    data: dailyFollowers,
+    isLoading: isFollowersLoading,
+    error: followersError,
+    reload: reloadFollowers,
+  } = useFetch(loadFollowers, []);
+
   useGrowthAccountsUpdated(async () => {
     await reloadProfiles();
     await reloadPosts();
+    await reloadFollowers();
   });
 
   const posts = useMemo(
@@ -83,10 +102,20 @@ export function useGrowthDashboard() {
     [activeProfile],
   );
 
+  const followersGained = useMemo(
+    () => sumFollowersGained(dailyFollowers),
+    [dailyFollowers],
+  );
+
   const statCards = useMemo(
     () =>
-      buildDashboardStatCards(postsDataRows, activeAccount, interactionTotals),
-    [postsDataRows, activeAccount, interactionTotals],
+      buildDashboardStatCards(
+        postsDataRows,
+        activeAccount,
+        interactionTotals,
+        followersGained,
+      ),
+    [postsDataRows, activeAccount, interactionTotals, followersGained],
   );
 
   const contentTypeSplit = useMemo(
@@ -101,8 +130,8 @@ export function useGrowthDashboard() {
     statCards,
     postsDataRows,
     contentTypeSplit,
-    isLoading: isProfilesLoading || isPostsLoading,
-    error: profilesError || postsError,
+    isLoading: isProfilesLoading || isPostsLoading || isFollowersLoading,
+    error: profilesError || postsError || followersError,
     dateFilterProps,
     periodLabel,
     hasAccounts: profiles.length > 0,

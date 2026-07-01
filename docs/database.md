@@ -28,7 +28,8 @@ Run only the migrations you have not applied yet, in order (`002` onward). See [
 | `growth_organic_accounts` | Connected Instagram/Facebook profiles (Meta token + followers) |
 | `growth_ad_accounts`   | Connected Meta ad accounts                                  |
 | `instagram_profiles`   | Instagram credentials + follower count (Phase 1 analytics)    |
-| `past_posts_metrics`   | Post-level metrics from the 29-day connect backfill           |
+| `past_posts_metrics`   | Post-level metrics from the 29-day connect backfill + daily sync |
+| `instagram_daily_followers` | Net followers gained per day (backfill + midnight cron)   |
 
 ## Relationships
 
@@ -76,3 +77,10 @@ Suggested team nav / setup order: Clients → Team → Projects → Posts.
 ## Feature docs
 
 See [README.md](./README.md) for per-feature schema details and DTOs.
+
+### Growth & Analytics
+
+| Doc | Purpose |
+|-----|---------|
+| [growth-and-analytics/README.md](./growth-and-analytics/README.md) | Instagram backfill, dashboard metrics, daily sync |
+| [scripts/growth-and-analytics/php/README.md](../scripts/growth-and-analytics/php/README.md) | GoDaddy PHP cron setup |

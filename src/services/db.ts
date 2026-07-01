@@ -116,4 +116,8 @@ export const DB = {
     SELECT:
       "id, account_id, post_id, caption, media_type, created_at, reach, impressions, likes, comments, saves, shares, reposts, post_thumbnail",
   },
+  INSTAGRAM_DAILY_FOLLOWERS: {
+    TABLE: "instagram_daily_followers",
+    SELECT: "date, followers_gained",
+  },
 } as const;

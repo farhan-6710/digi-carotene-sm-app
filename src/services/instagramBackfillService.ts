@@ -1,17 +1,17 @@
-import { subDays, startOfDay } from "date-fns";
-
-import { INSTAGRAM_BACKFILL_DAYS } from "@/features/growth-and-analytics/constants/metaConfig";
 import type { InstagramDbMediaType } from "@/features/growth-and-analytics/types/types";
+import { isWithinInstagramBackfillWindow, getInstagramBackfillMetaRange } from "@/features/growth-and-analytics/utils/instagramBackfillWindow";
 import {
   fetchInstagramBackfillMedia,
   fetchInstagramBackfillPostInsights,
   fetchInstagramBackfillProfile,
+  fetchInstagramBackfillFollowerGainByDay,
   type IgBackfillMediaItem,
 } from "@/services/metaService";
 import {
   fetchInstagramProfileByOrganicAccountId,
   updateInstagramProfileToken,
 } from "@/services/instagramProfilesService";
+import { replaceDailyFollowersForProfile } from "@/services/instagramDailyFollowersService";
 import {
   replacePastPostsForProfile,
   type PastPostInsert,
@@ -25,14 +25,6 @@ function mapMetaMediaTypeToDb(
   if (mediaType === "CAROUSEL_ALBUM") return "CAROUSEL";
   if (mediaType === "VIDEO") return "VIDEO";
   return "IMAGE";
-}
-
-function isWithinBackfillWindow(timestamp?: string): boolean {
-  if (!timestamp) return false;
-  const postedAt = new Date(timestamp);
-  const windowStart = startOfDay(subDays(new Date(), INSTAGRAM_BACKFILL_DAYS));
-  const todayStart = startOfDay(new Date());
-  return postedAt >= windowStart && postedAt < todayStart;
 }
 
 function resolvePostThumbnail(
@@ -76,7 +68,9 @@ export async function runInstagram29DayBackfill(
 ): Promise<number> {
   const profile = await fetchInstagramBackfillProfile(instagramId, accessToken);
   const media = await fetchInstagramBackfillMedia(instagramId, accessToken);
-  const recentMedia = media.filter((item) => isWithinBackfillWindow(item.timestamp));
+  const recentMedia = media.filter((item) =>
+    isWithinInstagramBackfillWindow(item.timestamp),
+  );
 
   const posts: PastPostInsert[] = [];
   for (const item of recentMedia) {
@@ -86,6 +80,20 @@ export async function runInstagram29DayBackfill(
   }
 
   await replacePastPostsForProfile(profileId, posts);
+
+  const followerRange = getInstagramBackfillMetaRange();
+  const dailyFollowers = await fetchInstagramBackfillFollowerGainByDay(
+    instagramId,
+    accessToken,
+    followerRange,
+  );
+  await replaceDailyFollowersForProfile(
+    profileId,
+    dailyFollowers,
+    followerRange.from,
+    followerRange.to,
+  );
+
   await updateInstagramProfileToken(
     profileId,
     accessToken,
