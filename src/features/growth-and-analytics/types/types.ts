@@ -124,9 +124,17 @@ export type LabeledValue = {
 };
 
 export type SpendPoint = {
+  date: string;
   label: string;
   spend: number;
   conversions: number;
+};
+
+export type SpendTrendGranularity = "day" | "month";
+
+export type SpendTrend = {
+  points: SpendPoint[];
+  granularity: SpendTrendGranularity;
 };
 
 export type TopAccountRow = {

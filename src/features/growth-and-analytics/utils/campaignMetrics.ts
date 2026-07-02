@@ -2,23 +2,12 @@ import { MousePointerClick, Target, TrendingUp, Wallet } from "lucide-react";
 
 import type { StatCardItem } from "@/shared/types/statsCards";
 
-import type { CampaignMetricRow, CampaignRow, SpendPoint } from "../types/types";
-import { dayLabel, formatCompact, formatCurrency, formatNumber } from "./formatters";
+import { addDays, differenceInCalendarDays } from "date-fns";
 
-function localDateKey(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-// Monday-based week start for the given `yyyy-MM-dd` date.
-function weekStartKey(dateStr: string): string {
-  const date = new Date(`${dateStr}T00:00:00`);
-  const offset = (date.getDay() + 6) % 7;
-  date.setDate(date.getDate() - offset);
-  return localDateKey(date);
-}
+import { SPEND_TREND_DAILY_MAX_DAYS } from "../constants/spendTrend";
+import type { CampaignMetricRow, CampaignRow, SpendPoint, SpendTrend } from "../types/types";
+import { dayLabel, formatCompact, formatCurrency, formatNumber, monthLabel } from "./formatters";
+import { parseUrlDateParam, serializeUrlDate } from "@/shared/utils/urlDateParams";
 
 export function buildCampaignStatCards(
   rows: CampaignMetricRow[],
@@ -63,23 +52,79 @@ export function buildCampaignStatCards(
   ];
 }
 
-export function buildSpendTrend(rows: CampaignMetricRow[]): SpendPoint[] {
-  const byWeek = new Map<string, { spend: number; conversions: number }>();
+export function buildSpendTrend(rows: CampaignMetricRow[]): SpendTrend {
+  const byDate = new Map<string, { spend: number; conversions: number }>();
+
   for (const row of rows) {
-    const key = weekStartKey(row.date);
-    const current = byWeek.get(key) ?? { spend: 0, conversions: 0 };
+    const current = byDate.get(row.date) ?? { spend: 0, conversions: 0 };
     current.spend += row.spend;
     current.conversions += row.conversions;
-    byWeek.set(key, current);
+    byDate.set(row.date, current);
   }
 
-  return [...byWeek.entries()]
+  const sortedDates = [...byDate.keys()].sort();
+  if (sortedDates.length === 0) {
+    return { points: [], granularity: "day" };
+  }
+
+  const fromDate = parseUrlDateParam(sortedDates[0]!)!;
+  const toDate = parseUrlDateParam(sortedDates[sortedDates.length - 1]!)!;
+  const spanDays = differenceInCalendarDays(toDate, fromDate) + 1;
+  const useDaily = spanDays <= SPEND_TREND_DAILY_MAX_DAYS;
+
+  if (useDaily) {
+    const points: SpendPoint[] = [];
+    let current = fromDate;
+
+    while (current <= toDate) {
+      const date = serializeUrlDate(current);
+      const totals = byDate.get(date) ?? { spend: 0, conversions: 0 };
+      points.push({
+        date,
+        label: dayLabel(date),
+        spend: totals.spend,
+        conversions: totals.conversions,
+      });
+      current = addDays(current, 1);
+    }
+
+    return { points, granularity: "day" };
+  }
+
+  const byMonth = new Map<
+    string,
+    { label: string; spend: number; conversions: number }
+  >();
+
+  for (const date of sortedDates) {
+    const monthKey = date.slice(0, 7);
+    const totals = byDate.get(date)!;
+    const current = byMonth.get(monthKey) ?? {
+      label: monthLabel(date),
+      spend: 0,
+      conversions: 0,
+    };
+    current.spend += totals.spend;
+    current.conversions += totals.conversions;
+    byMonth.set(monthKey, current);
+  }
+
+  const points = [...byMonth.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, totals]) => ({
-      label: dayLabel(key),
+    .map(([monthKey, totals]) => ({
+      date: `${monthKey}-01`,
+      label: totals.label,
       spend: totals.spend,
       conversions: totals.conversions,
     }));
+
+  return { points, granularity: "month" };
+}
+
+export function spendTrendChartTitle(granularity: SpendTrend["granularity"]): string {
+  return granularity === "day"
+    ? "Daily Spend vs Conversions"
+    : "Monthly Spend vs Conversions";
 }
 
 export function buildCampaignRows(rows: CampaignMetricRow[]): CampaignRow[] {

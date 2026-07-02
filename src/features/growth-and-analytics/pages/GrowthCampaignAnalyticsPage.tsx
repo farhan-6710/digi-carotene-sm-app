@@ -12,6 +12,7 @@ export function GrowthCampaignAnalyticsPage() {
   const {
     statCards,
     spendTrend,
+    spendTrendTitle,
     campaignRows,
     adAccountId,
     isLoading,
@@ -46,9 +47,10 @@ export function GrowthCampaignAnalyticsPage() {
       <StatsCards cards={statCards} isLoading={isLoading} />
 
       <GrowthSpendChart
-        title="Weekly Spend vs Conversions"
+        title={spendTrendTitle}
         description="Ad spend and conversions across the selected period."
-        data={spendTrend}
+        data={spendTrend.points}
+        granularity={spendTrend.granularity}
       />
 
       <CampaignTable rows={campaignRows} adAccountId={adAccountId} />

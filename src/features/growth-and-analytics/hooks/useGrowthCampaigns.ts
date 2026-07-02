@@ -7,6 +7,7 @@ import {
   buildCampaignRows,
   buildCampaignStatCards,
   buildSpendTrend,
+  spendTrendChartTitle,
 } from "../utils/campaignMetrics";
 import { filterCampaignMetricsByRange } from "../utils/dashboardDataFilters";
 import { saveGrowthReport } from "../utils/generateReport";
@@ -53,6 +54,7 @@ export function useGrowthCampaigns() {
     () => buildSpendTrend(filteredMetrics),
     [filteredMetrics],
   );
+  const spendTrendTitle = spendTrendChartTitle(spendTrend.granularity);
   const campaignRows = useMemo(
     () => buildCampaignRows(filteredMetrics),
     [filteredMetrics],
@@ -79,6 +81,7 @@ export function useGrowthCampaigns() {
   return {
     statCards,
     spendTrend,
+    spendTrendTitle,
     campaignRows,
     adAccountId,
     isLoading: isAccountsLoading || isMetricsLoading,

@@ -16,6 +16,7 @@ import type {
   ReportRow,
   ReportType,
   SpendPoint,
+  SpendTrendGranularity,
   TopAccountRow,
 } from "./types";
 
@@ -54,6 +55,7 @@ export type GrowthSpendChartProps = {
   title: string;
   description?: string;
   data: SpendPoint[];
+  granularity: SpendTrendGranularity;
 };
 
 export type TopAccountsTableProps = {
