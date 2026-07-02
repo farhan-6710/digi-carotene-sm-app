@@ -8,8 +8,7 @@ import { MobileLabel } from "./tableBits";
 import type { ContentPostsTableProps } from "../../types/components";
 import { formatCompact, formatPercent } from "../../utils/formatters";
 
-const GRID_CLASS =
-  "grid-cols-[2.4fr_0.75fr_0.7fr_0.7fr_0.7fr_0.8fr]";
+const GRID_CLASS = "grid-cols-[2.4fr_0.75fr_0.7fr_0.7fr_0.7fr_0.8fr]";
 
 export function ContentPostsTable({ rows }: ContentPostsTableProps) {
   return (

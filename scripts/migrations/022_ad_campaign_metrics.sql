@@ -1,7 +1,7 @@
 -- Migration 022 — Ad campaign daily metrics + currencies lookup.
 -- Run once in Supabase SQL Editor after 021.
 
-create table public.currencies (
+create table if not exists public.currencies (
   code text primary key,
   name text not null,
   symbol text not null
@@ -11,7 +11,7 @@ insert into public.currencies (code, name, symbol)
 values ('INR', 'Indian Rupee', '₹')
 on conflict (code) do nothing;
 
-create table public.growth_ad_campaign_daily_metrics (
+create table if not exists public.growth_ad_campaign_daily_metrics (
   id bigserial primary key,
   ad_account_id uuid not null references public.growth_ad_accounts (id) on delete cascade,
   campaign_id text not null,
@@ -27,8 +27,11 @@ create table public.growth_ad_campaign_daily_metrics (
   unique (ad_account_id, campaign_id, metric_date)
 );
 
-create index growth_ad_campaign_daily_metrics_account_date_idx
+create index if not exists growth_ad_campaign_daily_metrics_account_date_idx
   on public.growth_ad_campaign_daily_metrics (ad_account_id, metric_date desc);
+
+drop trigger if exists set_growth_ad_campaign_daily_metrics_updated_at
+  on public.growth_ad_campaign_daily_metrics;
 
 create trigger set_growth_ad_campaign_daily_metrics_updated_at
   before update on public.growth_ad_campaign_daily_metrics
@@ -38,7 +41,7 @@ alter table public.growth_ad_accounts
   add column if not exists currency_code text references public.currencies (code);
 
 update public.growth_ad_accounts
-set currency_code = coalesce(nullif(currency, ''), 'INR')
+set currency_code = 'INR'
 where currency_code is null;
 
 alter table public.growth_ad_accounts
@@ -53,10 +56,13 @@ alter table public.growth_ad_accounts
 alter table public.currencies enable row level security;
 alter table public.growth_ad_campaign_daily_metrics enable row level security;
 
+drop policy if exists "currencies_read" on public.currencies;
 create policy "currencies_read"
   on public.currencies for select to anon, authenticated
   using (true);
 
+drop policy if exists "growth_ad_campaign_daily_metrics_all"
+  on public.growth_ad_campaign_daily_metrics;
 create policy "growth_ad_campaign_daily_metrics_all"
   on public.growth_ad_campaign_daily_metrics for all to anon, authenticated
   using (true) with check (true);
