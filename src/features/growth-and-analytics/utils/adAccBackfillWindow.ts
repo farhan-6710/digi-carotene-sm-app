@@ -5,7 +5,7 @@ import { serializeUrlDate } from "@/shared/utils/urlDateParams";
 
 import type { MetaSyncRange } from "./metaSyncMappers";
 
-export function getAdBackfillWindow(): {
+export function getAdAccBackfillWindow(): {
   from: Date;
   toExclusive: Date;
 } {
@@ -16,9 +16,9 @@ export function getAdBackfillWindow(): {
   };
 }
 
-/** Meta insights range for the 29 completed days (excludes today). */
-export function getAdBackfillMetaRange(): MetaSyncRange {
-  const { from, toExclusive } = getAdBackfillWindow();
+/** Meta insights range for the 90 completed days (excludes today). */
+export function getAdAccBackfillMetaRange(): MetaSyncRange {
+  const { from, toExclusive } = getAdAccBackfillWindow();
   const to = subDays(toExclusive, 1);
 
   return {
@@ -29,7 +29,7 @@ export function getAdBackfillMetaRange(): MetaSyncRange {
   };
 }
 
-export function getYesterdayDateString(): string {
-  const { toExclusive } = getAdBackfillWindow();
+export function getAdAccYesterdayDateString(): string {
+  const { toExclusive } = getAdAccBackfillWindow();
   return serializeUrlDate(subDays(toExclusive, 1));
 }

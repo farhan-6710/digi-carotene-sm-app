@@ -1,4 +1,4 @@
-import { rerunAdBackfillForAccount, runAd29DayBackfill } from "@/services/adBackfillService";
+import { rerunAdBackfillForAccount, runAdBackfill } from "@/services/adBackfillService";
 import { DB } from "@/services/db";
 import { rerunInstagramBackfillForOrganicAccount, runInstagram29DayBackfill } from "@/services/instagramBackfillService";
 import {
@@ -255,7 +255,7 @@ export async function connectAdAccount(form: AdAccountForm): Promise<AdAccount> 
   }
 
   const account = mapAd(data as AdRow);
-  await runAd29DayBackfill(account.id, metaAdAccountId, token);
+  await runAdBackfill(account.id, metaAdAccountId, token);
 
   return account;
 }

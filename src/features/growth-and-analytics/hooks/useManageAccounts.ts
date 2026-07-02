@@ -160,7 +160,7 @@ export function useManageAccounts() {
             : "Ad account updated.",
         );
       } else {
-        showToast("info", "Validating ad account and syncing 29 days of campaign data…");
+        showToast("info", "Validating ad account and syncing 90 days of campaign data…");
         await connectAdAccount(adForm);
         showToast("success", "Ad account connected. Open Campaign Analytics to view metrics.");
       }

@@ -1,5 +1,8 @@
 import type { InstagramDbMediaType } from "@/features/growth-and-analytics/types/types";
-import { isWithinInstagramBackfillWindow, getInstagramBackfillMetaRange } from "@/features/growth-and-analytics/utils/instagramBackfillWindow";
+import {
+  isWithinOrganicAccBackfillWindow,
+  getOrganicAccBackfillMetaRange,
+} from "@/features/growth-and-analytics/utils/organicAccBackfillWindow";
 import {
   fetchInstagramBackfillMedia,
   fetchInstagramBackfillPostInsights,
@@ -69,7 +72,7 @@ export async function runInstagram29DayBackfill(
   const profile = await fetchInstagramBackfillProfile(instagramId, accessToken);
   const media = await fetchInstagramBackfillMedia(instagramId, accessToken);
   const recentMedia = media.filter((item) =>
-    isWithinInstagramBackfillWindow(item.timestamp),
+    isWithinOrganicAccBackfillWindow(item.timestamp),
   );
 
   const posts: PastPostInsert[] = [];
@@ -81,7 +84,7 @@ export async function runInstagram29DayBackfill(
 
   await replacePastPostsForProfile(profileId, posts);
 
-  const followerRange = getInstagramBackfillMetaRange();
+  const followerRange = getOrganicAccBackfillMetaRange();
   const dailyFollowers = await fetchInstagramBackfillFollowerGainByDay(
     instagramId,
     accessToken,

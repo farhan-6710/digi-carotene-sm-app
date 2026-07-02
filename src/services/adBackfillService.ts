@@ -4,7 +4,7 @@ import {
   parseSpend,
   getMetaInsightChunksForSpan,
 } from "@/features/growth-and-analytics/utils/metaSyncMappers";
-import { getAdBackfillMetaRange } from "@/features/growth-and-analytics/utils/adBackfillWindow";
+import { getAdAccBackfillMetaRange } from "@/features/growth-and-analytics/utils/adAccBackfillWindow";
 import {
   fetchAdCampaignStatuses,
   fetchAdDailyInsights,
@@ -37,12 +37,12 @@ function mapInsightToInsert(
   };
 }
 
-export async function runAd29DayBackfill(
+export async function runAdBackfill(
   adAccountId: string,
   metaAdAccountId: string,
   accessToken: string,
 ): Promise<number> {
-  const range = getAdBackfillMetaRange();
+  const range = getAdAccBackfillMetaRange();
   const campaigns = await fetchAdCampaignStatuses(metaAdAccountId, accessToken);
   const statusByCampaignId = new Map(
     campaigns.map((campaign) => [campaign.id, campaign.status ?? ""]),
@@ -81,5 +81,5 @@ export async function rerunAdBackfillForAccount(
   metaAdAccountId: string,
   accessToken: string,
 ): Promise<number> {
-  return runAd29DayBackfill(adAccountId, metaAdAccountId, accessToken);
+  return runAdBackfill(adAccountId, metaAdAccountId, accessToken);
 }

@@ -5,7 +5,7 @@ import { serializeUrlDate } from "@/shared/utils/urlDateParams";
 
 import type { MetaSyncRange } from "./metaSyncMappers";
 
-export function getInstagramBackfillWindow(): {
+export function getOrganicAccBackfillWindow(): {
   from: Date;
   toExclusive: Date;
 } {
@@ -16,16 +16,16 @@ export function getInstagramBackfillWindow(): {
   };
 }
 
-export function isWithinInstagramBackfillWindow(timestamp?: string): boolean {
+export function isWithinOrganicAccBackfillWindow(timestamp?: string): boolean {
   if (!timestamp) return false;
   const postedAt = new Date(timestamp);
-  const { from, toExclusive } = getInstagramBackfillWindow();
+  const { from, toExclusive } = getOrganicAccBackfillWindow();
   return postedAt >= from && postedAt < toExclusive;
 }
 
 /** Meta insights range for the 29 completed days (excludes today). */
-export function getInstagramBackfillMetaRange(): MetaSyncRange {
-  const { from, toExclusive } = getInstagramBackfillWindow();
+export function getOrganicAccBackfillMetaRange(): MetaSyncRange {
+  const { from, toExclusive } = getOrganicAccBackfillWindow();
   const to = subDays(toExclusive, 1);
 
   return {
@@ -36,7 +36,7 @@ export function getInstagramBackfillMetaRange(): MetaSyncRange {
   };
 }
 
-export function getYesterdayDateString(): string {
-  const { toExclusive } = getInstagramBackfillWindow();
+export function getOrganicAccYesterdayDateString(): string {
+  const { toExclusive } = getOrganicAccBackfillWindow();
   return serializeUrlDate(subDays(toExclusive, 1));
 }
