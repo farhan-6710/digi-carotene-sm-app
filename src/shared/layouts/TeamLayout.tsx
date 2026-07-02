@@ -10,6 +10,7 @@ function TeamLayoutShell() {
     <AppShellLayout
       sidebarConfig={sidebarConfig}
       accountPath="/team-portal/account"
+      settingsPath="/team-portal/settings"
       headerActions={<TeamApprovalsHeaderButton />}
       mobileNavDescription="Team portal navigation links and quick actions"
     />

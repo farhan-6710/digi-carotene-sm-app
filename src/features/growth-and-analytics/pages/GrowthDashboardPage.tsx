@@ -1,4 +1,3 @@
-import { GrowthAccountComboBox } from "../components/GrowthAccountComboBox";
 import { GrowthDonutChart } from "../components/charts/GrowthDonutChart";
 import { GrowthPostsDataChart } from "../components/charts/GrowthPostsDataChart";
 import { useGrowthDashboard } from "../hooks/useGrowthDashboard";
@@ -10,9 +9,6 @@ import { StatsCards } from "@/shared/components/StatsCards";
 
 export function GrowthDashboardPage() {
   const {
-    accountOptions,
-    accountId,
-    setAccountId,
     statCards,
     postsDataRows,
     contentTypeSplit,
@@ -31,14 +27,6 @@ export function GrowthDashboardPage() {
       />
 
       {error ? <ErrorBanner message={error} /> : null}
-
-      <GrowthAccountComboBox
-        label="Account"
-        value={accountId}
-        options={accountOptions}
-        onChange={setAccountId}
-        placeholder="Select account"
-      />
 
       <StatsCards cards={statCards} isLoading={isLoading} />
 

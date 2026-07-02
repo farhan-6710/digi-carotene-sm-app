@@ -127,10 +127,16 @@ export type ShellMobileNavSheetProps = {
   sheetDescription: string;
 };
 
+export type PortalUserHeaderMenuProps = {
+  accountPath: string;
+  settingsPath?: string;
+};
+
 export type AppShellLayoutProps = {
   sidebarConfig: ShellSidebarConfig;
-  /** When omitted (e.g. public shells), the account avatar is hidden. */
+  /** When set, shows the user avatar menu (account, settings, sign out). */
   accountPath?: string;
+  settingsPath?: string;
   headerCenter?: ReactNode;
   headerActions?: ReactNode;
   mobileNavDescription: string;

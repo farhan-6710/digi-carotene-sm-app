@@ -20,9 +20,6 @@ import { useGrowthOrganicAccountPicker } from "./useGrowthOrganicAccountPicker";
 export function useGrowthDashboard() {
   const { range, dateFilterProps, periodLabel } = useGrowthDateRange();
   const {
-    accountOptions,
-    accountId,
-    setAccountId,
     activeAccount,
     activeInstagramProfile,
     isAccountsLoading,
@@ -98,9 +95,6 @@ export function useGrowthDashboard() {
   );
 
   return {
-    accountOptions,
-    accountId,
-    setAccountId,
     statCards,
     postsDataRows,
     contentTypeSplit,

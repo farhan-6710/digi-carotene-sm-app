@@ -4,7 +4,7 @@ import {
   startOfDay,
   subDays,
   subMonths,
-  subYears,
+  // subYears,
 } from "date-fns";
 
 import type { AnalyticsQuickPeriodId } from "@/features/analytics/constants/analyticsFilters";
@@ -36,9 +36,9 @@ export function resolveAnalyticsDateRange(
     "7d": startOfDay(subDays(today, 6)),
     "1m": startOfDay(subMonths(today, 1)),
     "3m": startOfDay(subMonths(today, 3)),
-    "6m": startOfDay(subMonths(today, 6)),
-    "9m": startOfDay(subMonths(today, 9)),
-    "1y": startOfDay(subYears(today, 1)),
+    // "6m": startOfDay(subMonths(today, 6)),
+    // "9m": startOfDay(subMonths(today, 9)),
+    // "1y": startOfDay(subYears(today, 1)),
   };
 
   return {
@@ -84,9 +84,9 @@ export function formatAnalyticsFilterLabel(
       "7d": "Last 7 days",
       "1m": "Last month",
       "3m": "Last 3 months",
-      "6m": "Last 6 months",
-      "9m": "Last 9 months",
-      "1y": "Last year",
+      // "6m": "Last 6 months",
+      // "9m": "Last 9 months",
+      // "1y": "Last year",
     };
 
     return labels[filter.period];

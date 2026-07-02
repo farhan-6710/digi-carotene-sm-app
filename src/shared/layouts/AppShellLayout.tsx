@@ -1,10 +1,9 @@
 import { useRef, useState } from "react";
-import { Link } from "react-router";
 import { Menu, Moon, Sun } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { useTheme } from "@/shared/providers/ThemeProvider";
-import { useAuth } from "@/features/auth/hooks/useAuth";
+import { PortalUserHeaderMenu } from "@/shared/components/PortalUserHeaderMenu";
 import {
   ShellMobileNavSheet,
   ShellSidebar,
@@ -18,16 +17,11 @@ import { SHELL_HEADER_MOTION } from "@/shared/constants/pageMotion";
 import type { AppShellLayoutProps } from "@/shared/types/components";
 import { Button } from "@/shared/ui/button";
 import { Switch } from "@/shared/ui/switch";
-import {
-  getUserAvatarUrl,
-  getUserDisplayName,
-  getUserInitials,
-} from "@/shared/utils/authUserDisplay";
-import { cn } from "@/shared/lib/utils";
 
 export function AppShellLayout({
   sidebarConfig,
   accountPath,
+  settingsPath,
   headerCenter,
   headerActions,
   mobileNavDescription,
@@ -35,10 +29,6 @@ export function AppShellLayout({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const { isDarkMode, setDarkMode } = useTheme();
-  const { user } = useAuth();
-  const displayName = getUserDisplayName(user);
-  const initials = getUserInitials(user);
-  const avatarUrl = getUserAvatarUrl(user);
   const mainRef = useRef<HTMLElement>(null);
 
   return (
@@ -96,24 +86,10 @@ export function AppShellLayout({
                 <Moon className="size-4" aria-hidden="true" />
               </div>
               {accountPath ? (
-                <Link
-                  to={accountPath}
-                  className={cn(
-                    "flex size-9 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-sm font-semibold text-primary transition hover:bg-primary/20",
-                    avatarUrl && "bg-transparent",
-                  )}
-                  aria-label={`Open account for ${displayName}`}
-                >
-                  {avatarUrl ? (
-                    <img
-                      src={avatarUrl}
-                      alt={displayName}
-                      className="size-full object-cover"
-                    />
-                  ) : (
-                    initials
-                  )}
-                </Link>
+                <PortalUserHeaderMenu
+                  accountPath={accountPath}
+                  settingsPath={settingsPath}
+                />
               ) : null}
             </div>
           </motion.header>

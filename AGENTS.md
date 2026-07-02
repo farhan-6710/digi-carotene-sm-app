@@ -42,12 +42,13 @@ src/
 - Keep components presentational; move logic to hooks/utils.
 - One concern per hook (`useClientsQuery` fetch, `useClientDialog` form+mutations, `useClientsManagement` composes).
 - Target **~120 lines/file**; split when larger. Prefer named exports.
-- Dialogs: pass a `values` object + `onFieldChange`; destructive actions use `ConfirmationModal`.
+- Dialogs: pass a `values` object + `onFieldChange`; destructive actions use `ConfirmationModal` (see **UI & UX**).
 
 ## UI & UX
 
 - shadcn UI from `src/shared/ui/`. `PageHeader` for team page titles/actions.
 - Toasts via `showToast(type, message)` (`success | error | info`) for create/update/delete and API success/failure.
+- **Confirmation modals** — use `ConfirmationModal` (`shared/ConfirmationModal.tsx`) before any important or irreversible user action: sign out, delete/remove, disconnect accounts, discard unsaved work, and other destructive or hard-to-undo operations. Do not run the action on the first click alone.
 - Keep spacing, sizing, and typography consistent. Tabbed views sync the active tab to URL params.
 
 ## Naming

@@ -1,4 +1,3 @@
-import { GrowthAccountComboBox } from "../components/GrowthAccountComboBox";
 import { GrowthBarChart } from "../components/charts/GrowthBarChart";
 import { GrowthDonutChart } from "../components/charts/GrowthDonutChart";
 import { ContentPostsTable } from "../components/tables/ContentPostsTable";
@@ -12,9 +11,6 @@ import { Button } from "@/shared/ui/button";
 
 export function GrowthContentPerformancePage() {
   const {
-    accountOptions,
-    accountId,
-    setAccountId,
     statCards,
     typeSplit,
     engagementByType,
@@ -47,14 +43,6 @@ export function GrowthContentPerformancePage() {
       />
 
       {error ? <ErrorBanner message={error} /> : null}
-
-      <GrowthAccountComboBox
-        label="Account"
-        value={accountId}
-        options={accountOptions}
-        onChange={setAccountId}
-        placeholder="Select account"
-      />
 
       <StatsCards cards={statCards} isLoading={isLoading} />
 
