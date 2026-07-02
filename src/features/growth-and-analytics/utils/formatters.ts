@@ -34,3 +34,11 @@ export function dayLabel(dateStr: string): string {
     day: "numeric",
   });
 }
+
+export function formatCampaignObjective(objective: string | null): string {
+  if (!objective) return "—";
+  return objective
+    .split("_")
+    .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+    .join(" ");
+}

@@ -11,6 +11,7 @@ type MetricRow = {
   campaign_id: string;
   campaign_name: string;
   status: CampaignMetricRow["status"];
+  objective: string | null;
   metric_date: string;
   spend: number;
   impressions: number;
@@ -20,8 +21,10 @@ type MetricRow = {
 
 function mapMetric(row: MetricRow): CampaignMetricRow {
   return {
+    campaignId: row.campaign_id,
     campaignName: row.campaign_name,
     status: row.status,
+    objective: row.objective,
     spend: Number(row.spend),
     impressions: row.impressions,
     clicks: row.clicks,
@@ -49,12 +52,28 @@ export type AdCampaignMetricInsert = {
   campaignId: string;
   campaignName: string;
   status: CampaignMetricRow["status"];
+  objective: string | null;
   metricDate: string;
   spend: number;
   impressions: number;
   clicks: number;
   conversions: number;
 };
+
+function toInsertRow(adAccountId: string, row: AdCampaignMetricInsert) {
+  return {
+    ad_account_id: adAccountId,
+    campaign_id: row.campaignId,
+    campaign_name: row.campaignName,
+    status: row.status,
+    objective: row.objective,
+    metric_date: row.metricDate,
+    spend: row.spend,
+    impressions: row.impressions,
+    clicks: row.clicks,
+    conversions: row.conversions,
+  };
+}
 
 export async function fetchAdCampaignMetricsForAccount(
   adAccountId: string,
@@ -69,6 +88,51 @@ export async function fetchAdCampaignMetricsForAccount(
   const { data, error } = await applyDateRange<typeof base>(base, range);
   if (error) throw new Error(error.message);
   return ((data ?? []) as MetricRow[]).map(mapMetric);
+}
+
+export async function fetchAdCampaignMetricsByCampaignId(
+  adAccountId: string,
+  campaignId: string,
+): Promise<CampaignMetricRow[]> {
+  const { data, error } = await supabase
+    .from(DB.AD_CAMPAIGN_DAILY_METRICS.TABLE)
+    .select(DB.AD_CAMPAIGN_DAILY_METRICS.SELECT)
+    .eq("ad_account_id", adAccountId)
+    .eq("campaign_id", campaignId)
+    .order("metric_date", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return ((data ?? []) as MetricRow[]).map(mapMetric);
+}
+
+export async function fetchAdCampaignNeighborIds(
+  adAccountId: string,
+  campaignId: string,
+): Promise<{ previousCampaignId: string | null; nextCampaignId: string | null }> {
+  const { data, error } = await supabase
+    .from(DB.AD_CAMPAIGN_DAILY_METRICS.TABLE)
+    .select("campaign_id, spend")
+    .eq("ad_account_id", adAccountId);
+
+  if (error) throw new Error(error.message);
+
+  const spendByCampaign = new Map<string, number>();
+  for (const row of (data ?? []) as Array<{ campaign_id: string; spend: number }>) {
+    const current = spendByCampaign.get(row.campaign_id) ?? 0;
+    spendByCampaign.set(row.campaign_id, current + Number(row.spend));
+  }
+
+  const orderedIds = [...spendByCampaign.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([id]) => id);
+
+  const index = orderedIds.indexOf(campaignId);
+
+  return {
+    previousCampaignId: index > 0 ? orderedIds[index - 1]! : null,
+    nextCampaignId:
+      index >= 0 && index < orderedIds.length - 1 ? orderedIds[index + 1]! : null,
+  };
 }
 
 export async function replaceAdCampaignMetricsForAccount(
@@ -89,19 +153,7 @@ export async function replaceAdCampaignMetricsForAccount(
 
   const { error: insertError } = await supabase
     .from(DB.AD_CAMPAIGN_DAILY_METRICS.TABLE)
-    .insert(
-      rows.map((row) => ({
-        ad_account_id: adAccountId,
-        campaign_id: row.campaignId,
-        campaign_name: row.campaignName,
-        status: row.status,
-        metric_date: row.metricDate,
-        spend: row.spend,
-        impressions: row.impressions,
-        clicks: row.clicks,
-        conversions: row.conversions,
-      })),
-    );
+    .insert(rows.map((row) => toInsertRow(adAccountId, row)));
 
   if (insertError) throw new Error(insertError.message);
 }
@@ -111,17 +163,7 @@ export async function upsertAdCampaignMetric(
   row: AdCampaignMetricInsert,
 ): Promise<void> {
   const { error } = await supabase.from(DB.AD_CAMPAIGN_DAILY_METRICS.TABLE).upsert(
-    {
-      ad_account_id: adAccountId,
-      campaign_id: row.campaignId,
-      campaign_name: row.campaignName,
-      status: row.status,
-      metric_date: row.metricDate,
-      spend: row.spend,
-      impressions: row.impressions,
-      clicks: row.clicks,
-      conversions: row.conversions,
-    },
+    toInsertRow(adAccountId, row),
     { onConflict: "ad_account_id,campaign_id,metric_date" },
   );
 

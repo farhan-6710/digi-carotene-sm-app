@@ -18,6 +18,7 @@ import {
 function mapInsightToInsert(
   insight: AdDailyInsight,
   statusByCampaignId: Map<string, string>,
+  objectiveByCampaignId: Map<string, string | null>,
 ): AdCampaignMetricInsert | null {
   const campaignId = insight.campaign_id?.trim();
   const metricDate = insight.date_start?.trim();
@@ -27,6 +28,7 @@ function mapInsightToInsert(
     campaignId,
     campaignName: insight.campaign_name?.trim() || "Unnamed campaign",
     status: mapCampaignStatus(statusByCampaignId.get(campaignId)),
+    objective: objectiveByCampaignId.get(campaignId) ?? null,
     metricDate,
     spend: parseSpend(insight.spend),
     impressions: Math.round(Number(insight.impressions ?? 0)),
@@ -45,6 +47,9 @@ export async function runAd29DayBackfill(
   const statusByCampaignId = new Map(
     campaigns.map((campaign) => [campaign.id, campaign.status ?? ""]),
   );
+  const objectiveByCampaignId = new Map(
+    campaigns.map((campaign) => [campaign.id, campaign.objective ?? null]),
+  );
 
   const rows: AdCampaignMetricInsert[] = [];
   const chunks = getMetaInsightChunksForSpan(range.from, range.to);
@@ -52,7 +57,11 @@ export async function runAd29DayBackfill(
   for (const chunk of chunks) {
     const insights = await fetchAdDailyInsights(metaAdAccountId, accessToken, chunk);
     for (const insight of insights) {
-      const row = mapInsightToInsert(insight, statusByCampaignId);
+      const row = mapInsightToInsert(
+        insight,
+        statusByCampaignId,
+        objectiveByCampaignId,
+      );
       if (row) rows.push(row);
     }
   }

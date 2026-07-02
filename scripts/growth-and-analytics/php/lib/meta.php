@@ -262,7 +262,7 @@ function fetchAdCampaignStatuses(array $config, string $adAccountId, string $acc
     $id = str_starts_with($adAccountId, 'act_') ? $adAccountId : 'act_' . $adAccountId;
 
     return metaGraphGetAll($config, $id . '/campaigns', [
-        'fields' => 'id,name,status',
+        'fields' => 'id,name,status,objective',
         'limit' => '100',
         'access_token' => $accessToken,
     ]);

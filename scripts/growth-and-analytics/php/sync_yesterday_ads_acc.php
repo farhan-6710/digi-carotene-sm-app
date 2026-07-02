@@ -54,6 +54,7 @@ try {
         try {
             $campaigns = fetchAdCampaignStatuses($config, $metaAdAccountId, $accessToken);
             $statusByCampaignId = [];
+            $objectiveByCampaignId = [];
             foreach ($campaigns as $campaign) {
                 if (!is_array($campaign)) {
                     continue;
@@ -65,6 +66,8 @@ try {
                 $statusByCampaignId[$campaignId] = is_string($campaign['status'] ?? null)
                     ? $campaign['status']
                     : '';
+                $objective = $campaign['objective'] ?? null;
+                $objectiveByCampaignId[$campaignId] = is_string($objective) ? $objective : null;
             }
 
             $insights = fetchAdDailyInsightsForDay(
@@ -101,6 +104,7 @@ try {
                     'campaign_id' => $campaignId,
                     'campaign_name' => $campaignName,
                     'status' => mapCampaignStatus($statusByCampaignId[$campaignId] ?? null),
+                    'objective' => $objectiveByCampaignId[$campaignId] ?? null,
                     'metric_date' => $metricDate,
                     'spend' => parseSpend($insight['spend'] ?? 0),
                     'impressions' => parseMetricValue($insight['impressions'] ?? 0),

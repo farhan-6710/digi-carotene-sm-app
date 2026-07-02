@@ -13,6 +13,7 @@ export function GrowthCampaignAnalyticsPage() {
     statCards,
     spendTrend,
     campaignRows,
+    adAccountId,
     isLoading,
     error,
     dateFilterProps,
@@ -50,7 +51,7 @@ export function GrowthCampaignAnalyticsPage() {
         data={spendTrend}
       />
 
-      <CampaignTable rows={campaignRows} />
+      <CampaignTable rows={campaignRows} adAccountId={adAccountId} />
     </PageContent>
   );
 }

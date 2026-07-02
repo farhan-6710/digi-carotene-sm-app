@@ -28,7 +28,7 @@ export function buildCampaignStatCards(
   const impressions = rows.reduce((sum, row) => sum + row.impressions, 0);
   const clicks = rows.reduce((sum, row) => sum + row.clicks, 0);
   const conversions = rows.reduce((sum, row) => sum + row.conversions, 0);
-  const campaignCount = new Set(rows.map((row) => row.campaignName)).size;
+  const campaignCount = new Set(rows.map((row) => row.campaignId)).size;
   const description = `Across ${campaignCount} campaigns`;
 
   return [
@@ -86,7 +86,9 @@ export function buildCampaignRows(rows: CampaignMetricRow[]): CampaignRow[] {
   const byCampaign = new Map<
     string,
     {
+      name: string;
       status: CampaignRow["status"];
+      objective: string | null;
       spend: number;
       impressions: number;
       clicks: number;
@@ -95,26 +97,31 @@ export function buildCampaignRows(rows: CampaignMetricRow[]): CampaignRow[] {
   >();
 
   for (const row of rows) {
-    const current = byCampaign.get(row.campaignName) ?? {
+    const current = byCampaign.get(row.campaignId) ?? {
+      name: row.campaignName,
       status: row.status,
+      objective: row.objective,
       spend: 0,
       impressions: 0,
       clicks: 0,
       conversions: 0,
     };
+    current.name = row.campaignName;
     current.status = row.status;
+    if (row.objective) current.objective = row.objective;
     current.spend += row.spend;
     current.impressions += row.impressions;
     current.clicks += row.clicks;
     current.conversions += row.conversions;
-    byCampaign.set(row.campaignName, current);
+    byCampaign.set(row.campaignId, current);
   }
 
   return [...byCampaign.entries()]
-    .map(([name, totals]) => ({
-      id: name,
-      name,
+    .map(([campaignId, totals]) => ({
+      id: campaignId,
+      name: totals.name,
       status: totals.status,
+      objective: totals.objective,
       spend: totals.spend,
       impressions: totals.impressions,
       clicks: totals.clicks,

@@ -51,6 +51,11 @@ const GrowthCampaignAnalyticsPage = lazyRoutePage(
     import("@/features/growth-and-analytics/pages/GrowthCampaignAnalyticsPage"),
   "GrowthCampaignAnalyticsPage",
 );
+const GrowthCampaignDetailPage = lazyRoutePage(
+  () =>
+    import("@/features/growth-and-analytics/pages/GrowthCampaignDetailPage"),
+  "GrowthCampaignDetailPage",
+);
 const GrowthCustomReportBuilderPage = lazyRoutePage(
   () =>
     import(
@@ -166,6 +171,10 @@ export const router = createBrowserRouter([
         element: <GrowthPostDetailPage />,
       },
       { path: "campaigns", element: <GrowthCampaignAnalyticsPage /> },
+      {
+        path: "campaigns/:campaignId",
+        element: <GrowthCampaignDetailPage />,
+      },
       { path: "custom-report", element: <GrowthCustomReportBuilderPage /> },
       { path: "reports", element: <GrowthReportsPage /> },
       { path: "manage-accounts", element: <GrowthManageAccountsPage /> },

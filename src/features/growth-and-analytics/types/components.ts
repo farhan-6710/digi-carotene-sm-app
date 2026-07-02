@@ -9,6 +9,7 @@ import type {
   DailyMetricRow,
   LabeledValue,
   GrowthPostDetailView,
+  GrowthCampaignDetailView,
   OrganicAccount,
   OrganicAccountForm,
   ReportableAccount,
@@ -67,8 +68,18 @@ export type GrowthPostProfileCardProps = {
   view: GrowthPostDetailView;
 };
 
+export type GrowthCampaignProfileCardProps = {
+  view: GrowthCampaignDetailView;
+};
+
+export type CampaignDailyMetricsTableProps = {
+  rows: GrowthCampaignDetailView["dailyRows"];
+  currencyCode: string;
+};
+
 export type CampaignTableProps = {
   rows: CampaignRow[];
+  adAccountId?: string;
 };
 
 export type ReportsTableProps = {

@@ -105,6 +105,7 @@ function upsertAdCampaignMetric(array $config, string $adAccountId, array $row):
             'campaign_id' => $row['campaign_id'],
             'campaign_name' => $row['campaign_name'],
             'status' => $row['status'],
+            'objective' => $row['objective'] ?? null,
             'metric_date' => $row['metric_date'],
             'spend' => $row['spend'],
             'impressions' => $row['impressions'],

@@ -80,6 +80,7 @@ export function useGrowthCampaigns() {
     statCards,
     spendTrend,
     campaignRows,
+    adAccountId,
     isLoading: isAccountsLoading || isMetricsLoading,
     error: accountsError || metricsError,
     dateFilterProps,

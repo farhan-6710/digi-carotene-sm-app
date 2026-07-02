@@ -95,8 +95,10 @@ export type PostRow = {
 };
 
 export type CampaignMetricRow = {
+  campaignId: string;
   campaignName: string;
   status: CampaignRow["status"];
+  objective: string | null;
   spend: number;
   impressions: number;
   clicks: number;
@@ -155,11 +157,29 @@ export type CampaignRow = {
   id: string;
   name: string;
   status: "Active" | "Paused" | "Completed";
+  objective: string | null;
   spend: number;
   impressions: number;
   clicks: number;
   ctr: number;
   conversions: number;
+};
+
+export type GrowthCampaignDetailView = {
+  campaignId: string;
+  campaignName: string;
+  status: CampaignRow["status"];
+  objective: string | null;
+  adAccountName: string;
+  currencyCode: string;
+  spend: number;
+  impressions: number;
+  clicks: number;
+  conversions: number;
+  ctr: number;
+  dailyRows: CampaignMetricRow[];
+  previousCampaignId: string | null;
+  nextCampaignId: string | null;
 };
 
 export type ReportType =

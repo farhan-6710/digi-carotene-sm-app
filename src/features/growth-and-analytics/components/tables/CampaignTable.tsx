@@ -1,17 +1,21 @@
+import { Link } from "react-router";
+
+import { buildGrowthCampaignDetailPath } from "../../constants/routes";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { cn } from "@/shared/lib/utils";
 
 import { MobileLabel, StatusBadge } from "./tableBits";
 import type { CampaignTableProps } from "../../types/components";
 import {
+  formatCampaignObjective,
   formatCompact,
   formatCurrency,
   formatPercent,
 } from "../../utils/formatters";
 
-const GRID_CLASS = "grid-cols-[1.8fr_0.8fr_0.8fr_0.7fr_0.8fr]";
+const GRID_CLASS = "grid-cols-[1.5fr_1fr_0.7fr_0.8fr_0.7fr_0.8fr]";
 
-export function CampaignTable({ rows }: CampaignTableProps) {
+export function CampaignTable({ rows, adAccountId }: CampaignTableProps) {
   return (
     <DirectoryTable
       title="Campaign Breakdown"
@@ -19,6 +23,7 @@ export function CampaignTable({ rows }: CampaignTableProps) {
       gridClass={GRID_CLASS}
       columns={[
         { label: "CAMPAIGN" },
+        { label: "OBJECTIVE" },
         { label: "STATUS" },
         { label: "SPEND", align: "right" },
         { label: "CTR", align: "right" },
@@ -36,9 +41,18 @@ export function CampaignTable({ rows }: CampaignTableProps) {
             GRID_CLASS,
           )}
         >
-          <div className="text-sm font-medium text-foreground">
+          <div className="min-w-0 text-sm font-medium text-foreground">
             <MobileLabel>CAMPAIGN</MobileLabel>
-            {row.name}
+            <Link
+              to={buildGrowthCampaignDetailPath(row.id, adAccountId)}
+              className="line-clamp-2 text-primary hover:underline"
+            >
+              {row.name}
+            </Link>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            <MobileLabel>OBJECTIVE</MobileLabel>
+            {formatCampaignObjective(row.objective)}
           </div>
           <div>
             <MobileLabel>STATUS</MobileLabel>

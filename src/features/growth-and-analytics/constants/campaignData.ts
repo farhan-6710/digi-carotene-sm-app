@@ -20,10 +20,30 @@ export const DUMMY_AD_ACCOUNTS: AdAccount[] = [
 ];
 
 const CAMPAIGNS = [
-  { name: "Spring Awareness", status: "Active" as const },
-  { name: "Retargeting — Site Visitors", status: "Active" as const },
-  { name: "Lead Gen — Consultation", status: "Paused" as const },
-  { name: "Brand Reach Q2", status: "Completed" as const },
+  {
+    id: "camp-spring-awareness",
+    name: "Spring Awareness",
+    status: "Active" as const,
+    objective: "OUTCOME_AWARENESS",
+  },
+  {
+    id: "camp-retargeting",
+    name: "Retargeting — Site Visitors",
+    status: "Active" as const,
+    objective: "LINK_CLICKS",
+  },
+  {
+    id: "camp-lead-gen",
+    name: "Lead Gen — Consultation",
+    status: "Paused" as const,
+    objective: "OUTCOME_LEADS",
+  },
+  {
+    id: "camp-brand-reach",
+    name: "Brand Reach Q2",
+    status: "Completed" as const,
+    objective: "OUTCOME_ENGAGEMENT",
+  },
 ];
 
 const DUMMY_HISTORY_DAYS = 90;
@@ -45,8 +65,10 @@ function buildMetricsForAccount(adAccountId: string): CampaignMetricRow[] {
       const campaign = CAMPAIGNS[i]!;
       const seed = day + seedOffset + i * 31;
       rows.push({
+        campaignId: campaign.id,
         campaignName: campaign.name,
         status: campaign.status,
+        objective: campaign.objective,
         spend: seedValue(seed, 800, 6_500),
         impressions: seedValue(seed + 2, 4_000, 28_000),
         clicks: seedValue(seed + 4, 120, 980),

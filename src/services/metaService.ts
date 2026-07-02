@@ -350,7 +350,12 @@ export async function fetchFacebookPostEngagement(
   }
 }
 
-export type AdCampaignStatus = { id: string; name: string; status?: string };
+export type AdCampaignStatus = {
+  id: string;
+  name: string;
+  status?: string;
+  objective?: string;
+};
 
 export async function fetchAdCampaignStatuses(
   adAccountId: string,
@@ -358,7 +363,7 @@ export async function fetchAdCampaignStatuses(
 ): Promise<AdCampaignStatus[]> {
   const id = adAccountId.startsWith("act_") ? adAccountId : `act_${adAccountId}`;
   return graphGetAll<AdCampaignStatus>(META_API_VERSION.ads, `${id}/campaigns`, {
-    fields: "id,name,status",
+    fields: "id,name,status,objective",
     limit: "100",
     access_token: accessToken,
   });
