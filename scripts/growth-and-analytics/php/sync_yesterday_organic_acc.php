@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 /**
- * Midnight Instagram sync — yesterday's posts + follower gain.
+ * Midnight Instagram organic account sync — yesterday's posts + follower gain.
  * Run daily at 12:01 AM (server timezone in config.php).
  *
- * CLI:  php sync_yesterday.php
- * HTTP: https://your-domain.com/.../sync_yesterday.php?secret=YOUR_CRON_SECRET
+ * CLI:  php sync_yesterday_organic_acc.php
+ * HTTP: https://your-domain.com/.../sync_yesterday_organic_acc.php?secret=YOUR_CRON_SECRET
  */
 
 require_once __DIR__ . '/lib/supabase.php';

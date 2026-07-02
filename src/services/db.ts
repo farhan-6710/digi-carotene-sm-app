@@ -105,7 +105,8 @@ export const DB = {
   },
   GROWTH_AD_ACCOUNTS: {
     TABLE: "growth_ad_accounts",
-    SELECT: "id, client_name, account_name, ad_account_id, currency, created_at",
+    SELECT:
+      "id, client_name, account_name, ad_account_id, currency_code, created_at",
   },
   INSTAGRAM_PROFILES: {
     TABLE: "instagram_profiles",
@@ -119,5 +120,14 @@ export const DB = {
   INSTAGRAM_DAILY_FOLLOWERS: {
     TABLE: "instagram_daily_followers",
     SELECT: "date, followers_gained",
+  },
+  CURRENCIES: {
+    TABLE: "currencies",
+    SELECT: "code, name, symbol",
+  },
+  AD_CAMPAIGN_DAILY_METRICS: {
+    TABLE: "ad_campaign_daily_metrics",
+    SELECT:
+      "id, ad_account_id, campaign_id, campaign_name, status, metric_date, spend, impressions, clicks, conversions",
   },
 } as const;

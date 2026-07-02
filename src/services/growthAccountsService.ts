@@ -1,3 +1,4 @@
+import { rerunAdBackfillForAccount, runAd29DayBackfill } from "@/services/adBackfillService";
 import { DB } from "@/services/db";
 import { rerunInstagramBackfillForOrganicAccount, runInstagram29DayBackfill } from "@/services/instagramBackfillService";
 import {
@@ -31,7 +32,7 @@ type AdRow = {
   client_name: string;
   account_name: string;
   ad_account_id: string;
-  currency: string;
+  currency_code: string;
 };
 
 function mapOrganic(row: OrganicRow): OrganicAccount {
@@ -51,7 +52,7 @@ function mapAd(row: AdRow): AdAccount {
     clientName: row.client_name,
     accountName: row.account_name,
     adAccountId: row.ad_account_id,
-    currency: row.currency,
+    currencyCode: row.currency_code || "INR",
   };
 }
 
@@ -232,6 +233,7 @@ export async function connectAdAccount(form: AdAccountForm): Promise<AdAccount> 
   }
 
   const info = await fetchMetaAdInfo(metaAdAccountId, token);
+  const currencyCode = form.currencyCode.trim() || info.currency || "INR";
 
   const { data, error } = await supabase
     .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
@@ -240,7 +242,7 @@ export async function connectAdAccount(form: AdAccountForm): Promise<AdAccount> 
       account_name: form.accountName.trim() || info.accountName,
       ad_account_id: metaAdAccountId,
       access_token: token,
-      currency: info.currency || form.currency,
+      currency_code: currencyCode,
     })
     .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
     .single();
@@ -252,7 +254,10 @@ export async function connectAdAccount(form: AdAccountForm): Promise<AdAccount> 
     throw new Error(error.message);
   }
 
-  return mapAd(data as AdRow);
+  const account = mapAd(data as AdRow);
+  await runAd29DayBackfill(account.id, metaAdAccountId, token);
+
+  return account;
 }
 
 export async function updateAdAccount(
@@ -260,12 +265,13 @@ export async function updateAdAccount(
   form: AdAccountForm,
 ): Promise<AdAccount> {
   const token = form.accessToken.trim();
-  const metaAdAccountId = form.adAccountId.trim();
+  const metaAdAccountId = normalizeAdAccountId(form.adAccountId);
+  const currencyCode = form.currencyCode.trim() || "INR";
   const columns: Record<string, unknown> = {
     client_name: form.clientName.trim(),
     account_name: form.accountName.trim(),
     ad_account_id: metaAdAccountId,
-    currency: form.currency,
+    currency_code: currencyCode,
   };
 
   if (token) {
@@ -284,6 +290,7 @@ export async function updateAdAccount(
   const account = mapAd(data as AdRow);
   if (token) {
     await clearAdCachedMetrics(id);
+    await rerunAdBackfillForAccount(id, metaAdAccountId, token);
   }
 
   return account;

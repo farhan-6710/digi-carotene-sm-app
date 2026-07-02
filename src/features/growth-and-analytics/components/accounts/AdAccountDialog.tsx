@@ -87,9 +87,9 @@ export function AdAccountDialog({
 
             <GrowthStaticComboBox
               label="Currency"
-              value={values.currency}
+              value={values.currencyCode}
               options={currencyOptions}
-              onChange={(value) => onFieldChange("currency", value)}
+              onChange={(value) => onFieldChange("currencyCode", value)}
               placeholder="Select currency"
             />
 

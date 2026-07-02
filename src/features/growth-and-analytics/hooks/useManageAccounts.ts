@@ -135,7 +135,7 @@ export function useManageAccounts() {
       accountName: account.accountName,
       adAccountId: account.adAccountId,
       accessToken: "",
-      currency: account.currency,
+      currencyCode: account.currencyCode,
     });
     setAdEditId(account.id);
     setIsAdOpen(true);
@@ -160,9 +160,9 @@ export function useManageAccounts() {
             : "Ad account updated.",
         );
       } else {
-        showToast("info", "Validating ad account with Meta…");
+        showToast("info", "Validating ad account and syncing 29 days of campaign data…");
         await connectAdAccount(adForm);
-        showToast("success", "Ad account connected. Open Campaign Analytics to load metrics.");
+        showToast("success", "Ad account connected. Open Campaign Analytics to view metrics.");
       }
       setIsAdOpen(false);
       await reloadAds();

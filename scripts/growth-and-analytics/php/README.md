@@ -1,12 +1,20 @@
-# Growth & Analytics — Instagram midnight sync (PHP)
+# Growth & Analytics — midnight sync (PHP)
 
-Runs on **GoDaddy** (PHP 8.2.30). GoDaddy cron hits a URL; this script syncs **yesterday’s** posts and follower gain into Supabase.
+Runs on **GoDaddy** (PHP 8.2.30). GoDaddy cron hits a URL; scripts sync **yesterday’s** data into Supabase.
+
+| Script | What it syncs |
+|--------|----------------|
+| `sync_yesterday_organic_acc.php` | Instagram organic posts + follower gain |
+| `sync_yesterday_ads_acc.php` | Meta ad campaign daily metrics |
 
 ## Quick setup (URL cron — easiest on GoDaddy)
 
 ### 1. Supabase
 
-Run migration [`021_instagram_daily_followers.sql`](../../migrations/021_instagram_daily_followers.sql) in the SQL Editor (if not done already).
+Run migrations in the SQL Editor (if not done already):
+
+- [`021_instagram_daily_followers.sql`](../../migrations/021_instagram_daily_followers.sql)
+- [`022_ad_campaign_metrics.sql`](../../migrations/022_ad_campaign_metrics.sql)
 
 ### 2. Edit `config.php`
 
@@ -15,7 +23,7 @@ Open `config.php` in this folder and set:
 | Key | Where to get it |
 |-----|-----------------|
 | `supabase_service_key` | Supabase → **Project Settings → API → service_role** (secret key) |
-| `cron_secret` | Any long random string you invent (e.g. run `openssl rand -hex 32` locally) |
+| `cron_secret` | Any long random string you invent (e.g. run `openssl rand -hex 32` locally). One shared secret is fine for both cron URLs. |
 
 `supabase_url` and `timezone` are already set. Do **not** commit `config.php` after adding the service role key.
 
@@ -26,17 +34,24 @@ Upload the whole `php/` folder via **File Manager** or FTP, e.g.:
 ```text
 public_html/growth-and-analytics/php/
   config.php
-  sync_yesterday.php
+  sync_yesterday_organic_acc.php
+  sync_yesterday_ads_acc.php
   lib/
   .htaccess
 ```
 
 ### 4. Test in the browser
 
-Open (replace domain, folder, and secret):
+Instagram sync:
 
 ```text
-https://YOUR-DOMAIN.com/growth-and-analytics/php/sync_yesterday.php?secret=YOUR_CRON_SECRET
+https://YOUR-DOMAIN.com/growth-and-analytics/php/sync_yesterday_organic_acc.php?secret=YOUR_CRON_SECRET
+```
+
+Ad campaign sync:
+
+```text
+https://YOUR-DOMAIN.com/growth-and-analytics/php/sync_yesterday_ads_acc.php?secret=YOUR_CRON_SECRET
 ```
 
 You should see log lines like:
@@ -48,24 +63,19 @@ You should see log lines like:
 [2026-07-01 00:15:05] Sync complete.
 ```
 
-Check Supabase tables `past_posts_metrics` and `instagram_daily_followers` for new rows.
+Check Supabase:
+
+- Instagram: `past_posts_metrics`, `instagram_daily_followers`
+- Ads: `ad_campaign_daily_metrics`
 
 ### 5. Add GoDaddy cron (cPanel)
 
-1. GoDaddy → **Hosting → Manage → cPanel**
-2. Search **Cron Jobs**
-3. **Add New Cron Job**
-4. Schedule: **12:05 AM every day** (minute `5`, hour `0`, rest `*`)  
-   — slightly after midnight so “yesterday” is clear in `Asia/Kolkata`
-5. Command:
+Add **two** daily jobs at **12:05 AM** (or stagger by a few minutes):
 
 ```bash
-curl -s "https://YOUR-DOMAIN.com/growth-and-analytics/php/sync_yesterday.php?secret=YOUR_CRON_SECRET"
+curl -s "https://YOUR-DOMAIN.com/growth-and-analytics/php/sync_yesterday_organic_acc.php?secret=YOUR_CRON_SECRET"
+curl -s "https://YOUR-DOMAIN.com/growth-and-analytics/php/sync_yesterday_ads_acc.php?secret=YOUR_CRON_SECRET"
 ```
-
-6. Save.
-
-If cPanel uses a **URL** field instead of a command box, paste the same `https://...` URL there.
 
 **Timezone note:** cPanel cron time is usually **server time** (often US). If your server is not in India, adjust the hour so the job runs just after midnight **India time**. Example: if server is US Eastern, 12:05 AM IST is roughly 1:35 PM previous day Eastern — use cPanel’s time labels or test once and shift the hour.
 
@@ -81,7 +91,7 @@ If cPanel uses a **URL** field instead of a command box, paste the same `https:/
 | Use `.htaccess` (included) to block web access to `config.php` | Share the key in chat/email |
 | Restrict who has FTP/cPanel access | Use the service role key in the browser |
 
-The service role **bypasses RLS** — that’s why the cron can write to your tables. It never appears in the frontend; only `sync_yesterday.php` reads it on the server.
+The service role **bypasses RLS** — that’s why the cron can write to your tables. It never appears in the frontend; only the PHP sync entry files read it on the server.
 
 The **cron secret** in the URL stops random visitors from triggering a sync. Use a long random value.
 
@@ -99,7 +109,7 @@ The **cron secret** in the URL stops random visitors from triggering a sync. Use
 
 **For 1–5 Instagram accounts:** URL cron is fine.
 
-**If you grow to many accounts:** switch to CLI cron (`php sync_yesterday.php`) or split work — same script, no code change.
+**If you grow to many accounts:** switch to CLI cron (`php sync_yesterday_organic_acc.php`) or split work — same script, no code change.
 
 **Reliability tips:**
 
@@ -109,17 +119,20 @@ The **cron secret** in the URL stops random visitors from triggering a sync. Use
 
 ---
 
-## What the script does
+## What the scripts do
 
-Each run:
+**Instagram (`sync_yesterday_organic_acc.php`)** — for each `instagram_profiles` row, for **yesterday only**:
 
-1. Loads all `instagram_profiles` from Supabase
-2. For each account, for **yesterday only**:
-   - Upserts posts → `past_posts_metrics`
-   - Upserts follower gain → `instagram_daily_followers`
-   - Updates profile `followers_count` and `username`
+- Upserts posts → `past_posts_metrics`
+- Upserts follower gain → `instagram_daily_followers`
+- Updates profile `followers_count` and `username`
 
-Connect/reconnect in the app still backfills the last **29 days** in the browser.
+**Ads (`sync_yesterday_ads_acc.php`)** — for each `growth_ad_accounts` row, for **yesterday only**:
+
+- Fetches campaign-level insights from Meta (`spend`, `impressions`, `clicks`, `actions`)
+- Upserts rows → `ad_campaign_daily_metrics`
+
+Connect/reconnect in the app still backfills the last **29 days** in the browser (organic + ads).
 
 ---
 
@@ -128,7 +141,8 @@ Connect/reconnect in the app still backfills the last **29 days** in the browser
 | File | Purpose |
 |------|---------|
 | `config.php` | Supabase + cron secret (edit before upload) |
-| `sync_yesterday.php` | Entry point (URL or CLI) |
+| `sync_yesterday_organic_acc.php` | Instagram organic entry point (URL or CLI) |
+| `sync_yesterday_ads_acc.php` | Ad campaign entry point (URL or CLI) |
 | `lib/` | Supabase REST + Meta Graph helpers |
 | `.htaccess` | Blocks direct access to `config.php` |
 
@@ -137,7 +151,7 @@ Connect/reconnect in the app still backfills the last **29 days** in the browser
 If your plan supports SSH:
 
 ```bash
-5 0 * * * /usr/local/bin/php -q /home/USER/public_html/growth-and-analytics/php/sync_yesterday.php >> /home/USER/logs/ig-sync.log 2>&1
+5 0 * * * /usr/local/bin/php -q /home/USER/public_html/growth-and-analytics/php/sync_yesterday_organic_acc.php >> /home/USER/logs/ig-sync.log 2>&1
 ```
 
 No `?secret=` needed when run from CLI.

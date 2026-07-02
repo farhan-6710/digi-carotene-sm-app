@@ -210,3 +210,79 @@ function isPostedBetween(string $timestamp, DateTimeImmutable $from, DateTimeImm
 
     return $posted >= $from && $posted < $toExclusive;
 }
+
+function mapCampaignStatus(?string $status): string
+{
+    if ($status === 'ACTIVE') {
+        return 'Active';
+    }
+    if ($status === 'PAUSED') {
+        return 'Paused';
+    }
+
+    return 'Completed';
+}
+
+function parseSpend(mixed $value): float
+{
+    return round((float) ($value ?? 0), 2);
+}
+
+function parseConversions(mixed $actions): int
+{
+    if (!is_array($actions)) {
+        return 0;
+    }
+
+    $types = [
+        'lead',
+        'onsite_conversion.lead_grouped',
+        'purchase',
+        'offsite_conversion.fb_pixel_purchase',
+    ];
+    $total = 0;
+
+    foreach ($actions as $action) {
+        if (!is_array($action)) {
+            continue;
+        }
+        $type = is_string($action['action_type'] ?? null) ? $action['action_type'] : '';
+        if (!in_array($type, $types, true)) {
+            continue;
+        }
+        $total += (int) round((float) ($action['value'] ?? 0));
+    }
+
+    return $total;
+}
+
+/** @return list<array{id: string, name: string, status?: string}> */
+function fetchAdCampaignStatuses(array $config, string $adAccountId, string $accessToken): array
+{
+    $id = str_starts_with($adAccountId, 'act_') ? $adAccountId : 'act_' . $adAccountId;
+
+    return metaGraphGetAll($config, $id . '/campaigns', [
+        'fields' => 'id,name,status',
+        'limit' => '100',
+        'access_token' => $accessToken,
+    ]);
+}
+
+/** @return list<array<string, mixed>> */
+function fetchAdDailyInsightsForDay(
+    array $config,
+    string $adAccountId,
+    string $accessToken,
+    string $date,
+): array {
+    $id = str_starts_with($adAccountId, 'act_') ? $adAccountId : 'act_' . $adAccountId;
+    $timeRange = json_encode(['since' => $date, 'until' => $date], JSON_THROW_ON_ERROR);
+
+    return metaGraphGetAll($config, $id . '/insights', [
+        'fields' => 'campaign_id,campaign_name,spend,impressions,clicks,actions',
+        'time_range' => $timeRange,
+        'time_increment' => '1',
+        'level' => 'campaign',
+        'access_token' => $accessToken,
+    ]);
+}

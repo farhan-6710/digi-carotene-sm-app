@@ -1,4 +1,3 @@
-import { GrowthAccountComboBox } from "../components/GrowthAccountComboBox";
 import { GrowthSpendChart } from "../components/charts/GrowthSpendChart";
 import { CampaignTable } from "../components/tables/CampaignTable";
 import { useGrowthCampaigns } from "../hooks/useGrowthCampaigns";
@@ -11,9 +10,6 @@ import { Button } from "@/shared/ui/button";
 
 export function GrowthCampaignAnalyticsPage() {
   const {
-    accountOptions,
-    adAccountId,
-    setAdAccountId,
     statCards,
     spendTrend,
     campaignRows,
@@ -29,7 +25,7 @@ export function GrowthCampaignAnalyticsPage() {
     <PageContent>
       <PageHeader
         heading="Campaign Analytics"
-        description="Track paid performance — spend, reach, clicks, and conversions."
+        description="Track paid performance — spend, impressions, clicks, and conversions from Meta."
         actions={
           <div className="flex flex-wrap items-center justify-end gap-2">
             <DateFilters {...dateFilterProps} />
@@ -45,14 +41,6 @@ export function GrowthCampaignAnalyticsPage() {
       />
 
       {error ? <ErrorBanner message={error} /> : null}
-
-      <GrowthAccountComboBox
-        label="Ad Account"
-        value={adAccountId}
-        options={accountOptions}
-        onChange={setAdAccountId}
-        placeholder="Select ad account"
-      />
 
       <StatsCards cards={statCards} isLoading={isLoading} />
 

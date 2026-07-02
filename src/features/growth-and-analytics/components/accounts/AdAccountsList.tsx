@@ -59,7 +59,7 @@ export function AdAccountsList({
           </div>
           <div className="text-sm text-foreground">
             <MobileLabel>CURRENCY</MobileLabel>
-            {account.currency}
+            {account.currencyCode}
           </div>
           <div className="flex justify-end">
             <Button

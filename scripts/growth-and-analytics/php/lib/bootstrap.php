@@ -6,7 +6,7 @@ function loadConfig(): array
 {
     $path = __DIR__ . '/../config.php';
     if (!is_file($path)) {
-        throw new RuntimeException('Missing config.php — add it next to sync_yesterday.php');
+        throw new RuntimeException('Missing config.php — add it next to the sync entry files');
     }
 
     /** @var array $config */

@@ -208,7 +208,13 @@ export type AdAccount = {
   clientName: string;
   accountName: string;
   adAccountId: string;
-  currency: string;
+  currencyCode: string;
+};
+
+export type Currency = {
+  code: string;
+  name: string;
+  symbol: string;
 };
 
 export type OrganicAccountForm = {
@@ -223,5 +229,5 @@ export type AdAccountForm = {
   accountName: string;
   adAccountId: string;
   accessToken: string;
-  currency: string;
+  currencyCode: string;
 };

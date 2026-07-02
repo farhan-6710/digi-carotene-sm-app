@@ -11,9 +11,6 @@ export const platformOptions: { value: GrowthPlatform; label: string }[] = [
 
 export const currencyOptions = [
   { value: "INR", label: "INR — Indian Rupee" },
-  { value: "USD", label: "USD — US Dollar" },
-  { value: "EUR", label: "EUR — Euro" },
-  { value: "GBP", label: "GBP — British Pound" },
 ];
 
 export const emptyOrganicForm: OrganicAccountForm = {
@@ -28,5 +25,5 @@ export const emptyAdForm: AdAccountForm = {
   accountName: "",
   adAccountId: "",
   accessToken: "",
-  currency: "INR",
+  currencyCode: "INR",
 };

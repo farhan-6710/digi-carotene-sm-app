@@ -8,14 +8,14 @@ export const DUMMY_AD_ACCOUNTS: AdAccount[] = [
     clientName: "Carotene",
     accountName: "Carotene Ads",
     adAccountId: "act_100200300",
-    currency: "INR",
+    currencyCode: "INR",
   },
   {
     id: "ad-acc-veda",
     clientName: "Veda Hospitals",
     accountName: "Veda Performance",
     adAccountId: "act_400500600",
-    currency: "INR",
+    currencyCode: "INR",
   },
 ];
 

@@ -81,3 +81,36 @@ function updateInstagramProfile(array $config, string $profileId, string $userna
         ['Prefer: return=minimal'],
     );
 }
+
+/** @return list<array{id: string, ad_account_id: string, account_name: string, access_token: string}> */
+function fetchAdAccounts(array $config): array
+{
+    $rows = supabaseRequest(
+        $config,
+        'GET',
+        'growth_ad_accounts?select=id,ad_account_id,account_name,access_token',
+    );
+
+    return is_array($rows) ? $rows : [];
+}
+
+function upsertAdCampaignMetric(array $config, string $adAccountId, array $row): void
+{
+    supabaseRequest(
+        $config,
+        'POST',
+        'ad_campaign_daily_metrics?on_conflict=ad_account_id,campaign_id,metric_date',
+        [
+            'ad_account_id' => $adAccountId,
+            'campaign_id' => $row['campaign_id'],
+            'campaign_name' => $row['campaign_name'],
+            'status' => $row['status'],
+            'metric_date' => $row['metric_date'],
+            'spend' => $row['spend'],
+            'impressions' => $row['impressions'],
+            'clicks' => $row['clicks'],
+            'conversions' => $row['conversions'],
+        ],
+        ['Prefer: resolution=merge-duplicates,return=minimal'],
+    );
+}
