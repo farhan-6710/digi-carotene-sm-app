@@ -66,7 +66,7 @@ You should see log lines like:
 Check Supabase:
 
 - Instagram: `past_posts_metrics`, `instagram_daily_followers`
-- Ads: `ad_campaign_daily_metrics`
+- Ads: `growth_ad_campaign_daily_metrics`
 
 ### 5. Add GoDaddy cron (cPanel)
 
@@ -130,7 +130,7 @@ The **cron secret** in the URL stops random visitors from triggering a sync. Use
 **Ads (`sync_yesterday_ads_acc.php`)** — for each `growth_ad_accounts` row, for **yesterday only**:
 
 - Fetches campaign-level insights from Meta (`spend`, `impressions`, `clicks`, `actions`)
-- Upserts rows → `ad_campaign_daily_metrics`
+- Upserts rows → `growth_ad_campaign_daily_metrics`
 
 Connect/reconnect in the app still backfills the last **29 days** in the browser (organic + ads).
 

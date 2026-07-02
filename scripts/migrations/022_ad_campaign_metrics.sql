@@ -11,7 +11,7 @@ insert into public.currencies (code, name, symbol)
 values ('INR', 'Indian Rupee', '₹')
 on conflict (code) do nothing;
 
-create table public.ad_campaign_daily_metrics (
+create table public.growth_ad_campaign_daily_metrics (
   id bigserial primary key,
   ad_account_id uuid not null references public.growth_ad_accounts (id) on delete cascade,
   campaign_id text not null,
@@ -27,11 +27,11 @@ create table public.ad_campaign_daily_metrics (
   unique (ad_account_id, campaign_id, metric_date)
 );
 
-create index ad_campaign_daily_metrics_account_date_idx
-  on public.ad_campaign_daily_metrics (ad_account_id, metric_date desc);
+create index growth_ad_campaign_daily_metrics_account_date_idx
+  on public.growth_ad_campaign_daily_metrics (ad_account_id, metric_date desc);
 
-create trigger set_ad_campaign_daily_metrics_updated_at
-  before update on public.ad_campaign_daily_metrics
+create trigger set_growth_ad_campaign_daily_metrics_updated_at
+  before update on public.growth_ad_campaign_daily_metrics
   for each row execute function public.handle_updated_at();
 
 alter table public.growth_ad_accounts
@@ -51,12 +51,12 @@ alter table public.growth_ad_accounts
   drop column if exists currency;
 
 alter table public.currencies enable row level security;
-alter table public.ad_campaign_daily_metrics enable row level security;
+alter table public.growth_ad_campaign_daily_metrics enable row level security;
 
 create policy "currencies_read"
   on public.currencies for select to anon, authenticated
   using (true);
 
-create policy "ad_campaign_daily_metrics_all"
-  on public.ad_campaign_daily_metrics for all to anon, authenticated
+create policy "growth_ad_campaign_daily_metrics_all"
+  on public.growth_ad_campaign_daily_metrics for all to anon, authenticated
   using (true) with check (true);

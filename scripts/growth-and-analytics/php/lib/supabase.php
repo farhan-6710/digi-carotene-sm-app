@@ -99,7 +99,7 @@ function upsertAdCampaignMetric(array $config, string $adAccountId, array $row):
     supabaseRequest(
         $config,
         'POST',
-        'ad_campaign_daily_metrics?on_conflict=ad_account_id,campaign_id,metric_date',
+        'growth_ad_campaign_daily_metrics?on_conflict=ad_account_id,campaign_id,metric_date',
         [
             'ad_account_id' => $adAccountId,
             'campaign_id' => $row['campaign_id'],

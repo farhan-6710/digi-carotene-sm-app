@@ -126,7 +126,7 @@ export const DB = {
     SELECT: "code, name, symbol",
   },
   AD_CAMPAIGN_DAILY_METRICS: {
-    TABLE: "ad_campaign_daily_metrics",
+    TABLE: "growth_ad_campaign_daily_metrics",
     SELECT:
       "id, ad_account_id, campaign_id, campaign_name, status, metric_date, spend, impressions, clicks, conversions",
   },
