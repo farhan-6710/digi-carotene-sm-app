@@ -334,22 +334,43 @@ export function mapCampaignStatus(status?: string): "Active" | "Paused" | "Compl
   return "Completed";
 }
 
+/** Meta may return both `lead` and `onsite_conversion.lead_grouped` for the same event — count once per group. */
+const CONVERSION_ACTION_GROUPS: string[][] = [
+  ["onsite_conversion.lead_grouped", "lead"],
+  ["offsite_conversion.fb_pixel_purchase", "purchase"],
+  ["offsite_conversion.fb_pixel_lead", "offsite_conversion.lead"],
+];
+
 export function parseConversions(
   actions?: Array<{ action_type?: string; value?: string }>,
 ): number {
-  if (!actions) return 0;
-  const types = new Set([
-    "lead",
-    "onsite_conversion.lead_grouped",
-    "purchase",
-    "offsite_conversion.fb_pixel_purchase",
-  ]);
-  return actions.reduce((sum, action) => {
-    if (action.action_type && types.has(action.action_type)) {
-      return sum + Math.round(Number(action.value ?? 0));
+  if (!actions?.length) return 0;
+
+  const byType = new Map<string, number>();
+  for (const action of actions) {
+    if (!action.action_type) continue;
+    byType.set(action.action_type, Math.round(Number(action.value ?? 0)));
+  }
+
+  let total = 0;
+  for (const group of CONVERSION_ACTION_GROUPS) {
+    for (const type of group) {
+      const value = byType.get(type);
+      if (value != null && value > 0) {
+        total += value;
+        break;
+      }
     }
-    return sum;
-  }, 0);
+  }
+  return total;
+}
+
+export function parseMetricInt(value: string | number | undefined): number {
+  return Math.round(Number(value ?? 0));
+}
+
+export function parseMetricDecimal(value: string | number | undefined): number {
+  return Number(Number(value ?? 0).toFixed(2));
 }
 
 export function parseSpend(value: string | number | undefined): number {

@@ -128,6 +128,6 @@ export const DB = {
   AD_CAMPAIGN_DAILY_METRICS: {
     TABLE: "growth_ad_campaign_daily_metrics",
     SELECT:
-      "id, ad_account_id, campaign_id, campaign_name, status, objective, metric_date, spend, impressions, clicks, conversions",
+      "id, ad_account_id, campaign_id, campaign_name, status, objective, metric_date, spend, impressions, reach, clicks, cpm, frequency, conversions",
   },
 } as const;

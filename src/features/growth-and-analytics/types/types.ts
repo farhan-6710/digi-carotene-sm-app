@@ -101,7 +101,10 @@ export type CampaignMetricRow = {
   objective: string | null;
   spend: number;
   impressions: number;
+  reach: number;
   clicks: number;
+  cpm: number;
+  frequency: number;
   conversions: number;
   date: string;
 };

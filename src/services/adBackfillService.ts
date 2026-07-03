@@ -1,6 +1,8 @@
 import {
   mapCampaignStatus,
   parseConversions,
+  parseMetricDecimal,
+  parseMetricInt,
   parseSpend,
   getMetaInsightChunksForSpan,
 } from "@/features/growth-and-analytics/utils/metaSyncMappers";
@@ -31,8 +33,11 @@ function mapInsightToInsert(
     objective: objectiveByCampaignId.get(campaignId) ?? null,
     metricDate,
     spend: parseSpend(insight.spend),
-    impressions: Math.round(Number(insight.impressions ?? 0)),
-    clicks: Math.round(Number(insight.clicks ?? 0)),
+    impressions: parseMetricInt(insight.impressions),
+    reach: parseMetricInt(insight.reach),
+    clicks: parseMetricInt(insight.clicks),
+    cpm: parseMetricDecimal(insight.cpm),
+    frequency: parseMetricDecimal(insight.frequency),
     conversions: parseConversions(insight.actions),
   };
 }

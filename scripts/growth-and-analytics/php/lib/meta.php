@@ -234,26 +234,40 @@ function parseConversions(mixed $actions): int
         return 0;
     }
 
-    $types = [
-        'lead',
-        'onsite_conversion.lead_grouped',
-        'purchase',
-        'offsite_conversion.fb_pixel_purchase',
-    ];
-    $total = 0;
-
+    $byType = [];
     foreach ($actions as $action) {
         if (!is_array($action)) {
             continue;
         }
         $type = is_string($action['action_type'] ?? null) ? $action['action_type'] : '';
-        if (!in_array($type, $types, true)) {
+        if ($type === '') {
             continue;
         }
-        $total += (int) round((float) ($action['value'] ?? 0));
+        $byType[$type] = (int) round((float) ($action['value'] ?? 0));
+    }
+
+    $groups = [
+        ['onsite_conversion.lead_grouped', 'lead'],
+        ['offsite_conversion.fb_pixel_purchase', 'purchase'],
+        ['offsite_conversion.fb_pixel_lead', 'offsite_conversion.lead'],
+    ];
+    $total = 0;
+
+    foreach ($groups as $group) {
+        foreach ($group as $type) {
+            if (!empty($byType[$type])) {
+                $total += $byType[$type];
+                break;
+            }
+        }
     }
 
     return $total;
+}
+
+function parseDecimal(mixed $value): float
+{
+    return round((float) ($value ?? 0), 2);
 }
 
 /** @return list<array{id: string, name: string, status?: string}> */
@@ -279,7 +293,7 @@ function fetchAdDailyInsightsForDay(
     $timeRange = json_encode(['since' => $date, 'until' => $date], JSON_THROW_ON_ERROR);
 
     return metaGraphGetAll($config, $id . '/insights', [
-        'fields' => 'campaign_id,campaign_name,spend,impressions,clicks,actions',
+        'fields' => 'campaign_id,campaign_name,spend,impressions,reach,clicks,cpm,frequency,actions',
         'time_range' => $timeRange,
         'time_increment' => '1',
         'level' => 'campaign',

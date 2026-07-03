@@ -375,7 +375,10 @@ export type AdDailyInsight = {
   date_start?: string;
   spend?: string;
   impressions?: string;
+  reach?: string;
   clicks?: string;
+  cpm?: string;
+  frequency?: string;
   actions?: Array<{ action_type?: string; value?: string }>;
 };
 
@@ -388,7 +391,8 @@ export async function fetchAdDailyInsights(
   const timeRange = JSON.stringify({ since: range.from, until: range.to });
 
   return graphGetAll<AdDailyInsight>(META_API_VERSION.ads, `${id}/insights`, {
-    fields: "campaign_id,campaign_name,spend,impressions,clicks,actions",
+    fields:
+      "campaign_id,campaign_name,spend,impressions,reach,clicks,cpm,frequency,actions",
     time_range: timeRange,
     time_increment: "1",
     level: "campaign",

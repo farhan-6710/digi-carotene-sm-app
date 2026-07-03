@@ -71,7 +71,10 @@ function buildMetricsForAccount(adAccountId: string): CampaignMetricRow[] {
         objective: campaign.objective,
         spend: seedValue(seed, 800, 6_500),
         impressions: seedValue(seed + 2, 4_000, 28_000),
+        reach: seedValue(seed + 1, 3_000, 22_000),
         clicks: seedValue(seed + 4, 120, 980),
+        cpm: seedValue(seed + 3, 40, 180),
+        frequency: Number((1 + (seed % 20) / 10).toFixed(2)),
         conversions: seedValue(seed + 6, 2, 42),
         date,
       });

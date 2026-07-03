@@ -108,7 +108,10 @@ try {
                     'metric_date' => $metricDate,
                     'spend' => parseSpend($insight['spend'] ?? 0),
                     'impressions' => parseMetricValue($insight['impressions'] ?? 0),
+                    'reach' => parseMetricValue($insight['reach'] ?? 0),
                     'clicks' => parseMetricValue($insight['clicks'] ?? 0),
+                    'cpm' => parseDecimal($insight['cpm'] ?? 0),
+                    'frequency' => parseDecimal($insight['frequency'] ?? 0),
                     'conversions' => parseConversions($insight['actions'] ?? null),
                 ]);
                 $syncedRows++;

@@ -15,7 +15,10 @@ type MetricRow = {
   metric_date: string;
   spend: number;
   impressions: number;
+  reach: number;
   clicks: number;
+  cpm: number;
+  frequency: number;
   conversions: number;
 };
 
@@ -27,7 +30,10 @@ function mapMetric(row: MetricRow): CampaignMetricRow {
     objective: row.objective,
     spend: Number(row.spend),
     impressions: row.impressions,
+    reach: row.reach,
     clicks: row.clicks,
+    cpm: Number(row.cpm),
+    frequency: Number(row.frequency),
     conversions: row.conversions,
     date: row.metric_date,
   };
@@ -56,7 +62,10 @@ export type AdCampaignMetricInsert = {
   metricDate: string;
   spend: number;
   impressions: number;
+  reach: number;
   clicks: number;
+  cpm: number;
+  frequency: number;
   conversions: number;
 };
 
@@ -70,7 +79,10 @@ function toInsertRow(adAccountId: string, row: AdCampaignMetricInsert) {
     metric_date: row.metricDate,
     spend: row.spend,
     impressions: row.impressions,
+    reach: row.reach,
     clicks: row.clicks,
+    cpm: row.cpm,
+    frequency: row.frequency,
     conversions: row.conversions,
   };
 }

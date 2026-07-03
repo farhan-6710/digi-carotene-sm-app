@@ -20,6 +20,19 @@ export function formatCurrency(value: number, currency = "INR"): string {
   }).format(value);
 }
 
+export function formatCpm(value: number, currency = "INR"): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+export function formatFrequency(value: number): string {
+  return value.toFixed(2);
+}
+
 // `yyyy-MM-dd` → "Jan" (parsed as local time to avoid timezone drift).
 export function monthLabel(dateStr: string): string {
   return new Date(`${dateStr}T00:00:00`).toLocaleString("en-US", {
