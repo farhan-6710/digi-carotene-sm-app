@@ -130,4 +130,24 @@ export const DB = {
     SELECT:
       "id, ad_account_id, campaign_id, campaign_name, status, objective, metric_date, spend, impressions, reach, clicks, cpm, frequency, conversions",
   },
+  ADSETS: {
+    TABLE: "growth_adsets",
+    SELECT:
+      "id, ad_account_id, campaign_id, adset_id, adset_name, performance_goal, location_summary, age_summary, custom_targeting_summary, detailed_targeting_summary, placements_summary",
+  },
+  ADSET_DAILY_METRICS: {
+    TABLE: "growth_adset_daily_metrics",
+    SELECT:
+      "id, ad_account_id, campaign_id, adset_id, adset_name, metric_date, spend, impressions, reach, clicks, cpm, frequency, conversions",
+  },
+  ADS: {
+    TABLE: "growth_ads",
+    SELECT:
+      "id, ad_account_id, campaign_id, adset_id, ad_id, ad_name, thumbnail_url, primary_text, headline",
+  },
+  AD_DAILY_METRICS: {
+    TABLE: "growth_ad_daily_metrics",
+    SELECT:
+      "id, ad_account_id, campaign_id, adset_id, ad_id, ad_name, metric_date, spend, impressions, reach, clicks, cpm, frequency, conversions",
+  },
 } as const;

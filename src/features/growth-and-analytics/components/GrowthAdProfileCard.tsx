@@ -1,25 +1,23 @@
-import { growthCampaignDetailStatItems } from "../constants/campaignDetailStats";
-import { AdsetsTable } from "./tables/AdsetsTable";
-import { CampaignDailyMetricsTable } from "./tables/CampaignDailyMetricsTable";
-import { StatusBadge } from "./tables/tableBits";
-import type { GrowthCampaignProfileCardProps } from "../types/components";
+import { growthAdDetailStatItems } from "../constants/adDetailStats";
+import { AdDailyMetricsTable } from "./tables/AdDailyMetricsTable";
+import type { GrowthAdProfileCardProps } from "../types/components";
 import {
-  formatCampaignObjective,
   formatCompact,
   formatCurrency,
   formatPercent,
 } from "../utils/formatters";
 import { cn } from "@/shared/lib/utils";
 
-export function GrowthCampaignProfileCard({
-  view,
-  adAccountId,
-}: GrowthCampaignProfileCardProps) {
+function summaryOrDash(value: string | null): string {
+  return value?.trim() ? value : "—";
+}
+
+export function GrowthAdProfileCard({ view }: GrowthAdProfileCardProps) {
   const details = [
     { label: "Ad account", value: view.adAccountName },
-    { label: "Objective", value: formatCampaignObjective(view.objective) },
-    { label: "Meta campaign ID", value: view.campaignId },
-    { label: "Synced days", value: String(view.dailyRows.length) },
+    { label: "Primary text", value: summaryOrDash(view.primaryText) },
+    { label: "Headline", value: summaryOrDash(view.headline) },
+    { label: "Meta ad ID", value: view.adId },
   ];
 
   return (
@@ -27,29 +25,34 @@ export function GrowthCampaignProfileCard({
       <div className="rounded-2xl border border-border bg-card shadow-sm">
         <div className="border-b border-border px-6 py-5">
           <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-            Campaign details
+            Ad details
           </p>
-          <div className="mt-2 flex flex-wrap items-center gap-3">
-            <h2 className="text-xl font-semibold tracking-tight">
-              {view.campaignName}
-            </h2>
-            <StatusBadge status={view.status} />
-          </div>
+          <h2 className="mt-2 text-xl font-semibold tracking-tight">{view.adName}</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            All stored daily metrics for this campaign across the backfill window.
+            Creative and daily performance for this ad.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 border-b border-border sm:grid-cols-5">
-          {growthCampaignDetailStatItems.map((item, index) => (
+        {view.thumbnailUrl ? (
+          <div className="border-b border-border px-6 py-5">
+            <img
+              src={view.thumbnailUrl}
+              alt={view.adName}
+              className="max-h-56 rounded-lg border border-border object-cover"
+            />
+          </div>
+        ) : null}
+
+        <div className="grid grid-cols-2 border-b border-border sm:grid-cols-3 lg:grid-cols-6">
+          {growthAdDetailStatItems.map((item, index) => (
             <div
               key={item.label}
               className={cn(
                 "px-6 py-4",
-                index < growthCampaignDetailStatItems.length - 1 &&
-                  "sm:border-r sm:border-border",
+                index < growthAdDetailStatItems.length - 1 &&
+                  "lg:border-r lg:border-border",
                 index % 2 === 0 && "border-r border-border sm:border-r",
-                index < 4 && "border-b border-border sm:border-b-0",
+                index < 4 && "border-b border-border lg:border-b-0",
               )}
             >
               <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -80,23 +83,15 @@ export function GrowthCampaignProfileCard({
               <span className="text-xs font-semibold tracking-wider text-muted-foreground">
                 {detail.label.toUpperCase()}
               </span>
-              <span className="text-sm text-foreground">{detail.value}</span>
+              <span className="max-w-xl text-right text-sm text-foreground">
+                {detail.value}
+              </span>
             </div>
           ))}
         </div>
       </div>
 
-      <AdsetsTable
-        rows={view.adsetRows}
-        campaignId={view.campaignId}
-        adAccountId={adAccountId}
-        currencyCode={view.currencyCode}
-      />
-
-      <CampaignDailyMetricsTable
-        rows={view.dailyRows}
-        currencyCode={view.currencyCode}
-      />
+      <AdDailyMetricsTable rows={view.dailyRows} currencyCode={view.currencyCode} />
     </div>
   );
 }

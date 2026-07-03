@@ -176,6 +176,83 @@ export type CampaignRow = {
   conversions: number;
 };
 
+export type Adset = {
+  adsetId: string;
+  campaignId: string;
+  adsetName: string;
+  performanceGoal: string | null;
+  locationSummary: string | null;
+  ageSummary: string | null;
+  customTargetingSummary: string | null;
+  detailedTargetingSummary: string | null;
+  placementsSummary: string | null;
+};
+
+export type AdsetMetricRow = {
+  adsetId: string;
+  adsetName: string;
+  campaignId: string;
+  spend: number;
+  impressions: number;
+  reach: number;
+  clicks: number;
+  cpm: number;
+  frequency: number;
+  conversions: number;
+  date: string;
+};
+
+export type AdsetRow = {
+  id: string;
+  name: string;
+  spend: number;
+  impressions: number;
+  reach: number;
+  clicks: number;
+  ctr: number;
+  cpm: number;
+  frequency: number;
+  conversions: number;
+};
+
+export type Ad = {
+  adId: string;
+  adsetId: string;
+  campaignId: string;
+  adName: string;
+  thumbnailUrl: string | null;
+  primaryText: string | null;
+  headline: string | null;
+};
+
+export type AdMetricRow = {
+  adId: string;
+  adName: string;
+  adsetId: string;
+  campaignId: string;
+  spend: number;
+  impressions: number;
+  reach: number;
+  clicks: number;
+  cpm: number;
+  frequency: number;
+  conversions: number;
+  date: string;
+};
+
+export type AdRow = {
+  id: string;
+  name: string;
+  spend: number;
+  impressions: number;
+  reach: number;
+  clicks: number;
+  ctr: number;
+  cpm: number;
+  frequency: number;
+  conversions: number;
+};
+
 export type GrowthCampaignDetailView = {
   campaignId: string;
   campaignName: string;
@@ -189,8 +266,57 @@ export type GrowthCampaignDetailView = {
   conversions: number;
   ctr: number;
   dailyRows: CampaignMetricRow[];
+  adsetRows: AdsetRow[];
   previousCampaignId: string | null;
   nextCampaignId: string | null;
+};
+
+export type GrowthAdsetDetailView = {
+  campaignId: string;
+  adsetId: string;
+  adsetName: string;
+  performanceGoal: string | null;
+  locationSummary: string | null;
+  ageSummary: string | null;
+  customTargetingSummary: string | null;
+  detailedTargetingSummary: string | null;
+  placementsSummary: string | null;
+  adAccountName: string;
+  currencyCode: string;
+  spend: number;
+  impressions: number;
+  reach: number;
+  clicks: number;
+  ctr: number;
+  cpm: number;
+  frequency: number;
+  conversions: number;
+  adRows: AdRow[];
+  previousAdsetId: string | null;
+  nextAdsetId: string | null;
+};
+
+export type GrowthAdDetailView = {
+  campaignId: string;
+  adsetId: string;
+  adId: string;
+  adName: string;
+  thumbnailUrl: string | null;
+  primaryText: string | null;
+  headline: string | null;
+  adAccountName: string;
+  currencyCode: string;
+  spend: number;
+  impressions: number;
+  reach: number;
+  clicks: number;
+  ctr: number;
+  cpm: number;
+  frequency: number;
+  conversions: number;
+  dailyRows: AdMetricRow[];
+  previousAdId: string | null;
+  nextAdId: string | null;
 };
 
 export type ReportType =

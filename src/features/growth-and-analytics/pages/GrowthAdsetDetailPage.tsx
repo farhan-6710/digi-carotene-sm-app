@@ -1,13 +1,12 @@
 import { Link, useParams } from "react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
-import { GrowthCampaignProfileCard } from "../components/GrowthCampaignProfileCard";
+import { GrowthAdsetProfileCard } from "../components/GrowthAdsetProfileCard";
 import {
+  buildGrowthAdsetDetailPath,
   buildGrowthCampaignDetailPath,
-  GROWTH_CAMPAIGN_ANALYTICS_PATH,
 } from "../constants/routes";
-import { GROWTH_AD_ACCOUNT_PARAM } from "../constants/growthUrlParams";
-import { useGrowthCampaignDetailQuery } from "../hooks/useGrowthCampaignDetailQuery";
+import { useGrowthAdsetDetailQuery } from "../hooks/useGrowthAdsetDetailQuery";
 import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
@@ -15,57 +14,61 @@ import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { Button } from "@/shared/ui/button";
 
-function GrowthCampaignDetailBackButton({ adAccountId }: { adAccountId: string }) {
-  const backPath = adAccountId
-    ? `${GROWTH_CAMPAIGN_ANALYTICS_PATH}?${GROWTH_AD_ACCOUNT_PARAM}=${adAccountId}`
-    : GROWTH_CAMPAIGN_ANALYTICS_PATH;
-
+function GrowthAdsetDetailBackButton({
+  campaignId,
+  adAccountId,
+}: {
+  campaignId: string;
+  adAccountId: string;
+}) {
   return (
     <Button asChild variant="outline" className="rounded-full">
-      <Link to={backPath}>
+      <Link to={buildGrowthCampaignDetailPath(campaignId, adAccountId)}>
         <ArrowLeft className="mr-2 size-4" />
-        Back to campaign analytics
+        Back to campaign
       </Link>
     </Button>
   );
 }
 
-function GrowthCampaignPager({
-  previousCampaignId,
-  nextCampaignId,
+function GrowthAdsetPager({
+  campaignId,
+  previousAdsetId,
+  nextAdsetId,
   adAccountId,
 }: {
-  previousCampaignId: string | null;
-  nextCampaignId: string | null;
+  campaignId: string;
+  previousAdsetId: string | null;
+  nextAdsetId: string | null;
   adAccountId: string;
 }) {
   return (
     <div className="flex items-center gap-2">
-      {previousCampaignId ? (
+      {previousAdsetId ? (
         <Button asChild variant="outline" className="rounded-full">
           <Link
-            to={buildGrowthCampaignDetailPath(previousCampaignId, adAccountId)}
+            to={buildGrowthAdsetDetailPath(campaignId, previousAdsetId, adAccountId)}
           >
             <ArrowLeft className="mr-2 size-4" />
-            Prev campaign
+            Prev ad set
           </Link>
         </Button>
       ) : (
         <Button variant="outline" className="rounded-full" disabled>
           <ArrowLeft className="mr-2 size-4" />
-          Prev campaign
+          Prev ad set
         </Button>
       )}
-      {nextCampaignId ? (
+      {nextAdsetId ? (
         <Button asChild variant="outline" className="rounded-full">
-          <Link to={buildGrowthCampaignDetailPath(nextCampaignId, adAccountId)}>
-            Next campaign
+          <Link to={buildGrowthAdsetDetailPath(campaignId, nextAdsetId, adAccountId)}>
+            Next ad set
             <ArrowRight className="ml-2 size-4" />
           </Link>
         </Button>
       ) : (
         <Button variant="outline" className="rounded-full" disabled>
-          Next campaign
+          Next ad set
           <ArrowRight className="ml-2 size-4" />
         </Button>
       )}
@@ -73,15 +76,17 @@ function GrowthCampaignPager({
   );
 }
 
-export function GrowthCampaignDetailPage() {
-  const { campaignId = "" } = useParams();
+export function GrowthAdsetDetailPage() {
+  const { campaignId = "", adsetId = "" } = useParams();
   const { accountId } = useGrowthSelectedAdAccount();
-  const { view, isLoading, error } = useGrowthCampaignDetailQuery(campaignId);
+  const { view, isLoading, error } = useGrowthAdsetDetailQuery(campaignId, adsetId);
 
   if (isLoading) {
     return (
       <DetailPageLoading
-        backButton={<GrowthCampaignDetailBackButton adAccountId={accountId} />}
+        backButton={
+          <GrowthAdsetDetailBackButton campaignId={campaignId} adAccountId={accountId} />
+        }
       />
     );
   }
@@ -92,16 +97,17 @@ export function GrowthCampaignDetailPage() {
         <PageHeader
           actions={
             <div className="flex w-full items-center justify-between gap-4">
-              <GrowthCampaignDetailBackButton adAccountId={accountId} />
-              <GrowthCampaignPager
-                previousCampaignId={null}
-                nextCampaignId={null}
+              <GrowthAdsetDetailBackButton campaignId={campaignId} adAccountId={accountId} />
+              <GrowthAdsetPager
+                campaignId={campaignId}
+                previousAdsetId={null}
+                nextAdsetId={null}
                 adAccountId={accountId}
               />
             </div>
           }
         />
-        <ErrorBanner message={error ?? "Campaign not found."} />
+        <ErrorBanner message={error ?? "Ad set not found."} />
       </section>
     );
   }
@@ -111,10 +117,11 @@ export function GrowthCampaignDetailPage() {
       <PageHeader
         actions={
           <div className="flex w-full items-center justify-between gap-4">
-            <GrowthCampaignDetailBackButton adAccountId={accountId} />
-            <GrowthCampaignPager
-              previousCampaignId={view.previousCampaignId}
-              nextCampaignId={view.nextCampaignId}
+            <GrowthAdsetDetailBackButton campaignId={campaignId} adAccountId={accountId} />
+            <GrowthAdsetPager
+              campaignId={campaignId}
+              previousAdsetId={view.previousAdsetId}
+              nextAdsetId={view.nextAdsetId}
               adAccountId={accountId}
             />
           </div>
@@ -123,7 +130,7 @@ export function GrowthCampaignDetailPage() {
 
       {error ? <ErrorBanner message={error} /> : null}
 
-      <GrowthCampaignProfileCard view={view} adAccountId={accountId} />
+      <GrowthAdsetProfileCard view={view} adAccountId={accountId} />
     </PageContent>
   );
 }

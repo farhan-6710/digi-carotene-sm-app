@@ -118,3 +118,94 @@ function upsertAdCampaignMetric(array $config, string $adAccountId, array $row):
         ['Prefer: resolution=merge-duplicates,return=minimal'],
     );
 }
+
+function upsertAdsetMaster(array $config, string $adAccountId, array $row): void
+{
+    supabaseRequest(
+        $config,
+        'POST',
+        'growth_adsets?on_conflict=ad_account_id,adset_id',
+        [
+            'ad_account_id' => $adAccountId,
+            'campaign_id' => $row['campaign_id'],
+            'adset_id' => $row['adset_id'],
+            'adset_name' => $row['adset_name'],
+            'performance_goal' => $row['performance_goal'] ?? null,
+            'location_summary' => $row['location_summary'] ?? null,
+            'age_summary' => $row['age_summary'] ?? null,
+            'custom_targeting_summary' => $row['custom_targeting_summary'] ?? null,
+            'detailed_targeting_summary' => $row['detailed_targeting_summary'] ?? null,
+            'placements_summary' => $row['placements_summary'] ?? null,
+        ],
+        ['Prefer: resolution=merge-duplicates,return=minimal'],
+    );
+}
+
+function upsertAdMaster(array $config, string $adAccountId, array $row): void
+{
+    supabaseRequest(
+        $config,
+        'POST',
+        'growth_ads?on_conflict=ad_account_id,ad_id',
+        [
+            'ad_account_id' => $adAccountId,
+            'campaign_id' => $row['campaign_id'],
+            'adset_id' => $row['adset_id'],
+            'ad_id' => $row['ad_id'],
+            'ad_name' => $row['ad_name'],
+            'thumbnail_url' => $row['thumbnail_url'] ?? null,
+            'primary_text' => $row['primary_text'] ?? null,
+            'headline' => $row['headline'] ?? null,
+        ],
+        ['Prefer: resolution=merge-duplicates,return=minimal'],
+    );
+}
+
+function upsertAdsetMetric(array $config, string $adAccountId, array $row): void
+{
+    supabaseRequest(
+        $config,
+        'POST',
+        'growth_adset_daily_metrics?on_conflict=ad_account_id,adset_id,metric_date',
+        [
+            'ad_account_id' => $adAccountId,
+            'campaign_id' => $row['campaign_id'],
+            'adset_id' => $row['adset_id'],
+            'adset_name' => $row['adset_name'],
+            'metric_date' => $row['metric_date'],
+            'spend' => $row['spend'],
+            'impressions' => $row['impressions'],
+            'reach' => $row['reach'],
+            'clicks' => $row['clicks'],
+            'cpm' => $row['cpm'],
+            'frequency' => $row['frequency'],
+            'conversions' => $row['conversions'],
+        ],
+        ['Prefer: resolution=merge-duplicates,return=minimal'],
+    );
+}
+
+function upsertAdMetric(array $config, string $adAccountId, array $row): void
+{
+    supabaseRequest(
+        $config,
+        'POST',
+        'growth_ad_daily_metrics?on_conflict=ad_account_id,ad_id,metric_date',
+        [
+            'ad_account_id' => $adAccountId,
+            'campaign_id' => $row['campaign_id'],
+            'adset_id' => $row['adset_id'],
+            'ad_id' => $row['ad_id'],
+            'ad_name' => $row['ad_name'],
+            'metric_date' => $row['metric_date'],
+            'spend' => $row['spend'],
+            'impressions' => $row['impressions'],
+            'reach' => $row['reach'],
+            'clicks' => $row['clicks'],
+            'cpm' => $row['cpm'],
+            'frequency' => $row['frequency'],
+            'conversions' => $row['conversions'],
+        ],
+        ['Prefer: resolution=merge-duplicates,return=minimal'],
+    );
+}

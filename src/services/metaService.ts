@@ -388,20 +388,86 @@ export type AdDailyInsight = {
   actions?: Array<{ action_type?: string; value?: string }>;
 };
 
+const AD_INSIGHT_METRIC_FIELDS =
+  "spend,impressions,reach,clicks,cpm,frequency,results,actions";
+
+const AD_INSIGHT_FIELDS_BY_LEVEL = {
+  campaign: `campaign_id,campaign_name,${AD_INSIGHT_METRIC_FIELDS}`,
+  adset: `adset_id,adset_name,campaign_id,${AD_INSIGHT_METRIC_FIELDS}`,
+  ad: `ad_id,ad_name,adset_id,campaign_id,${AD_INSIGHT_METRIC_FIELDS}`,
+} as const;
+
+export type AdInsightLevel = keyof typeof AD_INSIGHT_FIELDS_BY_LEVEL;
+
+export type AdHierarchyInsight = AdDailyInsight & {
+  adset_id?: string;
+  adset_name?: string;
+  ad_id?: string;
+  ad_name?: string;
+};
+
 export async function fetchAdDailyInsights(
   adAccountId: string,
   accessToken: string,
   range: MetaSyncRange,
-): Promise<AdDailyInsight[]> {
+  level: AdInsightLevel = "campaign",
+): Promise<AdHierarchyInsight[]> {
   const id = adAccountId.startsWith("act_") ? adAccountId : `act_${adAccountId}`;
   const timeRange = JSON.stringify({ since: range.from, until: range.to });
 
-  return graphGetAll<AdDailyInsight>(META_API_VERSION.ads, `${id}/insights`, {
-    fields:
-      "campaign_id,campaign_name,spend,impressions,reach,clicks,cpm,frequency,results,actions",
+  return graphGetAll<AdHierarchyInsight>(META_API_VERSION.ads, `${id}/insights`, {
+    fields: AD_INSIGHT_FIELDS_BY_LEVEL[level],
     time_range: timeRange,
     time_increment: "1",
-    level: "campaign",
+    level,
+    access_token: accessToken,
+  });
+}
+
+export type MetaAdset = {
+  id: string;
+  name: string;
+  campaign_id?: string;
+  optimization_goal?: string;
+  targeting?: Record<string, unknown>;
+  publisher_platforms?: string[];
+  facebook_positions?: string[];
+  instagram_positions?: string[];
+};
+
+export async function fetchAdsetMasters(
+  adAccountId: string,
+  accessToken: string,
+): Promise<MetaAdset[]> {
+  const id = adAccountId.startsWith("act_") ? adAccountId : `act_${adAccountId}`;
+  return graphGetAll<MetaAdset>(META_API_VERSION.ads, `${id}/adsets`, {
+    fields:
+      "id,name,campaign_id,optimization_goal,targeting,publisher_platforms,facebook_positions,instagram_positions",
+    limit: "100",
+    access_token: accessToken,
+  });
+}
+
+export type MetaAd = {
+  id: string;
+  name: string;
+  adset_id?: string;
+  campaign_id?: string;
+  creative?: {
+    thumbnail_url?: string;
+    body?: string;
+    title?: string;
+  };
+};
+
+export async function fetchAdMasters(
+  adAccountId: string,
+  accessToken: string,
+): Promise<MetaAd[]> {
+  const id = adAccountId.startsWith("act_") ? adAccountId : `act_${adAccountId}`;
+  return graphGetAll<MetaAd>(META_API_VERSION.ads, `${id}/ads`, {
+    fields: "id,name,adset_id,campaign_id,creative{thumbnail_url,body,title}",
+    limit: "100",
     access_token: accessToken,
   });
 }

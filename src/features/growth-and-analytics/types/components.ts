@@ -10,6 +10,8 @@ import type {
   LabeledValue,
   GrowthPostDetailView,
   GrowthCampaignDetailView,
+  GrowthAdsetDetailView,
+  GrowthAdDetailView,
   OrganicAccount,
   OrganicAccountForm,
   ReportableAccount,
@@ -72,10 +74,40 @@ export type GrowthPostProfileCardProps = {
 
 export type GrowthCampaignProfileCardProps = {
   view: GrowthCampaignDetailView;
+  adAccountId?: string;
 };
 
 export type CampaignDailyMetricsTableProps = {
   rows: GrowthCampaignDetailView["dailyRows"];
+  currencyCode: string;
+};
+
+export type AdsetsTableProps = {
+  rows: GrowthCampaignDetailView["adsetRows"];
+  campaignId: string;
+  adAccountId?: string;
+  currencyCode: string;
+};
+
+export type AdsTableProps = {
+  rows: GrowthAdsetDetailView["adRows"];
+  campaignId: string;
+  adsetId: string;
+  adAccountId?: string;
+  currencyCode: string;
+};
+
+export type GrowthAdsetProfileCardProps = {
+  view: GrowthAdsetDetailView;
+  adAccountId?: string;
+};
+
+export type GrowthAdProfileCardProps = {
+  view: GrowthAdDetailView;
+};
+
+export type AdDailyMetricsTableProps = {
+  rows: GrowthAdDetailView["dailyRows"];
   currencyCode: string;
 };
 

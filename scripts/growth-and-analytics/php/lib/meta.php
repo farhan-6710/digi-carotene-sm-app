@@ -331,15 +331,269 @@ function fetchAdDailyInsightsForDay(
     string $adAccountId,
     string $accessToken,
     string $date,
+    string $level = 'campaign',
 ): array {
     $id = str_starts_with($adAccountId, 'act_') ? $adAccountId : 'act_' . $adAccountId;
     $timeRange = json_encode(['since' => $date, 'until' => $date], JSON_THROW_ON_ERROR);
 
+    $fieldsByLevel = [
+        'campaign' => 'campaign_id,campaign_name,spend,impressions,reach,clicks,cpm,frequency,results,actions',
+        'adset' => 'adset_id,adset_name,campaign_id,spend,impressions,reach,clicks,cpm,frequency,results,actions',
+        'ad' => 'ad_id,ad_name,adset_id,campaign_id,spend,impressions,reach,clicks,cpm,frequency,results,actions',
+    ];
+    $fields = $fieldsByLevel[$level] ?? $fieldsByLevel['campaign'];
+
     return metaGraphGetAll($config, $id . '/insights', [
-        'fields' => 'campaign_id,campaign_name,spend,impressions,reach,clicks,cpm,frequency,results,actions',
+        'fields' => $fields,
         'time_range' => $timeRange,
         'time_increment' => '1',
-        'level' => 'campaign',
+        'level' => $level,
         'access_token' => $accessToken,
     ]);
+}
+
+/** @return list<array<string, mixed>> */
+function fetchAdsetMasters(array $config, string $adAccountId, string $accessToken): array
+{
+    $id = str_starts_with($adAccountId, 'act_') ? $adAccountId : 'act_' . $adAccountId;
+
+    return metaGraphGetAll($config, $id . '/adsets', [
+        'fields' => 'id,name,campaign_id,optimization_goal,targeting,publisher_platforms,facebook_positions,instagram_positions',
+        'limit' => '100',
+        'access_token' => $accessToken,
+    ]);
+}
+
+/** @return list<array<string, mixed>> */
+function fetchAdMasters(array $config, string $adAccountId, string $accessToken): array
+{
+    $id = str_starts_with($adAccountId, 'act_') ? $adAccountId : 'act_' . $adAccountId;
+
+    return metaGraphGetAll($config, $id . '/ads', [
+        'fields' => 'id,name,adset_id,campaign_id,creative{thumbnail_url,body,title}',
+        'limit' => '100',
+        'access_token' => $accessToken,
+    ]);
+}
+
+function titleCaseLabel(string $value): string
+{
+    $value = str_replace('_', ' ', $value);
+
+    return ucwords($value);
+}
+
+function formatPerformanceGoal(?string $goal): ?string
+{
+    if (!is_string($goal) || trim($goal) === '') {
+        return null;
+    }
+
+    return titleCaseLabel(trim($goal));
+}
+
+/** @param list<array{name?: string}>|null $items */
+function joinTargetingNames(?array $items, int $limit = 5): ?string
+{
+    if ($items === null || $items === []) {
+        return null;
+    }
+
+    $names = [];
+    foreach ($items as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        $name = is_string($item['name'] ?? null) ? trim($item['name']) : '';
+        if ($name !== '') {
+            $names[] = $name;
+        }
+    }
+
+    if ($names === []) {
+        return null;
+    }
+
+    $shown = array_slice($names, 0, $limit);
+    $suffix = count($names) > $limit ? ' +' . (count($names) - $limit) . ' more' : '';
+
+    return implode(', ', $shown) . $suffix;
+}
+
+/** @param array<string, mixed> $targeting */
+function parseLocationSummary(array $targeting): ?string
+{
+    $geo = $targeting['geo_locations'] ?? null;
+    if (!is_array($geo)) {
+        return null;
+    }
+
+    $parts = [];
+    $countries = $geo['countries'] ?? null;
+    if (is_array($countries) && $countries !== []) {
+        $parts[] = implode(', ', array_map('strval', $countries));
+    }
+
+    $cities = joinTargetingNames(is_array($geo['cities'] ?? null) ? $geo['cities'] : null);
+    if (is_string($cities) && $cities !== '') {
+        $parts[] = $cities;
+    }
+
+    $regions = joinTargetingNames(is_array($geo['regions'] ?? null) ? $geo['regions'] : null);
+    if (is_string($regions) && $regions !== '') {
+        $parts[] = $regions;
+    }
+
+    return $parts === [] ? null : implode(' · ', $parts);
+}
+
+/** @param array<string, mixed> $targeting */
+function parseAgeSummary(array $targeting): ?string
+{
+    $min = $targeting['age_min'] ?? null;
+    $max = $targeting['age_max'] ?? null;
+    $hasMin = is_numeric($min);
+    $hasMax = is_numeric($max);
+
+    if ($hasMin && $hasMax) {
+        return ((int) $min) . '–' . ((int) $max);
+    }
+    if ($hasMin) {
+        return ((int) $min) . '+';
+    }
+    if ($hasMax) {
+        return 'Up to ' . ((int) $max);
+    }
+
+    return null;
+}
+
+/** @param array<string, mixed> $targeting */
+function parseCustomTargetingSummary(array $targeting): ?string
+{
+  $audiences = $targeting['custom_audiences'] ?? null;
+
+  return joinTargetingNames(is_array($audiences) ? $audiences : null, 8);
+}
+
+/** @param array<string, mixed> $targeting */
+function parseDetailedTargetingSummary(array $targeting): ?string
+{
+    $specs = $targeting['flexible_spec'] ?? null;
+    if (!is_array($specs)) {
+        return null;
+    }
+
+    $names = [];
+    foreach ($specs as $spec) {
+        if (!is_array($spec)) {
+            continue;
+        }
+        foreach ($spec as $entries) {
+            if (!is_array($entries)) {
+                continue;
+            }
+            foreach ($entries as $entry) {
+                if (!is_array($entry)) {
+                    continue;
+                }
+                $name = is_string($entry['name'] ?? null) ? trim($entry['name']) : '';
+                if ($name !== '') {
+                    $names[] = $name;
+                }
+            }
+        }
+    }
+
+    if ($names === []) {
+        return null;
+    }
+
+    $unique = array_values(array_unique($names));
+    $shown = array_slice($unique, 0, 8);
+    $suffix = count($unique) > 8 ? ' +' . (count($unique) - 8) . ' more' : '';
+
+    return implode(', ', $shown) . $suffix;
+}
+
+/** @param array<string, mixed> $adset */
+function parsePlacementsSummary(array $adset): ?string
+{
+    $parts = [];
+
+    $platforms = $adset['publisher_platforms'] ?? null;
+    if (is_array($platforms) && $platforms !== []) {
+        $parts[] = implode(', ', array_map('titleCaseLabel', array_map('strval', $platforms)));
+    }
+
+    $facebook = $adset['facebook_positions'] ?? null;
+    if (is_array($facebook) && $facebook !== []) {
+        $parts[] = 'Facebook: ' . implode(', ', array_map('titleCaseLabel', array_map('strval', $facebook)));
+    }
+
+    $instagram = $adset['instagram_positions'] ?? null;
+    if (is_array($instagram) && $instagram !== []) {
+        $parts[] = 'Instagram: ' . implode(', ', array_map('titleCaseLabel', array_map('strval', $instagram)));
+    }
+
+    return $parts === [] ? null : implode(' · ', $parts);
+}
+
+/** @param array<string, mixed> $adset */
+function mapMetaAdsetRow(array $adset): ?array
+{
+    $adsetId = is_string($adset['id'] ?? null) ? trim($adset['id']) : '';
+    $campaignId = is_string($adset['campaign_id'] ?? null) ? trim($adset['campaign_id']) : '';
+    if ($adsetId === '' || $campaignId === '') {
+        return null;
+    }
+
+    $targeting = is_array($adset['targeting'] ?? null) ? $adset['targeting'] : [];
+
+    return [
+        'campaign_id' => $campaignId,
+        'adset_id' => $adsetId,
+        'adset_name' => is_string($adset['name'] ?? null) && trim($adset['name']) !== ''
+            ? trim($adset['name'])
+            : 'Unnamed ad set',
+        'performance_goal' => formatPerformanceGoal(
+            is_string($adset['optimization_goal'] ?? null) ? $adset['optimization_goal'] : null,
+        ),
+        'location_summary' => parseLocationSummary($targeting),
+        'age_summary' => parseAgeSummary($targeting),
+        'custom_targeting_summary' => parseCustomTargetingSummary($targeting),
+        'detailed_targeting_summary' => parseDetailedTargetingSummary($targeting),
+        'placements_summary' => parsePlacementsSummary($adset),
+    ];
+}
+
+/** @param array<string, mixed> $ad */
+function mapMetaAdRow(array $ad): ?array
+{
+    $adId = is_string($ad['id'] ?? null) ? trim($ad['id']) : '';
+    $adsetId = is_string($ad['adset_id'] ?? null) ? trim($ad['adset_id']) : '';
+    $campaignId = is_string($ad['campaign_id'] ?? null) ? trim($ad['campaign_id']) : '';
+    if ($adId === '' || $adsetId === '' || $campaignId === '') {
+        return null;
+    }
+
+    $creative = is_array($ad['creative'] ?? null) ? $ad['creative'] : [];
+
+    return [
+        'campaign_id' => $campaignId,
+        'adset_id' => $adsetId,
+        'ad_id' => $adId,
+        'ad_name' => is_string($ad['name'] ?? null) && trim($ad['name']) !== ''
+            ? trim($ad['name'])
+            : 'Unnamed ad',
+        'thumbnail_url' => is_string($creative['thumbnail_url'] ?? null) && trim($creative['thumbnail_url']) !== ''
+            ? trim($creative['thumbnail_url'])
+            : null,
+        'primary_text' => is_string($creative['body'] ?? null) && trim($creative['body']) !== ''
+            ? trim($creative['body'])
+            : null,
+        'headline' => is_string($creative['title'] ?? null) && trim($creative['title']) !== ''
+            ? trim($creative['title'])
+            : null,
+    ];
 }

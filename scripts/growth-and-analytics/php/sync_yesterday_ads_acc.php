@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Midnight ads account sync — yesterday's campaign metrics.
+ * Midnight ads account sync — yesterday's campaign, adset, and ad metrics.
  * Run daily at 12:05 AM (server timezone in config.php).
  *
  * CLI:  php sync_yesterday_ads_acc.php
@@ -70,15 +70,62 @@ try {
                 $objectiveByCampaignId[$campaignId] = is_string($objective) ? $objective : null;
             }
 
-            $insights = fetchAdDailyInsightsForDay(
+            $adsetMasters = fetchAdsetMasters($config, $metaAdAccountId, $accessToken);
+            $adMasters = fetchAdMasters($config, $metaAdAccountId, $accessToken);
+            $syncedAdsetMasters = 0;
+            $syncedAdMasters = 0;
+
+            foreach ($adsetMasters as $adset) {
+                if (!is_array($adset)) {
+                    continue;
+                }
+                $row = mapMetaAdsetRow($adset);
+                if ($row === null) {
+                    continue;
+                }
+                upsertAdsetMaster($config, $accountId, $row);
+                $syncedAdsetMasters++;
+            }
+
+            foreach ($adMasters as $ad) {
+                if (!is_array($ad)) {
+                    continue;
+                }
+                $row = mapMetaAdRow($ad);
+                if ($row === null) {
+                    continue;
+                }
+                upsertAdMaster($config, $accountId, $row);
+                $syncedAdMasters++;
+            }
+
+            $campaignInsights = fetchAdDailyInsightsForDay(
                 $config,
                 $metaAdAccountId,
                 $accessToken,
                 $yesterdayDate,
+                'campaign',
             );
-            $syncedRows = 0;
+            $adsetInsights = fetchAdDailyInsightsForDay(
+                $config,
+                $metaAdAccountId,
+                $accessToken,
+                $yesterdayDate,
+                'adset',
+            );
+            $adInsights = fetchAdDailyInsightsForDay(
+                $config,
+                $metaAdAccountId,
+                $accessToken,
+                $yesterdayDate,
+                'ad',
+            );
 
-            foreach ($insights as $insight) {
+            $syncedCampaignRows = 0;
+            $syncedAdsetRows = 0;
+            $syncedAdRows = 0;
+
+            foreach ($campaignInsights as $insight) {
                 if (!is_array($insight)) {
                     continue;
                 }
@@ -114,10 +161,103 @@ try {
                     'frequency' => parseDecimal($insight['frequency'] ?? 0),
                     'conversions' => parseInsightConversions($insight),
                 ]);
-                $syncedRows++;
+                $syncedCampaignRows++;
             }
 
-            logLine('Done ' . $accountName . ': campaign_rows=' . $syncedRows);
+            foreach ($adsetInsights as $insight) {
+                if (!is_array($insight)) {
+                    continue;
+                }
+
+                $adsetId = is_string($insight['adset_id'] ?? null)
+                    ? trim($insight['adset_id'])
+                    : '';
+                $campaignId = is_string($insight['campaign_id'] ?? null)
+                    ? trim($insight['campaign_id'])
+                    : '';
+                $metricDate = is_string($insight['date_start'] ?? null)
+                    ? trim($insight['date_start'])
+                    : $yesterdayDate;
+                if ($adsetId === '' || $campaignId === '') {
+                    continue;
+                }
+
+                $adsetName = is_string($insight['adset_name'] ?? null)
+                    ? trim($insight['adset_name'])
+                    : 'Unnamed ad set';
+                if ($adsetName === '') {
+                    $adsetName = 'Unnamed ad set';
+                }
+
+                upsertAdsetMetric($config, $accountId, [
+                    'campaign_id' => $campaignId,
+                    'adset_id' => $adsetId,
+                    'adset_name' => $adsetName,
+                    'metric_date' => $metricDate,
+                    'spend' => parseSpend($insight['spend'] ?? 0),
+                    'impressions' => parseMetricValue($insight['impressions'] ?? 0),
+                    'reach' => parseMetricValue($insight['reach'] ?? 0),
+                    'clicks' => parseMetricValue($insight['clicks'] ?? 0),
+                    'cpm' => parseDecimal($insight['cpm'] ?? 0),
+                    'frequency' => parseDecimal($insight['frequency'] ?? 0),
+                    'conversions' => parseInsightConversions($insight),
+                ]);
+                $syncedAdsetRows++;
+            }
+
+            foreach ($adInsights as $insight) {
+                if (!is_array($insight)) {
+                    continue;
+                }
+
+                $adId = is_string($insight['ad_id'] ?? null)
+                    ? trim($insight['ad_id'])
+                    : '';
+                $adsetId = is_string($insight['adset_id'] ?? null)
+                    ? trim($insight['adset_id'])
+                    : '';
+                $campaignId = is_string($insight['campaign_id'] ?? null)
+                    ? trim($insight['campaign_id'])
+                    : '';
+                $metricDate = is_string($insight['date_start'] ?? null)
+                    ? trim($insight['date_start'])
+                    : $yesterdayDate;
+                if ($adId === '' || $adsetId === '' || $campaignId === '') {
+                    continue;
+                }
+
+                $adName = is_string($insight['ad_name'] ?? null)
+                    ? trim($insight['ad_name'])
+                    : 'Unnamed ad';
+                if ($adName === '') {
+                    $adName = 'Unnamed ad';
+                }
+
+                upsertAdMetric($config, $accountId, [
+                    'campaign_id' => $campaignId,
+                    'adset_id' => $adsetId,
+                    'ad_id' => $adId,
+                    'ad_name' => $adName,
+                    'metric_date' => $metricDate,
+                    'spend' => parseSpend($insight['spend'] ?? 0),
+                    'impressions' => parseMetricValue($insight['impressions'] ?? 0),
+                    'reach' => parseMetricValue($insight['reach'] ?? 0),
+                    'clicks' => parseMetricValue($insight['clicks'] ?? 0),
+                    'cpm' => parseDecimal($insight['cpm'] ?? 0),
+                    'frequency' => parseDecimal($insight['frequency'] ?? 0),
+                    'conversions' => parseInsightConversions($insight),
+                ]);
+                $syncedAdRows++;
+            }
+
+            logLine(
+                'Done ' . $accountName
+                . ': campaign_rows=' . $syncedCampaignRows
+                . ' adset_masters=' . $syncedAdsetMasters
+                . ' ad_masters=' . $syncedAdMasters
+                . ' adset_rows=' . $syncedAdsetRows
+                . ' ad_rows=' . $syncedAdRows,
+            );
         } catch (Throwable $error) {
             logLine('Error for ' . $accountName . ': ' . $error->getMessage());
         }
