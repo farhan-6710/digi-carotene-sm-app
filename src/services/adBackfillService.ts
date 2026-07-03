@@ -1,6 +1,6 @@
 import {
   mapCampaignStatus,
-  parseConversions,
+  parseInsightConversions,
   parseMetricDecimal,
   parseMetricInt,
   parseSpend,
@@ -38,7 +38,7 @@ function mapInsightToInsert(
     clicks: parseMetricInt(insight.clicks),
     cpm: parseMetricDecimal(insight.cpm),
     frequency: parseMetricDecimal(insight.frequency),
-    conversions: parseConversions(insight.actions),
+    conversions: parseInsightConversions(insight),
   };
 }
 

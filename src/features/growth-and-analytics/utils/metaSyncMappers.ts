@@ -339,7 +339,40 @@ const CONVERSION_ACTION_GROUPS: string[][] = [
   ["onsite_conversion.lead_grouped", "lead"],
   ["offsite_conversion.fb_pixel_purchase", "purchase"],
   ["offsite_conversion.fb_pixel_lead", "offsite_conversion.lead"],
+  [
+    "onsite_conversion.messaging_conversation_started_7d",
+    "messaging_conversation_started_7d",
+    "onsite_conversion.messaging_conversation_started_1d",
+  ],
+  [
+    "onsite_conversion.messaging_first_reply",
+    "onsite_conversion.total_messaging_connection",
+  ],
 ];
+
+type InsightStatEntry = {
+  action_type?: string;
+  value?: string;
+  indicator?: string;
+  values?: Array<{ value?: string | number }>;
+};
+
+function parseInsightStatList(entries?: InsightStatEntry[]): number {
+  if (!entries?.length) return 0;
+
+  let total = 0;
+  for (const entry of entries) {
+    if (entry.value != null && entry.value !== "") {
+      total += Math.round(Number(entry.value));
+      continue;
+    }
+    const nested = entry.values?.[0]?.value;
+    if (nested != null && nested !== "") {
+      total += Math.round(Number(nested));
+    }
+  }
+  return total;
+}
 
 export function parseConversions(
   actions?: Array<{ action_type?: string; value?: string }>,
@@ -363,6 +396,16 @@ export function parseConversions(
     }
   }
   return total;
+}
+
+/** Prefer Meta `results` (Ads Manager “Results”); fall back to deduped `actions`. */
+export function parseInsightConversions(insight: {
+  results?: InsightStatEntry[];
+  actions?: Array<{ action_type?: string; value?: string }>;
+}): number {
+  const fromResults = parseInsightStatList(insight.results);
+  if (fromResults > 0) return fromResults;
+  return parseConversions(insight.actions);
 }
 
 export function parseMetricInt(value: string | number | undefined): number {

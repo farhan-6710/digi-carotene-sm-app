@@ -379,6 +379,12 @@ export type AdDailyInsight = {
   clicks?: string;
   cpm?: string;
   frequency?: string;
+  results?: Array<{
+    action_type?: string;
+    value?: string;
+    indicator?: string;
+    values?: Array<{ value?: string | number }>;
+  }>;
   actions?: Array<{ action_type?: string; value?: string }>;
 };
 
@@ -392,7 +398,7 @@ export async function fetchAdDailyInsights(
 
   return graphGetAll<AdDailyInsight>(META_API_VERSION.ads, `${id}/insights`, {
     fields:
-      "campaign_id,campaign_name,spend,impressions,reach,clicks,cpm,frequency,actions",
+      "campaign_id,campaign_name,spend,impressions,reach,clicks,cpm,frequency,results,actions",
     time_range: timeRange,
     time_increment: "1",
     level: "campaign",

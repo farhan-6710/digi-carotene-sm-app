@@ -228,6 +228,30 @@ function parseSpend(mixed $value): float
     return round((float) ($value ?? 0), 2);
 }
 
+function parseInsightStatList(mixed $entries): int
+{
+    if (!is_array($entries)) {
+        return 0;
+    }
+
+    $total = 0;
+    foreach ($entries as $entry) {
+        if (!is_array($entry)) {
+            continue;
+        }
+        if (isset($entry['value']) && $entry['value'] !== '') {
+            $total += (int) round((float) $entry['value']);
+            continue;
+        }
+        $nested = $entry['values'][0]['value'] ?? null;
+        if ($nested !== null && $nested !== '') {
+            $total += (int) round((float) $nested);
+        }
+    }
+
+    return $total;
+}
+
 function parseConversions(mixed $actions): int
 {
     if (!is_array($actions)) {
@@ -250,6 +274,15 @@ function parseConversions(mixed $actions): int
         ['onsite_conversion.lead_grouped', 'lead'],
         ['offsite_conversion.fb_pixel_purchase', 'purchase'],
         ['offsite_conversion.fb_pixel_lead', 'offsite_conversion.lead'],
+        [
+            'onsite_conversion.messaging_conversation_started_7d',
+            'messaging_conversation_started_7d',
+            'onsite_conversion.messaging_conversation_started_1d',
+        ],
+        [
+            'onsite_conversion.messaging_first_reply',
+            'onsite_conversion.total_messaging_connection',
+        ],
     ];
     $total = 0;
 
@@ -263,6 +296,16 @@ function parseConversions(mixed $actions): int
     }
 
     return $total;
+}
+
+function parseInsightConversions(array $insight): int
+{
+    $fromResults = parseInsightStatList($insight['results'] ?? null);
+    if ($fromResults > 0) {
+        return $fromResults;
+    }
+
+    return parseConversions($insight['actions'] ?? null);
 }
 
 function parseDecimal(mixed $value): float
@@ -293,7 +336,7 @@ function fetchAdDailyInsightsForDay(
     $timeRange = json_encode(['since' => $date, 'until' => $date], JSON_THROW_ON_ERROR);
 
     return metaGraphGetAll($config, $id . '/insights', [
-        'fields' => 'campaign_id,campaign_name,spend,impressions,reach,clicks,cpm,frequency,actions',
+        'fields' => 'campaign_id,campaign_name,spend,impressions,reach,clicks,cpm,frequency,results,actions',
         'time_range' => $timeRange,
         'time_increment' => '1',
         'level' => 'campaign',

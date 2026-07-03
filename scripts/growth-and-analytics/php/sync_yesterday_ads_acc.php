@@ -112,7 +112,7 @@ try {
                     'clicks' => parseMetricValue($insight['clicks'] ?? 0),
                     'cpm' => parseDecimal($insight['cpm'] ?? 0),
                     'frequency' => parseDecimal($insight['frequency'] ?? 0),
-                    'conversions' => parseConversions($insight['actions'] ?? null),
+                    'conversions' => parseInsightConversions($insight),
                 ]);
                 $syncedRows++;
             }
