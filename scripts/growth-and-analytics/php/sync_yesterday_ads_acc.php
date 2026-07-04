@@ -139,6 +139,9 @@ try {
                 if ($campaignId === '') {
                     continue;
                 }
+                if (!hasAdDeliveryMetrics($insight)) {
+                    continue;
+                }
 
                 $campaignName = is_string($insight['campaign_name'] ?? null)
                     ? trim($insight['campaign_name'])
@@ -179,6 +182,9 @@ try {
                     ? trim($insight['date_start'])
                     : $yesterdayDate;
                 if ($adsetId === '' || $campaignId === '') {
+                    continue;
+                }
+                if (!hasAdDeliveryMetrics($insight)) {
                     continue;
                 }
 
@@ -223,6 +229,9 @@ try {
                     ? trim($insight['date_start'])
                     : $yesterdayDate;
                 if ($adId === '' || $adsetId === '' || $campaignId === '') {
+                    continue;
+                }
+                if (!hasAdDeliveryMetrics($insight)) {
                     continue;
                 }
 

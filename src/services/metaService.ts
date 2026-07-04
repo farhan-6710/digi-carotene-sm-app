@@ -420,6 +420,7 @@ export async function fetchAdDailyInsights(
     time_range: timeRange,
     time_increment: "1",
     level,
+    use_unified_attribution_setting: "true",
     access_token: accessToken,
   });
 }

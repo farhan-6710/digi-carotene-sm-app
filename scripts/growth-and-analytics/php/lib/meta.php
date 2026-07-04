@@ -313,6 +313,14 @@ function parseDecimal(mixed $value): float
     return round((float) ($value ?? 0), 2);
 }
 
+/** Meta can return attribution-only daily rows (0 delivery, non-zero results). Ads Manager omits these from daily breakdown. */
+function hasAdDeliveryMetrics(array $insight): bool
+{
+    return parseSpend($insight['spend'] ?? 0) > 0
+        || parseMetricValue($insight['impressions'] ?? 0) > 0
+        || parseMetricValue($insight['clicks'] ?? 0) > 0;
+}
+
 /** @return list<array{id: string, name: string, status?: string}> */
 function fetchAdCampaignStatuses(array $config, string $adAccountId, string $accessToken): array
 {
@@ -348,6 +356,7 @@ function fetchAdDailyInsightsForDay(
         'time_range' => $timeRange,
         'time_increment' => '1',
         'level' => $level,
+        'use_unified_attribution_setting' => 'true',
         'access_token' => $accessToken,
     ]);
 }

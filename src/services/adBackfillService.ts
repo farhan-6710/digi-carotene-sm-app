@@ -6,6 +6,7 @@ import {
   parseMetricInt,
   parseSpend,
   getMetaInsightChunksForSpan,
+  hasAdDeliveryMetrics,
 } from "@/features/growth-and-analytics/utils/metaSyncMappers";
 import { getAdAccBackfillMetaRange } from "@/features/growth-and-analytics/utils/adAccBackfillWindow";
 import {
@@ -38,6 +39,7 @@ function mapCampaignInsightToInsert(
   const campaignId = insight.campaign_id?.trim();
   const metricDate = insight.date_start?.trim();
   if (!campaignId || !metricDate) return null;
+  if (!hasAdDeliveryMetrics(insight)) return null;
 
   return {
     campaignId,
@@ -60,6 +62,7 @@ function mapAdsetInsightToInsert(insight: AdHierarchyInsight): AdsetMetricInsert
   const campaignId = insight.campaign_id?.trim();
   const metricDate = insight.date_start?.trim();
   if (!adsetId || !campaignId || !metricDate) return null;
+  if (!hasAdDeliveryMetrics(insight)) return null;
 
   return {
     campaignId,
@@ -82,6 +85,7 @@ function mapAdInsightToInsert(insight: AdHierarchyInsight): AdMetricInsert | nul
   const campaignId = insight.campaign_id?.trim();
   const metricDate = insight.date_start?.trim();
   if (!adId || !adsetId || !campaignId || !metricDate) return null;
+  if (!hasAdDeliveryMetrics(insight)) return null;
 
   return {
     campaignId,

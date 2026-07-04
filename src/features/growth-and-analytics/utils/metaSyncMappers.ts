@@ -419,3 +419,16 @@ export function parseMetricDecimal(value: string | number | undefined): number {
 export function parseSpend(value: string | number | undefined): number {
   return Math.round(Number(value ?? 0));
 }
+
+/** Meta can return attribution-only daily rows (0 delivery, non-zero results). Ads Manager omits these from daily breakdown. */
+export function hasAdDeliveryMetrics(insight: {
+  spend?: string | number;
+  impressions?: string | number;
+  clicks?: string | number;
+}): boolean {
+  return (
+    parseSpend(insight.spend) > 0 ||
+    parseMetricInt(insight.impressions) > 0 ||
+    parseMetricInt(insight.clicks) > 0
+  );
+}
