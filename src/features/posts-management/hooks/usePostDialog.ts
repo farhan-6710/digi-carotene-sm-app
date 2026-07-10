@@ -5,8 +5,9 @@ import {
   deletePostMutation,
   savePostMutation,
 } from "@/features/posts-management/utils/postDialogMutations";
-import type { Slot } from "@/features/posts-management/types/types";
+import type { Post, Slot } from "@/features/posts-management/types/types";
 import { getDayLabel } from "@/features/posts-management/utils/calendarUtils";
+import { postToSlotClient } from "@/features/posts-management/utils/postsSlots";
 import {
   buildAddFormValues,
   buildEditFormValues,
@@ -89,6 +90,26 @@ export function usePostDialog({ slots, reload, setError }: UsePostDialogOptions)
     [slots],
   );
 
+  const openEditDialogFromPost = useCallback((post: Post) => {
+    const [year, month, day] = post.to_be_posted_date.split("-").map(Number);
+
+    if (!year || !month || !day) {
+      return;
+    }
+
+    const client = postToSlotClient(post);
+
+    setActiveSlot({
+      year,
+      month,
+      date: day,
+      day: getDayLabel(year, month, day),
+    });
+    setEditingPostId(post.id);
+    setValues(buildEditFormValues(client, year, month, day));
+    setIsDialogOpen(true);
+  }, []);
+
   const savePost = useCallback(async () => {
     if (!activeSlot || isSaving) {
       return;
@@ -149,6 +170,7 @@ export function usePostDialog({ slots, reload, setError }: UsePostDialogOptions)
     statusOptions,
     openAddDialog,
     openEditDialog,
+    openEditDialogFromPost,
     dialog: {
       open: isDialogOpen,
       onOpenChange: handleDialogOpenChange,

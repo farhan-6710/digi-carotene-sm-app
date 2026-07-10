@@ -1,3 +1,5 @@
+import { Pencil } from "lucide-react";
+
 import { PROJECT_POSTS_ROW_GRID_CLASS } from "@/features/projects-management/constants/projectPostsDirectory";
 import type { ProjectPostsTableRowProps } from "@/features/projects-management/types/components";
 import {
@@ -9,7 +11,10 @@ import {
 } from "@/features/posts-management/constants/postsManagement";
 import { cn } from "@/shared/lib/utils";
 
-export function ProjectPostsTableRow({ post }: ProjectPostsTableRowProps) {
+export function ProjectPostsTableRow({
+  post,
+  onEditPost,
+}: ProjectPostsTableRowProps) {
   const toBePostedLabel = formatToBePostedOnLabel(
     post.to_be_posted_date,
     post.to_be_posted_time,
@@ -47,6 +52,16 @@ export function ProjectPostsTableRow({ post }: ProjectPostsTableRowProps) {
       >
         {post.status}
       </span>
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => onEditPost(post)}
+          className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
+        >
+          <Pencil className="size-3.5" />
+          <span className="sr-only">Edit post</span>
+        </button>
+      </div>
     </div>
   );
 }

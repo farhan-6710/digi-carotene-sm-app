@@ -6,7 +6,11 @@ import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { MonthSelector } from "@/shared/ui/MonthSelector";
 import { PostStatusFilter } from "@/shared/ui/PostStatusFilter";
 
-export function ProjectPostsTable({ posts, isLoading }: ProjectPostsTableProps) {
+export function ProjectPostsTable({
+  posts,
+  isLoading,
+  onEditPost,
+}: ProjectPostsTableProps) {
   const {
     filteredPosts,
     year,
@@ -45,7 +49,11 @@ export function ProjectPostsTable({ posts, isLoading }: ProjectPostsTableProps) 
       }
     >
       {filteredPosts.map((post) => (
-        <ProjectPostsTableRow key={post.id} post={post} />
+        <ProjectPostsTableRow
+          key={post.id}
+          post={post}
+          onEditPost={onEditPost}
+        />
       ))}
     </DirectoryTable>
   );

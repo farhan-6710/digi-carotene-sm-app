@@ -89,10 +89,12 @@ export type ProjectProfileCardProps = {
 export type ProjectPostsTableProps = {
   posts: Post[];
   isLoading: boolean;
+  onEditPost: (post: Post) => void;
 };
 
 export type ProjectPostsTableRowProps = {
   post: Post;
+  onEditPost: (post: Post) => void;
 };
 
 export type ProjectDialogSocialFieldsProps = {

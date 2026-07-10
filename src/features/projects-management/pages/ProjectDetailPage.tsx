@@ -1,7 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { ArrowLeft } from "lucide-react";
 
+import { PostDialog } from "@/features/posts-management/components/PostDialog";
+import { usePostDialog } from "@/features/posts-management/hooks/usePostDialog";
 import { ProjectPostsTable } from "@/features/projects-management/components/ProjectPostsTable";
 import { ProjectProfileCard } from "@/features/projects-management/components/ProjectProfileCard";
 import { PROJECTS_MANAGEMENT_PATH } from "@/features/projects-management/constants/routes";
@@ -26,9 +28,15 @@ function ProjectDetailBackButton() {
 
 export function ProjectDetailPage() {
   const { projectId = "" } = useParams();
-  const { project, posts, teamMembers, isLoading, error } =
+  const [dialogError, setDialogError] = useState<string | null>(null);
+  const { project, posts, teamMembers, isLoading, error, reload } =
     useProjectDetailQuery(projectId);
   const postStats = useMemo(() => buildProjectPostStats(posts), [posts]);
+  const { openEditDialogFromPost, dialog } = usePostDialog({
+    slots: [],
+    reload,
+    setError: setDialogError,
+  });
 
   if (isLoading) {
     return <DetailPageLoading backButton={<ProjectDetailBackButton />} />;
@@ -48,6 +56,7 @@ export function ProjectDetailPage() {
       <PageHeader backButton={<ProjectDetailBackButton />} />
 
       {error ? <ErrorBanner message={error} /> : null}
+      {dialogError ? <ErrorBanner message={dialogError} /> : null}
 
       <ProjectProfileCard
         project={project}
@@ -55,7 +64,13 @@ export function ProjectDetailPage() {
         teamMembers={teamMembers}
       />
 
-      <ProjectPostsTable posts={posts} isLoading={isLoading} />
+      <ProjectPostsTable
+        posts={posts}
+        isLoading={isLoading}
+        onEditPost={openEditDialogFromPost}
+      />
+
+      <PostDialog {...dialog} />
     </PageContent>
   );
 }
