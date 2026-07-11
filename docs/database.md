@@ -27,6 +27,11 @@ Run only the migrations you have not applied yet, in order (`002` onward). See [
 | `profiles`             | Auth user roles + portal `client_id`                        |
 | `growth_organic_accounts` | Connected Instagram/Facebook profiles (Meta token + followers) |
 | `growth_ad_accounts`   | Connected Meta ad accounts                                  |
+| `growth_ad_campaign_daily_metrics` | Campaign daily ad metrics (backfill + cron)          |
+| `growth_adsets`        | Ad set master rows (targeting / placement summaries)        |
+| `growth_adset_daily_metrics` | Ad set daily metrics                                  |
+| `growth_ads`           | Ad master rows (name, creative summary)                     |
+| `growth_ad_daily_metrics` | Ad daily metrics                                         |
 | `instagram_profiles`   | Instagram credentials + follower count (Phase 1 analytics)    |
 | `past_posts_metrics`   | Post-level metrics from the 29-day connect backfill + daily sync |
 | `instagram_daily_followers` | Net followers gained per day (backfill + midnight cron)   |
@@ -82,5 +87,5 @@ See [README.md](./README.md) for per-feature schema details and DTOs.
 
 | Doc | Purpose |
 |-----|---------|
-| [growth-and-analytics/README.md](./growth-and-analytics/README.md) | Instagram backfill, dashboard metrics, daily sync |
+| [growth-and-analytics/README.md](./growth-and-analytics/README.md) | Instagram backfill, ads campaign analytics, live breakdowns, daily sync |
 | [scripts/growth-and-analytics/php/README.md](../scripts/growth-and-analytics/php/README.md) | GoDaddy PHP cron setup |
