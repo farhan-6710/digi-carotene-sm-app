@@ -9,6 +9,22 @@ import type { CampaignMetricRow, CampaignRow, SpendPoint, SpendTrend } from "../
 import { dayLabel, formatCompact, formatCurrency, formatNumber, monthLabel } from "./formatters";
 import { parseUrlDateParam, serializeUrlDate } from "@/shared/utils/urlDateParams";
 
+const CAMPAIGN_STATUS_SORT_ORDER: Record<CampaignRow["status"], number> = {
+  Active: 0,
+  Paused: 1,
+  Completed: 2,
+};
+
+function compareCampaignRows(a: CampaignRow, b: CampaignRow): number {
+  const statusDiff =
+    CAMPAIGN_STATUS_SORT_ORDER[a.status] - CAMPAIGN_STATUS_SORT_ORDER[b.status];
+  if (statusDiff !== 0) {
+    return statusDiff;
+  }
+
+  return b.spend - a.spend;
+}
+
 export function buildCampaignStatCards(
   rows: CampaignMetricRow[],
   currency: string,
@@ -175,5 +191,5 @@ export function buildCampaignRows(rows: CampaignMetricRow[]): CampaignRow[] {
         : 0,
       conversions: totals.conversions,
     }))
-    .sort((a, b) => b.spend - a.spend);
+    .sort(compareCampaignRows);
 }
