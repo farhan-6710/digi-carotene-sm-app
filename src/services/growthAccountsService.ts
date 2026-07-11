@@ -113,6 +113,25 @@ export async function fetchAdAccounts(): Promise<AdAccount[]> {
   return ((data ?? []) as AdRow[]).map(mapAd);
 }
 
+export async function fetchAdAccountAccessToken(accountId: string): Promise<string> {
+  const { data, error } = await supabase
+    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
+    .select("access_token")
+    .eq("id", accountId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+
+  const token = (data as { access_token?: string } | null)?.access_token?.trim();
+  if (!token) {
+    throw new Error(
+      "No Meta access token stored for this ad account. Open Manage Accounts and refresh the token.",
+    );
+  }
+
+  return token;
+}
+
 export async function connectOrganicAccount(
   form: OrganicAccountForm,
 ): Promise<OrganicAccount> {

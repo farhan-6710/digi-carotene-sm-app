@@ -88,5 +88,6 @@ export function useGrowthAdsetDetailQuery(campaignId: string, adsetId: string) {
     reload,
     dateFilterProps,
     periodLabel,
+    range,
   };
 }

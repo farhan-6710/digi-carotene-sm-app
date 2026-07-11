@@ -68,5 +68,6 @@ export function useGrowthAdDetailQuery(
     reload,
     dateFilterProps,
     periodLabel,
+    range,
   };
 }

@@ -3,7 +3,10 @@ import type { ReactNode } from "react";
 import type {
   AdAccount,
   AdAccountForm,
+  CampaignDemographicMetric,
+  CampaignDemographicTableView,
   CampaignRow,
+  DemographicBreakdown,
   CategoryDatum,
   ContentPostRow,
   DailyMetricRow,
@@ -76,11 +79,27 @@ export type GrowthCampaignProfileCardProps = {
   view: GrowthCampaignDetailView;
   adAccountId?: string;
   periodLabel?: string;
+  breakdowns: DemographicBreakdown[];
+  onBreakdownsChange: (breakdowns: DemographicBreakdown[]) => void;
+  demographicView: CampaignDemographicTableView;
+  isDemographicLoading: boolean;
 };
+
+export type CampaignMetricCellsMetric = CampaignDemographicMetric;
 
 export type CampaignDailyMetricsTableProps = {
   rows: GrowthCampaignDetailView["dailyRows"];
   currencyCode: string;
+  breakdowns: DemographicBreakdown[];
+  onBreakdownsChange: (breakdowns: DemographicBreakdown[]) => void;
+  demographicView: CampaignDemographicTableView;
+  isDemographicLoading: boolean;
+};
+
+export type DailyMetricsBreakdownSelectProps = {
+  value: DemographicBreakdown[];
+  onChange: (breakdowns: DemographicBreakdown[]) => void;
+  emptyLabel?: string;
 };
 
 export type AdsetsTableProps = {
@@ -96,22 +115,38 @@ export type AdsTableProps = {
   adsetId: string;
   adAccountId?: string;
   currencyCode: string;
+  breakdowns: DemographicBreakdown[];
+  onBreakdownsChange: (breakdowns: DemographicBreakdown[]) => void;
+  demographicView: CampaignDemographicTableView;
+  isDemographicLoading: boolean;
 };
 
 export type GrowthAdsetProfileCardProps = {
   view: GrowthAdsetDetailView;
   adAccountId?: string;
   periodLabel?: string;
+  breakdowns: DemographicBreakdown[];
+  onBreakdownsChange: (breakdowns: DemographicBreakdown[]) => void;
+  demographicView: CampaignDemographicTableView;
+  isDemographicLoading: boolean;
 };
 
 export type GrowthAdProfileCardProps = {
   view: GrowthAdDetailView;
   periodLabel?: string;
+  breakdowns: DemographicBreakdown[];
+  onBreakdownsChange: (breakdowns: DemographicBreakdown[]) => void;
+  demographicView: CampaignDemographicTableView;
+  isDemographicLoading: boolean;
 };
 
 export type AdDailyMetricsTableProps = {
   rows: GrowthAdDetailView["dailyRows"];
   currencyCode: string;
+  breakdowns: DemographicBreakdown[];
+  onBreakdownsChange: (breakdowns: DemographicBreakdown[]) => void;
+  demographicView: CampaignDemographicTableView;
+  isDemographicLoading: boolean;
 };
 
 export type CampaignTableProps = {

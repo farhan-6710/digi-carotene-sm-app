@@ -253,6 +253,32 @@ export type AdRow = {
   conversions: number;
 };
 
+export type DemographicBreakdown = "age" | "gender" | "placement";
+
+export type CampaignDemographicMetric = {
+  spend: number;
+  impressions: number;
+  reach: number;
+  clicks: number;
+  cpm: number;
+  frequency: number;
+  conversions: number;
+};
+
+export type CampaignDemographicRow = {
+  id: string;
+  age: string | null;
+  gender: string | null;
+  placement: string | null;
+  metrics: CampaignDemographicMetric;
+  isAgeSummary: boolean;
+};
+
+export type CampaignDemographicTableView = {
+  rows: CampaignDemographicRow[];
+  total: CampaignDemographicMetric;
+};
+
 export type GrowthCampaignDetailView = {
   campaignId: string;
   campaignName: string;

@@ -86,5 +86,6 @@ export function useGrowthCampaignDetailQuery(campaignId: string) {
     reload,
     dateFilterProps,
     periodLabel,
+    range,
   };
 }

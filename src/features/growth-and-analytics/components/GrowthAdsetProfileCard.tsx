@@ -16,6 +16,10 @@ export function GrowthAdsetProfileCard({
   view,
   adAccountId,
   periodLabel = "All time",
+  breakdowns,
+  onBreakdownsChange,
+  demographicView,
+  isDemographicLoading,
 }: GrowthAdsetProfileCardProps) {
   const details = [
     { label: "Ad account", value: view.adAccountName },
@@ -95,6 +99,10 @@ export function GrowthAdsetProfileCard({
         adsetId={view.adsetId}
         adAccountId={adAccountId}
         currencyCode={view.currencyCode}
+        breakdowns={breakdowns}
+        onBreakdownsChange={onBreakdownsChange}
+        demographicView={demographicView}
+        isDemographicLoading={isDemographicLoading}
       />
     </div>
   );

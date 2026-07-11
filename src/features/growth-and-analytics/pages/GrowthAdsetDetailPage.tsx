@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
@@ -6,8 +7,10 @@ import {
   buildGrowthAdsetDetailPath,
   buildGrowthCampaignDetailPath,
 } from "../constants/routes";
+import { useGrowthAdEntityBreakdown } from "../hooks/useGrowthCampaignDemographicBreakdown";
 import { useGrowthAdsetDetailQuery } from "../hooks/useGrowthAdsetDetailQuery";
 import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
+import type { DemographicBreakdown } from "../types/types";
 import { DateFilters } from "@/shared/components/DateFilters";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
@@ -80,8 +83,18 @@ function GrowthAdsetPager({
 export function GrowthAdsetDetailPage() {
   const { campaignId = "", adsetId = "" } = useParams();
   const { accountId } = useGrowthSelectedAdAccount();
-  const { view, isLoading, error, dateFilterProps, periodLabel } =
+  const [breakdowns, setBreakdowns] = useState<DemographicBreakdown[]>([]);
+  const { view, isLoading, error, dateFilterProps, periodLabel, range } =
     useGrowthAdsetDetailQuery(campaignId, adsetId);
+  const breakdownScope = useMemo(
+    () => ({ level: "adset" as const, id: adsetId }),
+    [adsetId],
+  );
+  const {
+    view: demographicView,
+    isLoading: isDemographicLoading,
+    error: demographicError,
+  } = useGrowthAdEntityBreakdown(breakdownScope, range, breakdowns);
 
   if (isLoading) {
     return (
@@ -134,11 +147,16 @@ export function GrowthAdsetDetailPage() {
       />
 
       {error ? <ErrorBanner message={error} /> : null}
+      {demographicError ? <ErrorBanner message={demographicError} /> : null}
 
       <GrowthAdsetProfileCard
         view={view}
         adAccountId={accountId}
         periodLabel={periodLabel}
+        breakdowns={breakdowns}
+        onBreakdownsChange={setBreakdowns}
+        demographicView={demographicView}
+        isDemographicLoading={isDemographicLoading}
       />
     </PageContent>
   );

@@ -15,6 +15,10 @@ function summaryOrDash(value: string | null): string {
 export function GrowthAdProfileCard({
   view,
   periodLabel = "All time",
+  breakdowns,
+  onBreakdownsChange,
+  demographicView,
+  isDemographicLoading,
 }: GrowthAdProfileCardProps) {
   const details = [
     { label: "Ad account", value: view.adAccountName },
@@ -94,7 +98,14 @@ export function GrowthAdProfileCard({
         </div>
       </div>
 
-      <AdDailyMetricsTable rows={view.dailyRows} currencyCode={view.currencyCode} />
+      <AdDailyMetricsTable
+        rows={view.dailyRows}
+        currencyCode={view.currencyCode}
+        breakdowns={breakdowns}
+        onBreakdownsChange={onBreakdownsChange}
+        demographicView={demographicView}
+        isDemographicLoading={isDemographicLoading}
+      />
     </div>
   );
 }

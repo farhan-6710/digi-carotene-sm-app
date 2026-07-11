@@ -425,6 +425,60 @@ export async function fetchAdDailyInsights(
   });
 }
 
+export type AdDemographicInsight = AdDailyInsight & {
+  age?: string;
+  gender?: string;
+  platform_position?: string;
+  publisher_platform?: string;
+};
+
+export type AdBreakdownScope = {
+  level: "campaign" | "adset" | "ad";
+  id: string;
+};
+
+export async function fetchAdBreakdownInsights(
+  adAccountId: string,
+  accessToken: string,
+  range: Pick<MetaSyncRange, "from" | "to">,
+  scope: AdBreakdownScope,
+  breakdowns: string,
+): Promise<AdDemographicInsight[]> {
+  const id = adAccountId.startsWith("act_") ? adAccountId : `act_${adAccountId}`;
+  const timeRange = JSON.stringify({ since: range.from, until: range.to });
+  const filtering = JSON.stringify([
+    { field: `${scope.level}.id`, operator: "IN", value: [scope.id] },
+  ]);
+
+  // Meta (#100): placement breakdowns can't combine with the action_type
+  // breakdown that `results`/`actions` (and unified attribution) pull in, so
+  // for placement we drop those fields and the attribution flag entirely.
+  const isDeliveryPlacement =
+    breakdowns.includes("platform_position") ||
+    breakdowns.includes("publisher_platform");
+
+  const params: Record<string, string> = {
+    fields: isDeliveryPlacement
+      ? "spend,impressions,reach,clicks,cpm,frequency"
+      : AD_INSIGHT_METRIC_FIELDS,
+    time_range: timeRange,
+    level: scope.level,
+    breakdowns,
+    filtering,
+    access_token: accessToken,
+  };
+
+  if (!isDeliveryPlacement) {
+    params.use_unified_attribution_setting = "true";
+  }
+
+  return graphGetAll<AdDemographicInsight>(
+    META_API_VERSION.ads,
+    `${id}/insights`,
+    params,
+  );
+}
+
 export type MetaAdset = {
   id: string;
   name: string;
