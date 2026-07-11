@@ -12,7 +12,10 @@ function summaryOrDash(value: string | null): string {
   return value?.trim() ? value : "—";
 }
 
-export function GrowthAdProfileCard({ view }: GrowthAdProfileCardProps) {
+export function GrowthAdProfileCard({
+  view,
+  periodLabel = "All time",
+}: GrowthAdProfileCardProps) {
   const details = [
     { label: "Ad account", value: view.adAccountName },
     { label: "Primary text", value: summaryOrDash(view.primaryText) },
@@ -29,7 +32,7 @@ export function GrowthAdProfileCard({ view }: GrowthAdProfileCardProps) {
           </p>
           <h2 className="mt-2 text-xl font-semibold tracking-tight">{view.adName}</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Creative and daily performance for this ad.
+            Creative and daily performance for {periodLabel.toLowerCase()}.
           </p>
         </div>
 

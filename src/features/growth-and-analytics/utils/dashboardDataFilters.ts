@@ -1,4 +1,6 @@
 import type {
+  AdMetricRow,
+  AdsetMetricRow,
   CampaignMetricRow,
   DailyMetricRow,
   GrowthDateRange,
@@ -42,6 +44,20 @@ export function filterCampaignMetricsByRange(
   rows: CampaignMetricRow[],
   range: GrowthDateRange,
 ): CampaignMetricRow[] {
+  return rows.filter((row) => isDateInRange(row.date, range));
+}
+
+export function filterAdsetMetricsByRange(
+  rows: AdsetMetricRow[],
+  range: GrowthDateRange,
+): AdsetMetricRow[] {
+  return rows.filter((row) => isDateInRange(row.date, range));
+}
+
+export function filterAdMetricsByRange(
+  rows: AdMetricRow[],
+  range: GrowthDateRange,
+): AdMetricRow[] {
   return rows.filter((row) => isDateInRange(row.date, range));
 }
 

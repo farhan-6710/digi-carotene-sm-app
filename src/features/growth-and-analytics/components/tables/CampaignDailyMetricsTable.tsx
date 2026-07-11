@@ -22,7 +22,7 @@ export function CampaignDailyMetricsTable({
   return (
     <DirectoryTable
       title="Daily metrics"
-      description="One row per synced day for this campaign."
+      description="Daily rows for the selected period."
       gridClass={GRID_CLASS}
       columns={[
         { label: "DATE" },

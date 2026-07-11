@@ -14,12 +14,13 @@ import { cn } from "@/shared/lib/utils";
 export function GrowthCampaignProfileCard({
   view,
   adAccountId,
+  periodLabel = "All time",
 }: GrowthCampaignProfileCardProps) {
   const details = [
     { label: "Ad account", value: view.adAccountName },
     { label: "Objective", value: formatCampaignObjective(view.objective) },
     { label: "Meta campaign ID", value: view.campaignId },
-    { label: "Synced days", value: String(view.dailyRows.length) },
+    { label: "Days in period", value: String(view.dailyRows.length) },
   ];
 
   return (
@@ -36,7 +37,7 @@ export function GrowthCampaignProfileCard({
             <StatusBadge status={view.status} />
           </div>
           <p className="mt-2 text-sm text-muted-foreground">
-            All stored daily metrics for this campaign across the backfill window.
+            Performance for {periodLabel.toLowerCase()}.
           </p>
         </div>
 

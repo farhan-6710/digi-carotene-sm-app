@@ -9,6 +9,7 @@ import {
 import { GROWTH_AD_ACCOUNT_PARAM } from "../constants/growthUrlParams";
 import { useGrowthCampaignDetailQuery } from "../hooks/useGrowthCampaignDetailQuery";
 import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
+import { DateFilters } from "@/shared/components/DateFilters";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -76,7 +77,8 @@ function GrowthCampaignPager({
 export function GrowthCampaignDetailPage() {
   const { campaignId = "" } = useParams();
   const { accountId } = useGrowthSelectedAdAccount();
-  const { view, isLoading, error } = useGrowthCampaignDetailQuery(campaignId);
+  const { view, isLoading, error, dateFilterProps, periodLabel } =
+    useGrowthCampaignDetailQuery(campaignId);
 
   if (isLoading) {
     return (
@@ -110,20 +112,27 @@ export function GrowthCampaignDetailPage() {
     <PageContent>
       <PageHeader
         actions={
-          <div className="flex w-full items-center justify-between gap-4">
-            <GrowthCampaignDetailBackButton adAccountId={accountId} />
-            <GrowthCampaignPager
-              previousCampaignId={view.previousCampaignId}
-              nextCampaignId={view.nextCampaignId}
-              adAccountId={accountId}
-            />
+          <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-2">
+              <GrowthCampaignDetailBackButton adAccountId={accountId} />
+              <GrowthCampaignPager
+                previousCampaignId={view.previousCampaignId}
+                nextCampaignId={view.nextCampaignId}
+                adAccountId={accountId}
+              />
+            </div>
+            <DateFilters {...dateFilterProps} />
           </div>
         }
       />
 
       {error ? <ErrorBanner message={error} /> : null}
 
-      <GrowthCampaignProfileCard view={view} adAccountId={accountId} />
+      <GrowthCampaignProfileCard
+        view={view}
+        adAccountId={accountId}
+        periodLabel={periodLabel}
+      />
     </PageContent>
   );
 }

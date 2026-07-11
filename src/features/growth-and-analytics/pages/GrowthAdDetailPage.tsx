@@ -8,6 +8,7 @@ import {
 } from "../constants/routes";
 import { useGrowthAdDetailQuery } from "../hooks/useGrowthAdDetailQuery";
 import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
+import { DateFilters } from "@/shared/components/DateFilters";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -85,7 +86,8 @@ function GrowthAdPager({
 export function GrowthAdDetailPage() {
   const { campaignId = "", adsetId = "", adId = "" } = useParams();
   const { accountId } = useGrowthSelectedAdAccount();
-  const { view, isLoading, error } = useGrowthAdDetailQuery(campaignId, adsetId, adId);
+  const { view, isLoading, error, dateFilterProps, periodLabel } =
+    useGrowthAdDetailQuery(campaignId, adsetId, adId);
 
   if (isLoading) {
     return (
@@ -131,26 +133,29 @@ export function GrowthAdDetailPage() {
     <PageContent>
       <PageHeader
         actions={
-          <div className="flex w-full items-center justify-between gap-4">
-            <GrowthAdDetailBackButton
-              campaignId={campaignId}
-              adsetId={adsetId}
-              adAccountId={accountId}
-            />
-            <GrowthAdPager
-              campaignId={campaignId}
-              adsetId={adsetId}
-              previousAdId={view.previousAdId}
-              nextAdId={view.nextAdId}
-              adAccountId={accountId}
-            />
+          <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-2">
+              <GrowthAdDetailBackButton
+                campaignId={campaignId}
+                adsetId={adsetId}
+                adAccountId={accountId}
+              />
+              <GrowthAdPager
+                campaignId={campaignId}
+                adsetId={adsetId}
+                previousAdId={view.previousAdId}
+                nextAdId={view.nextAdId}
+                adAccountId={accountId}
+              />
+            </div>
+            <DateFilters {...dateFilterProps} />
           </div>
         }
       />
 
       {error ? <ErrorBanner message={error} /> : null}
 
-      <GrowthAdProfileCard view={view} />
+      <GrowthAdProfileCard view={view} periodLabel={periodLabel} />
     </PageContent>
   );
 }

@@ -75,6 +75,7 @@ export type GrowthPostProfileCardProps = {
 export type GrowthCampaignProfileCardProps = {
   view: GrowthCampaignDetailView;
   adAccountId?: string;
+  periodLabel?: string;
 };
 
 export type CampaignDailyMetricsTableProps = {
@@ -104,6 +105,7 @@ export type GrowthAdsetProfileCardProps = {
 
 export type GrowthAdProfileCardProps = {
   view: GrowthAdDetailView;
+  periodLabel?: string;
 };
 
 export type AdDailyMetricsTableProps = {
