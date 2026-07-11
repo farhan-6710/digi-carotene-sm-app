@@ -8,6 +8,7 @@ import {
 } from "../constants/routes";
 import { useGrowthAdsetDetailQuery } from "../hooks/useGrowthAdsetDetailQuery";
 import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
+import { DateFilters } from "@/shared/components/DateFilters";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -79,7 +80,8 @@ function GrowthAdsetPager({
 export function GrowthAdsetDetailPage() {
   const { campaignId = "", adsetId = "" } = useParams();
   const { accountId } = useGrowthSelectedAdAccount();
-  const { view, isLoading, error } = useGrowthAdsetDetailQuery(campaignId, adsetId);
+  const { view, isLoading, error, dateFilterProps, periodLabel } =
+    useGrowthAdsetDetailQuery(campaignId, adsetId);
 
   if (isLoading) {
     return (
@@ -116,21 +118,28 @@ export function GrowthAdsetDetailPage() {
     <PageContent>
       <PageHeader
         actions={
-          <div className="flex w-full items-center justify-between gap-4">
-            <GrowthAdsetDetailBackButton campaignId={campaignId} adAccountId={accountId} />
-            <GrowthAdsetPager
-              campaignId={campaignId}
-              previousAdsetId={view.previousAdsetId}
-              nextAdsetId={view.nextAdsetId}
-              adAccountId={accountId}
-            />
+          <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-2">
+              <GrowthAdsetDetailBackButton campaignId={campaignId} adAccountId={accountId} />
+              <GrowthAdsetPager
+                campaignId={campaignId}
+                previousAdsetId={view.previousAdsetId}
+                nextAdsetId={view.nextAdsetId}
+                adAccountId={accountId}
+              />
+            </div>
+            <DateFilters {...dateFilterProps} />
           </div>
         }
       />
 
       {error ? <ErrorBanner message={error} /> : null}
 
-      <GrowthAdsetProfileCard view={view} adAccountId={accountId} />
+      <GrowthAdsetProfileCard
+        view={view}
+        adAccountId={accountId}
+        periodLabel={periodLabel}
+      />
     </PageContent>
   );
 }

@@ -15,6 +15,7 @@ function summaryOrDash(value: string | null): string {
 export function GrowthAdsetProfileCard({
   view,
   adAccountId,
+  periodLabel = "All time",
 }: GrowthAdsetProfileCardProps) {
   const details = [
     { label: "Ad account", value: view.adAccountName },
@@ -36,7 +37,7 @@ export function GrowthAdsetProfileCard({
           </p>
           <h2 className="mt-2 text-xl font-semibold tracking-tight">{view.adsetName}</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Audience, placement, and performance for this ad set.
+            Audience, placement, and performance for {periodLabel.toLowerCase()}.
           </p>
         </div>
 

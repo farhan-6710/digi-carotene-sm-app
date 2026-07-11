@@ -4,11 +4,14 @@ import { TransitionLink } from "@/shared/components/TransitionLink";
 import { SHELL_SIDEBAR_MOTION } from "@/shared/constants/pageMotion";
 import { shellNavIcons } from "@/shared/constants/shellNavIcons";
 import { cn } from "@/shared/lib/utils";
+import { usePageTransition } from "@/shared/providers/pageTransitionContext";
 import type {
   ShellMobileNavSheetProps,
   ShellSidebarContentProps,
   ShellSidebarProps,
 } from "@/shared/types/components";
+import { resolveActiveNavPath } from "@/shared/utils/shellNavActive";
+import { routePath } from "@/shared/utils/routePath";
 import {
   Sheet,
   SheetContent,
@@ -27,6 +30,8 @@ export function ShellSidebarContent({
   collapsed,
   onNavigate,
 }: ShellSidebarContentProps) {
+  const { activePath } = usePageTransition();
+  const activeNavPath = resolveActiveNavPath(activePath, config.nav);
   const nameParts = config.brandName.split(" ");
 
   return (
@@ -68,20 +73,19 @@ export function ShellSidebarContent({
       <nav className="min-h-0 flex-1 space-y-1.5 overflow-y-auto p-4">
         {config.nav.map((item) => {
           const Icon = shellNavIcons[item.icon];
+          const isActive = routePath(item.to) === activeNavPath;
           const navLinkEl = (
             <TransitionLink
               key={item.to}
               to={item.to}
               onClick={onNavigate}
-              className={({ isActive }) =>
-                [
-                  "flex items-center rounded-2xl text-sm font-medium transition gap-3",
-                  collapsed ? "justify-center px-4 py-4" : "px-6 py-3",
-                  isActive
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-sidebar-foreground/75 hover:bg-secondary hover:text-secondary-foreground",
-                ].join(" ")
-              }
+              className={[
+                "flex items-center rounded-2xl text-sm font-medium transition gap-3",
+                collapsed ? "justify-center px-4 py-4" : "px-6 py-3",
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-sidebar-foreground/75 hover:bg-secondary hover:text-secondary-foreground",
+              ].join(" ")}
             >
               <Icon className="size-4" aria-hidden="true" />
               {collapsed ? (

@@ -101,6 +101,7 @@ export type AdsTableProps = {
 export type GrowthAdsetProfileCardProps = {
   view: GrowthAdsetDetailView;
   adAccountId?: string;
+  periodLabel?: string;
 };
 
 export type GrowthAdProfileCardProps = {
