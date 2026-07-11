@@ -19,11 +19,50 @@ function loadConfig(): array
 function logLine(string $message): void
 {
     $line = '[' . date('Y-m-d H:i:s') . '] ' . $message . PHP_EOL;
-    if (PHP_SAPI === 'cli') {
+    if (isCronCli()) {
         fwrite(STDOUT, $line);
         return;
     }
     echo $line;
+}
+
+function isCronCli(): bool
+{
+    $sapi = php_sapi_name();
+
+    if ($sapi === 'cli' || $sapi === 'phpdbg') {
+        return true;
+    }
+
+    // Optional escape hatch for hosts that invoke cron without reporting "cli".
+    return getenv('CRON_ALLOW_CLI') === '1';
+}
+
+function assertCronAccess(array $config): void
+{
+    if (isCronCli()) {
+        return;
+    }
+
+    $secret = (string) ($_GET['secret'] ?? $_SERVER['HTTP_X_CRON_SECRET'] ?? '');
+    $expected = (string) ($config['cron_secret'] ?? '');
+
+    if ($expected === '' || !hash_equals($expected, $secret)) {
+        http_response_code(403);
+        echo 'Forbidden';
+        exit(1);
+    }
+}
+
+function cronFail(string $message, int $httpStatus = 500): never
+{
+    logLine($message);
+
+    if (!isCronCli()) {
+        http_response_code($httpStatus);
+    }
+
+    exit(1);
 }
 
 function httpJson(string $method, string $url, ?array $body, array $headers = []): array

@@ -28,7 +28,7 @@ export type ProjectDialogProps = {
   values: ProjectFormValues;
   formSeeds?: ProjectFormSeeds | null;
   onFieldChange: (
-    field: keyof Pick<ProjectFormValues, "projectName" | "facebook" | "instagram" | "linkedin" | "youtube">,
+    field: keyof Pick<ProjectFormValues, "projectName" | "facebook" | "instagram" | "linkedin" | "youtube" | "google">,
     value: string,
   ) => void;
   onClientChange: (clientId: string) => void;
@@ -100,7 +100,7 @@ export type ProjectPostsTableRowProps = {
 export type ProjectDialogSocialFieldsProps = {
   values: ProjectFormValues;
   onFieldChange: (
-    field: "facebook" | "instagram" | "linkedin" | "youtube",
+    field: "facebook" | "instagram" | "linkedin" | "youtube" | "google",
     value: string,
   ) => void;
   disabled?: boolean;

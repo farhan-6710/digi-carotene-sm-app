@@ -1,9 +1,11 @@
 import {
   DEFAULT_POST_STATUS,
+  DEFAULT_POST_TYPE,
 } from "@/features/posts-management/constants/postsManagement";
 import { DEFAULT_POST_TIME } from "@/features/posts-management/constants/postSchedule";
 import type {
   PostDateTimeValue,
+  PostType,
   Slot,
   StatusKey,
 } from "@/features/posts-management/types/types";
@@ -17,6 +19,7 @@ export type PostFormValues = {
   projectId: string;
   projectName: string;
   postTitle: string;
+  postType: PostType;
   socials: string[];
   postLinks: Record<string, string>;
   toBePostedOn: PostDateTimeValue | null;
@@ -28,6 +31,7 @@ export const emptyPostFormValues = (): PostFormValues => ({
   projectId: "",
   projectName: "",
   postTitle: "",
+  postType: DEFAULT_POST_TYPE,
   socials: [],
   postLinks: {},
   toBePostedOn: null,
@@ -67,6 +71,7 @@ export function buildEditFormValues(
     projectId: client.projectId,
     projectName: getSlotProjectLabel(client),
     postTitle: client.postTitle ?? "",
+    postType: client.postType,
     socials: client.socials ?? [],
     postLinks: (client.postLinks as Record<string, string>) ?? {},
     toBePostedOn:
@@ -121,6 +126,7 @@ export function postFormToPayload(values: PostFormValues) {
   return {
     projectId: values.projectId.trim(),
     postTitle: values.postTitle.trim() || null,
+    postType: values.postType,
     socials: values.socials.length > 0 ? values.socials : null,
     postLinks: values.postLinks,
     toBePostedOn,

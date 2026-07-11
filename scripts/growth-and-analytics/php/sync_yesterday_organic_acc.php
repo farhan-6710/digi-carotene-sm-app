@@ -15,16 +15,7 @@ require_once __DIR__ . '/lib/meta.php';
 
 try {
     $config = loadConfig();
-
-    if (PHP_SAPI !== 'cli') {
-        $secret = (string) ($_GET['secret'] ?? '');
-        $expected = (string) ($config['cron_secret'] ?? '');
-        if ($expected === '' || !hash_equals($expected, $secret)) {
-            http_response_code(403);
-            echo 'Forbidden';
-            exit(1);
-        }
-    }
+    assertCronAccess($config);
 
     $tz = new DateTimeZone($config['timezone'] ?? 'UTC');
     $todayStart = new DateTimeImmutable('today', $tz);
@@ -124,9 +115,5 @@ try {
 
     logLine('Sync complete.');
 } catch (Throwable $error) {
-    logLine('Fatal: ' . $error->getMessage());
-    if (PHP_SAPI !== 'cli') {
-        http_response_code(500);
-    }
-    exit(1);
+    cronFail('Fatal: ' . $error->getMessage());
 }

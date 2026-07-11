@@ -15,6 +15,7 @@ Scheduled content per **project**. Post-level platform tags and published links 
 | `id` | uuid | No | PK |
 | `project_id` | uuid | No | FK → `projects.id` ON DELETE RESTRICT |
 | `post_title` | text | Yes | Optional title |
+| `post_type` | text | No | Default `single_post`; CHECK: `single_post`, `carousel`, `reel`, `story`, `video` (migration 026). Stored as snake_case tokens; UI shows labels via `postTypeLabels` |
 | `socials` | text[] | Yes | Platforms for this post |
 | `post_links` | jsonb | No | Default `{}`; published URLs per platform |
 | `to_be_posted_date` | date | No | Target publish date (“To be posted on”) |
@@ -33,7 +34,7 @@ Scheduled content per **project**. Post-level platform tags and published links 
 | **Post** | `posts.socials` text[] | Which **platforms** this post targets |
 | **Post** | `posts.post_links` jsonb | **Published post URLs** after going live |
 
-Post `socials` values: `Instagram`, `Facebook`, `LinkedIn`, `YouTube` (see constants).
+Post `socials` values: `Instagram`, `Facebook`, `LinkedIn`, `YouTube`, `Google` (see constants).
 
 ### `post_links` jsonb shape
 
@@ -70,13 +71,16 @@ Types: `src/features/posts-management/types/types.ts`
 ```ts
 type StatusKey = "Not posted" | "Scheduled" | "Posted";
 
-type SocialPlatform = "Instagram" | "Facebook" | "LinkedIn" | "YouTube";
+type SocialPlatform = "Instagram" | "Facebook" | "LinkedIn" | "YouTube" | "Google";
+
+type PostType = "single_post" | "carousel" | "reel" | "story" | "video";
 
 type PostLinks = {
   facebook?: string;
   instagram?: string;
   linkedin?: string;
   youtube?: string;
+  google?: string;
 };
 
 type Post = {
@@ -85,6 +89,7 @@ type Post = {
   project_name?: string;   // joined for display
   client_name?: string;    // joined via project → client
   post_title: string | null;
+  post_type: PostType;
   socials: string[] | null;
   post_links: PostLinks | null;
   to_be_posted_date: string;
@@ -129,6 +134,7 @@ type Slot = {
 type CreatePostInput = {
   projectId: string;
   postTitle: string | null;
+  postType: PostType;
   socials: string[] | null;
   postLinks?: PostLinks | null;
   toBePostedOn: { date: string; time: string };
@@ -148,6 +154,7 @@ type PostFormValues = {
   projectId: string;
   projectName: string;
   postTitle: string;
+  postType: PostType;
   socials: string[];
   postLinks: Record<string, string>;
   toBePostedOn: PostDateTimeValue | null;
@@ -162,6 +169,7 @@ type PostFormValues = {
 |----|-----|
 | `projectId` | `project_id` |
 | `postTitle` | `post_title` |
+| `postType` | `post_type` |
 | `socials` | `socials` |
 | `postLinks` | `post_links` |
 | `toBePostedOn` | `to_be_posted_date` + `to_be_posted_time` |

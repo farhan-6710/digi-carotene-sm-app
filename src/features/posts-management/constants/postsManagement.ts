@@ -1,12 +1,18 @@
-import type { StatusKey } from "@/features/posts-management/types/types";
+import type { PostType, StatusKey } from "@/features/posts-management/types/types";
 
-export type SocialPlatform = "Instagram" | "Facebook" | "LinkedIn" | "YouTube";
+export type SocialPlatform =
+  | "Instagram"
+  | "Facebook"
+  | "LinkedIn"
+  | "YouTube"
+  | "Google";
 
 export const SOCIAL_PLATFORMS: SocialPlatform[] = [
   "Instagram",
   "Facebook",
   "LinkedIn",
   "YouTube",
+  "Google",
 ];
 
 export const platformColors: Record<SocialPlatform, string> = {
@@ -14,6 +20,7 @@ export const platformColors: Record<SocialPlatform, string> = {
   Facebook: "bg-blue-600",
   LinkedIn: "bg-sky-700",
   YouTube: "bg-red-600",
+  Google: "bg-[#4285F4]",
 };
 
 export const platformText: Record<SocialPlatform, string> = {
@@ -21,6 +28,25 @@ export const platformText: Record<SocialPlatform, string> = {
   Facebook: "text-blue-600",
   LinkedIn: "text-sky-700",
   YouTube: "text-red-600",
+  Google: "text-[#4285F4]",
+};
+
+export const POST_TYPES: PostType[] = [
+  "single_post",
+  "carousel",
+  "reel",
+  "story",
+  "video",
+];
+
+export const DEFAULT_POST_TYPE: PostType = "single_post";
+
+export const postTypeLabels: Record<PostType, string> = {
+  single_post: "Single Post",
+  carousel: "Carousel",
+  reel: "Reel",
+  story: "Story",
+  video: "Video",
 };
 
 export const statusOptions: StatusKey[] = ["Not posted", "Scheduled", "Posted"];

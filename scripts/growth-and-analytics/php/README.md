@@ -5,7 +5,21 @@ Runs on **GoDaddy** (PHP 8.2.30). GoDaddy cron hits a URL; scripts sync **yester
 | Script | What it syncs |
 |--------|----------------|
 | `sync_yesterday_organic_acc.php` | Instagram organic posts + follower gain |
-| `sync_yesterday_ads_acc.php` | Meta ad campaign daily metrics |
+| `sync_yesterday_ads_acc.php` | Meta ad campaign / adset / ad daily metrics |
+| `test.php` | Smoke test — config + auth only (no Meta/Supabase sync) |
+| `sync_yesterday.php` | Legacy alias → same as organic sync (older cron URLs) |
+
+## Cron auth (HTTP vs CLI)
+
+| How it runs | Secret required? |
+|-------------|------------------|
+| **PHP CLI** — `php sync_yesterday_organic_acc.php` | No |
+| **Hostinger “PHP” cron** — picks a file path | No (runs as CLI) |
+| **HTTP / curl** — `?secret=YOUR_CRON_SECRET` | Yes |
+
+Shared helpers live in `lib/bootstrap.php`: `isCronCli()`, `assertCronAccess()`, `cronFail()`.
+
+If your host reports a non-`cli` SAPI but still runs the file from cron without a web request, set env `CRON_ALLOW_CLI=1` on that job as a fallback.
 
 ## Quick setup (URL cron — easiest on GoDaddy)
 
@@ -70,12 +84,21 @@ Check Supabase:
 
 ### 5. Add GoDaddy cron (cPanel)
 
-Add **two** daily jobs at **12:05 AM** (or stagger by a few minutes):
+**Recommended — PHP CLI** (no secret, no HTTP timeout):
+
+```bash
+5 0 * * * /usr/local/bin/php -q /home/USER/public_html/growth-and-analytics/php/sync_yesterday_organic_acc.php >> /home/USER/logs/ig-sync.log 2>&1
+10 0 * * * /usr/local/bin/php -q /home/USER/public_html/growth-and-analytics/php/sync_yesterday_ads_acc.php >> /home/USER/logs/ads-sync.log 2>&1
+```
+
+**Alternative — URL curl** (requires `?secret=`):
 
 ```bash
 curl -s "https://YOUR-DOMAIN.com/growth-and-analytics/php/sync_yesterday_organic_acc.php?secret=YOUR_CRON_SECRET"
 curl -s "https://YOUR-DOMAIN.com/growth-and-analytics/php/sync_yesterday_ads_acc.php?secret=YOUR_CRON_SECRET"
 ```
+
+**Hostinger hPanel:** use **Cron Jobs → PHP** (file path) for CLI, or **Custom** with the `curl` commands above for HTTP.
 
 **Timezone note:** cPanel cron time is usually **server time** (often US). If your server is not in India, adjust the hour so the job runs just after midnight **India time**. Example: if server is US Eastern, 12:05 AM IST is roughly 1:35 PM previous day Eastern — use cPanel’s time labels or test once and shift the hour.
 
@@ -141,17 +164,26 @@ Connect/reconnect in the app still backfills the last **29 days** in the browser
 | File | Purpose |
 |------|---------|
 | `config.php` | Supabase + cron secret (edit before upload) |
-| `sync_yesterday_organic_acc.php` | Instagram organic entry point (URL or CLI) |
-| `sync_yesterday_ads_acc.php` | Ad campaign entry point (URL or CLI) |
+| `sync_yesterday_organic_acc.php` | Instagram organic entry point (CLI or HTTP) |
+| `sync_yesterday_ads_acc.php` | Ad metrics entry point (CLI or HTTP) |
+| `test.php` | Auth/config smoke test (CLI or HTTP) |
+| `sync_yesterday.php` | Legacy organic alias (CLI or HTTP) |
+| `lib/bootstrap.php` | Config load, CLI detection, cron auth, logging |
 | `lib/` | Supabase REST + Meta Graph helpers |
 | `.htaccess` | Blocks direct access to `config.php` |
 
-## CLI cron (optional)
+## CLI cron (recommended)
 
-If your plan supports SSH:
+If your plan supports SSH or hPanel **PHP** cron (file path):
 
 ```bash
+# Test once
+php /home/USER/public_html/growth-and-analytics/php/sync_yesterday_organic_acc.php
+php /home/USER/public_html/growth-and-analytics/php/sync_yesterday_ads_acc.php
+
+# Schedule (example — adjust PHP path and user)
 5 0 * * * /usr/local/bin/php -q /home/USER/public_html/growth-and-analytics/php/sync_yesterday_organic_acc.php >> /home/USER/logs/ig-sync.log 2>&1
+10 0 * * * /usr/local/bin/php -q /home/USER/public_html/growth-and-analytics/php/sync_yesterday_ads_acc.php >> /home/USER/logs/ads-sync.log 2>&1
 ```
 
 No `?secret=` needed when run from CLI.

@@ -2,6 +2,7 @@ import type { ComponentType, SVGProps } from "react";
 
 import {
   FacebookIcon,
+  GoogleIcon,
   InstagramIcon,
   LinkedinIcon,
   YoutubeIcon,
@@ -11,7 +12,8 @@ export type SocialPlatformKey =
   | "facebook"
   | "instagram"
   | "linkedin"
-  | "youtube";
+  | "youtube"
+  | "google";
 
 export type SocialLinkMap = Partial<Record<SocialPlatformKey, string>>;
 
@@ -50,6 +52,13 @@ export const SOCIAL_PLATFORMS: SocialPlatformConfig[] = [
     Icon: YoutubeIcon,
     activeClassName:
       "border-[#FF0000]/35 bg-[#FF0000]/10 text-[#FF0000] hover:bg-[#FF0000]/20",
+  },
+  {
+    key: "google",
+    label: "Google",
+    Icon: GoogleIcon,
+    activeClassName:
+      "border-[#4285F4]/35 bg-[#4285F4]/10 text-[#4285F4] hover:bg-[#4285F4]/20",
   },
 ];
 

@@ -6,6 +6,7 @@ const POST_SELECT = `
   id,
   project_id,
   post_title,
+  post_type,
   socials,
   post_links,
   to_be_posted_date,

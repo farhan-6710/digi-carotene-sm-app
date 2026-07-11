@@ -3,6 +3,7 @@ export type ProjectSocials = {
   instagram?: string;
   linkedin?: string;
   youtube?: string;
+  google?: string;
 };
 
 export type ProjectClient = {

@@ -6,6 +6,7 @@ const socialFields = [
   { field: "instagram" as const, label: "Instagram URL", placeholder: "e.g. instagram.com/brand" },
   { field: "linkedin" as const, label: "LinkedIn URL", placeholder: "e.g. linkedin.com/company/brand" },
   { field: "youtube" as const, label: "YouTube URL", placeholder: "e.g. youtube.com/@brand" },
+  { field: "google" as const, label: "Google URL", placeholder: "e.g. business.google.com/brand" },
 ];
 
 export function ProjectDialogSocialFields({

@@ -1,4 +1,5 @@
 import { ProjectSelect } from "@/features/posts-management/components/ProjectSelect";
+import { PostTypeSelect } from "@/features/posts-management/components/PostTypeSelect";
 import { PostDateTimePicker } from "@/features/posts-management/components/PostDateTimePicker";
 import { PostDialogLinkFields } from "@/features/posts-management/components/PostDialogLinkFields";
 import { SocialsSelect } from "@/features/posts-management/components/SocialsSelect";
@@ -42,6 +43,17 @@ export function PostDialogFormFields({
             selectedLabel={values.projectName}
           />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <span className="block text-xs font-semibold text-muted-foreground">
+          Post type
+        </span>
+        <PostTypeSelect
+          value={values.postType}
+          onChange={(postType) => patchValues({ postType })}
+          disabled={disabled}
+        />
       </div>
 
       <SocialsSelect

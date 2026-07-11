@@ -13,11 +13,12 @@ export type ProjectFormValues = {
   instagram: string;
   linkedin: string;
   youtube: string;
+  google: string;
 };
 
 export type ProjectFormField = keyof Pick<
   ProjectFormValues,
-  "projectName" | "facebook" | "instagram" | "linkedin" | "youtube"
+  "projectName" | "facebook" | "instagram" | "linkedin" | "youtube" | "google"
 >;
 
 export const emptyProjectFormValues = (): ProjectFormValues => ({
@@ -29,6 +30,7 @@ export const emptyProjectFormValues = (): ProjectFormValues => ({
   instagram: "",
   linkedin: "",
   youtube: "",
+  google: "",
 });
 
 export function projectToFormValues(project: ProjectListItem): ProjectFormValues {
@@ -41,6 +43,7 @@ export function projectToFormValues(project: ProjectListItem): ProjectFormValues
     instagram: project.socials?.instagram ?? "",
     linkedin: project.socials?.linkedin ?? "",
     youtube: project.socials?.youtube ?? "",
+    google: project.socials?.google ?? "",
   };
 }
 
@@ -50,6 +53,7 @@ export function formValuesToSocials(values: ProjectFormValues): ProjectSocials {
     instagram: values.instagram.trim() || undefined,
     linkedin: values.linkedin.trim() || undefined,
     youtube: values.youtube.trim() || undefined,
+    google: values.google.trim() || undefined,
   };
 }
 

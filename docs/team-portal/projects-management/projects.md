@@ -27,7 +27,8 @@ Operational unit: social profile URLs, manager, team, and posts. Each project be
   "facebook": "https://facebook.com/...",
   "instagram": "https://instagram.com/...",
   "linkedin": "https://linkedin.com/...",
-  "youtube": "https://youtube.com/..."
+  "youtube": "https://youtube.com/...",
+  "google": "https://business.google.com/..."
 }
 ```
 
@@ -67,6 +68,7 @@ type ProjectSocials = {
   instagram?: string;
   linkedin?: string;
   youtube?: string;
+  google?: string;
 };
 
 type ProjectClient = {
@@ -149,6 +151,7 @@ type ProjectFormValues = {
   instagram: string;
   linkedin: string;
   youtube: string;
+  google: string;
 };
 ```
 

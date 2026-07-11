@@ -1,5 +1,9 @@
 import type { POST_APPROVAL_REQUEST_STATUSES } from "@/features/post-approvals/constants/postApprovals";
-import type { StatusKey, PostLinks } from "@/features/posts-management/types/types";
+import type {
+  PostType,
+  StatusKey,
+  PostLinks,
+} from "@/features/posts-management/types/types";
 
 export type PostApprovalRequestStatus =
   (typeof POST_APPROVAL_REQUEST_STATUSES)[number];
@@ -7,6 +11,7 @@ export type PostApprovalRequestStatus =
 export type PostApprovalPayload = {
   projectId: string;
   postTitle: string | null;
+  postType: PostType;
   socials: string[] | null;
   postLinks: PostLinks | null;
   toBePostedOn: { date: string; time: string };

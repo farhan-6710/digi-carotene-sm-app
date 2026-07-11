@@ -1,10 +1,18 @@
 export type StatusKey = "Not posted" | "Scheduled" | "Posted";
 
+export type PostType =
+  | "single_post"
+  | "carousel"
+  | "reel"
+  | "story"
+  | "video";
+
 export type PostLinks = {
   facebook?: string;
   instagram?: string;
   linkedin?: string;
   youtube?: string;
+  google?: string;
 };
 
 export type Post = {
@@ -13,6 +21,7 @@ export type Post = {
   project_name?: string;
   client_name?: string;
   post_title: string | null;
+  post_type: PostType;
   socials: string[] | null;
   post_links: PostLinks | null;
   to_be_posted_date: string;
@@ -29,6 +38,7 @@ export type SlotClient = {
   name: string;
   clientName?: string;
   postTitle: string | null;
+  postType: PostType;
   socials: string[] | null;
   postLinks: PostLinks | null;
   toBePostedDate: string;

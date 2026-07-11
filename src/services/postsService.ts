@@ -2,7 +2,12 @@ import { format, lastDayOfMonth, startOfMonth } from "date-fns";
 
 import { DB } from "@/services/db";
 import { supabase } from "@/services/supabaseClient";
-import type { Post, StatusKey, PostLinks } from "@/features/posts-management/types/types";
+import type {
+  Post,
+  PostType,
+  StatusKey,
+  PostLinks,
+} from "@/features/posts-management/types/types";
 import { getPostStatusUpdateFields } from "@/features/posts-management/utils/postStatusUtils";
 
 // Supabase returns nested relations as either an object or an array.
@@ -34,6 +39,7 @@ export function mapPostRow(row: PostRow): Post {
     project_name: project?.project_name,
     client_name: client?.client_name,
     post_title: row.post_title,
+    post_type: row.post_type,
     socials: row.socials,
     post_links: row.post_links,
     to_be_posted_date: row.to_be_posted_date,
@@ -61,6 +67,7 @@ export type PostDateTimeInput = {
 export type CreatePostInput = {
   projectId: string;
   postTitle: string | null;
+  postType: PostType;
   socials: string[] | null;
   postLinks?: PostLinks | null;
   toBePostedOn: PostDateTimeInput;
@@ -192,6 +199,7 @@ export async function createPost(input: CreatePostInput): Promise<Post> {
     .insert({
       project_id: input.projectId,
       post_title: input.postTitle,
+      post_type: input.postType,
       socials: input.socials,
       post_links: input.postLinks || {},
       to_be_posted_date: input.toBePostedOn.date,
@@ -219,6 +227,7 @@ export async function updatePost(
     .update({
       project_id: input.projectId,
       post_title: input.postTitle,
+      post_type: input.postType,
       socials: input.socials,
       post_links: input.postLinks || {},
       to_be_posted_date: input.toBePostedOn.date,

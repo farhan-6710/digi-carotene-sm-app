@@ -9,6 +9,7 @@ export function postToSlotClient(post: Post): SlotClient {
     name: post.project_name ?? "Unknown project",
     clientName: post.client_name,
     postTitle: post.post_title ?? null,
+    postType: post.post_type,
     socials: post.socials ?? null,
     postLinks: post.post_links ?? null,
     toBePostedDate: post.to_be_posted_date,

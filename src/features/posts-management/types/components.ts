@@ -1,5 +1,5 @@
 import type { SocialPlatform } from "@/features/posts-management/constants/postsManagement";
-import type { StatusKey } from "@/features/posts-management/types/types";
+import type { PostType, StatusKey } from "@/features/posts-management/types/types";
 import type { PostFormValues } from "@/features/posts-management/utils/postFormUtils";
 
 export type ProjectSelectProps = {
@@ -9,6 +9,13 @@ export type ProjectSelectProps = {
   disabled?: boolean;
   preload?: boolean;
   selectedLabel?: string;
+};
+
+export type PostTypeSelectProps = {
+  id?: string;
+  value: PostType;
+  onChange: (value: PostType) => void;
+  disabled?: boolean;
 };
 
 export type ClientSelectProps = {
