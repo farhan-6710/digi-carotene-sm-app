@@ -450,23 +450,29 @@ export async function fetchAdBreakdownInsights(
     { field: `${scope.level}.id`, operator: "IN", value: [scope.id] },
   ]);
 
-  // Meta (#100): placement breakdowns can't combine with the action_type
-  // breakdown that `results`/`actions` (and unified attribution) pull in, so
-  // for placement we drop those fields and the attribution flag entirely.
+  // Meta (#100): the `results` field applies an internal action_type breakdown
+  // that placement breakdowns reject, so for placement we drop `results` (and
+  // the unified attribution flag) but keep `actions` — conversions fall back to
+  // it in parseInsightConversions.
   const isDeliveryPlacement =
     breakdowns.includes("platform_position") ||
     breakdowns.includes("publisher_platform");
 
   const params: Record<string, string> = {
     fields: isDeliveryPlacement
-      ? "spend,impressions,reach,clicks,cpm,frequency"
+      ? "spend,impressions,reach,clicks,cpm,frequency,actions"
       : AD_INSIGHT_METRIC_FIELDS,
     time_range: timeRange,
     level: scope.level,
-    breakdowns,
     filtering,
     access_token: accessToken,
   };
+
+  // An empty breakdown fetches scope-level totals (used to read the true
+  // "Results" action type so placement conversions reconcile).
+  if (breakdowns) {
+    params.breakdowns = breakdowns;
+  }
 
   if (!isDeliveryPlacement) {
     params.use_unified_attribution_setting = "true";

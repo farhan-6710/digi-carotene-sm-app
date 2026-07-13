@@ -14,6 +14,7 @@ import type {
 import type { AdDemographicInsight } from "@/services/metaService";
 import {
   hasAdDeliveryMetrics,
+  parseConversionsForTypes,
   parseInsightConversions,
   parseMetricDecimal,
   parseMetricInt,
@@ -51,8 +52,17 @@ function formatPlacementLabel(placement: string): string {
   );
 }
 
-function parseCell(insight: AdDemographicInsight): DemographicCell | null {
-  const conversions = parseInsightConversions(insight);
+function parseCell(
+  insight: AdDemographicInsight,
+  resultActionTypes?: Set<string>,
+): DemographicCell | null {
+  // Placement can't return `results`, so count only the campaign's true result
+  // action types from `actions` — otherwise summing all action groups inflates
+  // the per-placement totals beyond the real Results count.
+  const conversions =
+    resultActionTypes && resultActionTypes.size > 0
+      ? parseConversionsForTypes(insight.actions, resultActionTypes)
+      : parseInsightConversions(insight);
   if (!hasAdDeliveryMetrics(insight) && conversions === 0) return null;
 
   const reach = parseMetricInt(insight.reach);
@@ -231,9 +241,10 @@ export function buildCampaignDemographicTableView(
   breakdowns: DemographicBreakdown[],
   primaryInsights: AdDemographicInsight[],
   ageSummaryInsights: AdDemographicInsight[] = [],
+  resultActionTypes?: Set<string>,
 ): CampaignDemographicTableView {
   const cells = primaryInsights
-    .map(parseCell)
+    .map((insight) => parseCell(insight, resultActionTypes))
     .filter((cell): cell is DemographicCell => cell != null);
 
   const total = cells.length > 0 ? sumMetrics(cells) : EMPTY_METRIC;
@@ -246,7 +257,7 @@ export function buildCampaignDemographicTableView(
     rows = buildPlacementRows(cells);
   } else if (hasAge && hasGender) {
     const ageSummaryCells = ageSummaryInsights
-      .map(parseCell)
+      .map((insight) => parseCell(insight))
       .filter((cell): cell is DemographicCell => cell != null);
     rows = buildAgeGenderRows(cells, ageSummaryCells);
   } else if (hasAge) {

@@ -408,6 +408,44 @@ export function parseInsightConversions(insight: {
   return parseConversions(insight.actions);
 }
 
+/**
+ * The `results` entries name their action type in `action_type` or in an
+ * `indicator` like `actions:onsite_conversion.messaging_conversation_started`.
+ * Collect those so we can count the matching `actions` on breakdowns (e.g.
+ * placement) where Meta refuses to return `results`.
+ */
+export function extractResultActionTypes(
+  insights: Array<{ results?: InsightStatEntry[] }>,
+): Set<string> {
+  const types = new Set<string>();
+  for (const insight of insights) {
+    for (const entry of insight.results ?? []) {
+      const fromIndicator = entry.indicator?.includes(":")
+        ? entry.indicator.split(":").pop()
+        : entry.indicator;
+      const type = entry.action_type ?? fromIndicator;
+      if (type) types.add(type);
+    }
+  }
+  return types;
+}
+
+/** Count only the given action types (used when `results` is unavailable). */
+export function parseConversionsForTypes(
+  actions: Array<{ action_type?: string; value?: string }> | undefined,
+  allowedTypes: Set<string>,
+): number {
+  if (!actions?.length || allowedTypes.size === 0) return 0;
+
+  let total = 0;
+  for (const action of actions) {
+    if (action.action_type && allowedTypes.has(action.action_type)) {
+      total += Math.round(Number(action.value ?? 0));
+    }
+  }
+  return total;
+}
+
 export function parseMetricInt(value: string | number | undefined): number {
   return Math.round(Number(value ?? 0));
 }

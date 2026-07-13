@@ -15,6 +15,7 @@ import type {
 } from "../types/types";
 import { CAMPAIGN_BREAKDOWN_META_PARAM } from "../constants/campaignDemographicBreakdown";
 import { buildCampaignDemographicTableView } from "../utils/campaignDemographicBreakdown";
+import { extractResultActionTypes } from "../utils/metaSyncMappers";
 import { useGrowthSelectedAdAccount } from "./useGrowthSelectedAdAccount";
 
 const EMPTY_VIEW: CampaignDemographicTableView = {
@@ -63,13 +64,28 @@ export function useGrowthAdEntityBreakdown(
     }
 
     const accessToken = await fetchAdAccountAccessToken(accountId);
-    const primaryInsights = await fetchAdBreakdownInsights(
-      activeAccount.adAccountId,
-      accessToken,
-      metaRange,
-      scope,
-      metaBreakdownParam,
-    );
+    const isPlacement = breakdownKey === "placement";
+
+    const [primaryInsights, resultInsights] = await Promise.all([
+      fetchAdBreakdownInsights(
+        activeAccount.adAccountId,
+        accessToken,
+        metaRange,
+        scope,
+        metaBreakdownParam,
+      ),
+      // Placement can't return `results`; fetch scope-level totals separately
+      // to learn the true Result action type(s) and reconcile conversions.
+      isPlacement
+        ? fetchAdBreakdownInsights(
+            activeAccount.adAccountId,
+            accessToken,
+            metaRange,
+            scope,
+            "",
+          )
+        : Promise.resolve([]),
+    ]);
 
     const ageSummaryInsights =
       breakdownKey === "age,gender"
@@ -82,10 +98,15 @@ export function useGrowthAdEntityBreakdown(
           )
         : [];
 
+    const resultActionTypes = isPlacement
+      ? extractResultActionTypes(resultInsights)
+      : undefined;
+
     return buildCampaignDemographicTableView(
       ordered,
       primaryInsights,
       ageSummaryInsights,
+      resultActionTypes,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scope, accountId, activeAccount, metaRange, breakdownKey]);
