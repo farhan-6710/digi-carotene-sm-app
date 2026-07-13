@@ -44,7 +44,7 @@ export function TeamMemberDialogFormFields({
       </label>
 
       <label className="block text-xs font-semibold text-muted-foreground">
-        Admin team role
+        Team member role
         <div className="mt-2">
           <TeamMemberRoleSelect
             value={values.teamRole}

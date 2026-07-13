@@ -3,7 +3,7 @@ import {
   AuthFormAlert,
   AuthPasswordField,
 } from "@/features/auth/components/AuthFormFields";
-import { AuthGoogleSignIn } from "@/features/auth/components/AuthGoogleSignIn";
+import { AuthOAuthSignIn } from "@/features/auth/components/AuthOAuthSignIn";
 import { authFormStyles } from "@/features/auth/components/authFormStyles";
 import { useSignupForm } from "@/features/auth/hooks/useSignupForm";
 import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
@@ -82,7 +82,7 @@ export function SignupForm() {
         </Button>
       </form>
 
-      <AuthGoogleSignIn
+      <AuthOAuthSignIn
         disabled={isSubmitting}
         isSignup
         onError={setError}

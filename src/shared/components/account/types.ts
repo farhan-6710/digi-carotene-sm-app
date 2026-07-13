@@ -22,7 +22,7 @@ export type AccountHeaderProps = {
   user: User | null;
   roleLabel: string;
   bio?: string;
-  /** When set (including null), shows the internal admin team role badge. */
+  /** When set (including null), shows the internal team member role badge. */
   teamRole?: TeamMemberRole | null;
 };
 

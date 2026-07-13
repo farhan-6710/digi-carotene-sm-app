@@ -4,6 +4,8 @@ import type { AuthError, User } from "@supabase/supabase-js";
 import type { Profile, UserRole } from "@/features/auth/types/profile";
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 
+import type { AuthOAuthProvider } from "@/services/authService";
+
 export type AuthContextValue = {
   user: User | null;
   profile: Profile | null;
@@ -24,6 +26,11 @@ export type AuthContextValue = {
     fullName: string,
   ) => Promise<AuthError | null>;
   signInWithGoogle: (options?: { isSignup?: boolean }) => Promise<AuthError | null>;
+  signInWithFacebook: (options?: { isSignup?: boolean }) => Promise<AuthError | null>;
+  signInWithOAuthProvider: (
+    provider: AuthOAuthProvider,
+    options?: { isSignup?: boolean },
+  ) => Promise<AuthError | null>;
   signOut: () => Promise<void>;
 };
 

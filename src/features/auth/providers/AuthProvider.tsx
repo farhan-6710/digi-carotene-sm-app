@@ -17,7 +17,9 @@ import {
   getCurrentUser,
   onAuthChange,
   signInWithEmail,
+  signInWithFacebook,
   signInWithGoogle,
+  signInWithOAuthProvider,
   signOut,
   signUpWithEmail,
 } from "@/services/authService";
@@ -103,6 +105,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signInWithEmail,
       signUpWithEmail,
       signInWithGoogle: (options) => signInWithGoogle(options?.isSignup ?? false),
+      signInWithFacebook: (options) => signInWithFacebook(options?.isSignup ?? false),
+      signInWithOAuthProvider: (provider, options) =>
+        signInWithOAuthProvider(provider, options?.isSignup ?? false),
       signOut: handleSignOut,
     };
   }, [user, profile, teamRole, loading, refreshProfile, handleSignOut]);

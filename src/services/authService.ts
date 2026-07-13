@@ -1,8 +1,10 @@
-import type { AuthError, User } from "@supabase/supabase-js";
+import type { AuthError, Provider, User } from "@supabase/supabase-js";
 
 import { AUTH_FORM_TYPES, type AuthFormType } from "@/features/auth/constants/auth";
 import { buildAuthUrl } from "@/features/auth/utils/authUrlParams";
 import { supabase } from "@/services/supabaseClient";
+
+export type AuthOAuthProvider = Extract<Provider, "google" | "facebook">;
 
 function redirectUrl(formType: AuthFormType): string {
   return `${window.location.origin}${buildAuthUrl(formType)}`;
@@ -60,13 +62,24 @@ export async function signUpWithEmail(
   return signInError;
 }
 
-export async function signInWithGoogle(isSignup: boolean): Promise<AuthError | null> {
+export async function signInWithOAuthProvider(
+  provider: AuthOAuthProvider,
+  isSignup: boolean,
+): Promise<AuthError | null> {
   const formType = isSignup ? AUTH_FORM_TYPES.signup : AUTH_FORM_TYPES.login;
   const { error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
+    provider,
     options: { redirectTo: redirectUrl(formType) },
   });
   return error;
+}
+
+export async function signInWithGoogle(isSignup: boolean): Promise<AuthError | null> {
+  return signInWithOAuthProvider("google", isSignup);
+}
+
+export async function signInWithFacebook(isSignup: boolean): Promise<AuthError | null> {
+  return signInWithOAuthProvider("facebook", isSignup);
 }
 
 export async function signOut(): Promise<void> {

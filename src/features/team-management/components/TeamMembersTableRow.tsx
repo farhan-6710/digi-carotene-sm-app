@@ -60,7 +60,7 @@ export function TeamMembersTableRow({
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <MobileLabel>ADMIN TEAM ROLE</MobileLabel>
+        <MobileLabel>TEAM MEMBER ROLE</MobileLabel>
         <span
           className={cn(
             "inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold",

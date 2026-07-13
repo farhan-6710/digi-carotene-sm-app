@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 
 import { TeamMemberActiveProjectsSection } from "@/features/team-management/components/TeamMemberActiveProjectsSection";
 import { TeamMemberAssignProjectDialog } from "@/features/team-management/components/TeamMemberAssignProjectDialog";
+import { TeamMemberDialog } from "@/features/team-management/components/TeamMemberDialog";
 import { TeamMemberProjectHistorySection } from "@/features/team-management/components/TeamMemberProjectHistorySection";
 import { TeamMemberProfileCard } from "@/features/team-management/components/TeamMemberProfileCard";
 import { TEAM_MANAGEMENT_PATH } from "@/features/team-management/constants/routes";
+import { useTeamMemberDialog } from "@/features/team-management/hooks/useTeamMemberDialog";
 import { useTeamMemberProjectActions } from "@/features/team-management/hooks/useTeamMemberProjectActions";
 import { useTeamMemberDetailQuery } from "@/features/team-management/hooks/useTeamMemberDetailQuery";
 import { usePermissions } from "@/shared/hooks/usePermissions";
@@ -50,6 +52,8 @@ export function TeamMemberDetailPage() {
     setError,
   });
 
+  const { openEditDialog, dialog } = useTeamMemberDialog({ reload, setError });
+
   const activeProjectIds = [
     ...activeAssignments.map((assignment) => assignment.project_id),
     ...managedProjects.map((project) => project.id),
@@ -70,7 +74,22 @@ export function TeamMemberDetailPage() {
 
   return (
     <PageContent>
-      <PageHeader backButton={<TeamMemberDetailBackButton />} />
+      <PageHeader
+        actions={
+          <div className="flex w-full items-center justify-between gap-4">
+            <TeamMemberDetailBackButton />
+            {canManageTeam ? (
+              <Button
+                onClick={() => openEditDialog(member)}
+                className="rounded-full shadow-sm"
+              >
+                <Pencil className="mr-2 size-4" />
+                Edit Profile
+              </Button>
+            ) : null}
+          </div>
+        }
+      />
 
       {error ? <ErrorBanner message={error} /> : null}
 
@@ -92,13 +111,16 @@ export function TeamMemberDetailPage() {
       />
 
       {canManageTeam ? (
-        <TeamMemberAssignProjectDialog
-          open={isAssignDialogOpen}
-          onOpenChange={setIsAssignDialogOpen}
-          activeProjectIds={activeProjectIds}
-          isSaving={isSaving}
-          onAssign={assignProject}
-        />
+        <>
+          <TeamMemberAssignProjectDialog
+            open={isAssignDialogOpen}
+            onOpenChange={setIsAssignDialogOpen}
+            activeProjectIds={activeProjectIds}
+            isSaving={isSaving}
+            onAssign={assignProject}
+          />
+          <TeamMemberDialog {...dialog} />
+        </>
       ) : null}
     </PageContent>
   );

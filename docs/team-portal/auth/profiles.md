@@ -44,13 +44,24 @@ After creating or updating a team member or client, the app calls the `link_prof
 
 ### Signup flow (V1)
 
-1. User signs up at `/auth?form-type=signup` with **email + password** or **Google**.
+1. User signs up at `/auth?form-type=signup` with **email + password**, **Google**, or **Facebook**.
 2. Account is created and the user is signed in immediately (no email verification in V1).
 3. Profile created with `role = user` → redirected to `/user-portal` (pending).
 4. Team creates a **team member** or **client** with that email → DB links profile automatically (or links on signup if roster row already existed).
 5. User refreshes → correct portal.
 
-**Supabase:** disable **Confirm email** under Authentication → Providers → Email so `signUp` returns a session without a verification mail.
+**Supabase OAuth setup**
+
+| Provider | Supabase dashboard |
+|----------|-------------------|
+| Google | Authentication → Providers → Google — Client ID + secret |
+| Facebook | Authentication → Providers → Facebook — App ID + secret from [Meta for Developers](https://developers.facebook.com/) |
+
+Add your site URL and redirect URL (`https://<project-ref>.supabase.co/auth/v1/callback`) in the Meta app **Facebook Login** settings.
+
+**Instagram:** Supabase Auth has no Instagram login provider. Users sign in with Facebook (Meta), email/password, or Google. Instagram in this app is for **Growth analytics** (page tokens), not portal signup.
+
+**Supabase email:** disable **Confirm email** under Authentication → Providers → Email so `signUp` returns a session without a verification mail.
 
 ### Signup trigger
 

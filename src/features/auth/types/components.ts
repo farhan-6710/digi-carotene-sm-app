@@ -1,9 +1,12 @@
-export type AuthGoogleSignInProps = {
+export type AuthOAuthSignInProps = {
   disabled?: boolean;
   isSignup?: boolean;
   onError: (message: string) => void;
   onBeforeSignIn?: () => void;
 };
+
+/** @deprecated Use AuthOAuthSignInProps */
+export type AuthGoogleSignInProps = AuthOAuthSignInProps;
 
 export type AuthEmailFieldProps = {
   id: string;
