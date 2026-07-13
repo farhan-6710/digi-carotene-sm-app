@@ -9,13 +9,21 @@ import type { AuthOAuthProvider } from "@/services/authService";
 import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import { Button } from "@/shared/ui/button";
 
+// Facebook is a placeholder for now — the button renders but does nothing.
+// Portal Facebook auth is on hold until the Growth/analytics auth flow lands.
 const OAUTH_OPTIONS: Array<{
   provider: AuthOAuthProvider;
   label: string;
   icon: ReactNode;
+  enabled: boolean;
 }> = [
-  { provider: "google", label: "Continue with Google", icon: <GoogleIcon /> },
-  { provider: "facebook", label: "Continue with Facebook", icon: <FacebookIcon /> },
+  { provider: "google", label: "Continue with Google", icon: <GoogleIcon />, enabled: true },
+  {
+    provider: "facebook",
+    label: "Continue with Facebook",
+    icon: <FacebookIcon />,
+    enabled: false,
+  },
 ];
 
 export function AuthOAuthSignIn({
@@ -61,7 +69,11 @@ export function AuthOAuthSignIn({
               type="button"
               variant="outline"
               className={authFormStyles.oauthButton}
-              onClick={() => void handleOAuthSignIn(option.provider)}
+              onClick={
+                option.enabled
+                  ? () => void handleOAuthSignIn(option.provider)
+                  : undefined
+              }
               disabled={disabled || loadingProvider != null}
             >
               {isLoading ? <LoadingSpinner size="sm" /> : option.icon}

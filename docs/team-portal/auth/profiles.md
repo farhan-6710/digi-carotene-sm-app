@@ -44,7 +44,7 @@ After creating or updating a team member or client, the app calls the `link_prof
 
 ### Signup flow (V1)
 
-1. User signs up at `/auth?form-type=signup` with **email + password**, **Google**, or **Facebook**.
+1. User signs up at `/auth?form-type=signup` with **email + password** or **Google**. ("Continue with Facebook" renders as a placeholder button that does nothing — portal Facebook auth is on hold until the Growth/analytics auth flow lands.)
 2. Account is created and the user is signed in immediately (no email verification in V1).
 3. Profile created with `role = user` → redirected to `/user-portal` (pending).
 4. Team creates a **team member** or **client** with that email → DB links profile automatically (or links on signup if roster row already existed).
@@ -58,6 +58,8 @@ After creating or updating a team member or client, the app calls the `link_prof
 | Facebook | Authentication → Providers → Facebook — App ID + secret from [Meta for Developers](https://developers.facebook.com/) |
 
 Add your site URL and redirect URL (`https://<project-ref>.supabase.co/auth/v1/callback`) in the Meta app **Facebook Login** settings.
+
+**Facebook login is on hold.** The "Continue with Facebook" button in `AuthOAuthSignIn` is a placeholder (no `onClick`) until the Growth/analytics auth flow is designed. Only Google + email/password work today. When re-enabling, note: portal login uses Supabase's standard `signInWithOAuth` (scope-based, `email` + `public_profile`), which only works with a **Consumer** Meta app using the plain **Facebook Login** product. Do **not** reuse a **Business** app or the **Facebook Login for Business** product — those require a `config_id` that Supabase cannot send, and real (non-tester) users get *"It looks like this app isn't available. This app needs at least one supported permission."* Keep portal-login and the ads/Instagram analytics apps separate. Set the app to **Live** (standard login needs no App Review).
 
 **Instagram:** Supabase Auth has no Instagram login provider. Users sign in with Facebook (Meta), email/password, or Google. Instagram in this app is for **Growth analytics** (page tokens), not portal signup.
 
