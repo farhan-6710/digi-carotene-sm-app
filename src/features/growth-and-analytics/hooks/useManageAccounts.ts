@@ -66,6 +66,8 @@ export function useManageAccounts() {
       accountName: account.accountName,
       accountId: account.accountId,
       accessToken: "",
+      clientId: account.clientId ?? "",
+      clientName: "",
     });
     setOrganicEditId(account.id);
     setIsOrganicOpen(true);
@@ -131,6 +133,7 @@ export function useManageAccounts() {
 
   const openAdEdit = useCallback((account: AdAccount) => {
     setAdForm({
+      clientId: account.clientId ?? "",
       clientName: account.clientName,
       accountName: account.accountName,
       adAccountId: account.adAccountId,

@@ -1,6 +1,6 @@
 import type { ShellNavItem } from "@/shared/types/components";
 
-export const growthBasePath = "/growth-and-analytics";
+export const growthBasePath = "/team-portal/growth-and-analytics";
 
 export const growthNav: ShellNavItem[] = [
   { label: "Dashboard", to: growthBasePath, icon: "dashboard" },
@@ -30,9 +30,3 @@ export const growthNav: ShellNavItem[] = [
     icon: "manageAccounts",
   },
 ];
-
-export const growthMeta = {
-  brandName: "Digi Carotene",
-  brandSubtitle: "Growth & Analytics",
-  initials: "D",
-} as const;

@@ -13,6 +13,8 @@ import {
   DialogTitle,
 } from "@/shared/ui/dialog";
 
+import { ClientCombobox } from "@/features/clients-management/components/ClientCombobox";
+
 import { GrowthStaticComboBox } from "../GrowthStaticComboBox";
 import { platformOptions } from "../../constants/accountsData";
 import type { OrganicAccountDialogProps } from "../../types/components";
@@ -38,7 +40,9 @@ export function OrganicAccountDialog({
   }, [open]);
 
   const canSave =
-    values.accountName.trim() !== "" && values.accountId.trim() !== "";
+    values.clientId.trim() !== "" &&
+    values.accountName.trim() !== "" &&
+    values.accountId.trim() !== "";
 
   return (
     <>
@@ -54,6 +58,22 @@ export function OrganicAccountDialog({
           </DialogHeader>
 
           <div className="flex-1 space-y-4 overflow-y-auto py-1 pr-1">
+            <label className="block text-xs font-semibold text-muted-foreground">
+              Client
+              <div className="mt-2">
+                <ClientCombobox
+                  value={values.clientId}
+                  onChange={(clientId) => onFieldChange("clientId", clientId)}
+                  placeholder="Select the client this account belongs to"
+                  seedClient={
+                    values.clientId
+                      ? { id: values.clientId, client_name: values.clientName }
+                      : null
+                  }
+                />
+              </div>
+            </label>
+
             <GrowthStaticComboBox
               label="Platform"
               value={values.platform}

@@ -18,9 +18,12 @@ export const emptyOrganicForm: OrganicAccountForm = {
   accountName: "",
   accountId: "",
   accessToken: "",
+  clientId: "",
+  clientName: "",
 };
 
 export const emptyAdForm: AdAccountForm = {
+  clientId: "",
   clientName: "",
   accountName: "",
   adAccountId: "",

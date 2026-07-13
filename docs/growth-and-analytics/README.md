@@ -42,11 +42,24 @@ Migrations: `022` (campaign metrics), `025` (adset/ad masters + daily metrics). 
 
 **Breakdowns are not stored.** Age, gender, and placement pivots are fetched live from Meta Insights when the user selects a breakdown on a detail page. No extra migration or cron job.
 
+## Portals & client ownership
+
+Growth & Analytics is a **logged-in-only** feature (not on the public site).
+
+- **Team portal** — full experience under `/team-portal/growth-and-analytics` (guarded by `TeamRoute`): connect accounts (**Manage Accounts**), refresh tokens, view all analytics, build reports. The pages render inside the **team portal shell** (`TeamLayout`) — no separate shell — where "Growth & Analytics" is an **expandable sidebar group** with sub-links; the header shows the organic/ad account switcher on growth routes. `TeamLayout` wraps the growth account providers so the switcher works. When connecting an **organic** or **ad** account the team **selects the client** it belongs to → stored as `client_id` (migration `027`).
+- **Client portal** — read-only landing at `/client-portal/growth-and-analytics` (`ClientGrowthPage` + `useClientGrowthAccounts`). Lists only the accounts where `client_id` = the logged-in user's `client_id`, via `fetchOrganicAccountsByClientId` / `fetchAdAccountsByClientId`. No Manage Accounts, no tokens, no Meta developer setup; shows a "contact Digi Carotene" empty state when nothing is linked. Full client-scoped dashboards/drill-downs are future work.
+
+Growth & Analytics is no longer on the public site nav — it lives inside the portals only.
+
+**Login vs data ownership are separate.** How a client logs in (Google / email / Facebook) only proves identity. Their analytics come from the `client_id` link on connected accounts — set by the team — so a Google-login client still sees the Meta data the team connected for them.
+
+"Meta account" is not one thing: an **organic account** is a Facebook Page or Instagram business profile (organic insights); an **ad account** is a Meta ad account `act_…` (paid campaign analytics). WhatsApp is out of scope for V1.
+
 ## Connect flow
 
 ### Organic
 
-1. User connects Instagram in **Manage Accounts**.
+1. User connects Instagram in **Manage Accounts** (selects the owning **client**).
 2. `runInstagram29DayBackfill` fetches media from Meta Graph **v24**.
 3. Posts in the last **29 completed days** (excludes today) → `past_posts_metrics`.
 4. `follower_count` insights for the same window → `instagram_daily_followers`.
@@ -54,7 +67,7 @@ Migrations: `022` (campaign metrics), `025` (adset/ad masters + daily metrics). 
 
 ### Ads
 
-1. User connects an ad account in **Manage Accounts** (paste Meta access token).
+1. User connects an ad account in **Manage Accounts** (selects the owning **client**, pastes Meta access token).
 2. `runAdBackfill` pulls campaign / ad set / ad masters and daily metrics into Supabase.
 3. PHP cron extends stored rows nightly (`sync_yesterday_ads_acc.php`).
 

@@ -80,10 +80,17 @@ export type PageContentProps = {
   children: ReactNode;
 };
 
+export type ShellNavSubItem = {
+  label: string;
+  to: string;
+};
+
 export type ShellNavItem = {
   label: string;
   to: string;
   icon: import("@/shared/constants/shellNavIcons").ShellNavIconKey;
+  /** When present, the item renders as an expandable group with sub-links. */
+  children?: ShellNavSubItem[];
 };
 
 export type ShellQuickAction = {

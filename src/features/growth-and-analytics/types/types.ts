@@ -384,10 +384,12 @@ export type OrganicAccount = {
   accountId: string;
   followers: number;
   isActive: boolean;
+  clientId: string | null;
 };
 
 export type AdAccount = {
   id: string;
+  clientId: string | null;
   clientName: string;
   accountName: string;
   adAccountId: string;
@@ -405,9 +407,14 @@ export type OrganicAccountForm = {
   accountName: string;
   accountId: string;
   accessToken: string;
+  clientId: string;
+  // Only used to seed the client selector label when editing.
+  clientName: string;
 };
 
 export type AdAccountForm = {
+  clientId: string;
+  // Only used to seed the client selector label when editing.
   clientName: string;
   accountName: string;
   adAccountId: string;

@@ -27,10 +27,6 @@ const AboutPage = lazyRoutePage(
   () => import("@/features/public/pages/AboutPage"),
   "AboutPage",
 );
-const GrowthLayout = lazyRoutePage(
-  () => import("@/shared/layouts/GrowthLayout"),
-  "GrowthLayout",
-);
 const GrowthDashboardPage = lazyRoutePage(
   () => import("@/features/growth-and-analytics/pages/GrowthDashboardPage"),
   "GrowthDashboardPage",
@@ -152,6 +148,10 @@ const ClientPostsPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientPostsPage"),
   "ClientPostsPage",
 );
+const ClientGrowthPage = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientGrowthPage"),
+  "ClientGrowthPage",
+);
 const ClientAccountPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientAccountPage"),
   "ClientAccountPage",
@@ -165,35 +165,6 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: "about", element: <AboutPage /> },
-    ],
-  },
-  {
-    path: "/growth-and-analytics",
-    element: <GrowthLayout />,
-    errorElement: <RouteErrorPage />,
-    children: [
-      { index: true, element: <GrowthDashboardPage /> },
-      { path: "content-performance", element: <GrowthContentPerformancePage /> },
-      {
-        path: "content-performance/posts/:postId",
-        element: <GrowthPostDetailPage />,
-      },
-      { path: "campaigns", element: <GrowthCampaignAnalyticsPage /> },
-      {
-        path: "campaigns/:campaignId",
-        element: <GrowthCampaignDetailPage />,
-      },
-      {
-        path: "campaigns/:campaignId/adsets/:adsetId",
-        element: <GrowthAdsetDetailPage />,
-      },
-      {
-        path: "campaigns/:campaignId/adsets/:adsetId/ads/:adId",
-        element: <GrowthAdDetailPage />,
-      },
-      { path: "custom-report", element: <GrowthCustomReportBuilderPage /> },
-      { path: "reports", element: <GrowthReportsPage /> },
-      { path: "manage-accounts", element: <GrowthManageAccountsPage /> },
     ],
   },
   { path: "/auth", element: <AuthPage /> },
@@ -211,6 +182,42 @@ export const router = createBrowserRouter([
         element: <TeamLayout />,
         children: [
           { path: "dashboard", element: <TeamDashboardPage /> },
+          {
+            path: "growth-and-analytics",
+            children: [
+              { index: true, element: <GrowthDashboardPage /> },
+              {
+                path: "content-performance",
+                element: <GrowthContentPerformancePage />,
+              },
+              {
+                path: "content-performance/posts/:postId",
+                element: <GrowthPostDetailPage />,
+              },
+              { path: "campaigns", element: <GrowthCampaignAnalyticsPage /> },
+              {
+                path: "campaigns/:campaignId",
+                element: <GrowthCampaignDetailPage />,
+              },
+              {
+                path: "campaigns/:campaignId/adsets/:adsetId",
+                element: <GrowthAdsetDetailPage />,
+              },
+              {
+                path: "campaigns/:campaignId/adsets/:adsetId/ads/:adId",
+                element: <GrowthAdDetailPage />,
+              },
+              {
+                path: "custom-report",
+                element: <GrowthCustomReportBuilderPage />,
+              },
+              { path: "reports", element: <GrowthReportsPage /> },
+              {
+                path: "manage-accounts",
+                element: <GrowthManageAccountsPage />,
+              },
+            ],
+          },
           { path: "posts-management", element: <PostsManagementPage /> },
           { path: "post-approvals", element: <PostApprovalsPage /> },
           { path: "projects-management", element: <ProjectsManagementPage /> },
@@ -251,6 +258,10 @@ export const router = createBrowserRouter([
         children: [
           { path: "dashboard", element: <ClientDashboardPage /> },
           { path: "posts", element: <ClientPostsPage /> },
+          {
+            path: "growth-and-analytics",
+            element: <ClientGrowthPage />,
+          },
           { path: "account", element: <ClientAccountPage /> },
         ],
       },

@@ -1,4 +1,3 @@
-import type { ShellNavItem } from "@/shared/types/components";
 import { routePath } from "@/shared/utils/routePath";
 
 function navItemMatches(activePath: string, itemPath: string): boolean {
@@ -7,7 +6,7 @@ function navItemMatches(activePath: string, itemPath: string): boolean {
 
 export function resolveActiveNavPath(
   activePath: string,
-  navItems: ShellNavItem[],
+  navItems: { to: string }[],
 ): string | null {
   const matches = navItems.filter((item) =>
     navItemMatches(activePath, routePath(item.to)),

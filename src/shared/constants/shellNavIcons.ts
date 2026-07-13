@@ -12,6 +12,7 @@ import {
   Megaphone,
   PlugZap,
   Settings,
+  TrendingUp,
   UserCog,
   UserRound,
   Users,
@@ -28,6 +29,7 @@ export type ShellNavIconKey =
   | "approvals"
   | "account"
   | "settings"
+  | "growth"
   | "contentPerformance"
   | "campaigns"
   | "customReport"
@@ -41,6 +43,7 @@ export const shellNavIcons: Record<ShellNavIconKey, LucideIcon> = {
   clients: Users,
   team: UserCog,
   analytics: BarChart3,
+  growth: TrendingUp,
   reports: FileText,
   approvals: ClipboardCheck,
   account: UserRound,

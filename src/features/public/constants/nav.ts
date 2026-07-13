@@ -4,7 +4,6 @@ import { buildAuthUrl } from "@/features/auth/utils/authUrlParams";
 export const publicNavLinks = [
   { label: "Home", to: "/" },
   { label: "Services", to: "/#services" },
-  { label: "Growth & Analytics", to: "/growth-and-analytics" },
   { label: "About", to: "/about" },
   { label: "Contact", to: "/#contact" },
 ] as const;

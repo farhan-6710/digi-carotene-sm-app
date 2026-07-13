@@ -57,6 +57,7 @@ export function profileToOrganicAccount(profile: InstagramProfile): OrganicAccou
     accountId: profile.instagramId,
     followers: profile.followersCount,
     isActive: true,
+    clientId: null,
   };
 }
 

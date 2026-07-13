@@ -13,6 +13,8 @@ import {
   DialogTitle,
 } from "@/shared/ui/dialog";
 
+import { ClientCombobox } from "@/features/clients-management/components/ClientCombobox";
+
 import { GrowthStaticComboBox } from "../GrowthStaticComboBox";
 import { currencyOptions } from "../../constants/accountsData";
 import type { AdAccountDialogProps } from "../../types/components";
@@ -37,7 +39,7 @@ export function AdAccountDialog({
   }, [open]);
 
   const canSave =
-    values.clientName.trim() !== "" &&
+    values.clientId.trim() !== "" &&
     values.accountName.trim() !== "" &&
     values.adAccountId.trim() !== "";
 
@@ -56,13 +58,19 @@ export function AdAccountDialog({
 
           <div className="flex-1 space-y-4 overflow-y-auto py-1 pr-1">
             <label className="block text-xs font-semibold text-muted-foreground">
-              Client name
-              <input
-                value={values.clientName}
-                onChange={(event) => onFieldChange("clientName", event.target.value)}
-                placeholder="e.g. Armario Pro"
-                className={formFieldClassName}
-              />
+              Client
+              <div className="mt-2">
+                <ClientCombobox
+                  value={values.clientId}
+                  onChange={(clientId) => onFieldChange("clientId", clientId)}
+                  placeholder="Select the client this ad account belongs to"
+                  seedClient={
+                    values.clientId
+                      ? { id: values.clientId, client_name: values.clientName }
+                      : null
+                  }
+                />
+              </div>
             </label>
 
             <label className="block text-xs font-semibold text-muted-foreground">

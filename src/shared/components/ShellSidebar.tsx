@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { TransitionLink } from "@/shared/components/TransitionLink";
@@ -7,6 +9,7 @@ import { cn } from "@/shared/lib/utils";
 import { usePageTransition } from "@/shared/providers/pageTransitionContext";
 import type {
   ShellMobileNavSheetProps,
+  ShellNavItem,
   ShellSidebarContentProps,
   ShellSidebarProps,
 } from "@/shared/types/components";
@@ -24,6 +27,141 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
+
+const navLinkClass = (isActive: boolean, collapsed: boolean) =>
+  cn(
+    "flex items-center rounded-2xl text-sm font-medium transition gap-3",
+    collapsed ? "justify-center px-4 py-4" : "px-4 py-2.5",
+    isActive
+      ? "bg-primary text-primary-foreground shadow-sm"
+      : "text-sidebar-foreground/75 hover:bg-secondary hover:text-secondary-foreground",
+  );
+
+const subLinkClass = (isActive: boolean) =>
+  cn(
+    "flex items-center rounded-xl px-3 py-2 text-sm transition",
+    isActive
+      ? "bg-primary font-medium text-primary-foreground shadow-sm"
+      : "text-sidebar-foreground/65 hover:bg-secondary/70 hover:text-secondary-foreground",
+  );
+
+function ShellNavLink({
+  item,
+  isActive,
+  collapsed,
+  onNavigate,
+}: {
+  item: ShellNavItem;
+  isActive: boolean;
+  collapsed: boolean;
+  onNavigate?: () => void;
+}) {
+  const Icon = shellNavIcons[item.icon];
+  const navLinkEl = (
+    <TransitionLink
+      to={item.to}
+      onClick={onNavigate}
+      className={navLinkClass(isActive, collapsed)}
+    >
+      <Icon className="size-4" aria-hidden="true" />
+      {collapsed ? (
+        <span className="sr-only">{item.label}</span>
+      ) : (
+        <span>{item.label}</span>
+      )}
+    </TransitionLink>
+  );
+
+  if (collapsed) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="w-full">{navLinkEl}</div>
+        </TooltipTrigger>
+        <TooltipContent side="right" sideOffset={10}>
+          <p className="font-medium">{item.label}</p>
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return navLinkEl;
+}
+
+function ShellNavGroup({
+  item,
+  collapsed,
+  activePath,
+  onNavigate,
+}: {
+  item: ShellNavItem;
+  collapsed: boolean;
+  activePath: string;
+  onNavigate?: () => void;
+}) {
+  const Icon = shellNavIcons[item.icon];
+  const children = item.children ?? [];
+  const activeChildPath = resolveActiveNavPath(activePath, children);
+  const groupActive = activeChildPath !== null;
+  const [manualOpen, setManualOpen] = useState<boolean | null>(null);
+  const open = manualOpen ?? groupActive;
+
+  if (collapsed) {
+    return (
+      <ShellNavLink
+        item={item}
+        isActive={groupActive}
+        collapsed
+        onNavigate={onNavigate}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-0.5">
+      <button
+        type="button"
+        onClick={() => setManualOpen(!open)}
+        aria-expanded={open}
+        className={cn(
+          "flex w-full items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium transition",
+          open || groupActive
+            ? "text-sidebar-foreground"
+            : "text-sidebar-foreground/75 hover:bg-secondary hover:text-secondary-foreground",
+        )}
+      >
+        <Icon className="size-4 shrink-0" aria-hidden="true" />
+        <span className="min-w-0 flex-1 truncate text-left">{item.label}</span>
+        <ChevronDown
+          className={cn(
+            "size-4 shrink-0 text-muted-foreground transition-transform",
+            open && "rotate-180",
+          )}
+          aria-hidden="true"
+        />
+      </button>
+
+      {open ? (
+        <div className="relative ml-4 space-y-0.5 border-l border-sidebar-border/70 py-0.5 pl-3">
+          {children.map((child) => {
+            const childActive = routePath(child.to) === activeChildPath;
+
+            return (
+              <TransitionLink
+                key={child.to}
+                to={child.to}
+                onClick={onNavigate}
+                className={subLinkClass(childActive)}
+              >
+                <span className="truncate">{child.label}</span>
+              </TransitionLink>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 export function ShellSidebarContent({
   config,
@@ -71,46 +209,25 @@ export function ShellSidebarContent({
       </TransitionLink>
 
       <nav className="min-h-0 flex-1 space-y-1.5 overflow-y-auto p-4">
-        {config.nav.map((item) => {
-          const Icon = shellNavIcons[item.icon];
-          const isActive = routePath(item.to) === activeNavPath;
-          const navLinkEl = (
-            <TransitionLink
+        {config.nav.map((item) =>
+          item.children && item.children.length > 0 ? (
+            <ShellNavGroup
               key={item.to}
-              to={item.to}
-              onClick={onNavigate}
-              className={[
-                "flex items-center rounded-2xl text-sm font-medium transition gap-3",
-                collapsed ? "justify-center px-4 py-4" : "px-6 py-3",
-                isActive
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-sidebar-foreground/75 hover:bg-secondary hover:text-secondary-foreground",
-              ].join(" ")}
-            >
-              <Icon className="size-4" aria-hidden="true" />
-              {collapsed ? (
-                <span className="sr-only">{item.label}</span>
-              ) : (
-                <span>{item.label}</span>
-              )}
-            </TransitionLink>
-          );
-
-          if (collapsed) {
-            return (
-              <Tooltip key={item.to}>
-                <TooltipTrigger asChild>
-                  <div className="w-full">{navLinkEl}</div>
-                </TooltipTrigger>
-                <TooltipContent side="right" sideOffset={10}>
-                  <p className="font-medium">{item.label}</p>
-                </TooltipContent>
-              </Tooltip>
-            );
-          }
-
-          return navLinkEl;
-        })}
+              item={item}
+              collapsed={collapsed}
+              activePath={activePath}
+              onNavigate={onNavigate}
+            />
+          ) : (
+            <ShellNavLink
+              key={item.to}
+              item={item}
+              isActive={routePath(item.to) === activeNavPath}
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
+          ),
+        )}
       </nav>
 
       {!collapsed && config.quickAction ? (

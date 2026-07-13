@@ -33,6 +33,7 @@ Run only migrations you have **not** applied yet, in order:
 | `019_past_posts_reposts.sql` | Adds `reposts` column to `past_posts_metrics` |
 | `020_past_posts_thumbnail.sql` | Adds `post_thumbnail` column to `past_posts_metrics` |
 | `021_instagram_daily_followers.sql` | Daily follower gain per Instagram profile (backfill + cron) |
+| `027_growth_account_client_link.sql` | Adds nullable `client_id` FK to `growth_organic_accounts` + `growth_ad_accounts` so the client portal can show a client only their own connected accounts |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

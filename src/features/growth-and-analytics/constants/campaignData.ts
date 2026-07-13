@@ -5,6 +5,7 @@ import type { AdAccount, CampaignMetricRow } from "../types/types";
 export const DUMMY_AD_ACCOUNTS: AdAccount[] = [
   {
     id: "ad-acc-carotene",
+    clientId: null,
     clientName: "Carotene",
     accountName: "Carotene Ads",
     adAccountId: "act_100200300",
@@ -12,6 +13,7 @@ export const DUMMY_AD_ACCOUNTS: AdAccount[] = [
   },
   {
     id: "ad-acc-veda",
+    clientId: null,
     clientName: "Veda Hospitals",
     accountName: "Veda Performance",
     adAccountId: "act_400500600",

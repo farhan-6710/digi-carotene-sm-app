@@ -21,16 +21,30 @@ export function ShellNavSearch({
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
 
+  const entries = useMemo(
+    () =>
+      nav.flatMap((item) =>
+        item.children && item.children.length > 0
+          ? item.children.map((child) => ({
+              label: child.label,
+              to: child.to,
+              icon: item.icon,
+            }))
+          : [{ label: item.label, to: item.to, icon: item.icon }],
+      ),
+    [nav],
+  );
+
   const filteredNav = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     if (!normalized) {
-      return nav;
+      return entries;
     }
 
-    return nav.filter((item) =>
+    return entries.filter((item) =>
       item.label.toLowerCase().includes(normalized),
     );
-  }, [nav, query]);
+  }, [entries, query]);
 
   const showResults = open && query.trim().length > 0;
 

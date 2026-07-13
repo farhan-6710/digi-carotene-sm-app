@@ -102,12 +102,12 @@ export const DB = {
   GROWTH_ORGANIC_ACCOUNTS: {
     TABLE: "growth_organic_accounts",
     SELECT:
-      "id, platform, account_name, account_id, followers, profile_picture, is_active, created_at",
+      "id, platform, account_name, account_id, followers, profile_picture, is_active, client_id, created_at",
   },
   GROWTH_AD_ACCOUNTS: {
     TABLE: "growth_ad_accounts",
     SELECT:
-      "id, client_name, account_name, ad_account_id, currency_code, created_at",
+      "id, client_id, client_name, account_name, ad_account_id, currency_code, created_at",
   },
   INSTAGRAM_PROFILES: {
     TABLE: "instagram_profiles",
