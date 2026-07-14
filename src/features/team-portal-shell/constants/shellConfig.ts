@@ -6,6 +6,7 @@ export const teamShellConfig: ShellSidebarConfig = {
   homeLink: "/",
   initials: appMeta.userInitials,
   brandName: appMeta.name,
+  brandSubtitle: appMeta.portalLabel,
   nav: primaryNav,
   searchPlaceholder: "Search team portal pages...",
   quickAction: {

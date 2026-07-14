@@ -73,6 +73,20 @@ Posts month lists filter by the same scoped project ids. Flip a role to `"all"` 
 
 Services: `fetchProjectsScoped`, `resolveScopedProjectIds` in `projectsService.ts`.
 
+### Midnight post digest email
+
+Config matrix (TypeScript): `src/shared/constants/postDigestEmail.ts` (`POST_DIGEST_SECTIONS_BY_ROLE`).
+
+Cron runner (PHP + Resend, same CLI/HTTP pattern as Growth): [`scripts/post-digest/php/README.md`](../../../scripts/post-digest/php/README.md).
+
+| Role | Sections (one email each, midnight `Asia/Kolkata`) |
+|------|-----------------------------------------------------|
+| `executive` | Today’s posts on projects where they have an **active** `project_team_members` row |
+| `manager` | Today’s posts on projects they **manage** (`manager_id`) + yesterday’s still **`Not posted`** on those projects |
+| `admin` | Yesterday’s **`Not posted`** across **all** projects (single ordered list) |
+
+Lists ordered by `to_be_posted_date`, then `to_be_posted_time`. Empty digests are not emailed.
+
 ---
 
 ## DTOs

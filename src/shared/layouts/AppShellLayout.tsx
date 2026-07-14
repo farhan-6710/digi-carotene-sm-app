@@ -39,7 +39,7 @@ export function AppShellLayout({
         <div className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden">
           <motion.header
             {...SHELL_HEADER_MOTION}
-            className="flex shrink-0 items-center gap-4 border-b border-border/60 bg-card px-4 py-4 sm:px-6"
+            className="flex h-16 shrink-0 items-center gap-4 border-b border-border/60 bg-card px-4 sm:px-6"
           >
             <Button
               type="button"

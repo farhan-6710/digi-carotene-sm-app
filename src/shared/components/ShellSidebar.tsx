@@ -177,7 +177,7 @@ export function ShellSidebarContent({
       <TransitionLink
         to={config.homeLink}
         onClick={onNavigate}
-        className="flex items-center justify-center border-b border-sidebar-border/80 p-4"
+        className="flex h-16 shrink-0 items-center justify-center border-b border-sidebar-border/80 px-4"
       >
         <div
           className={
@@ -186,11 +186,11 @@ export function ShellSidebarContent({
               : "flex items-center justify-center gap-3"
           }
         >
-          <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-lg font-bold text-primary-foreground shadow-sm">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-lg font-bold text-primary-foreground shadow-sm">
             {config.initials}
           </div>
           <div className={collapsed ? "sr-only" : "min-w-0 text-left"}>
-            <div className="text-2xl font-bold tracking-tight truncate">
+            <div className="truncate text-xl font-bold leading-none tracking-tight">
               <span className="text-primary">{nameParts[0]}</span>
               {nameParts.length > 1 ? (
                 <span className="text-accent">
@@ -200,7 +200,7 @@ export function ShellSidebarContent({
               ) : null}
             </div>
             {config.brandSubtitle ? (
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <p className="mt-0.5 truncate text-[10px] font-semibold uppercase leading-none tracking-wider text-muted-foreground">
                 {config.brandSubtitle}
               </p>
             ) : null}

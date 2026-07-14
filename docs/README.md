@@ -24,6 +24,7 @@ Reference docs for the Digi Carotene service management app: database schema, DT
 | Posts | [team-portal/posts-management/posts.md](./team-portal/posts-management/posts.md) |
 | Post approvals | [team-portal/post-approvals/post-approval-requests.md](./team-portal/post-approvals/post-approval-requests.md) |
 | Growth & Analytics | [growth-and-analytics/README.md](./growth-and-analytics/README.md) |
+| Midnight post digest (PHP + Resend) | [scripts/post-digest/php/README.md](../scripts/post-digest/php/README.md) |
 
 ## Domain hierarchy
 

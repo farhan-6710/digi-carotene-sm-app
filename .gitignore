@@ -34,3 +34,4 @@ dist-ssr
 
 # GoDaddy PHP cron — do not commit after adding service role key
 scripts/growth-and-analytics/php/config.php
+scripts/post-digest/php/config.php

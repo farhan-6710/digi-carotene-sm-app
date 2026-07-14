@@ -38,5 +38,6 @@ export const approvalsNavItem: NavItem = {
 
 export const appMeta = {
   name: "Digi Carotene",
+  portalLabel: "Team Portal",
   userInitials: "D",
 } as const;

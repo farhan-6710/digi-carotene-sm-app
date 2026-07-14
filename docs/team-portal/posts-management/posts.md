@@ -208,5 +208,5 @@ Frontend groups by `to_be_posted_date` into calendar cells.
 
 ## Related docs
 
-- [Projects](../projects-management/projects.md)
+- [Projects](../projects-management/projects.md) — includes midnight post digest section matrix
 - [Database setup](../../database.md)
