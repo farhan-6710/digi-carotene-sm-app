@@ -1,9 +1,10 @@
 import { FolderKanban } from "lucide-react";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
-import { fetchProjects } from "@/services/projectsService";
-import { getProjectDisplayLabel } from "@/features/projects-management/utils/projectFormUtils";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import type { ProjectSelectProps } from "@/features/posts-management/types/components";
+import { getProjectDisplayLabel } from "@/features/projects-management/utils/projectFormUtils";
+import { fetchProjectsScoped } from "@/services/projectsService";
 import { useLazyEntityList } from "@/shared/hooks/useLazyEntityList";
 import { mergeOptionsByValue } from "@/shared/utils/mergeOptionsByValue";
 import { ComboBox } from "@/shared/ui/ComboBox";
@@ -16,8 +17,14 @@ export function ProjectSelect({
   preload = false,
   selectedLabel,
 }: ProjectSelectProps) {
+  const { teamRole, teamMemberId } = useAuth();
+  const loadProjects = useCallback(
+    () => fetchProjectsScoped(teamRole, teamMemberId),
+    [teamRole, teamMemberId],
+  );
+
   const { items: projects, isLoading, handleOpenChange } = useLazyEntityList(
-    fetchProjects,
+    loadProjects,
     { preload },
   );
 

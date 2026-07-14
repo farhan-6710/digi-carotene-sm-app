@@ -54,6 +54,25 @@ Additional team members (manager is on `projects.manager_id`, not duplicated her
 
 Both tables: authenticated users full CRUD.
 
+### Role-based list scope (app layer)
+
+Which projects appear in Projects Management / Posts Management / project pickers is controlled in `src/shared/utils/rbac.ts`:
+
+```ts
+PROJECT_DATA_SCOPE_BY_ROLE = {
+  admin: "all",
+  manager: "assigned",
+  executive: "assigned",
+}
+```
+
+- **`all`** — every project (admin today).
+- **`assigned`** — projects where the user is `manager_id` **or** an active row in `project_team_members`.
+
+Posts month lists filter by the same scoped project ids. Flip a role to `"all"` in that map to restore unfiltered lists in one place. Analytics / client detail still use unscoped fetchers where appropriate.
+
+Services: `fetchProjectsScoped`, `resolveScopedProjectIds` in `projectsService.ts`.
+
 ---
 
 ## DTOs

@@ -4,6 +4,8 @@ import type {
   ProjectListItem,
   ProjectSocials,
 } from "@/features/projects-management/types/types";
+import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
+import { seesAllProjects } from "@/shared/utils/rbac";
 
 export type CreateProjectInput = {
   projectName: string;
@@ -92,6 +94,91 @@ export async function fetchProjects(): Promise<ProjectListItem[]> {
   const teamMap = await fetchActiveMemberIdsByProject(rows.map((row) => row.id));
 
   return rows.map((row) => normalizeProjectRow(row, teamMap.get(row.id) ?? []));
+}
+
+/** Project ids where the member is manager or an active team assignee. */
+export async function fetchAssignedProjectIds(
+  teamMemberId: string,
+): Promise<string[]> {
+  const [managedResult, assignedResult] = await Promise.all([
+    supabase
+      .from(DB.PROJECTS.TABLE)
+      .select("id")
+      .eq("manager_id", teamMemberId),
+    supabase
+      .from(DB.PROJECT_TEAM_MEMBERS.TABLE)
+      .select("project_id")
+      .eq("member_id", teamMemberId)
+      .is("ended_at", null),
+  ]);
+
+  if (managedResult.error) {
+    throw managedResult.error;
+  }
+  if (assignedResult.error) {
+    throw assignedResult.error;
+  }
+
+  const ids = new Set<string>();
+  for (const row of managedResult.data ?? []) {
+    ids.add(row.id);
+  }
+  for (const row of assignedResult.data ?? []) {
+    ids.add(row.project_id);
+  }
+  return [...ids];
+}
+
+async function fetchProjectsByIds(
+  projectIds: string[],
+): Promise<ProjectListItem[]> {
+  if (projectIds.length === 0) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from(DB.PROJECTS.TABLE)
+    .select(DB.PROJECTS.SELECT)
+    .in("id", projectIds)
+    .order("project_name", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  const rows = (data ?? []) as unknown as ProjectRow[];
+  const teamMap = await fetchActiveMemberIdsByProject(rows.map((row) => row.id));
+
+  return rows.map((row) => normalizeProjectRow(row, teamMap.get(row.id) ?? []));
+}
+
+/**
+ * Projects visible to the current team user.
+ * Scope comes from `PROJECT_DATA_SCOPE_BY_ROLE` in rbac.ts (`all` | `assigned`).
+ * Returns `null` project-id filter for "all"; empty list means no assignments.
+ */
+export async function resolveScopedProjectIds(
+  teamRole: TeamMemberRole | null,
+  teamMemberId: string | null,
+): Promise<string[] | null> {
+  if (seesAllProjects(teamRole)) {
+    return null;
+  }
+  if (!teamMemberId) {
+    return [];
+  }
+  return fetchAssignedProjectIds(teamMemberId);
+}
+
+export async function fetchProjectsScoped(
+  teamRole: TeamMemberRole | null,
+  teamMemberId: string | null,
+): Promise<ProjectListItem[]> {
+  const scopedIds = await resolveScopedProjectIds(teamRole, teamMemberId);
+  if (scopedIds === null) {
+    return fetchProjects();
+  }
+  return fetchProjectsByIds(scopedIds);
 }
 
 export async function fetchProjectsByClientId(

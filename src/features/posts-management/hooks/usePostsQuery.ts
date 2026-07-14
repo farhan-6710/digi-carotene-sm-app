@@ -1,15 +1,20 @@
 import { useCallback } from "react";
 
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import type { Slot } from "@/features/posts-management/types/types";
-import { fetchPostsForMonth } from "@/services/postsService";
 import { postsToSlots } from "@/features/posts-management/utils/postsSlots";
+import { fetchPostsForMonth } from "@/services/postsService";
+import { resolveScopedProjectIds } from "@/services/projectsService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
 export function usePostsQuery(year: number, month: number) {
+  const { teamRole, teamMemberId } = useAuth();
+
   const load = useCallback(async () => {
-    const posts = await fetchPostsForMonth(year, month);
+    const projectIds = await resolveScopedProjectIds(teamRole, teamMemberId);
+    const posts = await fetchPostsForMonth(year, month, projectIds);
     return postsToSlots(posts, year, month);
-  }, [year, month]);
+  }, [year, month, teamRole, teamMemberId]);
 
   const { data: slots, isLoading, error, setError, reload } = useFetch(
     load,

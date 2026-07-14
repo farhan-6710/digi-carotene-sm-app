@@ -25,3 +25,30 @@ export function can(role: TeamMemberRole | null, permission: Permission): boolea
   const resource = permission.split(".")[0] as RbacResource;
   return ROLE_RESOURCES[role].includes(resource);
 }
+
+// ─── Project / post list scoping ─────────────────────────────────────────────
+// Controls which projects (and thus which posts) a role sees in team portal
+// lists. Flip a role to "all" here to restore unfiltered lists — one-line change.
+
+/** `all` = every project; `assigned` = manager_id OR active project_team_members. */
+export type ProjectDataScope = "all" | "assigned";
+
+export const PROJECT_DATA_SCOPE_BY_ROLE: Record<TeamMemberRole, ProjectDataScope> =
+  {
+    admin: "all",
+    manager: "assigned",
+    executive: "assigned",
+  };
+
+export function projectDataScopeForRole(
+  role: TeamMemberRole | null,
+): ProjectDataScope {
+  if (!role) {
+    return "assigned";
+  }
+  return PROJECT_DATA_SCOPE_BY_ROLE[role];
+}
+
+export function seesAllProjects(role: TeamMemberRole | null): boolean {
+  return projectDataScopeForRole(role) === "all";
+}

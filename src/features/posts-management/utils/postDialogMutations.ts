@@ -1,4 +1,4 @@
-import { fetchProjects } from "@/services/projectsService";
+import { fetchProjectsScoped } from "@/services/projectsService";
 import { findRegisteredProject } from "@/features/posts-management/utils/projectValidationUtils";
 import {
   postFormToPayload,
@@ -43,7 +43,7 @@ export async function savePostMutation({
 
   setError(null);
 
-  const projects = await fetchProjects();
+  const projects = await fetchProjectsScoped(teamRole, teamMemberId);
 
   if (projects.length === 0) {
     showToast("error", "Create a project before adding posts.");

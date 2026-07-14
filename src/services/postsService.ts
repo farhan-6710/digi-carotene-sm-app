@@ -94,16 +94,28 @@ export async function fetchAllPosts(): Promise<Post[]> {
 export async function fetchPostsForMonth(
   year: number,
   month: number,
+  /** When set, only posts on these projects. Empty array → no posts. Omit/null → all. */
+  projectIds?: string[] | null,
 ): Promise<Post[]> {
+  if (projectIds && projectIds.length === 0) {
+    return [];
+  }
+
   const monthStart = startOfMonth(new Date(year, month - 1, 1));
   const start = format(monthStart, "yyyy-MM-dd");
   const end = format(lastDayOfMonth(monthStart), "yyyy-MM-dd");
 
-  const { data, error } = await supabase
+  let query = supabase
     .from(DB.POSTS.TABLE)
     .select(DB.POSTS.SELECT)
     .gte("to_be_posted_date", start)
-    .lte("to_be_posted_date", end)
+    .lte("to_be_posted_date", end);
+
+  if (projectIds) {
+    query = query.in("project_id", projectIds);
+  }
+
+  const { data, error } = await query
     .order("to_be_posted_date", { ascending: true })
     .order("to_be_posted_time", { ascending: true });
 

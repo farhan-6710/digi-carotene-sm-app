@@ -180,7 +180,7 @@ type PostFormValues = {
 
 ## Month loading
 
-When calendar shows May 2026:
+When calendar shows May 2026, `usePostsQuery` loads via `fetchPostsForMonth` and applies the same **project data scope** as Projects Management (`PROJECT_DATA_SCOPE_BY_ROLE` in `rbac.ts`). Managers/executives only get posts whose `project_id` is in their assigned/managed projects; admins get all posts in the month.
 
 ```ts
 await supabase
@@ -188,6 +188,7 @@ await supabase
   .select("*, projects(project_name, clients(client_name))")
   .gte("to_be_posted_date", "2026-05-01")
   .lte("to_be_posted_date", "2026-05-31")
+  // managers/executives: .in("project_id", assignedIds)
   .order("to_be_posted_date")
   .order("to_be_posted_time");
 ```
