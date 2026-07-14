@@ -6,6 +6,7 @@ import { AccountHeader } from "@/shared/components/account/AccountHeader";
 import { AccountDetailsCard } from "@/shared/components/account/AccountDetailsCard";
 import type { AccountDetailRow } from "@/shared/components/account/types";
 import { AccountPanelCard } from "@/shared/components/account/AccountPanelCard";
+import { AccountPasswordCard } from "@/shared/components/account/AccountPasswordCard";
 import { AccountStatsGrid } from "@/shared/components/account/AccountStatsGrid";
 import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import { PageShell } from "@/shared/components/PageShell";
@@ -73,6 +74,7 @@ export function ClientAccountPage() {
                 </p>
               )}
             </AccountPanelCard>
+            <AccountPasswordCard user={user} />
           </>
         )}
       </div>

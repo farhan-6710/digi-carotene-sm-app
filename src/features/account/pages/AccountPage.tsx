@@ -3,6 +3,7 @@ import { TeamAccountDetailsCard } from "@/features/account/components/TeamAccoun
 import { teamAccount } from "@/features/account/constants/teamAccount";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { AccountHeader } from "@/shared/components/account/AccountHeader";
+import { AccountPasswordCard } from "@/shared/components/account/AccountPasswordCard";
 import { AccountStatsGrid } from "@/shared/components/account/AccountStatsGrid";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
@@ -16,7 +17,6 @@ export function AccountPage() {
         heading="Account"
         description="Your Digi Carotene team account, sign-in details, and agency performance snapshot."
       />
-
 
       <AccountHeader
         user={user}
@@ -37,6 +37,7 @@ export function AccountPage() {
           credentials={teamAccount.credentials}
           specializations={teamAccount.specializations}
         />
+        <AccountPasswordCard user={user} />
       </div>
     </PageContent>
   );

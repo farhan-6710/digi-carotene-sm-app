@@ -18,6 +18,9 @@ export type AuthContextValue = {
   isPending: boolean;
   homePath: string;
   loading: boolean;
+  /** True after the user opens a password-reset email link. */
+  isPasswordRecovery: boolean;
+  clearPasswordRecovery: () => void;
   refreshProfile: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<AuthError | null>;
   signUpWithEmail: (

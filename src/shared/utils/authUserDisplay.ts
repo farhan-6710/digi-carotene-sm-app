@@ -63,3 +63,27 @@ export function getUserAuthProvider(user: User | null): string {
 
   return provider.charAt(0).toUpperCase() + provider.slice(1);
 }
+
+/** True when the user can sign in with email + password (signup or Account set). */
+export function userHasPasswordLogin(user: User | null): boolean {
+  if (!user) {
+    return false;
+  }
+
+  if (user.user_metadata?.password_set === true) {
+    return true;
+  }
+
+  return (user.identities ?? []).some((identity) => identity.provider === "email");
+}
+
+/** True when password can be removed without locking the user out of the app. */
+export function userCanRemovePassword(user: User | null): boolean {
+  if (!user || !userHasPasswordLogin(user)) {
+    return false;
+  }
+
+  return (user.identities ?? []).some(
+    (identity) => identity.provider !== "email",
+  );
+}

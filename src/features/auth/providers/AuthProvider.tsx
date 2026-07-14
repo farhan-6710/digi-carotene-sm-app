@@ -30,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [teamRole, setTeamRole] = useState<TeamMemberRole | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
 
   // Load the profile for a user, plus their team role when they are team staff.
   const loadProfile = useCallback(async (currentUser: User) => {
@@ -49,6 +50,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user, loadProfile]);
 
+  const clearPasswordRecovery = useCallback(() => {
+    setIsPasswordRecovery(false);
+  }, []);
+
   useEffect(() => {
     let active = true;
 
@@ -64,8 +69,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    // 2. React to later sign in / sign out.
-    const unsubscribe = onAuthChange((nextUser) => {
+    // 2. React to later sign in / sign out / password recovery.
+    const unsubscribe = onAuthChange((nextUser, event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setIsPasswordRecovery(true);
+      }
+      if (event === "SIGNED_OUT") {
+        setIsPasswordRecovery(false);
+      }
+
       setUser(nextUser);
       if (nextUser) {
         void loadProfile(nextUser);
@@ -86,6 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setProfile(null);
     setTeamRole(null);
+    setIsPasswordRecovery(false);
   }, []);
 
   const value = useMemo<AuthContextValue>(() => {
@@ -101,6 +114,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isPending: isPendingAccess(profile),
       homePath: getHomePathForProfile(profile),
       loading,
+      isPasswordRecovery,
+      clearPasswordRecovery,
       refreshProfile,
       signInWithEmail,
       signUpWithEmail,
@@ -110,7 +125,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithOAuthProvider(provider, options?.isSignup ?? false),
       signOut: handleSignOut,
     };
-  }, [user, profile, teamRole, loading, refreshProfile, handleSignOut]);
+  }, [
+    user,
+    profile,
+    teamRole,
+    loading,
+    isPasswordRecovery,
+    clearPasswordRecovery,
+    refreshProfile,
+    handleSignOut,
+  ]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -65,6 +65,29 @@ Add your site URL and redirect URL (`https://<project-ref>.supabase.co/auth/v1/c
 
 **Supabase email:** disable **Confirm email** under Authentication → Providers → Email so `signUp` returns a session without a verification mail.
 
+### Set / change password (Account page)
+
+OAuth and email users can set an email/password login from **Account** (team + client portals).
+
+- UI: `AccountPasswordCard` + `AccountPasswordDialog` (`src/shared/components/account/`)
+- Service: `updatePassword` in `authService.ts` → `supabase.auth.updateUser({ password, data: { password_set: true } })`
+- Hash lives in **`auth.users`** (Supabase Auth). **Never** store passwords on `profiles`.
+- Status: `userHasPasswordLogin(user)` — true if `user_metadata.password_set` or an `email` identity exists.
+- Saved passwords cannot be revealed later (Auth hashes only). Use **Set a password** / **Change password** to open the modal; the eye toggle is only for typing in the modal.
+- **Remove password** (modal, with `ConfirmationModal`): only when the user still has another sign-in method (e.g. Google). Calls `unlinkIdentity` on the email identity + clears `password_set`. Email-only accounts cannot remove their only login method.
+
+### Reset password (email link)
+
+Forgot-password flow on `/auth`:
+
+1. Login → **Forgot password?** → `/auth?form-type=forgot-password`
+2. `requestPasswordReset(email)` → `supabase.auth.resetPasswordForEmail` with redirect `/auth?form-type=reset-password`
+3. User opens email link → Supabase fires `PASSWORD_RECOVERY` → `AuthProvider.isPasswordRecovery`
+4. Auth page shows **Choose a new password** → same `updatePassword` helper
+
+**Supabase dashboard:** Authentication → URL Configuration — add your site URL and redirect allow list entry for  
+`https://<your-domain>/auth?form-type=reset-password` (and localhost in dev).
+
 ### Signup trigger
 
 On new `auth.users` insert → auto-insert `profiles` row, then `link_profile_by_email`.

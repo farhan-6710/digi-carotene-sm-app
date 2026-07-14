@@ -34,3 +34,15 @@ export type AccountPanelCardProps = {
 export type AccountStatsGridProps = {
   stats: AccountStat[];
 };
+
+export type AccountPasswordCardProps = {
+  user: User | null;
+};
+
+export type AccountPasswordDialogProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  email: string;
+  isChange: boolean;
+  canRemove: boolean;
+};

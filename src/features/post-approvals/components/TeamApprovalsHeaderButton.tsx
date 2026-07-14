@@ -26,7 +26,7 @@ export function TeamApprovalsHeaderButton() {
         {pendingCount > 0 ? (
           <span
             className={cn(
-              "absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full",
+              "absolute -right-1 -top-2 flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full leading-none",
               "bg-primary px-1 text-[10px] font-semibold text-primary-foreground",
             )}
           >
