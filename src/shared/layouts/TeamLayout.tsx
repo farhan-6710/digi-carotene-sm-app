@@ -2,7 +2,10 @@ import { useLocation } from "react-router";
 
 import { GrowthAccountHeaderMenu } from "@/features/growth-and-analytics/components/GrowthAccountHeaderMenu";
 import { GrowthAdAccountHeaderMenu } from "@/features/growth-and-analytics/components/GrowthAdAccountHeaderMenu";
-import { growthBasePath } from "@/features/growth-and-analytics/constants/navigation";
+import {
+  growthBasePath,
+  growthHeaderAccounts,
+} from "@/features/growth-and-analytics/constants/navigation";
 import { GrowthSelectedAccountProvider } from "@/features/growth-and-analytics/providers/GrowthSelectedAccountProvider";
 import { GrowthSelectedAdAccountProvider } from "@/features/growth-and-analytics/providers/GrowthSelectedAdAccountProvider";
 import { TeamApprovalsHeaderButton } from "@/features/post-approvals/components/TeamApprovalsHeaderButton";
@@ -14,17 +17,18 @@ function TeamLayoutShell() {
   const sidebarConfig = useTeamShellConfig();
   const { pathname } = useLocation();
   const isGrowthRoute = pathname.startsWith(growthBasePath);
-  const isCampaignsRoute = pathname.startsWith(`${growthBasePath}/campaigns`);
+  const accounts = growthHeaderAccounts(pathname);
 
-  const headerActions = isGrowthRoute ? (
-    isCampaignsRoute ? (
-      <GrowthAdAccountHeaderMenu />
-    ) : (
-      <GrowthAccountHeaderMenu />
-    )
-  ) : (
-    <TeamApprovalsHeaderButton />
-  );
+  let headerActions = <TeamApprovalsHeaderButton />;
+  if (isGrowthRoute) {
+    if (accounts === "ad") {
+      headerActions = <GrowthAdAccountHeaderMenu />;
+    } else if (accounts === "organic") {
+      headerActions = <GrowthAccountHeaderMenu />;
+    } else {
+      headerActions = <></>;
+    }
+  }
 
   return (
     <AppShellLayout

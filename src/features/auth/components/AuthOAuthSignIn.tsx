@@ -7,6 +7,7 @@ import type { AuthOAuthSignInProps } from "@/features/auth/types/components";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import type { AuthOAuthProvider } from "@/services/authService";
 import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
+import { showToast } from "@/shared/utils/showToast";
 import { Button } from "@/shared/ui/button";
 
 // Facebook is a placeholder for now — the button renders but does nothing.
@@ -69,11 +70,19 @@ export function AuthOAuthSignIn({
               type="button"
               variant="outline"
               className={authFormStyles.oauthButton}
-              onClick={
-                option.enabled
-                  ? () => void handleOAuthSignIn(option.provider)
-                  : undefined
-              }
+              onClick={() => {
+                if (option.enabled) {
+                  void handleOAuthSignIn(option.provider);
+                  return;
+                }
+
+                if (option.provider === "facebook") {
+                  showToast(
+                    "info",
+                    "Facebook sign-in is coming soon. Use Google or email for now.",
+                  );
+                }
+              }}
               disabled={disabled || loadingProvider != null}
             >
               {isLoading ? <LoadingSpinner size="sm" /> : option.icon}

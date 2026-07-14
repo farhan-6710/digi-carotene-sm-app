@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 
+import { GrowthReportsAccountComboBox } from "../components/GrowthReportsAccountComboBox";
 import { GrowthReportTabs } from "../components/GrowthReportTabs";
 import { ReportsTable } from "../components/tables/ReportsTable";
 import { useGrowthReports } from "../hooks/useGrowthReports";
@@ -23,6 +24,7 @@ export function GrowthReportsPage() {
       <PageHeader
         heading="Reports"
         description="Browse generated Instagram, Facebook, campaign, and content reports."
+        actions={<GrowthReportsAccountComboBox />}
       />
 
       {error ? <ErrorBanner message={error} /> : null}
