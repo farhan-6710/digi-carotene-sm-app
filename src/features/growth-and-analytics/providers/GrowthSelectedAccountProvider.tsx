@@ -5,7 +5,10 @@ import {
 } from "react";
 import { useSearchParams } from "react-router";
 
-import { fetchOrganicAccounts } from "@/services/growthAccountsService";
+import {
+  fetchOrganicAccounts,
+  fetchOrganicAccountsByClientId,
+} from "@/services/growthAccountsService";
 import { fetchInstagramProfiles } from "@/services/instagramProfilesService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
@@ -22,12 +25,21 @@ const NO_PROFILES: InstagramProfile[] = [];
 
 export function GrowthSelectedAccountProvider({
   children,
+  clientId = null,
 }: {
   children: ReactNode;
+  /** When set, only organic accounts linked to this client (client portal). */
+  clientId?: string | null;
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const loadAccounts = useCallback(() => fetchOrganicAccounts(), []);
+  const loadAccounts = useCallback(() => {
+    if (clientId) {
+      return fetchOrganicAccountsByClientId(clientId);
+    }
+    return fetchOrganicAccounts();
+  }, [clientId]);
+
   const {
     data: accounts,
     isLoading: isAccountsLoading,

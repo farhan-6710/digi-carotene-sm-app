@@ -1,9 +1,9 @@
 import { Link } from "react-router";
 
-import { buildGrowthPostDetailPath } from "../../constants/routes";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { cn } from "@/shared/lib/utils";
 
+import { useGrowthPaths } from "../../hooks/useGrowthPaths";
 import { MobileLabel } from "./tableBits";
 import type { ContentPostsTableProps } from "../../types/components";
 import { formatCompact, formatPercent } from "../../utils/formatters";
@@ -11,6 +11,8 @@ import { formatCompact, formatPercent } from "../../utils/formatters";
 const GRID_CLASS = "grid-cols-[2.4fr_0.75fr_0.7fr_0.7fr_0.7fr_0.8fr]";
 
 export function ContentPostsTable({ rows }: ContentPostsTableProps) {
+  const { buildPostDetailPath } = useGrowthPaths();
+
   return (
     <DirectoryTable
       title="Post Performance"
@@ -52,7 +54,7 @@ export function ContentPostsTable({ rows }: ContentPostsTableProps) {
                 />
               )}
               <Link
-                to={buildGrowthPostDetailPath(row.id)}
+                to={buildPostDetailPath(row.id)}
                 className="line-clamp-1 min-w-0 text-primary hover:underline"
               >
                 {row.caption}

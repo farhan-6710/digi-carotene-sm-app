@@ -1,4 +1,5 @@
 import type { ShellNavIconKey } from "@/shared/constants/shellNavIcons";
+import { clientGrowthNav } from "@/features/growth-and-analytics/constants/navigation";
 
 export type ClientNavIconKey = Extract<
   ShellNavIconKey,
@@ -9,6 +10,7 @@ export type ClientNavItem = {
   label: string;
   to: string;
   icon: ClientNavIconKey;
+  children?: { label: string; to: string }[];
 };
 
 export const clientNav: ClientNavItem[] = [
@@ -18,6 +20,7 @@ export const clientNav: ClientNavItem[] = [
     label: "Growth & Analytics",
     to: "/client-portal/growth-and-analytics",
     icon: "growth",
+    children: clientGrowthNav.map(({ label, to }) => ({ label, to })),
   },
   { label: "Account", to: "/client-portal/account", icon: "account" },
 ];

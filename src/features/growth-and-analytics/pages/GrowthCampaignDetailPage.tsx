@@ -4,13 +4,10 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { GrowthCampaignProfileCard } from "../components/GrowthCampaignProfileCard";
 import type { DemographicBreakdown } from "../types/types";
-import {
-  buildGrowthCampaignDetailPath,
-  GROWTH_CAMPAIGN_ANALYTICS_PATH,
-} from "../constants/routes";
 import { GROWTH_AD_ACCOUNT_PARAM } from "../constants/growthUrlParams";
 import { useGrowthCampaignDetailQuery } from "../hooks/useGrowthCampaignDetailQuery";
 import { useGrowthCampaignDemographicBreakdown } from "../hooks/useGrowthCampaignDemographicBreakdown";
+import { useGrowthPaths } from "../hooks/useGrowthPaths";
 import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
 import { DateFilters } from "@/shared/components/DateFilters";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
@@ -20,9 +17,10 @@ import { PageHeader } from "@/shared/components/PageHeader";
 import { Button } from "@/shared/ui/button";
 
 function GrowthCampaignDetailBackButton({ adAccountId }: { adAccountId: string }) {
+  const { campaignAnalyticsPath } = useGrowthPaths();
   const backPath = adAccountId
-    ? `${GROWTH_CAMPAIGN_ANALYTICS_PATH}?${GROWTH_AD_ACCOUNT_PARAM}=${adAccountId}`
-    : GROWTH_CAMPAIGN_ANALYTICS_PATH;
+    ? `${campaignAnalyticsPath}?${GROWTH_AD_ACCOUNT_PARAM}=${adAccountId}`
+    : campaignAnalyticsPath;
 
   return (
     <Button asChild variant="outline" className="rounded-full">
@@ -43,13 +41,13 @@ function GrowthCampaignPager({
   nextCampaignId: string | null;
   adAccountId: string;
 }) {
+  const { buildCampaignDetailPath } = useGrowthPaths();
+
   return (
     <div className="flex items-center gap-2">
       {previousCampaignId ? (
         <Button asChild variant="outline" className="rounded-full">
-          <Link
-            to={buildGrowthCampaignDetailPath(previousCampaignId, adAccountId)}
-          >
+          <Link to={buildCampaignDetailPath(previousCampaignId, adAccountId)}>
             <ArrowLeft className="mr-2 size-4" />
             Prev campaign
           </Link>
@@ -62,7 +60,7 @@ function GrowthCampaignPager({
       )}
       {nextCampaignId ? (
         <Button asChild variant="outline" className="rounded-full">
-          <Link to={buildGrowthCampaignDetailPath(nextCampaignId, adAccountId)}>
+          <Link to={buildCampaignDetailPath(nextCampaignId, adAccountId)}>
             Next campaign
             <ArrowRight className="ml-2 size-4" />
           </Link>

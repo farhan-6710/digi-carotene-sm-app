@@ -2,10 +2,7 @@ import { Link, useParams } from "react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { GrowthPostProfileCard } from "../components/GrowthPostProfileCard";
-import {
-  buildGrowthPostDetailPath,
-  GROWTH_CONTENT_PERFORMANCE_PATH,
-} from "../constants/routes";
+import { useGrowthPaths } from "../hooks/useGrowthPaths";
 import { useGrowthPostDetailQuery } from "../hooks/useGrowthPostDetailQuery";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
@@ -14,9 +11,11 @@ import { PageHeader } from "@/shared/components/PageHeader";
 import { Button } from "@/shared/ui/button";
 
 function GrowthPostDetailBackButton() {
+  const { contentPerformancePath } = useGrowthPaths();
+
   return (
     <Button asChild variant="outline" className="rounded-full">
-      <Link to={GROWTH_CONTENT_PERFORMANCE_PATH}>
+      <Link to={contentPerformancePath}>
         <ArrowLeft className="mr-2 size-4" />
         Back to content performance
       </Link>
@@ -31,11 +30,13 @@ function GrowthPostPager({
   previousPostId: string | null;
   nextPostId: string | null;
 }) {
+  const { buildPostDetailPath } = useGrowthPaths();
+
   return (
     <div className="flex items-center gap-2">
       {previousPostId ? (
         <Button asChild variant="outline" className="rounded-full">
-          <Link to={buildGrowthPostDetailPath(previousPostId)}>
+          <Link to={buildPostDetailPath(previousPostId)}>
             <ArrowLeft className="mr-2 size-4" />
             Prev post
           </Link>
@@ -48,7 +49,7 @@ function GrowthPostPager({
       )}
       {nextPostId ? (
         <Button asChild variant="outline" className="rounded-full">
-          <Link to={buildGrowthPostDetailPath(nextPostId)}>
+          <Link to={buildPostDetailPath(nextPostId)}>
             Next post
             <ArrowRight className="ml-2 size-4" />
           </Link>

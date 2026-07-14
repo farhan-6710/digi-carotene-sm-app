@@ -3,12 +3,9 @@ import { Link, useParams } from "react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { GrowthAdsetProfileCard } from "../components/GrowthAdsetProfileCard";
-import {
-  buildGrowthAdsetDetailPath,
-  buildGrowthCampaignDetailPath,
-} from "../constants/routes";
 import { useGrowthAdEntityBreakdown } from "../hooks/useGrowthCampaignDemographicBreakdown";
 import { useGrowthAdsetDetailQuery } from "../hooks/useGrowthAdsetDetailQuery";
+import { useGrowthPaths } from "../hooks/useGrowthPaths";
 import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
 import type { DemographicBreakdown } from "../types/types";
 import { DateFilters } from "@/shared/components/DateFilters";
@@ -25,9 +22,11 @@ function GrowthAdsetDetailBackButton({
   campaignId: string;
   adAccountId: string;
 }) {
+  const { buildCampaignDetailPath } = useGrowthPaths();
+
   return (
     <Button asChild variant="outline" className="rounded-full">
-      <Link to={buildGrowthCampaignDetailPath(campaignId, adAccountId)}>
+      <Link to={buildCampaignDetailPath(campaignId, adAccountId)}>
         <ArrowLeft className="mr-2 size-4" />
         Back to campaign
       </Link>
@@ -46,12 +45,14 @@ function GrowthAdsetPager({
   nextAdsetId: string | null;
   adAccountId: string;
 }) {
+  const { buildAdsetDetailPath } = useGrowthPaths();
+
   return (
     <div className="flex items-center gap-2">
       {previousAdsetId ? (
         <Button asChild variant="outline" className="rounded-full">
           <Link
-            to={buildGrowthAdsetDetailPath(campaignId, previousAdsetId, adAccountId)}
+            to={buildAdsetDetailPath(campaignId, previousAdsetId, adAccountId)}
           >
             <ArrowLeft className="mr-2 size-4" />
             Prev ad set
@@ -65,7 +66,7 @@ function GrowthAdsetPager({
       )}
       {nextAdsetId ? (
         <Button asChild variant="outline" className="rounded-full">
-          <Link to={buildGrowthAdsetDetailPath(campaignId, nextAdsetId, adAccountId)}>
+          <Link to={buildAdsetDetailPath(campaignId, nextAdsetId, adAccountId)}>
             Next ad set
             <ArrowRight className="ml-2 size-4" />
           </Link>

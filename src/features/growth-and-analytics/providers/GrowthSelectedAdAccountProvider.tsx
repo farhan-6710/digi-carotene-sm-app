@@ -5,7 +5,10 @@ import {
 } from "react";
 import { useSearchParams } from "react-router";
 
-import { fetchAdAccounts } from "@/services/growthAccountsService";
+import {
+  fetchAdAccounts,
+  fetchAdAccountsByClientId,
+} from "@/services/growthAccountsService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
 import { GROWTH_AD_ACCOUNT_PARAM } from "../constants/growthUrlParams";
@@ -20,12 +23,21 @@ const NO_ACCOUNTS: AdAccount[] = [];
 
 export function GrowthSelectedAdAccountProvider({
   children,
+  clientId = null,
 }: {
   children: ReactNode;
+  /** When set, only ad accounts linked to this client (client portal). */
+  clientId?: string | null;
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const loadAccounts = useCallback(() => fetchAdAccounts(), []);
+  const loadAccounts = useCallback(() => {
+    if (clientId) {
+      return fetchAdAccountsByClientId(clientId);
+    }
+    return fetchAdAccounts();
+  }, [clientId]);
+
   const {
     data: accounts,
     isLoading,

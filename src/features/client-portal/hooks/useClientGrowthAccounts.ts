@@ -37,10 +37,15 @@ export function useClientGrowthAccounts() {
 
   const { data, isLoading, error } = useFetch<ClientGrowthAccounts>(load, EMPTY);
 
+  const hasOrganic = data.organic.length > 0;
+  const hasAds = data.ads.length > 0;
+
   return {
     organic: data.organic,
     ads: data.ads,
-    hasAccounts: data.organic.length > 0 || data.ads.length > 0,
+    hasOrganic,
+    hasAds,
+    hasAccounts: hasOrganic || hasAds,
     isLoading,
     error,
   };

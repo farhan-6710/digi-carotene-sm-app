@@ -12,12 +12,13 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
 
-import { growthBasePath } from "../constants/navigation";
+import { useGrowthPaths } from "../hooks/useGrowthPaths";
 import { useGrowthSelectedAccount } from "../hooks/useGrowthSelectedAccount";
 import { getOrganicAccountInitials } from "../utils/accountDisplay";
 import { PlatformBadge } from "./tables/tableBits";
 
 export function GrowthAccountHeaderMenu() {
+  const { canManageAccounts, manageAccountsPath } = useGrowthPaths();
   const {
     accounts,
     accountId,
@@ -59,11 +60,15 @@ export function GrowthAccountHeaderMenu() {
         <DropdownMenuSeparator />
 
         {!hasAccounts ? (
-          <DropdownMenuItem asChild>
-            <Link to={`${growthBasePath}/manage-accounts`}>
-              Connect an account
-            </Link>
-          </DropdownMenuItem>
+          canManageAccounts ? (
+            <DropdownMenuItem asChild>
+              <Link to={manageAccountsPath}>Connect an account</Link>
+            </DropdownMenuItem>
+          ) : (
+            <p className="px-2 py-1.5 text-sm text-muted-foreground">
+              No accounts connected yet.
+            </p>
+          )
         ) : (
           accounts.map((account) => {
             const isSelected = account.id === accountId;
@@ -98,16 +103,17 @@ export function GrowthAccountHeaderMenu() {
           })
         )}
 
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link
-            to={`${growthBasePath}/manage-accounts`}
-            className="flex items-center gap-2"
-          >
-            <Settings2 className="size-4" />
-            Manage accounts
-          </Link>
-        </DropdownMenuItem>
+        {canManageAccounts ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link to={manageAccountsPath} className="flex items-center gap-2">
+                <Settings2 className="size-4" />
+                Manage accounts
+              </Link>
+            </DropdownMenuItem>
+          </>
+        ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -1,9 +1,9 @@
 import { Link } from "react-router";
 
-import { buildGrowthAdsetDetailPath } from "../../constants/routes";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { cn } from "@/shared/lib/utils";
 
+import { useGrowthPaths } from "../../hooks/useGrowthPaths";
 import { MobileLabel } from "./tableBits";
 import type { AdsetsTableProps } from "../../types/components";
 import {
@@ -23,6 +23,8 @@ export function AdsetsTable({
   adAccountId,
   currencyCode,
 }: AdsetsTableProps) {
+  const { buildAdsetDetailPath } = useGrowthPaths();
+
   return (
     <DirectoryTable
       title="Ad sets"
@@ -54,7 +56,7 @@ export function AdsetsTable({
           <div className="min-w-0 text-sm font-medium text-foreground">
             <MobileLabel>AD SET</MobileLabel>
             <Link
-              to={buildGrowthAdsetDetailPath(campaignId, row.id, adAccountId)}
+              to={buildAdsetDetailPath(campaignId, row.id, adAccountId)}
               className="line-clamp-2 text-primary hover:underline"
             >
               {row.name}

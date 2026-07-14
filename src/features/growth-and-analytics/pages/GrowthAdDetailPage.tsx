@@ -3,12 +3,9 @@ import { Link, useParams } from "react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { GrowthAdProfileCard } from "../components/GrowthAdProfileCard";
-import {
-  buildGrowthAdDetailPath,
-  buildGrowthAdsetDetailPath,
-} from "../constants/routes";
 import { useGrowthAdEntityBreakdown } from "../hooks/useGrowthCampaignDemographicBreakdown";
 import { useGrowthAdDetailQuery } from "../hooks/useGrowthAdDetailQuery";
+import { useGrowthPaths } from "../hooks/useGrowthPaths";
 import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
 import type { DemographicBreakdown } from "../types/types";
 import { DateFilters } from "@/shared/components/DateFilters";
@@ -27,9 +24,11 @@ function GrowthAdDetailBackButton({
   adsetId: string;
   adAccountId: string;
 }) {
+  const { buildAdsetDetailPath } = useGrowthPaths();
+
   return (
     <Button asChild variant="outline" className="rounded-full">
-      <Link to={buildGrowthAdsetDetailPath(campaignId, adsetId, adAccountId)}>
+      <Link to={buildAdsetDetailPath(campaignId, adsetId, adAccountId)}>
         <ArrowLeft className="mr-2 size-4" />
         Back to ad set
       </Link>
@@ -50,12 +49,14 @@ function GrowthAdPager({
   nextAdId: string | null;
   adAccountId: string;
 }) {
+  const { buildAdDetailPath } = useGrowthPaths();
+
   return (
     <div className="flex items-center gap-2">
       {previousAdId ? (
         <Button asChild variant="outline" className="rounded-full">
           <Link
-            to={buildGrowthAdDetailPath(campaignId, adsetId, previousAdId, adAccountId)}
+            to={buildAdDetailPath(campaignId, adsetId, previousAdId, adAccountId)}
           >
             <ArrowLeft className="mr-2 size-4" />
             Prev ad
@@ -70,7 +71,7 @@ function GrowthAdPager({
       {nextAdId ? (
         <Button asChild variant="outline" className="rounded-full">
           <Link
-            to={buildGrowthAdDetailPath(campaignId, adsetId, nextAdId, adAccountId)}
+            to={buildAdDetailPath(campaignId, adsetId, nextAdId, adAccountId)}
           >
             Next ad
             <ArrowRight className="ml-2 size-4" />

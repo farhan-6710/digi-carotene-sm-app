@@ -1,9 +1,9 @@
 import { Link } from "react-router";
 
-import { buildGrowthAdDetailPath } from "../../constants/routes";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { cn } from "@/shared/lib/utils";
 
+import { useGrowthPaths } from "../../hooks/useGrowthPaths";
 import { DailyMetricsBreakdownSelect } from "./DailyMetricsBreakdownSelect";
 import { MobileLabel } from "./tableBits";
 import type { AdsTableProps, CampaignMetricCellsMetric } from "../../types/components";
@@ -92,6 +92,7 @@ export function AdsTable({
   demographicView,
   isDemographicLoading,
 }: AdsTableProps) {
+  const { buildAdDetailPath } = useGrowthPaths();
   const hasAge = breakdowns.includes("age");
   const hasGender = breakdowns.includes("gender");
   const hasPlacement = breakdowns.includes("placement");
@@ -176,7 +177,7 @@ export function AdsTable({
               <div className="min-w-0 text-sm font-medium text-foreground">
                 <MobileLabel>AD</MobileLabel>
                 <Link
-                  to={buildGrowthAdDetailPath(campaignId, adsetId, row.id, adAccountId)}
+                  to={buildAdDetailPath(campaignId, adsetId, row.id, adAccountId)}
                   className="line-clamp-2 text-primary hover:underline"
                 >
                   {row.name}

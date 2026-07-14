@@ -1,9 +1,9 @@
 import { Link } from "react-router";
 
-import { buildGrowthCampaignDetailPath } from "../../constants/routes";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { cn } from "@/shared/lib/utils";
 
+import { useGrowthPaths } from "../../hooks/useGrowthPaths";
 import { MobileLabel, StatusBadge } from "./tableBits";
 import type { CampaignTableProps } from "../../types/components";
 import {
@@ -16,6 +16,8 @@ import {
 const GRID_CLASS = "grid-cols-[1.5fr_1fr_0.7fr_0.8fr_0.7fr_0.8fr]";
 
 export function CampaignTable({ rows, adAccountId }: CampaignTableProps) {
+  const { buildCampaignDetailPath } = useGrowthPaths();
+
   return (
     <DirectoryTable
       title="Campaign Breakdown"
@@ -44,7 +46,7 @@ export function CampaignTable({ rows, adAccountId }: CampaignTableProps) {
           <div className="min-w-0 text-sm font-medium text-foreground">
             <MobileLabel>CAMPAIGN</MobileLabel>
             <Link
-              to={buildGrowthCampaignDetailPath(row.id, adAccountId)}
+              to={buildCampaignDetailPath(row.id, adAccountId)}
               className="line-clamp-2 text-primary hover:underline"
             >
               {row.name}

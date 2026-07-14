@@ -3,9 +3,10 @@ import { useLocation } from "react-router";
 import { GrowthAccountHeaderMenu } from "@/features/growth-and-analytics/components/GrowthAccountHeaderMenu";
 import { GrowthAdAccountHeaderMenu } from "@/features/growth-and-analytics/components/GrowthAdAccountHeaderMenu";
 import {
-  growthBasePath,
   growthHeaderAccounts,
+  teamGrowthBasePath,
 } from "@/features/growth-and-analytics/constants/navigation";
+import { GrowthPortalProvider } from "@/features/growth-and-analytics/providers/GrowthPortalProvider";
 import { GrowthSelectedAccountProvider } from "@/features/growth-and-analytics/providers/GrowthSelectedAccountProvider";
 import { GrowthSelectedAdAccountProvider } from "@/features/growth-and-analytics/providers/GrowthSelectedAdAccountProvider";
 import { TeamApprovalsHeaderButton } from "@/features/post-approvals/components/TeamApprovalsHeaderButton";
@@ -16,7 +17,7 @@ import { AppShellLayout } from "@/shared/layouts/AppShellLayout";
 function TeamLayoutShell() {
   const sidebarConfig = useTeamShellConfig();
   const { pathname } = useLocation();
-  const isGrowthRoute = pathname.startsWith(growthBasePath);
+  const isGrowthRoute = pathname.startsWith(teamGrowthBasePath);
   const accounts = growthHeaderAccounts(pathname);
 
   let headerActions = <TeamApprovalsHeaderButton />;
@@ -44,11 +45,16 @@ function TeamLayoutShell() {
 export function TeamLayout() {
   return (
     <TeamReviewerAccessProvider>
-      <GrowthSelectedAccountProvider>
-        <GrowthSelectedAdAccountProvider>
-          <TeamLayoutShell />
-        </GrowthSelectedAdAccountProvider>
-      </GrowthSelectedAccountProvider>
+      <GrowthPortalProvider
+        basePath={teamGrowthBasePath}
+        canManageAccounts={true}
+      >
+        <GrowthSelectedAccountProvider>
+          <GrowthSelectedAdAccountProvider>
+            <TeamLayoutShell />
+          </GrowthSelectedAdAccountProvider>
+        </GrowthSelectedAccountProvider>
+      </GrowthPortalProvider>
     </TeamReviewerAccessProvider>
   );
 }

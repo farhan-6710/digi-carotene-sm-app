@@ -148,9 +148,9 @@ const ClientPostsPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientPostsPage"),
   "ClientPostsPage",
 );
-const ClientGrowthPage = lazyRoutePage(
-  () => import("@/features/client-portal/pages/ClientGrowthPage"),
-  "ClientGrowthPage",
+const ClientGrowthOutlet = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientGrowthOutlet"),
+  "ClientGrowthOutlet",
 );
 const ClientAccountPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientAccountPage"),
@@ -260,7 +260,36 @@ export const router = createBrowserRouter([
           { path: "posts", element: <ClientPostsPage /> },
           {
             path: "growth-and-analytics",
-            element: <ClientGrowthPage />,
+            element: <ClientGrowthOutlet />,
+            children: [
+              { index: true, element: <GrowthDashboardPage /> },
+              {
+                path: "content-performance",
+                element: <GrowthContentPerformancePage />,
+              },
+              {
+                path: "content-performance/posts/:postId",
+                element: <GrowthPostDetailPage />,
+              },
+              { path: "campaigns", element: <GrowthCampaignAnalyticsPage /> },
+              {
+                path: "campaigns/:campaignId",
+                element: <GrowthCampaignDetailPage />,
+              },
+              {
+                path: "campaigns/:campaignId/adsets/:adsetId",
+                element: <GrowthAdsetDetailPage />,
+              },
+              {
+                path: "campaigns/:campaignId/adsets/:adsetId/ads/:adId",
+                element: <GrowthAdDetailPage />,
+              },
+              {
+                path: "custom-report",
+                element: <GrowthCustomReportBuilderPage />,
+              },
+              { path: "reports", element: <GrowthReportsPage /> },
+            ],
           },
           { path: "account", element: <ClientAccountPage /> },
         ],
