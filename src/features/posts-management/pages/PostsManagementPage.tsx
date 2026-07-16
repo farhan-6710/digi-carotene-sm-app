@@ -1,9 +1,11 @@
+import { Link, useNavigate } from "react-router";
 import { Plus } from "lucide-react";
 
 import { MonthSelector } from "@/shared/ui/MonthSelector";
 import { PostDialog } from "@/features/posts-management/components/PostDialog";
 import { PostsManagementStatusLegend } from "@/features/posts-management/components/PostsManagementStatusLegend";
 import { PostsManagementWeeksTable } from "@/features/posts-management/components/PostsManagementWeeksTable";
+import { buildAddPostsPath } from "@/features/posts-management/constants/routes";
 import {
   statusColors,
   statusText,
@@ -18,12 +20,19 @@ import { PageHeader } from "@/shared/components/PageHeader";
 import { Button } from "@/shared/ui/button";
 
 export function PostsManagementPage() {
+  const navigate = useNavigate();
   const { can } = usePermissions();
   const { selectedDate, calendarWeeks, year, month, selectDate } =
     usePostsCalendarSelection();
 
-  const { isLoading, error, getSlot, openAddDialog, openEditDialog, dialog } =
+  const { isLoading, error, getSlot, openEditDialog, dialog } =
     usePostsManagement(year, month);
+
+  const goToAddPost = (slotYear: number, slotMonth: number, date: number) => {
+    const target = new Date(slotYear, slotMonth - 1, date);
+    selectDate(target);
+    navigate(buildAddPostsPath(target));
+  };
 
   return (
     <PageContent>
@@ -32,19 +41,11 @@ export function PostsManagementPage() {
         description="Manage daily client posts by time and status. Click any day to add a post or tap one to update it."
         actions={
           can("posts.create") ? (
-            <Button
-              className="gap-2 rounded-full px-5 shadow-sm"
-              onClick={() => {
-                const today = new Date();
-                openAddDialog(
-                  today.getFullYear(),
-                  today.getMonth() + 1,
-                  today.getDate(),
-                );
-              }}
-            >
-              <Plus className="size-4" />
-              Add Post
+            <Button asChild className="gap-2 rounded-full px-5 shadow-sm">
+              <Link to={buildAddPostsPath(new Date())}>
+                <Plus className="size-4" />
+                Add Post
+              </Link>
             </Button>
           ) : null
         }
@@ -73,10 +74,7 @@ export function PostsManagementPage() {
           weeks={calendarWeeks}
           selectedDate={selectedDate}
           getSlot={getSlot}
-          onAdd={(slotYear, slotMonth, date) => {
-            selectDate(new Date(slotYear, slotMonth - 1, date));
-            openAddDialog(slotYear, slotMonth, date);
-          }}
+          onAdd={goToAddPost}
           onEdit={openEditDialog}
           statusColors={statusColors}
           statusText={statusText}

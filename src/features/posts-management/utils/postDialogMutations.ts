@@ -3,6 +3,7 @@ import { findRegisteredProject } from "@/features/posts-management/utils/project
 import {
   postFormToPayload,
   validatePostForm,
+  type PostDraftDay,
   type PostFormValues,
 } from "@/features/posts-management/utils/postFormUtils";
 import {
@@ -25,6 +26,13 @@ type SavePostOptions = {
 
 type DeletePostOptions = {
   editingPostId: string;
+  setError: (message: string | null) => void;
+};
+
+type SaveDraftDaysOptions = {
+  drafts: PostDraftDay[];
+  teamRole: TeamMemberRole | null;
+  teamMemberId: string | null;
   setError: (message: string | null) => void;
 };
 
@@ -67,11 +75,12 @@ export async function savePostMutation({
   if (editingPostId) {
     await updatePost(editingPostId, payload);
     showToast("success", `"${postLabel}" updated successfully.`);
-  } else if (
-    requiresBackdatedPostApproval(teamRole, payload.toBePostedOn)
-  ) {
+  } else if (requiresBackdatedPostApproval(teamRole, payload.toBePostedOn)) {
     if (!teamMemberId) {
-      showToast("error", "Your team member profile is required to request approval.");
+      showToast(
+        "error",
+        "Your team member profile is required to request approval.",
+      );
       return false;
     }
 
@@ -83,6 +92,90 @@ export async function savePostMutation({
   } else {
     await createPost(payload);
     showToast("success", `"${postLabel}" added successfully.`);
+  }
+
+  return true;
+}
+
+/** Create one post (or approval request) per draft day on the Add Post page. */
+export async function saveDraftDaysMutation({
+  drafts,
+  teamRole,
+  teamMemberId,
+  setError,
+}: SaveDraftDaysOptions): Promise<boolean> {
+  for (const draft of drafts) {
+    const validationError = validatePostForm(draft.values);
+    if (validationError) {
+      setError(`Day form: ${validationError}`);
+      return false;
+    }
+  }
+
+  setError(null);
+
+  const projects = await fetchProjectsScoped(teamRole, teamMemberId);
+
+  if (projects.length === 0) {
+    showToast("error", "Create a project before adding posts.");
+    return false;
+  }
+
+  let created = 0;
+  let requested = 0;
+
+  for (const draft of drafts) {
+    const registeredProject = findRegisteredProject(
+      draft.values.projectId,
+      projects,
+    );
+
+    if (!registeredProject) {
+      showToast("error", "Please select a valid project or create one first.");
+      return false;
+    }
+
+    const payload = {
+      ...postFormToPayload(draft.values),
+      projectId: registeredProject.id,
+    };
+
+    if (requiresBackdatedPostApproval(teamRole, payload.toBePostedOn)) {
+      if (!teamMemberId) {
+        showToast(
+          "error",
+          "Your team member profile is required to request approval.",
+        );
+        return false;
+      }
+
+      await createPostApprovalRequest(payload, teamMemberId);
+      requested += 1;
+    } else {
+      await createPost(payload);
+      created += 1;
+    }
+  }
+
+  if (created > 0 && requested === 0) {
+    showToast(
+      "success",
+      created > 1
+        ? `${created} posts added successfully.`
+        : "Post added successfully.",
+    );
+  } else if (created === 0 && requested > 0) {
+    showToast(
+      "info",
+      requested > 1
+        ? `${requested} approval requests sent to the project manager and admins.`
+        : "Approval request sent to the project manager and admins.",
+    );
+  } else {
+    showToast(
+      "success",
+      `Added ${created} post${created === 1 ? "" : "s"}; ${requested} need approval.`,
+    );
   }
 
   return true;

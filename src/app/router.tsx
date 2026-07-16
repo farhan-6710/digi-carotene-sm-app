@@ -92,6 +92,10 @@ const PostsManagementPage = lazyRoutePage(
   () => import("@/features/posts-management/pages/PostsManagementPage"),
   "PostsManagementPage",
 );
+const AddPostsPage = lazyRoutePage(
+  () => import("@/features/posts-management/pages/AddPostsPage"),
+  "AddPostsPage",
+);
 const ProjectsManagementPage = lazyRoutePage(
   () => import("@/features/projects-management/pages/ProjectsManagementPage"),
   "ProjectsManagementPage",
@@ -219,6 +223,10 @@ export const router = createBrowserRouter([
             ],
           },
           { path: "posts-management", element: <PostsManagementPage /> },
+          {
+            path: "posts-management/add-post",
+            element: <AddPostsPage />,
+          },
           { path: "post-approvals", element: <PostApprovalsPage /> },
           { path: "projects-management", element: <ProjectsManagementPage /> },
           {

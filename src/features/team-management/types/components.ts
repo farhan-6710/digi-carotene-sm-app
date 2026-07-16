@@ -68,5 +68,5 @@ export type TeamMemberAssignProjectDialogProps = {
   onOpenChange: (open: boolean) => void;
   activeProjectIds: string[];
   isSaving: boolean;
-  onAssign: (projectId: string) => void | Promise<void>;
+  onAssign: (projectIds: string[]) => void | Promise<void>;
 };

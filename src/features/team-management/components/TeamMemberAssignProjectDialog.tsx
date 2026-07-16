@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { ProjectCombobox } from "@/features/projects-management/components/ProjectCombobox";
+import { ProjectMultiSelect } from "@/features/projects-management/components/ProjectMultiSelect";
 import type { TeamMemberAssignProjectDialogProps } from "@/features/team-management/types/components";
 import { Button } from "@/shared/ui/button";
 import {
@@ -20,11 +20,11 @@ export function TeamMemberAssignProjectDialog({
   isSaving,
   onAssign,
 }: TeamMemberAssignProjectDialogProps) {
-  const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [selectedProjectIds, setSelectedProjectIds] = useState<string[]>([]);
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
-      setSelectedProjectId("");
+      setSelectedProjectIds([]);
     }
     onOpenChange(nextOpen);
   };
@@ -33,25 +33,25 @@ export function TeamMemberAssignProjectDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Assign project</DialogTitle>
+          <DialogTitle>Assign projects</DialogTitle>
           <DialogDescription>
-            Choose a project to add to their active workload.
+            Choose one or more projects to add to their active workload.
           </DialogDescription>
         </DialogHeader>
 
-        <label className="block text-xs font-semibold text-muted-foreground">
-          Project
-          <div className="mt-2">
-            <ProjectCombobox
-              value={selectedProjectId}
-              onChange={setSelectedProjectId}
-              activeProjectIds={activeProjectIds}
-              disabled={isSaving}
-              placeholder="e.g. Summer Campaign (Bloom Skincare)"
-              preload={open}
-            />
-          </div>
-        </label>
+        <div className="space-y-2">
+          <span className="block text-xs font-semibold text-muted-foreground">
+            Projects
+          </span>
+          <ProjectMultiSelect
+            value={selectedProjectIds}
+            onChange={setSelectedProjectIds}
+            excludeProjectIds={activeProjectIds}
+            disabled={isSaving}
+            placeholder="e.g. Summer Campaign (Bloom Skincare)"
+            preload={open}
+          />
+        </div>
 
         <DialogFooter>
           <DialogClose asChild>
@@ -61,13 +61,17 @@ export function TeamMemberAssignProjectDialog({
           </DialogClose>
           <Button
             className="rounded-full"
-            disabled={!selectedProjectId || isSaving}
+            disabled={selectedProjectIds.length === 0 || isSaving}
             onClick={async () => {
-              await onAssign(selectedProjectId);
+              await onAssign(selectedProjectIds);
               handleOpenChange(false);
             }}
           >
-            {isSaving ? "Assigning..." : "Assign project"}
+            {isSaving
+              ? "Assigning..."
+              : selectedProjectIds.length > 1
+                ? `Assign ${selectedProjectIds.length} projects`
+                : "Assign project"}
           </Button>
         </DialogFooter>
       </DialogContent>

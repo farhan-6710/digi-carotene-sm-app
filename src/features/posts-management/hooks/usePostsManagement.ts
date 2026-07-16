@@ -13,7 +13,6 @@ export function usePostsManagement(year: number, month: number) {
     isLoading: query.isLoading,
     error: query.error,
     getSlot: query.getSlot,
-    openAddDialog: dialogHook.openAddDialog,
     openEditDialog: dialogHook.openEditDialog,
     statusOptions: dialogHook.statusOptions,
     dialog: dialogHook.dialog,

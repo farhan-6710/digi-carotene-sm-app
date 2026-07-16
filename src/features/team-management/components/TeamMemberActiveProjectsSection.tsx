@@ -50,7 +50,7 @@ export function TeamMemberActiveProjectsSection({
               disabled={isSaving}
             >
               <Plus className="mr-2 size-4" />
-              Assign project
+              Assign projects
             </Button>
           ) : null}
         </div>

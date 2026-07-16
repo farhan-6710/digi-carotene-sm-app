@@ -26,12 +26,13 @@ export function PostDialog({
 }: PostDialogProps) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
-  const canSave =
+  const canSave = Boolean(
     values.projectId.trim() &&
-    values.toBePostedOn?.time.trim() &&
-    values.toBePostedOn.day &&
-    values.toBePostedOn.month &&
-    values.toBePostedOn.year;
+      values.toBePostedOn?.time.trim() &&
+      values.toBePostedOn.day &&
+      values.toBePostedOn.month &&
+      values.toBePostedOn.year,
+  );
 
   return (
     <>
@@ -40,8 +41,8 @@ export function PostDialog({
           <DialogHeader className="shrink-0">
             <DialogTitle>{isEditing ? "Edit Post" : "Add Post"}</DialogTitle>
             <DialogDescription>
-              Select a project, set post title, social platforms, planned publish
-              time, status, and actual publish time.
+              Update project, title, platforms, schedule, status, and publish
+              details.
             </DialogDescription>
           </DialogHeader>
 

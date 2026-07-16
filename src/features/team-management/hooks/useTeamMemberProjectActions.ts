@@ -20,8 +20,8 @@ export function useTeamMemberProjectActions({
   const [isSaving, setIsSaving] = useState(false);
 
   const assignProject = useCallback(
-    async (projectId: string) => {
-      if (!memberId || isSaving) {
+    async (projectIds: string[]) => {
+      if (!memberId || isSaving || projectIds.length === 0) {
         return;
       }
 
@@ -29,14 +29,22 @@ export function useTeamMemberProjectActions({
       setError(null);
 
       try {
-        await assignMemberToProject(memberId, projectId);
+        for (const projectId of projectIds) {
+          await assignMemberToProject(memberId, projectId);
+        }
         await reload();
-        showToast("success", "Project assigned successfully.");
+        showToast(
+          "success",
+          projectIds.length > 1
+            ? `${projectIds.length} projects assigned successfully.`
+            : "Project assigned successfully.",
+        );
       } catch (err) {
         const message =
           err instanceof Error ? err.message : "Failed to assign project.";
         setError(message);
         showToast("error", message);
+        await reload();
       } finally {
         setIsSaving(false);
       }

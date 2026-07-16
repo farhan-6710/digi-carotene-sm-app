@@ -27,6 +27,12 @@ export type PostFormValues = {
   clientStatus: StatusKey;
 };
 
+/** One draft day on the Add Post page (full form values per day). */
+export type PostDraftDay = {
+  id: string;
+  values: PostFormValues;
+};
+
 export const emptyPostFormValues = (): PostFormValues => ({
   projectId: "",
   projectName: "",
@@ -132,6 +138,17 @@ export function postFormToPayload(values: PostFormValues) {
     toBePostedOn,
     posted,
     status: values.clientStatus,
+  };
+}
+
+export function createDraftDayId(): string {
+  return `day-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+export function createDraftDay(values: PostFormValues): PostDraftDay {
+  return {
+    id: createDraftDayId(),
+    values,
   };
 }
 

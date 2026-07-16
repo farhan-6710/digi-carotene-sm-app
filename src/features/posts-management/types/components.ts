@@ -31,6 +31,8 @@ export type PostDateTimePickerProps = {
   onChange: (value: PostFormValues["toBePostedOn"]) => void;
   required?: boolean;
   disabled?: boolean;
+  /** Inline remove — renders an X in the date/time row. */
+  onRemove?: () => void;
 };
 
 export type PostDialogFormFieldsProps = {
@@ -39,6 +41,15 @@ export type PostDialogFormFieldsProps = {
   disabled?: boolean;
   preloadOptions?: boolean;
   patchValues: (patch: Partial<PostFormValues>) => void;
+};
+
+export type AddPostsDayListProps = {
+  drafts: import("@/features/posts-management/utils/postFormUtils").PostDraftDay[];
+  activeDayId: string;
+  disabled?: boolean;
+  onSelectDay: (dayId: string) => void;
+  onAddDay: () => void;
+  onRequestRemoveDay: (dayId: string) => void;
 };
 
 export type PostDialogLinkFieldsProps = {

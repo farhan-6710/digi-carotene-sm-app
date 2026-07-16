@@ -147,6 +147,12 @@ type UpdatePostInput = CreatePostInput;
 
 When `status` is not `Posted`, `posted_date` and `posted_time` are saved as `null`.
 
+### Add posts page (multi-day)
+
+**Route:** `/team-portal/posts-management/add-post` (optional `?date=yyyy-MM-dd` prefill).
+
+Each left-rail **day** is a full draft (`PostDraftDay`: own title, project, type, socials, schedule, status). Save runs `createPost` (or approval) once per day. Calendar still groups by `to_be_posted_date`. **Edit** stays in the calendar modal (single post).
+
 ### Form values
 
 ```ts

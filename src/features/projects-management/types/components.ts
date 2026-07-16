@@ -54,6 +54,15 @@ export type ProjectComboboxProps = {
   preload?: boolean;
 };
 
+export type ProjectMultiSelectProps = {
+  value: string[];
+  onChange: (projectIds: string[]) => void;
+  disabled?: boolean;
+  excludeProjectIds?: string[];
+  placeholder?: string;
+  preload?: boolean;
+};
+
 export type ProjectManagerSelectProps = {
   value: string;
   onChange: (managerId: string) => void;

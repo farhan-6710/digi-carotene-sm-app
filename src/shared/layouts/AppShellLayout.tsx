@@ -33,10 +33,10 @@ export function AppShellLayout({
 
   return (
     <PageTransitionProvider>
-      <div className="fixed inset-0 grid grid-cols-[auto_minmax(0,1fr)] overflow-hidden bg-background text-foreground">
+      <div className="fixed inset-0 flex overflow-hidden bg-background text-foreground">
         <ShellSidebar config={sidebarConfig} collapsed={isSidebarCollapsed} />
 
-        <div className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden">
+        <div className="grid min-h-0 min-w-0 flex-1 grid-rows-[auto_minmax(0,1fr)] overflow-hidden">
           <motion.header
             {...SHELL_HEADER_MOTION}
             className="flex h-16 shrink-0 items-center gap-4 border-b border-border/60 bg-card px-4 sm:px-6"
@@ -96,7 +96,7 @@ export function AppShellLayout({
 
           <PageTransitionMain
             mainRef={mainRef}
-            className="min-h-0 overflow-y-auto px-6 py-6 lg:px-8"
+            className="min-h-0 overflow-y-auto px-6 py-6 [scrollbar-gutter:stable] lg:px-8"
           />
         </div>
       </div>
