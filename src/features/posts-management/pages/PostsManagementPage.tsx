@@ -31,7 +31,7 @@ export function PostsManagementPage() {
   const goToAddPost = (slotYear: number, slotMonth: number, date: number) => {
     const target = new Date(slotYear, slotMonth - 1, date);
     selectDate(target);
-    navigate(buildAddPostsPath(target));
+    navigate(buildAddPostsPath({ date: target }));
   };
 
   return (
@@ -42,7 +42,7 @@ export function PostsManagementPage() {
         actions={
           can("posts.create") ? (
             <Button asChild className="gap-2 rounded-full px-5 shadow-sm">
-              <Link to={buildAddPostsPath(new Date())}>
+              <Link to={buildAddPostsPath({ date: new Date() })}>
                 <Plus className="size-4" />
                 Add Post
               </Link>

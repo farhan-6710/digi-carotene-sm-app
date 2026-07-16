@@ -1,14 +1,17 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 
 import { PostDialog } from "@/features/posts-management/components/PostDialog";
+import { buildAddPostsPath } from "@/features/posts-management/constants/routes";
 import { usePostDialog } from "@/features/posts-management/hooks/usePostDialog";
 import { ProjectPostsTable } from "@/features/projects-management/components/ProjectPostsTable";
 import { ProjectProfileCard } from "@/features/projects-management/components/ProjectProfileCard";
 import { PROJECTS_MANAGEMENT_PATH } from "@/features/projects-management/constants/routes";
 import { useProjectDetailQuery } from "@/features/projects-management/hooks/useProjectDetailQuery";
 import { buildProjectPostStats } from "@/features/projects-management/utils/projectPostStatsUtils";
+import { getProjectDisplayLabel } from "@/features/projects-management/utils/projectFormUtils";
+import { usePermissions } from "@/shared/hooks/usePermissions";
 import { PageContent } from "@/shared/components/PageContent";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
@@ -28,6 +31,7 @@ function ProjectDetailBackButton() {
 
 export function ProjectDetailPage() {
   const { projectId = "" } = useParams();
+  const { can } = usePermissions();
   const [dialogError, setDialogError] = useState<string | null>(null);
   const { project, posts, teamMembers, isLoading, error, reload } =
     useProjectDetailQuery(projectId);
@@ -53,7 +57,25 @@ export function ProjectDetailPage() {
 
   return (
     <PageContent>
-      <PageHeader backButton={<ProjectDetailBackButton />} />
+      <PageHeader
+        backButton={<ProjectDetailBackButton />}
+        actions={
+          can("posts.create") ? (
+            <Button asChild className="rounded-full shadow-sm">
+              <Link
+                to={buildAddPostsPath({
+                  date: new Date(),
+                  projectId: project.id,
+                  projectName: getProjectDisplayLabel(project),
+                })}
+              >
+                <Plus className="mr-2 size-4" />
+                Add Post
+              </Link>
+            </Button>
+          ) : null
+        }
+      />
 
       {error ? <ErrorBanner message={error} /> : null}
       {dialogError ? <ErrorBanner message={dialogError} /> : null}

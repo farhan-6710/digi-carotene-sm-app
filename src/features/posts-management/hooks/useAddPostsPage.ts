@@ -6,6 +6,7 @@ import { statusOptions } from "@/features/posts-management/constants/postsManage
 import {
   POSTS_MANAGEMENT_PATH,
   parseAddPostPrefillDate,
+  parseAddPostPrefillProject,
 } from "@/features/posts-management/constants/routes";
 import { saveDraftDaysMutation } from "@/features/posts-management/utils/postDialogMutations";
 import {
@@ -16,12 +17,19 @@ import {
 } from "@/features/posts-management/utils/postFormUtils";
 import { showToast } from "@/shared/utils/showToast";
 
-function seedValuesFromDate(date: Date): PostFormValues {
-  return buildAddFormValues(
-    date.getFullYear(),
-    date.getMonth() + 1,
-    date.getDate(),
-  );
+function seedValuesFromDate(
+  date: Date,
+  project?: { projectId: string; projectName: string } | null,
+): PostFormValues {
+  return {
+    ...buildAddFormValues(
+      date.getFullYear(),
+      date.getMonth() + 1,
+      date.getDate(),
+    ),
+    projectId: project?.projectId ?? "",
+    projectName: project?.projectName ?? "",
+  };
 }
 
 function bumpScheduleDay(values: PostFormValues): PostFormValues {
@@ -51,8 +59,9 @@ export function useAddPostsPage() {
   const { teamRole, teamMemberId } = useAuth();
 
   const initialDraft = useMemo(() => {
-    const prefill = parseAddPostPrefillDate(searchParams) ?? new Date();
-    return createDraftDay(seedValuesFromDate(prefill));
+    const prefillDate = parseAddPostPrefillDate(searchParams) ?? new Date();
+    const prefillProject = parseAddPostPrefillProject(searchParams);
+    return createDraftDay(seedValuesFromDate(prefillDate, prefillProject));
   }, [searchParams]);
 
   const [drafts, setDrafts] = useState<PostDraftDay[]>([initialDraft]);
