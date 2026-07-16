@@ -261,12 +261,16 @@ export function ShellSidebar({ config, collapsed }: ShellSidebarProps) {
       <MotionAside
         {...SHELL_SIDEBAR_MOTION}
         className={cn(
-          "hidden min-h-0 shrink-0 border-r border-sidebar-border/80 bg-sidebar text-sidebar-foreground md:block",
+          // Width 0 below md (not display:none) so flex content can fill the viewport.
+          "min-h-0 w-0 shrink-0 overflow-hidden border-0 bg-sidebar text-sidebar-foreground",
           "transition-[width] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
-          collapsed ? "w-20" : "w-64",
+          "md:border-r md:border-sidebar-border/80",
+          collapsed ? "md:w-20" : "md:w-64",
         )}
       >
-        <ShellSidebarContent config={config} collapsed={collapsed} />
+        <div className="hidden h-full md:block">
+          <ShellSidebarContent config={config} collapsed={collapsed} />
+        </div>
       </MotionAside>
     </TooltipProvider>
   );

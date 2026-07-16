@@ -11,7 +11,13 @@ import {
   type RefObject,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Outlet, createPath, useLocation, useNavigate, type To } from "react-router";
+import {
+  Outlet,
+  createPath,
+  useLocation,
+  useNavigate,
+  type To,
+} from "react-router";
 
 import { PAGE_MAIN_MOTION } from "@/shared/constants/pageMotion";
 import {
@@ -119,7 +125,11 @@ export function PageTransitionMain({
     <main ref={mainRef} className={className}>
       <AnimatePresence mode="wait" onExitComplete={onExitComplete}>
         {isVisible ? (
-          <motion.div key={pathname} {...PAGE_MAIN_MOTION}>
+          <motion.div
+            key={pathname}
+            className="w-full min-w-0"
+            {...PAGE_MAIN_MOTION}
+          >
             <Outlet />
           </motion.div>
         ) : null}

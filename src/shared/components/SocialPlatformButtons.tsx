@@ -13,7 +13,7 @@ export function SocialPlatformButtons({
   className,
 }: SocialPlatformButtonsProps) {
   return (
-    <div className={cn("flex flex-wrap items-center gap-1.5", className)}>
+    <div className={cn("flex flex-nowrap items-center gap-1.5", className)}>
       {SOCIAL_PLATFORMS.map(({ key, label, Icon, activeClassName }) => {
         const url = socials?.[key]?.trim();
         const isLinked = Boolean(url);

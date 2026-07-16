@@ -8,6 +8,7 @@ import {
   formatApprovalProjectLabel,
   formatApprovalPostingTimeLabel,
 } from "@/features/post-approvals/utils/postApprovalDisplayUtils";
+import { DIRECTORY_TABLE_MIN_WIDTH_CLASS } from "@/shared/constants/directoryTable";
 import { Button } from "@/shared/ui/button";
 
 type PostApprovalsTableRowProps = {
@@ -58,7 +59,11 @@ function PostApprovalsTableRow({
           disabled={isReviewing}
           onClick={() => onApprove(request.id)}
         >
-          {isReviewing ? <Loader2 className="size-4 animate-spin" /> : "Approve"}
+          {isReviewing ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            "Approve"
+          )}
         </Button>
       </div>
     </div>
@@ -89,16 +94,18 @@ export function PostApprovalsTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-card">
-      {requests.map((request) => (
-        <PostApprovalsTableRow
-          key={request.id}
-          request={request}
-          isReviewing={isReviewingId === request.id}
-          onApprove={onApprove}
-          onReject={onReject}
-        />
-      ))}
+    <div className="w-full min-w-0 max-w-full overflow-x-auto rounded-2xl border border-border bg-card">
+      <div className={DIRECTORY_TABLE_MIN_WIDTH_CLASS}>
+        {requests.map((request) => (
+          <PostApprovalsTableRow
+            key={request.id}
+            request={request}
+            isReviewing={isReviewingId === request.id}
+            onApprove={onApprove}
+            onReject={onReject}
+          />
+        ))}
+      </div>
     </div>
   );
 }

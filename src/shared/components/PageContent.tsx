@@ -12,13 +12,17 @@ import { cn } from "@/shared/lib/utils";
 export function PageContent({ className, children }: PageContentProps) {
   return (
     <motion.div
-      className={cn("space-y-8", className)}
+      className={cn("w-full min-w-0 space-y-8", className)}
       variants={SECTION_STAGGER_CONTAINER}
       initial="hidden"
       animate="show"
     >
       {Children.toArray(children).map((child, index) => (
-        <motion.div key={index} variants={SECTION_STAGGER_ITEM}>
+        <motion.div
+          key={index}
+          className="w-full min-w-0"
+          variants={SECTION_STAGGER_ITEM}
+        >
           {child}
         </motion.div>
       ))}

@@ -69,7 +69,9 @@ function StatCardContent({
           )}
         </div>
         {card.description ? (
-          <p className="mt-2 truncate text-xs text-muted-foreground">{card.description}</p>
+          <p className="mt-2 truncate text-xs text-muted-foreground">
+            {card.description}
+          </p>
         ) : null}
         {card.delta && card.deltaLabel && !isLoading ? (
           <StatCardTrend
@@ -103,7 +105,10 @@ function StatCardContent({
           <TooltipTrigger asChild>
             <div className="w-full cursor-default text-left">{body}</div>
           </TooltipTrigger>
-          <TooltipContent side="bottom" className="max-w-xs whitespace-pre-line">
+          <TooltipContent
+            side="bottom"
+            className="max-w-xs whitespace-pre-line"
+          >
             {card.descriptionTooltip}
           </TooltipContent>
         </Tooltip>
@@ -122,7 +127,7 @@ function StatCardContent({
 export function StatsCards({ cards, isLoading = false }: StatsCardsProps) {
   if (isLoading && cards.length === 0) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid w-full min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, index) => (
           <div
             key={index}
@@ -137,7 +142,7 @@ export function StatsCards({ cards, isLoading = false }: StatsCardsProps) {
 
   return (
     <TooltipProvider>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid w-full min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((card, idx) => (
           <StatCardShell
             key={card.id}
