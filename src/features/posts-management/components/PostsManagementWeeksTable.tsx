@@ -6,6 +6,8 @@ import {
 import { CALENDAR_DAY_LABELS } from "@/features/posts-management/constants/calendar";
 import type { PostsManagementWeeksTableProps } from "@/features/posts-management/types/components";
 import { isSameCalendarDay } from "@/features/posts-management/utils/calendarUtils";
+import { TABLE_HORIZONTAL_SCROLL_CLASS } from "@/shared/constants/directoryTable";
+import { cn } from "@/shared/lib/utils";
 import { TooltipProvider } from "@/shared/ui/tooltip";
 
 export function PostsManagementWeeksTable({
@@ -26,7 +28,12 @@ export function PostsManagementWeeksTable({
 
   return (
     <TooltipProvider>
-      <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
+      <div
+        className={cn(
+          TABLE_HORIZONTAL_SCROLL_CLASS,
+          "rounded-2xl border border-border bg-card shadow-sm",
+        )}
+      >
         <div style={{ minWidth: minTableWidth }}>
           <div
             className="grid border-b border-border bg-muted text-xs font-semibold tracking-wider text-muted-foreground"

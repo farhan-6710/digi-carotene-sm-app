@@ -2,6 +2,7 @@ import { Loader2 } from "lucide-react";
 
 import { ANALYTICS_BREAKDOWN_TABLE_MIN_WIDTH_CLASS } from "@/features/analytics/constants/analyticsBreakdownTable";
 import type { AnalyticsBreakdownTableProps } from "@/features/analytics/types/components";
+import { TABLE_HORIZONTAL_SCROLL_CLASS } from "@/shared/constants/directoryTable";
 
 const GRID = "grid grid-cols-[1.6fr_0.6fr_0.7fr_0.7fr_0.8fr] gap-4";
 
@@ -18,7 +19,7 @@ export function AnalyticsBreakdownTable({
         <div className="text-sm font-semibold text-foreground">{title}</div>
       </div>
 
-      <div className="max-w-full overflow-x-auto">
+      <div className={TABLE_HORIZONTAL_SCROLL_CLASS}>
         <div className={ANALYTICS_BREAKDOWN_TABLE_MIN_WIDTH_CLASS}>
           <div
             className={`${GRID} bg-muted/50 px-6 py-3 text-xs font-semibold tracking-wider text-muted-foreground`}

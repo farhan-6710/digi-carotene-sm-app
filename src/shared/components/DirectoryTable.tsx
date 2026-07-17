@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { TableLoadingState } from "@/shared/components/LoadingSpinner";
-import { DIRECTORY_TABLE_MIN_WIDTH_CLASS } from "@/shared/constants/directoryTable";
+import { DIRECTORY_TABLE_MIN_WIDTH_CLASS, TABLE_HORIZONTAL_SCROLL_CLASS } from "@/shared/constants/directoryTable";
 import type { DirectoryTableProps } from "@/shared/types/components";
 
 export function DirectoryTable({
@@ -24,7 +24,7 @@ export function DirectoryTable({
         {headerAside ? <div className="shrink-0">{headerAside}</div> : null}
       </div>
 
-      <div className="max-w-full overflow-x-auto border-t border-border">
+      <div className={cn(TABLE_HORIZONTAL_SCROLL_CLASS, "border-t border-border")}>
         <div className={DIRECTORY_TABLE_MIN_WIDTH_CLASS}>
           <div
             className={cn(

@@ -8,7 +8,8 @@ import {
   formatApprovalProjectLabel,
   formatApprovalPostingTimeLabel,
 } from "@/features/post-approvals/utils/postApprovalDisplayUtils";
-import { DIRECTORY_TABLE_MIN_WIDTH_CLASS } from "@/shared/constants/directoryTable";
+import { DIRECTORY_TABLE_MIN_WIDTH_CLASS, TABLE_HORIZONTAL_SCROLL_CLASS } from "@/shared/constants/directoryTable";
+import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 
 type PostApprovalsTableRowProps = {
@@ -94,7 +95,12 @@ export function PostApprovalsTable({
   }
 
   return (
-    <div className="w-full min-w-0 max-w-full overflow-x-auto rounded-2xl border border-border bg-card">
+    <div
+      className={cn(
+        TABLE_HORIZONTAL_SCROLL_CLASS,
+        "w-full min-w-0 rounded-2xl border border-border bg-card",
+      )}
+    >
       <div className={DIRECTORY_TABLE_MIN_WIDTH_CLASS}>
         {requests.map((request) => (
           <PostApprovalsTableRow
