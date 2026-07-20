@@ -12,8 +12,8 @@ import {
 import { filterCampaignMetricsByRange } from "../utils/dashboardDataFilters";
 import { saveGrowthReport } from "../utils/generateReport";
 import { resolveGrowthReportPeriod } from "../utils/reportPeriod";
-import { useGrowthAdAccountPicker } from "./useGrowthAdAccountPicker";
 import { useGrowthDateRange } from "./useGrowthDateRange";
+import { useGrowthSelectedAdAccount } from "./useGrowthSelectedAdAccount";
 
 export function useGrowthCampaigns() {
   const { range, dateFilterProps, periodLabel } = useGrowthDateRange();
@@ -22,7 +22,7 @@ export function useGrowthCampaigns() {
     isLoading: isAccountsLoading,
     error: accountsError,
     hasAccounts,
-  } = useGrowthAdAccountPicker();
+  } = useGrowthSelectedAdAccount();
 
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const adAccountId = activeAccount?.id ?? "";

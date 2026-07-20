@@ -45,15 +45,6 @@ export type ProjectsTableProps = {
   onEditProject: (project: ProjectListItem) => void;
 };
 
-export type ProjectComboboxProps = {
-  value: string;
-  onChange: (projectId: string) => void;
-  disabled?: boolean;
-  activeProjectIds?: string[];
-  placeholder?: string;
-  preload?: boolean;
-};
-
 export type ProjectMultiSelectProps = {
   value: string[];
   onChange: (projectIds: string[]) => void;

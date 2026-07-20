@@ -28,8 +28,6 @@ export type AuthContextValue = {
     password: string,
     fullName: string,
   ) => Promise<AuthError | null>;
-  signInWithGoogle: (options?: { isSignup?: boolean }) => Promise<AuthError | null>;
-  signInWithFacebook: (options?: { isSignup?: boolean }) => Promise<AuthError | null>;
   signInWithOAuthProvider: (
     provider: AuthOAuthProvider,
     options?: { isSignup?: boolean },

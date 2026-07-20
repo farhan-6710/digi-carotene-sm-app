@@ -5,9 +5,6 @@ export type AuthOAuthSignInProps = {
   onBeforeSignIn?: () => void;
 };
 
-/** @deprecated Use AuthOAuthSignInProps */
-export type AuthGoogleSignInProps = AuthOAuthSignInProps;
-
 export type AuthEmailFieldProps = {
   id: string;
   value: string;

@@ -17,8 +17,6 @@ import {
   getCurrentUser,
   onAuthChange,
   signInWithEmail,
-  signInWithFacebook,
-  signInWithGoogle,
   signInWithOAuthProvider,
   signOut,
   signUpWithEmail,
@@ -119,8 +117,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       refreshProfile,
       signInWithEmail,
       signUpWithEmail,
-      signInWithGoogle: (options) => signInWithGoogle(options?.isSignup ?? false),
-      signInWithFacebook: (options) => signInWithFacebook(options?.isSignup ?? false),
       signInWithOAuthProvider: (provider, options) =>
         signInWithOAuthProvider(provider, options?.isSignup ?? false),
       signOut: handleSignOut,

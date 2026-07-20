@@ -3,9 +3,6 @@ import type { ShellNavItem } from "@/shared/types/components";
 export const teamGrowthBasePath = "/team-portal/growth-and-analytics";
 export const clientGrowthBasePath = "/client-portal/growth-and-analytics";
 
-/** @deprecated Prefer teamGrowthBasePath / useGrowthPaths — kept for team default. */
-export const growthBasePath = teamGrowthBasePath;
-
 // Which account picker the shell header shows for a growth route. Reports and
 // Custom Report Builder use "none" — they show an in-page combobox instead.
 export type GrowthHeaderAccounts = "organic" | "ad" | "none";

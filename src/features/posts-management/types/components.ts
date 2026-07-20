@@ -18,13 +18,6 @@ export type PostTypeSelectProps = {
   disabled?: boolean;
 };
 
-export type ClientSelectProps = {
-  id?: string;
-  value: string;
-  onChange: (value: string) => void;
-  disabled?: boolean;
-};
-
 export type PostDateTimePickerProps = {
   label: string;
   value: PostFormValues["toBePostedOn"];
@@ -81,15 +74,6 @@ export type PostDialogProps = {
   patchValues: (patch: Partial<PostFormValues>) => void;
   onSave: () => void;
   onDelete?: () => void;
-};
-
-export type PostSchedulePickerProps = {
-  year: number;
-  month: number;
-  date: number;
-  selectedTime: string;
-  onTimeChange: (time: string) => void;
-  disabled?: boolean;
 };
 
 export type PostsManagementWeeksTableProps = {

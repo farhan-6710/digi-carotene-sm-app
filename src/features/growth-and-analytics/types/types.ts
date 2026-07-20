@@ -140,15 +140,6 @@ export type SpendTrend = {
   granularity: SpendTrendGranularity;
 };
 
-export type TopAccountRow = {
-  id: string;
-  name: string;
-  platform: GrowthPlatform;
-  followers: number;
-  engagementRate: number;
-  reach: number;
-};
-
 export type ContentPostRow = {
   id: string;
   caption: string;

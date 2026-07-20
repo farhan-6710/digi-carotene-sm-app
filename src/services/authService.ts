@@ -82,14 +82,6 @@ export async function signInWithOAuthProvider(
   return error;
 }
 
-export async function signInWithGoogle(isSignup: boolean): Promise<AuthError | null> {
-  return signInWithOAuthProvider("google", isSignup);
-}
-
-export async function signInWithFacebook(isSignup: boolean): Promise<AuthError | null> {
-  return signInWithOAuthProvider("facebook", isSignup);
-}
-
 export async function signOut(): Promise<void> {
   await supabase.auth.signOut();
 }

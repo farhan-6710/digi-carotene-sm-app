@@ -13,11 +13,6 @@ export function getDefaultPostStatusFilterState(): PostStatusFilterState {
   return { showAll: true, statuses: [] };
 }
 
-/** @deprecated Use getDefaultPostStatusFilterState */
-export function getDefaultPostStatusFilters(): StatusKey[] {
-  return [];
-}
-
 export function togglePostStatusFilter(
   current: PostStatusFilterState,
   target: PostStatusFilterTarget,

@@ -1,9 +1,5 @@
 // Meta Graph API configuration for the Growth & Analytics module.
-// Ported from sm-report-13-3-2026 (backend/config/config.php). The access token
-// is entered per account in the connect dialog, never hard-coded here.
-//
-// Graph API supports CORS GET requests, so the connect flow calls it directly
-// from the browser using the token the user pastes in.
+// Access tokens are entered per account in Manage Accounts — never hard-coded here.
 
 export const META_GRAPH_BASE_URL = "https://graph.facebook.com";
 
@@ -17,10 +13,6 @@ export const META_API_VERSION = {
   facebook: "v18.0",
   ads: "v18.0",
 } as const;
-
-// Public Meta App ID (from sm-report config fallback). Optional override via env.
-export const META_APP_ID =
-  import.meta.env.VITE_META_APP_ID ?? "872614585203502";
 
 // Fields requested when validating / reading an account on connect.
 export const META_ACCOUNT_FIELDS = {
@@ -37,6 +29,3 @@ export const META_INSIGHTS_WINDOW_DAYS = 28;
 
 // follower_count only supports the last 30 days, excluding today.
 export const META_FOLLOWER_COUNT_DAYS = 30;
-
-// Cap post sync on connect — each post insight call is a separate Graph API request.
-export const META_INITIAL_POST_SYNC_LIMIT = 10;
