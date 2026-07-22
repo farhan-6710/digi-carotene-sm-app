@@ -1,112 +1,126 @@
 # Growth & Analytics
 
-Instagram Phase 1 dashboard + Meta ads campaign analytics + midnight sync.
+Instagram organic insights + Meta ads campaign analytics. Team connects accounts; client portal is read-only.
 
-## Features
+**Code:** `src/features/growth-and-analytics/` · **Services:** `src/services/` (Meta + backfill)  
+**Cron:** [scripts/growth-and-analytics/php/README.md](../../scripts/growth-and-analytics/php/README.md)  
+**Schema:** [database.md](../database.md)
 
-| Area | Status | Doc |
-|------|--------|-----|
-| Connect + 29-day post backfill | Live (browser) | This file |
-| Dashboard metrics from `past_posts_metrics` | Live | This file |
-| Followers Gained (29-day backfill + daily sync) | Live | This file |
-| Ad account connect + campaign/adset/ad backfill | Live (browser) | This file |
-| Campaign analytics drill-down (campaign → ad set → ad) | Live | This file |
-| Detail-page date filters (URL-synced) | Live | This file |
-| Live Meta breakdowns (age / gender / placement) | Live (browser) | This file |
-| Midnight PHP cron (yesterday sync) | Live | [scripts/growth-and-analytics/php/README.md](../../scripts/growth-and-analytics/php/README.md) |
+**Routes**
 
-## Data model
+| Portal | Base path |
+|--------|-----------|
+| Team | `/team-portal/growth-and-analytics` |
+| Client | `/client-portal/growth-and-analytics` |
 
-### Organic (Instagram Phase 1)
+Manage Accounts (team only): `…/manage-accounts`
 
-| Table | Purpose |
-|-------|---------|
-| `instagram_profiles` | Meta token, username, current follower count |
-| `past_posts_metrics` | Post-level reach, impressions, engagement (backfill + daily upsert) |
-| `instagram_daily_followers` | Net followers gained per calendar day |
+---
 
-Migrations: `018` (profiles + posts), `021` (daily followers).
+## Meta setup — System User token
 
-### Ads (campaign analytics)
+To avoid Meta’s per-portfolio app-sharing limits, Digi Carotene uses **one centralized System User token**.
 
-| Table | Purpose |
-|-------|---------|
-| `growth_ad_accounts` | Connected Meta ad accounts (token, currency) |
-| `growth_ad_campaign_daily_metrics` | Campaign daily spend, delivery, conversions |
-| `growth_adsets` | Ad set master (targeting/placement summaries) |
-| `growth_adset_daily_metrics` | Ad set daily metrics |
-| `growth_ads` | Ad master (name, creative summary) |
-| `growth_ad_daily_metrics` | Ad daily metrics |
+- Meta App + developer permissions live under **one primary Business Portfolio**
+- Client Pages / Instagram / ad accounts are **shared or granted** into that primary portfolio
+- **Do not** create a separate Meta App per client portfolio
 
-Migrations: `022` (campaign metrics), `025` (adset/ad masters + daily metrics). See [database.md](../database.md).
+### Steps (Meta Business Suite)
 
-**Breakdowns are not stored.** Age, gender, and placement pivots are fetched live from Meta Insights when the user selects a breakdown on a detail page. No extra migration or cron job.
+1. Open the **primary Business Portfolio** → **Settings** → **System Users**.
+2. Select the system user (e.g. `analytics-cron`).
+3. **Add assets** → assign the client Page(s) / Instagram account(s) / ad account(s) the system user needs (full control for those assets).
+4. **Generate token** under that system user with the Graph permissions required for the assets you sync, for example:
+   - Organic: `instagram_basic`, `instagram_manage_insights`, `pages_read_engagement`
+   - Ads: include ads read scopes as needed (`ads_read`, etc.)
+5. Copy the permanent System User access token.
 
-## Portals & client ownership
+That single token is authorized for the central Meta App and every assigned client asset. Paste it in **Manage Accounts** when connecting each account (same token can be reused across assigned assets).
 
-Growth & Analytics is a **logged-in-only** feature (not on the public site).
+---
 
-- **Team portal** — full experience under `/team-portal/growth-and-analytics` (guarded by `TeamRoute`): connect accounts (**Manage Accounts**), refresh tokens, view all analytics, build reports. The pages render inside the **team portal shell** (`TeamLayout`) — no separate shell — where "Growth & Analytics" is an **expandable sidebar group** with sub-links; the header shows the organic/ad account switcher on growth routes. `TeamLayout` wraps the growth account providers so the switcher works. When connecting an **organic** or **ad** account the team **selects the client** it belongs to → stored as `client_id` (migration `027`).
-- **Client portal** — same Growth pages as the team under `/client-portal/growth-and-analytics` (guarded by `ClientRoute`), scoped so every account query is filtered by the logged-in user's `client_id`. Read-only: no **Manage Accounts**, no connect/edit/token UI (`GrowthPortalProvider` sets `canManageAccounts: false`). Account providers receive `clientId` so the header switchers only list linked accounts. Nav children are filtered by linked account **type** (organic vs ad) — already known from which table the team connected; no extra dropdown. Ads-only clients skip Content Performance; organic-only clients skip Campaign Analytics. `ClientGrowthOutlet` shows a "contact Digi Carotene" empty state when nothing is linked. Clients do **not** need Meta developer setup for V1 — the agency connects assets and tags them with `client_id` (migration `027`).
+## Connect flow (in app)
 
-Growth & Analytics is no longer on the public site nav — it lives inside the portals only.
+### Organic (Instagram / Facebook Page)
 
-**Login vs data ownership are separate.** How a client logs in (Google / email / Facebook) only proves identity. Their analytics come from the `client_id` link on connected accounts — set by the team — so a Google-login client still sees the Meta data the team connected for them.
-
-"Meta account" is not one thing: an **organic account** is a Facebook Page or Instagram business profile (organic insights); an **ad account** is a Meta ad account `act_…` (paid campaign analytics). WhatsApp is out of scope for V1.
-
-## Connect flow
-
-### Organic
-
-1. User connects Instagram in **Manage Accounts** (selects the owning **client**).
-2. `runInstagram29DayBackfill` fetches media from Meta Graph **v24**.
-3. Posts in the last **29 completed days** (excludes today) → `past_posts_metrics`.
-4. `follower_count` insights for the same window → `instagram_daily_followers`.
-5. Profile row updated with latest token, username, and follower count.
+1. Team opens **Manage Accounts** → Connect Organic Account.
+2. Select the owning **client**, platform, account ID, and paste the System User token.
+3. App validates via Meta Graph, saves `growth_organic_accounts` (+ `instagram_profiles` for Instagram).
+4. Instagram: `runInstagram29DayBackfill` → last **29 completed days** into `past_posts_metrics` and `instagram_daily_followers`.
 
 ### Ads
 
-1. User connects an ad account in **Manage Accounts** (selects the owning **client**, pastes Meta access token).
-2. `runAdBackfill` pulls campaign / ad set / ad masters and daily metrics into Supabase.
-3. PHP cron extends stored rows nightly (`sync_yesterday_ads_acc.php`).
+1. Team opens **Manage Accounts** → Connect Ad Account.
+2. Select the owning **client**, ad account ID (`act_…`), currency, and paste the System User token.
+3. App validates, saves `growth_ad_accounts`, runs `runAdBackfill` (~90 days of campaign / ad set / ad metrics).
+4. PHP cron extends rows nightly (`sync_yesterday_ads_acc.php`).
 
-## Dashboard (organic)
+**Organic** vs **ad** accounts are separate. WhatsApp is out of scope for V1.
 
-- **Posts Interactions / Posts Reach** — aggregated from `past_posts_metrics` in the selected date range.
-- **Followers Gained** — sum of `instagram_daily_followers.followers_gained` in the selected range (populated on connect backfill, then extended nightly by PHP cron).
+---
 
-## Campaign analytics (ads)
+## Portals
 
-Hierarchy: **Campaign Analytics** → campaign detail → ad set detail → ad detail.
+| Portal | Access |
+|--------|--------|
+| **Team** | Full Growth UI + Manage Accounts. Connecting an account requires selecting `client_id` (migration `027`). |
+| **Client** | Same analytics pages, scoped by `client_id`. No Manage Accounts / token UI. Nav hides Content Performance or Campaign Analytics when that account type is not linked. |
 
-- **Stored metrics** — daily rows from Supabase, filtered client-side by the page date range (URL-synced `DateFilters`; no refetch on filter change).
-- **Breakdown dropdown** — on the main metrics table only:
-  - **Campaign detail** — *Daily metrics* table
-  - **Ad detail** — *Daily metrics* table
-- **Ad set detail → Ads table** — ad listing with links into each ad; no breakdown (entity list, not a metrics pivot).
-- **Breakdown options**
-  - **Age** and **Gender** — can be combined (Ads Manager–style pivot: age group → All → Male / Female / Uncategorised).
-  - **Placement** — exclusive; selecting it clears age/gender. Uses Meta `publisher_platform,platform_position`.
-- **Placement API limits** — Meta rejects `results` / `actions` with placement breakdowns, so conversions show as zero for placement rows (same as Ads Manager “—”).
-- **All time** — breakdown requests fall back to the default Meta sync window (~29 days) because Insights requires explicit dates.
+Login method (Google / email) is separate from data ownership. Clients see Meta data only because the team linked accounts to their `client_id`.
 
-## Daily sync (GoDaddy)
+---
 
-PHP **8.2.30** cron under `scripts/growth-and-analytics/php/`. See the [PHP README](../../scripts/growth-and-analytics/php/README.md) for setup.
+## Data model
+
+### Organic
+
+| Table | Purpose |
+|-------|---------|
+| `growth_organic_accounts` | Connected Page / Instagram + token + `client_id` |
+| `instagram_profiles` | Instagram token, username, follower count |
+| `past_posts_metrics` | Post reach, impressions, engagement |
+| `instagram_daily_followers` | Net followers gained per day |
+
+Migrations: `018`, `021`, `027`.
+
+### Ads
+
+| Table | Purpose |
+|-------|---------|
+| `growth_ad_accounts` | Connected ad account + token + `client_id` |
+| `growth_ad_campaign_daily_metrics` | Campaign daily metrics |
+| `growth_adsets` / `growth_adset_daily_metrics` | Ad set master + daily |
+| `growth_ads` / `growth_ad_daily_metrics` | Ad master + daily |
+
+Migrations: `022`, `025`, `027`.
+
+Age / gender / placement breakdowns are **not stored** — fetched live from Meta on detail pages when selected.
+
+---
+
+## Product surfaces
+
+| Area | Behavior |
+|------|----------|
+| **Dashboard** | Organic interactions / reach from `past_posts_metrics`; followers gained from `instagram_daily_followers` |
+| **Content Performance** | Per-post organic metrics |
+| **Campaign Analytics** | Campaign → ad set → ad drill-down from stored daily metrics; optional live age/gender/placement breakdowns |
+| **Reports / Custom Report** | Team-built report flows |
+
+Daily sync after connect: [PHP cron README](../../scripts/growth-and-analytics/php/README.md).
+
+---
 
 ## Code map
 
 ```
 src/features/growth-and-analytics/   UI, hooks, utils
-  hooks/useGrowthAdEntityBreakdown.ts   Live Meta breakdown fetch (campaign / adset / ad scope)
-  components/tables/DailyMetricsBreakdownSelect.tsx
-  utils/campaignDemographicBreakdown.ts
 src/services/
-  instagramBackfillService.ts      Connect backfill (organic)
-  adBackfillService.ts             Connect backfill (ads)
-  instagramDailyFollowersService.ts  Follower rows
-  pastPostsMetricsService.ts         Post rows
-  metaService.ts                     Meta Graph API (incl. fetchAdBreakdownInsights)
-scripts/growth-and-analytics/php/    Midnight cron
+  growthAccountsService.ts       Connect / update accounts
+  metaService.ts                 Meta Graph API
+  instagramBackfillService.ts    Organic connect backfill
+  adBackfillService.ts           Ads connect backfill
+  pastPostsMetricsService.ts
+  instagramDailyFollowersService.ts
+scripts/growth-and-analytics/php/    Midnight yesterday sync
 ```

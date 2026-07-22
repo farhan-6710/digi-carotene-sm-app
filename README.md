@@ -18,6 +18,7 @@ Service management app for **Digi Carotene**, a digital marketing agency.
 | Clients             | Company registry                                     |
 | Projects            | Social links, manager, team assignments              |
 | Posts               | Month calendar — `Not posted`, `Scheduled`, `Posted` |
+| Growth & Analytics  | Meta organic + ads; Manage Accounts (System User token) |
 | Analytics & Reports | Agency and client activity                           |
 
 Public marketing site (home, about, contact) plus auth at `/auth`.

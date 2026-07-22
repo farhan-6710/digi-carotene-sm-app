@@ -32,6 +32,7 @@ Reference docs for the Digi Carotene service management app: database schema, DT
 clients (company)
   └── projects (social URLs, manager, team)
         └── posts (schedule, platform tags, post links)
+  └── growth_organic_accounts / growth_ad_accounts (Meta assets + client_id)
 team_members (internal team)
 profiles (auth roles + portal client_id)
 ```
