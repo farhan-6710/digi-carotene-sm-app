@@ -104,50 +104,50 @@ export const DB = {
     SELECT:
       "id, platform, account_name, account_id, followers, profile_picture, is_active, client_id, created_at",
   },
-  GROWTH_AD_ACCOUNTS: {
-    TABLE: "growth_ad_accounts",
-    SELECT:
-      "id, client_id, client_name, account_name, ad_account_id, currency_code, created_at",
-  },
-  INSTAGRAM_PROFILES: {
-    TABLE: "instagram_profiles",
+  GROWTH_ORGANIC_PROFILES: {
+    TABLE: "growth_organic_profiles",
     SELECT: "id, instagram_id, username, followers_count, organic_account_id, created_at",
   },
-  PAST_POSTS_METRICS: {
-    TABLE: "past_posts_metrics",
+  GROWTH_ORGANIC_POSTS_METRICS: {
+    TABLE: "growth_organic_posts_metrics",
     SELECT:
       "id, account_id, post_id, caption, media_type, created_at, reach, impressions, likes, comments, saves, shares, reposts, post_thumbnail",
   },
-  INSTAGRAM_DAILY_FOLLOWERS: {
-    TABLE: "instagram_daily_followers",
+  GROWTH_ORGANIC_DAILY_FOLLOWERS: {
+    TABLE: "growth_organic_daily_followers",
     SELECT: "date, followers_gained",
+  },
+  GROWTH_ADS_ACCOUNTS: {
+    TABLE: "growth_ads_accounts",
+    SELECT:
+      "id, client_id, client_name, account_name, ad_account_id, currency_code, created_at",
   },
   CURRENCIES: {
     TABLE: "currencies",
     SELECT: "code, name, symbol",
   },
-  AD_CAMPAIGN_DAILY_METRICS: {
-    TABLE: "growth_ad_campaign_daily_metrics",
+  GROWTH_ADS_CAMPAIGN_DAILY_METRICS: {
+    TABLE: "growth_ads_campaign_daily_metrics",
     SELECT:
       "id, ad_account_id, campaign_id, campaign_name, status, objective, metric_date, spend, impressions, reach, clicks, cpm, frequency, conversions",
   },
-  ADSETS: {
-    TABLE: "growth_adsets",
+  GROWTH_ADS_ADSETS: {
+    TABLE: "growth_ads_adsets",
     SELECT:
       "id, ad_account_id, campaign_id, adset_id, adset_name, performance_goal, location_summary, age_summary, custom_targeting_summary, detailed_targeting_summary, placements_summary",
   },
-  ADSET_DAILY_METRICS: {
-    TABLE: "growth_adset_daily_metrics",
+  GROWTH_ADS_ADSET_DAILY_METRICS: {
+    TABLE: "growth_ads_adset_daily_metrics",
     SELECT:
       "id, ad_account_id, campaign_id, adset_id, adset_name, metric_date, spend, impressions, reach, clicks, cpm, frequency, conversions",
   },
-  ADS: {
-    TABLE: "growth_ads",
+  GROWTH_ADS_ADS: {
+    TABLE: "growth_ads_ads",
     SELECT:
       "id, ad_account_id, campaign_id, adset_id, ad_id, ad_name, thumbnail_url, primary_text, headline",
   },
-  AD_DAILY_METRICS: {
-    TABLE: "growth_ad_daily_metrics",
+  GROWTH_ADS_AD_DAILY_METRICS: {
+    TABLE: "growth_ads_ad_daily_metrics",
     SELECT:
       "id, ad_account_id, campaign_id, adset_id, ad_id, ad_name, metric_date, spend, impressions, reach, clicks, cpm, frequency, conversions",
   },

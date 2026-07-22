@@ -79,8 +79,8 @@ You should see log lines like:
 
 Check Supabase:
 
-- Instagram: `past_posts_metrics`, `instagram_daily_followers`
-- Ads: `growth_ad_campaign_daily_metrics`
+- Instagram: `growth_organic_posts_metrics`, `growth_organic_daily_followers`
+- Ads: `growth_ads_campaign_daily_metrics`
 
 ### 5. Add GoDaddy cron (cPanel)
 
@@ -137,23 +137,23 @@ The **cron secret** in the URL stops random visitors from triggering a sync. Use
 **Reliability tips:**
 
 - Pick **12:05 AM** (not exactly midnight) in your `config.php` timezone
-- Once a week, spot-check Supabase for yesterday’s `instagram_daily_followers` row
+- Once a week, spot-check Supabase for yesterday’s `growth_organic_daily_followers` row
 - If a run fails, open the test URL manually — it’s idempotent (upserts, no duplicates)
 
 ---
 
 ## What the scripts do
 
-**Instagram (`sync_yesterday_organic_acc.php`)** — for each `instagram_profiles` row, for **yesterday only**:
+**Instagram (`sync_yesterday_organic_acc.php`)** — for each `growth_organic_profiles` row, for **yesterday only**:
 
-- Upserts posts → `past_posts_metrics`
-- Upserts follower gain → `instagram_daily_followers`
+- Upserts posts → `growth_organic_posts_metrics`
+- Upserts follower gain → `growth_organic_daily_followers`
 - Updates profile `followers_count` and `username`
 
-**Ads (`sync_yesterday_ads_acc.php`)** — for each `growth_ad_accounts` row, for **yesterday only**:
+**Ads (`sync_yesterday_ads_acc.php`)** — for each `growth_ads_accounts` row, for **yesterday only**:
 
 - Fetches campaign-level insights from Meta (`spend`, `impressions`, `clicks`, `actions`)
-- Upserts rows → `growth_ad_campaign_daily_metrics`
+- Upserts rows → `growth_ads_campaign_daily_metrics`
 
 Connect/reconnect in the app still backfills the last **29 days** in the browser (organic + ads).
 

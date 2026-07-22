@@ -39,8 +39,8 @@ export async function fetchDailyFollowersForProfile(
   range: GrowthDateRange = {},
 ): Promise<DailyFollowerRow[]> {
   const base = supabase
-    .from(DB.INSTAGRAM_DAILY_FOLLOWERS.TABLE)
-    .select(DB.INSTAGRAM_DAILY_FOLLOWERS.SELECT)
+    .from(DB.GROWTH_ORGANIC_DAILY_FOLLOWERS.TABLE)
+    .select(DB.GROWTH_ORGANIC_DAILY_FOLLOWERS.SELECT)
     .eq("account_id", profileId)
     .order("date", { ascending: true });
 
@@ -60,7 +60,7 @@ export async function replaceDailyFollowersForProfile(
   toDate: string,
 ): Promise<void> {
   const { error: deleteError } = await supabase
-    .from(DB.INSTAGRAM_DAILY_FOLLOWERS.TABLE)
+    .from(DB.GROWTH_ORGANIC_DAILY_FOLLOWERS.TABLE)
     .delete()
     .eq("account_id", profileId)
     .gte("date", fromDate)
@@ -70,7 +70,7 @@ export async function replaceDailyFollowersForProfile(
   if (rows.length === 0) return;
 
   const { error: insertError } = await supabase
-    .from(DB.INSTAGRAM_DAILY_FOLLOWERS.TABLE)
+    .from(DB.GROWTH_ORGANIC_DAILY_FOLLOWERS.TABLE)
     .insert(
       rows.map((row) => ({
         account_id: profileId,
@@ -87,7 +87,7 @@ export async function upsertDailyFollower(
   date: string,
   gained: number,
 ): Promise<void> {
-  const { error } = await supabase.from(DB.INSTAGRAM_DAILY_FOLLOWERS.TABLE).upsert(
+  const { error } = await supabase.from(DB.GROWTH_ORGANIC_DAILY_FOLLOWERS.TABLE).upsert(
     {
       account_id: profileId,
       date,

@@ -25,7 +25,7 @@ try {
 
     $accounts = fetchAdAccounts($config);
     if ($accounts === []) {
-        logLine('No growth_ad_accounts rows found.');
+        logLine('No growth_ads_accounts rows found.');
         exit(0);
     }
 

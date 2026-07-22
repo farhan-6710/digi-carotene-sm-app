@@ -61,8 +61,8 @@ export async function fetchAdsetsByCampaign(
   campaignId: string,
 ): Promise<Adset[]> {
   const { data, error } = await supabase
-    .from(DB.ADSETS.TABLE)
-    .select(DB.ADSETS.SELECT)
+    .from(DB.GROWTH_ADS_ADSETS.TABLE)
+    .select(DB.GROWTH_ADS_ADSETS.SELECT)
     .eq("ad_account_id", adAccountId)
     .eq("campaign_id", campaignId)
     .order("adset_name", { ascending: true });
@@ -76,8 +76,8 @@ export async function fetchAdsetById(
   adsetId: string,
 ): Promise<Adset | null> {
   const { data, error } = await supabase
-    .from(DB.ADSETS.TABLE)
-    .select(DB.ADSETS.SELECT)
+    .from(DB.GROWTH_ADS_ADSETS.TABLE)
+    .select(DB.GROWTH_ADS_ADSETS.SELECT)
     .eq("ad_account_id", adAccountId)
     .eq("adset_id", adsetId)
     .maybeSingle();
@@ -92,7 +92,7 @@ export async function replaceAdsetsForAccount(
   rows: AdsetMasterInsert[],
 ): Promise<void> {
   const { error: deleteError } = await supabase
-    .from(DB.ADSETS.TABLE)
+    .from(DB.GROWTH_ADS_ADSETS.TABLE)
     .delete()
     .eq("ad_account_id", adAccountId);
 
@@ -100,7 +100,7 @@ export async function replaceAdsetsForAccount(
   if (rows.length === 0) return;
 
   const { error: insertError } = await supabase
-    .from(DB.ADSETS.TABLE)
+    .from(DB.GROWTH_ADS_ADSETS.TABLE)
     .insert(rows.map((row) => toInsertRow(adAccountId, row)));
 
   if (insertError) throw new Error(insertError.message);
@@ -111,7 +111,7 @@ export async function upsertAdsetMaster(
   row: AdsetMasterInsert,
 ): Promise<void> {
   const { error } = await supabase
-    .from(DB.ADSETS.TABLE)
+    .from(DB.GROWTH_ADS_ADSETS.TABLE)
     .upsert(toInsertRow(adAccountId, row), { onConflict: "ad_account_id,adset_id" });
 
   if (error) throw new Error(error.message);
@@ -119,7 +119,7 @@ export async function upsertAdsetMaster(
 
 export async function clearAdsetsForAccount(adAccountId: string): Promise<void> {
   const { error } = await supabase
-    .from(DB.ADSETS.TABLE)
+    .from(DB.GROWTH_ADS_ADSETS.TABLE)
     .delete()
     .eq("ad_account_id", adAccountId);
 

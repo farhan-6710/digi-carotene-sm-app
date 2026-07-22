@@ -62,8 +62,8 @@ export async function fetchPastPostsForProfile(
   range: GrowthDateRange = {},
 ): Promise<PastPostMetric[]> {
   const base = supabase
-    .from(DB.PAST_POSTS_METRICS.TABLE)
-    .select(DB.PAST_POSTS_METRICS.SELECT)
+    .from(DB.GROWTH_ORGANIC_POSTS_METRICS.TABLE)
+    .select(DB.GROWTH_ORGANIC_POSTS_METRICS.SELECT)
     .eq("account_id", profileId)
     .order("created_at", { ascending: false });
 
@@ -74,8 +74,8 @@ export async function fetchPastPostsForProfile(
 
 export async function fetchPastPostById(id: string): Promise<PastPostMetric | null> {
   const { data, error } = await supabase
-    .from(DB.PAST_POSTS_METRICS.TABLE)
-    .select(DB.PAST_POSTS_METRICS.SELECT)
+    .from(DB.GROWTH_ORGANIC_POSTS_METRICS.TABLE)
+    .select(DB.GROWTH_ORGANIC_POSTS_METRICS.SELECT)
     .eq("id", id)
     .maybeSingle();
 
@@ -87,7 +87,7 @@ export async function fetchPastPostNeighborIds(
   post: Pick<PastPostMetric, "id" | "accountId">,
 ): Promise<{ previousPostId: string | null; nextPostId: string | null }> {
   const { data, error } = await supabase
-    .from(DB.PAST_POSTS_METRICS.TABLE)
+    .from(DB.GROWTH_ORGANIC_POSTS_METRICS.TABLE)
     .select("id")
     .eq("account_id", post.accountId)
     .order("created_at", { ascending: false });
@@ -126,7 +126,7 @@ export async function replacePastPostsForProfile(
   posts: PastPostInsert[],
 ): Promise<void> {
   const { error: deleteError } = await supabase
-    .from(DB.PAST_POSTS_METRICS.TABLE)
+    .from(DB.GROWTH_ORGANIC_POSTS_METRICS.TABLE)
     .delete()
     .eq("account_id", profileId);
 
@@ -134,7 +134,7 @@ export async function replacePastPostsForProfile(
   if (posts.length === 0) return;
 
   const { error: insertError } = await supabase
-    .from(DB.PAST_POSTS_METRICS.TABLE)
+    .from(DB.GROWTH_ORGANIC_POSTS_METRICS.TABLE)
     .insert(
       posts.map((post) => ({
         account_id: profileId,
@@ -160,7 +160,7 @@ export async function upsertPastPost(
   profileId: string,
   post: PastPostInsert,
 ): Promise<void> {
-  const { error } = await supabase.from(DB.PAST_POSTS_METRICS.TABLE).upsert(
+  const { error } = await supabase.from(DB.GROWTH_ORGANIC_POSTS_METRICS.TABLE).upsert(
     {
       account_id: profileId,
       post_id: post.postId,
@@ -186,7 +186,7 @@ export async function clearPastPostsForOrganicAccount(
   organicAccountId: string,
 ): Promise<void> {
   const { data, error } = await supabase
-    .from(DB.INSTAGRAM_PROFILES.TABLE)
+    .from(DB.GROWTH_ORGANIC_PROFILES.TABLE)
     .select("id")
     .eq("organic_account_id", organicAccountId)
     .maybeSingle();
@@ -195,7 +195,7 @@ export async function clearPastPostsForOrganicAccount(
   if (!data) return;
 
   const { error: deleteError } = await supabase
-    .from(DB.PAST_POSTS_METRICS.TABLE)
+    .from(DB.GROWTH_ORGANIC_POSTS_METRICS.TABLE)
     .delete()
     .eq("account_id", (data as { id: string }).id);
 

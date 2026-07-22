@@ -83,8 +83,8 @@ export async function fetchAdsetMetricsByCampaign(
   range: GrowthDateRange = {},
 ): Promise<AdsetMetricRow[]> {
   const base = supabase
-    .from(DB.ADSET_DAILY_METRICS.TABLE)
-    .select(DB.ADSET_DAILY_METRICS.SELECT)
+    .from(DB.GROWTH_ADS_ADSET_DAILY_METRICS.TABLE)
+    .select(DB.GROWTH_ADS_ADSET_DAILY_METRICS.SELECT)
     .eq("ad_account_id", adAccountId)
     .eq("campaign_id", campaignId)
     .order("metric_date", { ascending: true });
@@ -99,8 +99,8 @@ export async function fetchAdsetMetricsByAdsetId(
   adsetId: string,
 ): Promise<AdsetMetricRow[]> {
   const { data, error } = await supabase
-    .from(DB.ADSET_DAILY_METRICS.TABLE)
-    .select(DB.ADSET_DAILY_METRICS.SELECT)
+    .from(DB.GROWTH_ADS_ADSET_DAILY_METRICS.TABLE)
+    .select(DB.GROWTH_ADS_ADSET_DAILY_METRICS.SELECT)
     .eq("ad_account_id", adAccountId)
     .eq("adset_id", adsetId)
     .order("metric_date", { ascending: false });
@@ -115,7 +115,7 @@ export async function fetchAdsetNeighborIds(
   adsetId: string,
 ): Promise<{ previousAdsetId: string | null; nextAdsetId: string | null }> {
   const { data, error } = await supabase
-    .from(DB.ADSET_DAILY_METRICS.TABLE)
+    .from(DB.GROWTH_ADS_ADSET_DAILY_METRICS.TABLE)
     .select("adset_id, spend")
     .eq("ad_account_id", adAccountId)
     .eq("campaign_id", campaignId);
@@ -147,7 +147,7 @@ export async function replaceAdsetMetricsForAccount(
   rows: AdsetMetricInsert[],
 ): Promise<void> {
   const { error: deleteError } = await supabase
-    .from(DB.ADSET_DAILY_METRICS.TABLE)
+    .from(DB.GROWTH_ADS_ADSET_DAILY_METRICS.TABLE)
     .delete()
     .eq("ad_account_id", adAccountId)
     .gte("metric_date", fromDate)
@@ -157,7 +157,7 @@ export async function replaceAdsetMetricsForAccount(
   if (rows.length === 0) return;
 
   const { error: insertError } = await supabase
-    .from(DB.ADSET_DAILY_METRICS.TABLE)
+    .from(DB.GROWTH_ADS_ADSET_DAILY_METRICS.TABLE)
     .insert(rows.map((row) => toInsertRow(adAccountId, row)));
 
   if (insertError) throw new Error(insertError.message);
@@ -168,7 +168,7 @@ export async function upsertAdsetMetric(
   row: AdsetMetricInsert,
 ): Promise<void> {
   const { error } = await supabase
-    .from(DB.ADSET_DAILY_METRICS.TABLE)
+    .from(DB.GROWTH_ADS_ADSET_DAILY_METRICS.TABLE)
     .upsert(toInsertRow(adAccountId, row), {
       onConflict: "ad_account_id,adset_id,metric_date",
     });
@@ -178,7 +178,7 @@ export async function upsertAdsetMetric(
 
 export async function clearAdsetMetricsForAccount(adAccountId: string): Promise<void> {
   const { error } = await supabase
-    .from(DB.ADSET_DAILY_METRICS.TABLE)
+    .from(DB.GROWTH_ADS_ADSET_DAILY_METRICS.TABLE)
     .delete()
     .eq("ad_account_id", adAccountId);
 

@@ -26,15 +26,15 @@ Run only the migrations you have not applied yet, in order (`002` onward). See [
 | `post_approval_requests` | Executive backdated post approval workflow              |
 | `profiles`             | Auth user roles + portal `client_id`                        |
 | `growth_organic_accounts` | Connected Instagram/Facebook profiles (Meta token + followers); `client_id` FK links the account to a client |
-| `growth_ad_accounts`   | Connected Meta ad accounts; `client_id` FK links the account to a client |
-| `growth_ad_campaign_daily_metrics` | Campaign daily ad metrics (backfill + cron)          |
-| `growth_adsets`        | Ad set master rows (targeting / placement summaries)        |
-| `growth_adset_daily_metrics` | Ad set daily metrics                                  |
-| `growth_ads`           | Ad master rows (name, creative summary)                     |
-| `growth_ad_daily_metrics` | Ad daily metrics                                         |
-| `instagram_profiles`   | Instagram credentials + follower count (Phase 1 analytics)    |
-| `past_posts_metrics`   | Post-level metrics from the 29-day connect backfill + daily sync |
-| `instagram_daily_followers` | Net followers gained per day (backfill + midnight cron)   |
+| `growth_organic_profiles` | Instagram credentials + follower count |
+| `growth_organic_posts_metrics` | Post-level metrics from connect backfill + daily sync |
+| `growth_organic_daily_followers` | Net followers gained per day (backfill + midnight cron) |
+| `growth_ads_accounts` | Connected Meta ad accounts; `client_id` FK links the account to a client |
+| `growth_ads_campaign_daily_metrics` | Campaign daily ad metrics (backfill + cron) |
+| `growth_ads_adsets` | Ad set master rows (targeting / placement summaries) |
+| `growth_ads_adset_daily_metrics` | Ad set daily metrics |
+| `growth_ads_ads` | Ad master rows (name, creative summary) |
+| `growth_ads_ad_daily_metrics` | Ad daily metrics |
 
 ## Relationships
 

@@ -80,6 +80,7 @@ function normalizeAdAccountId(adAccountId: string): string {
 
 function isDuplicateAccountError(message: string): boolean {
   return message.includes("growth_organic_accounts_platform_account_id_key")
+    || message.includes("growth_ads_accounts_ad_account_id_key")
     || message.includes("growth_ad_accounts_ad_account_id_key")
     || message.includes("duplicate key");
 }
@@ -101,8 +102,8 @@ async function findOrganicByMetaId(
 
 async function findAdByMetaId(metaAdAccountId: string): Promise<AdAccount | null> {
   const { data, error } = await supabase
-    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
-    .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
+    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
+    .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
     .eq("ad_account_id", metaAdAccountId)
     .maybeSingle();
 
@@ -122,8 +123,8 @@ export async function fetchOrganicAccounts(): Promise<OrganicAccount[]> {
 
 export async function fetchAdAccounts(): Promise<AdAccount[]> {
   const { data, error } = await supabase
-    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
-    .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
+    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
+    .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
     .order("created_at", { ascending: true });
 
   if (error) throw new Error(error.message);
@@ -149,8 +150,8 @@ export async function fetchAdAccountsByClientId(
   clientId: string,
 ): Promise<AdAccount[]> {
   const { data, error } = await supabase
-    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
-    .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
+    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
+    .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
     .eq("client_id", clientId)
     .order("created_at", { ascending: true });
 
@@ -160,7 +161,7 @@ export async function fetchAdAccountsByClientId(
 
 export async function fetchAdAccountAccessToken(accountId: string): Promise<string> {
   const { data, error } = await supabase
-    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
+    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
     .select("access_token")
     .eq("id", accountId)
     .maybeSingle();
@@ -304,7 +305,7 @@ export async function connectAdAccount(form: AdAccountForm): Promise<AdAccount> 
   const clientName = clientId ? await resolveClientName(clientId) : "";
 
   const { data, error } = await supabase
-    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
+    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
     .insert({
       client_id: clientId,
       client_name: clientName,
@@ -313,7 +314,7 @@ export async function connectAdAccount(form: AdAccountForm): Promise<AdAccount> 
       access_token: token,
       currency_code: currencyCode,
     })
-    .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
+    .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
     .single();
 
   if (error) {
@@ -350,10 +351,10 @@ export async function updateAdAccount(
   }
 
   const { data, error } = await supabase
-    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
+    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
     .update(columns)
     .eq("id", id)
-    .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
+    .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
     .single();
 
   if (error) throw new Error(error.message);
@@ -369,7 +370,7 @@ export async function updateAdAccount(
 
 export async function deleteAdAccount(id: string): Promise<void> {
   const { error } = await supabase
-    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
+    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
     .delete()
     .eq("id", id);
 

@@ -53,8 +53,8 @@ export async function fetchAdsByAdset(
   adsetId: string,
 ): Promise<Ad[]> {
   const { data, error } = await supabase
-    .from(DB.ADS.TABLE)
-    .select(DB.ADS.SELECT)
+    .from(DB.GROWTH_ADS_ADS.TABLE)
+    .select(DB.GROWTH_ADS_ADS.SELECT)
     .eq("ad_account_id", adAccountId)
     .eq("adset_id", adsetId)
     .order("ad_name", { ascending: true });
@@ -68,8 +68,8 @@ export async function fetchAdById(
   adId: string,
 ): Promise<Ad | null> {
   const { data, error } = await supabase
-    .from(DB.ADS.TABLE)
-    .select(DB.ADS.SELECT)
+    .from(DB.GROWTH_ADS_ADS.TABLE)
+    .select(DB.GROWTH_ADS_ADS.SELECT)
     .eq("ad_account_id", adAccountId)
     .eq("ad_id", adId)
     .maybeSingle();
@@ -84,7 +84,7 @@ export async function replaceAdsForAccount(
   rows: AdMasterInsert[],
 ): Promise<void> {
   const { error: deleteError } = await supabase
-    .from(DB.ADS.TABLE)
+    .from(DB.GROWTH_ADS_ADS.TABLE)
     .delete()
     .eq("ad_account_id", adAccountId);
 
@@ -92,7 +92,7 @@ export async function replaceAdsForAccount(
   if (rows.length === 0) return;
 
   const { error: insertError } = await supabase
-    .from(DB.ADS.TABLE)
+    .from(DB.GROWTH_ADS_ADS.TABLE)
     .insert(rows.map((row) => toInsertRow(adAccountId, row)));
 
   if (insertError) throw new Error(insertError.message);
@@ -103,7 +103,7 @@ export async function upsertAdMaster(
   row: AdMasterInsert,
 ): Promise<void> {
   const { error } = await supabase
-    .from(DB.ADS.TABLE)
+    .from(DB.GROWTH_ADS_ADS.TABLE)
     .upsert(toInsertRow(adAccountId, row), { onConflict: "ad_account_id,ad_id" });
 
   if (error) throw new Error(error.message);
@@ -111,7 +111,7 @@ export async function upsertAdMaster(
 
 export async function clearAdsForAccount(adAccountId: string): Promise<void> {
   const { error } = await supabase
-    .from(DB.ADS.TABLE)
+    .from(DB.GROWTH_ADS_ADS.TABLE)
     .delete()
     .eq("ad_account_id", adAccountId);
 

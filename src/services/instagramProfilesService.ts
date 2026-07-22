@@ -22,8 +22,8 @@ function mapProfile(row: ProfileRow): InstagramProfile {
 
 export async function fetchInstagramProfiles(): Promise<InstagramProfile[]> {
   const { data, error } = await supabase
-    .from(DB.INSTAGRAM_PROFILES.TABLE)
-    .select(DB.INSTAGRAM_PROFILES.SELECT)
+    .from(DB.GROWTH_ORGANIC_PROFILES.TABLE)
+    .select(DB.GROWTH_ORGANIC_PROFILES.SELECT)
     .order("username", { ascending: true });
 
   if (error) throw new Error(error.message);
@@ -42,7 +42,7 @@ export async function createInstagramProfile(
   input: CreateInstagramProfileInput,
 ): Promise<InstagramProfile> {
   const { data, error } = await supabase
-    .from(DB.INSTAGRAM_PROFILES.TABLE)
+    .from(DB.GROWTH_ORGANIC_PROFILES.TABLE)
     .insert({
       instagram_id: input.instagramId,
       username: input.username,
@@ -50,7 +50,7 @@ export async function createInstagramProfile(
       followers_count: input.followersCount,
       organic_account_id: input.organicAccountId,
     })
-    .select(DB.INSTAGRAM_PROFILES.SELECT)
+    .select(DB.GROWTH_ORGANIC_PROFILES.SELECT)
     .single();
 
   if (error) throw new Error(error.message);
@@ -64,7 +64,7 @@ export async function updateInstagramProfileToken(
   username: string,
 ): Promise<void> {
   const { error } = await supabase
-    .from(DB.INSTAGRAM_PROFILES.TABLE)
+    .from(DB.GROWTH_ORGANIC_PROFILES.TABLE)
     .update({
       access_token: accessToken,
       followers_count: followersCount,
@@ -79,8 +79,8 @@ export async function fetchInstagramProfileById(
   profileId: string,
 ): Promise<InstagramProfile | null> {
   const { data, error } = await supabase
-    .from(DB.INSTAGRAM_PROFILES.TABLE)
-    .select(DB.INSTAGRAM_PROFILES.SELECT)
+    .from(DB.GROWTH_ORGANIC_PROFILES.TABLE)
+    .select(DB.GROWTH_ORGANIC_PROFILES.SELECT)
     .eq("id", profileId)
     .maybeSingle();
 
@@ -92,8 +92,8 @@ export async function fetchInstagramProfileByOrganicAccountId(
   organicAccountId: string,
 ): Promise<InstagramProfile | null> {
   const { data, error } = await supabase
-    .from(DB.INSTAGRAM_PROFILES.TABLE)
-    .select(DB.INSTAGRAM_PROFILES.SELECT)
+    .from(DB.GROWTH_ORGANIC_PROFILES.TABLE)
+    .select(DB.GROWTH_ORGANIC_PROFILES.SELECT)
     .eq("organic_account_id", organicAccountId)
     .maybeSingle();
 
@@ -105,7 +105,7 @@ export async function fetchInstagramProfileAccessToken(
   profileId: string,
 ): Promise<string | null> {
   const { data, error } = await supabase
-    .from(DB.INSTAGRAM_PROFILES.TABLE)
+    .from(DB.GROWTH_ORGANIC_PROFILES.TABLE)
     .select("access_token")
     .eq("id", profileId)
     .maybeSingle();

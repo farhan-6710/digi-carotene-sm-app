@@ -21,7 +21,7 @@ function fetchInstagramProfiles(array $config): array
     $rows = supabaseRequest(
         $config,
         'GET',
-        'instagram_profiles?select=id,instagram_id,username,access_token',
+        'growth_organic_profiles?select=id,instagram_id,username,access_token',
     );
 
     return is_array($rows) ? $rows : [];
@@ -32,7 +32,7 @@ function upsertPastPost(array $config, string $profileId, array $post): void
     supabaseRequest(
         $config,
         'POST',
-        'past_posts_metrics?on_conflict=account_id,post_id',
+        'growth_organic_posts_metrics?on_conflict=account_id,post_id',
         [
             'account_id' => $profileId,
             'post_id' => $post['post_id'],
@@ -57,7 +57,7 @@ function upsertDailyFollower(array $config, string $profileId, string $date, int
     supabaseRequest(
         $config,
         'POST',
-        'instagram_daily_followers?on_conflict=account_id,date',
+        'growth_organic_daily_followers?on_conflict=account_id,date',
         [
             'account_id' => $profileId,
             'date' => $date,
@@ -72,7 +72,7 @@ function updateInstagramProfile(array $config, string $profileId, string $userna
     supabaseRequest(
         $config,
         'PATCH',
-        'instagram_profiles?id=eq.' . rawurlencode($profileId),
+        'growth_organic_profiles?id=eq.' . rawurlencode($profileId),
         [
             'username' => $username,
             'followers_count' => $followersCount,
@@ -88,7 +88,7 @@ function fetchAdAccounts(array $config): array
     $rows = supabaseRequest(
         $config,
         'GET',
-        'growth_ad_accounts?select=id,ad_account_id,account_name,access_token',
+        'growth_ads_accounts?select=id,ad_account_id,account_name,access_token',
     );
 
     return is_array($rows) ? $rows : [];
@@ -99,7 +99,7 @@ function upsertAdCampaignMetric(array $config, string $adAccountId, array $row):
     supabaseRequest(
         $config,
         'POST',
-        'growth_ad_campaign_daily_metrics?on_conflict=ad_account_id,campaign_id,metric_date',
+        'growth_ads_campaign_daily_metrics?on_conflict=ad_account_id,campaign_id,metric_date',
         [
             'ad_account_id' => $adAccountId,
             'campaign_id' => $row['campaign_id'],
@@ -124,7 +124,7 @@ function upsertAdsetMaster(array $config, string $adAccountId, array $row): void
     supabaseRequest(
         $config,
         'POST',
-        'growth_adsets?on_conflict=ad_account_id,adset_id',
+        'growth_ads_adsets?on_conflict=ad_account_id,adset_id',
         [
             'ad_account_id' => $adAccountId,
             'campaign_id' => $row['campaign_id'],
@@ -146,7 +146,7 @@ function upsertAdMaster(array $config, string $adAccountId, array $row): void
     supabaseRequest(
         $config,
         'POST',
-        'growth_ads?on_conflict=ad_account_id,ad_id',
+        'growth_ads_ads?on_conflict=ad_account_id,ad_id',
         [
             'ad_account_id' => $adAccountId,
             'campaign_id' => $row['campaign_id'],
@@ -166,7 +166,7 @@ function upsertAdsetMetric(array $config, string $adAccountId, array $row): void
     supabaseRequest(
         $config,
         'POST',
-        'growth_adset_daily_metrics?on_conflict=ad_account_id,adset_id,metric_date',
+        'growth_ads_adset_daily_metrics?on_conflict=ad_account_id,adset_id,metric_date',
         [
             'ad_account_id' => $adAccountId,
             'campaign_id' => $row['campaign_id'],
@@ -190,7 +190,7 @@ function upsertAdMetric(array $config, string $adAccountId, array $row): void
     supabaseRequest(
         $config,
         'POST',
-        'growth_ad_daily_metrics?on_conflict=ad_account_id,ad_id,metric_date',
+        'growth_ads_ad_daily_metrics?on_conflict=ad_account_id,ad_id,metric_date',
         [
             'ad_account_id' => $adAccountId,
             'campaign_id' => $row['campaign_id'],

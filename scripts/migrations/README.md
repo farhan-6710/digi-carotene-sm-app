@@ -29,11 +29,17 @@ Run only migrations you have **not** applied yet, in order:
 | `015_ensure_profile_link_triggers.sql` | Re-create profile auto-link triggers + signup hook; ensure `link_profile_by_email` sets `profiles.role = 'team'` and grant its execute (idempotent) |
 | `016_growth_and_analytics.sql` | Growth & Analytics tables (schema only, no seed data) with anon-accessible RLS |
 | `017_growth_account_unique.sql` | Unique constraints on growth account Meta IDs |
-| `018_instagram_growth_phase1.sql` | Drops legacy growth metric tables; adds `instagram_profiles` + `past_posts_metrics` |
+| `018_instagram_growth_phase1.sql` | Drops legacy growth metric tables; adds `instagram_profiles` + `past_posts_metrics` (renamed in `028`) |
 | `019_past_posts_reposts.sql` | Adds `reposts` column to `past_posts_metrics` |
 | `020_past_posts_thumbnail.sql` | Adds `post_thumbnail` column to `past_posts_metrics` |
 | `021_instagram_daily_followers.sql` | Daily follower gain per Instagram profile (backfill + cron) |
-| `027_growth_account_client_link.sql` | Adds nullable `client_id` FK to `growth_organic_accounts` + `growth_ad_accounts` so the client portal can show a client only their own connected accounts |
+| `022_ad_campaign_metrics.sql` | Campaign daily metrics + currency on ad accounts |
+| `023_ad_campaign_objective.sql` | Adds `objective` to campaign daily metrics |
+| `024_ad_campaign_reach_cpm_frequency.sql` | Adds reach / CPM / frequency to campaign daily metrics |
+| `025_ad_adset_tables.sql` | Ad set + ad master/daily metric tables |
+| `026_posts_post_type.sql` | Posts `post_type` column |
+| `027_growth_account_client_link.sql` | Adds nullable `client_id` FK to organic + ads account tables |
+| `028_rename_growth_tables.sql` | Renames Growth tables to `growth_organic_*` / `growth_ads_*` prefixes |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

@@ -45,14 +45,14 @@ That single token is authorized for the central Meta App and every assigned clie
 
 1. Team opens **Manage Accounts** → Connect Organic Account.
 2. Select the owning **client**, platform, account ID, and paste the System User token.
-3. App validates via Meta Graph, saves `growth_organic_accounts` (+ `instagram_profiles` for Instagram).
-4. Instagram: `runInstagram29DayBackfill` → last **29 completed days** into `past_posts_metrics` and `instagram_daily_followers`.
+3. App validates via Meta Graph, saves `growth_organic_accounts` (+ `growth_organic_profiles` for Instagram).
+4. Instagram: `runInstagram29DayBackfill` → last **29 completed days** into `growth_organic_posts_metrics` and `growth_organic_daily_followers`.
 
 ### Ads
 
 1. Team opens **Manage Accounts** → Connect Ad Account.
 2. Select the owning **client**, ad account ID (`act_…`), currency, and paste the System User token.
-3. App validates, saves `growth_ad_accounts`, runs `runAdBackfill` (~90 days of campaign / ad set / ad metrics).
+3. App validates, saves `growth_ads_accounts`, runs `runAdBackfill` (~90 days of campaign / ad set / ad metrics).
 4. PHP cron extends rows nightly (`sync_yesterday_ads_acc.php`).
 
 **Organic** vs **ad** accounts are separate. WhatsApp is out of scope for V1.
@@ -77,22 +77,22 @@ Login method (Google / email) is separate from data ownership. Clients see Meta 
 | Table | Purpose |
 |-------|---------|
 | `growth_organic_accounts` | Connected Page / Instagram + token + `client_id` |
-| `instagram_profiles` | Instagram token, username, follower count |
-| `past_posts_metrics` | Post reach, impressions, engagement |
-| `instagram_daily_followers` | Net followers gained per day |
+| `growth_organic_profiles` | Instagram token, username, follower count |
+| `growth_organic_posts_metrics` | Post reach, impressions, engagement |
+| `growth_organic_daily_followers` | Net followers gained per day |
 
-Migrations: `018`, `021`, `027`.
+Migrations: `018`, `021`, `027`, `028`.
 
 ### Ads
 
 | Table | Purpose |
 |-------|---------|
-| `growth_ad_accounts` | Connected ad account + token + `client_id` |
-| `growth_ad_campaign_daily_metrics` | Campaign daily metrics |
-| `growth_adsets` / `growth_adset_daily_metrics` | Ad set master + daily |
-| `growth_ads` / `growth_ad_daily_metrics` | Ad master + daily |
+| `growth_ads_accounts` | Connected ad account + token + `client_id` |
+| `growth_ads_campaign_daily_metrics` | Campaign daily metrics |
+| `growth_ads_adsets` / `growth_ads_adset_daily_metrics` | Ad set master + daily |
+| `growth_ads_ads` / `growth_ads_ad_daily_metrics` | Ad master + daily |
 
-Migrations: `022`, `025`, `027`.
+Migrations: `022`, `025`, `027`, `028`.
 
 Age / gender / placement breakdowns are **not stored** — fetched live from Meta on detail pages when selected.
 
@@ -102,7 +102,7 @@ Age / gender / placement breakdowns are **not stored** — fetched live from Met
 
 | Area | Behavior |
 |------|----------|
-| **Dashboard** | Organic interactions / reach from `past_posts_metrics`; followers gained from `instagram_daily_followers` |
+| **Dashboard** | Organic interactions / reach from `growth_organic_posts_metrics`; followers gained from `growth_organic_daily_followers` |
 | **Content Performance** | Per-post organic metrics |
 | **Campaign Analytics** | Campaign → ad set → ad drill-down from stored daily metrics; optional live age/gender/placement breakdowns |
 | **Reports / Custom Report** | Team-built report flows |

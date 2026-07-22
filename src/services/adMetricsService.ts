@@ -87,8 +87,8 @@ export async function fetchAdMetricsByAdset(
   range: GrowthDateRange = {},
 ): Promise<AdMetricRow[]> {
   const base = supabase
-    .from(DB.AD_DAILY_METRICS.TABLE)
-    .select(DB.AD_DAILY_METRICS.SELECT)
+    .from(DB.GROWTH_ADS_AD_DAILY_METRICS.TABLE)
+    .select(DB.GROWTH_ADS_AD_DAILY_METRICS.SELECT)
     .eq("ad_account_id", adAccountId)
     .eq("adset_id", adsetId)
     .order("metric_date", { ascending: true });
@@ -103,8 +103,8 @@ export async function fetchAdMetricsByAdId(
   adId: string,
 ): Promise<AdMetricRow[]> {
   const { data, error } = await supabase
-    .from(DB.AD_DAILY_METRICS.TABLE)
-    .select(DB.AD_DAILY_METRICS.SELECT)
+    .from(DB.GROWTH_ADS_AD_DAILY_METRICS.TABLE)
+    .select(DB.GROWTH_ADS_AD_DAILY_METRICS.SELECT)
     .eq("ad_account_id", adAccountId)
     .eq("ad_id", adId)
     .order("metric_date", { ascending: false });
@@ -119,7 +119,7 @@ export async function fetchAdNeighborIds(
   adId: string,
 ): Promise<{ previousAdId: string | null; nextAdId: string | null }> {
   const { data, error } = await supabase
-    .from(DB.AD_DAILY_METRICS.TABLE)
+    .from(DB.GROWTH_ADS_AD_DAILY_METRICS.TABLE)
     .select("ad_id, spend")
     .eq("ad_account_id", adAccountId)
     .eq("adset_id", adsetId);
@@ -151,7 +151,7 @@ export async function replaceAdMetricsForAccount(
   rows: AdMetricInsert[],
 ): Promise<void> {
   const { error: deleteError } = await supabase
-    .from(DB.AD_DAILY_METRICS.TABLE)
+    .from(DB.GROWTH_ADS_AD_DAILY_METRICS.TABLE)
     .delete()
     .eq("ad_account_id", adAccountId)
     .gte("metric_date", fromDate)
@@ -161,7 +161,7 @@ export async function replaceAdMetricsForAccount(
   if (rows.length === 0) return;
 
   const { error: insertError } = await supabase
-    .from(DB.AD_DAILY_METRICS.TABLE)
+    .from(DB.GROWTH_ADS_AD_DAILY_METRICS.TABLE)
     .insert(rows.map((row) => toInsertRow(adAccountId, row)));
 
   if (insertError) throw new Error(insertError.message);
@@ -172,7 +172,7 @@ export async function upsertAdMetric(
   row: AdMetricInsert,
 ): Promise<void> {
   const { error } = await supabase
-    .from(DB.AD_DAILY_METRICS.TABLE)
+    .from(DB.GROWTH_ADS_AD_DAILY_METRICS.TABLE)
     .upsert(toInsertRow(adAccountId, row), {
       onConflict: "ad_account_id,ad_id,metric_date",
     });
@@ -182,7 +182,7 @@ export async function upsertAdMetric(
 
 export async function clearAdMetricsForAccount(adAccountId: string): Promise<void> {
   const { error } = await supabase
-    .from(DB.AD_DAILY_METRICS.TABLE)
+    .from(DB.GROWTH_ADS_AD_DAILY_METRICS.TABLE)
     .delete()
     .eq("ad_account_id", adAccountId);
 

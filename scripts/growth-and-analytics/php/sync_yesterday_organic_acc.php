@@ -28,7 +28,7 @@ try {
 
     $profiles = fetchInstagramProfiles($config);
     if ($profiles === []) {
-        logLine('No instagram_profiles rows found.');
+        logLine('No growth_organic_profiles rows found.');
         exit(0);
     }
 
