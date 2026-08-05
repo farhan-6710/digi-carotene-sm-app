@@ -62,8 +62,8 @@ export function AddPostsPage() {
             {isSaving
               ? "Creating..."
               : drafts.length > 1
-                ? `Create ${drafts.length} posts`
-                : "Create post"}
+                ? `Save ${drafts.length} posts`
+                : "Save post"}
           </Button>
         }
       />
