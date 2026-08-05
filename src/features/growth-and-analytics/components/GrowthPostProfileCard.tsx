@@ -43,7 +43,8 @@ export function GrowthPostProfileCard({ view }: GrowthPostProfileCardProps) {
             {mediaTypeLabel} post
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Synced metrics from the last connect backfill.
+            Total reach, views, and engagement this post has earned since it was
+            published.
           </p>
         </div>
       </div>

@@ -35,7 +35,7 @@ export function GrowthDashboardPage() {
           <PageContent className="space-y-6 lg:col-span-2">
             <GrowthPostsDataChart
               title="Posts Data"
-              description="Monthly totals from synced posts for the selected metric."
+              description="Month-by-month totals for the selected metric across all published posts."
               rows={postsDataRows}
             />
           </PageContent>

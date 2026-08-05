@@ -104,14 +104,15 @@ export function AdDailyMetricsTable({
         : hasPlacement
           ? [{ label: "PLACEMENT" }]
           : [{ label: "DATE" }];
+  const breakdownTitle = hasPlacement ? "Placement" : "Age & gender";
 
   return (
     <DirectoryTable
-      title={isBreakdown ? (hasPlacement ? "Placement" : "Age & gender") : "Daily metrics"}
+      title={isBreakdown ? breakdownTitle : "Daily metrics"}
       description={
         isBreakdown
-          ? "Meta breakdown for this ad in the selected period."
-          : "Daily rows for the selected period."
+          ? `Spend and results split by ${breakdownTitle.toLowerCase()} for the selected period.`
+          : "Day-by-day spend and results for the selected period."
       }
       gridClass={gridClass}
       columns={[...leadingColumns, ...METRIC_COLUMNS]}
@@ -125,8 +126,8 @@ export function AdDailyMetricsTable({
       isEmpty={isBreakdown ? demographicView.rows.length === 0 : rows.length === 0}
       emptyMessage={
         isBreakdown
-          ? "No breakdown delivery for this ad in the selected period."
-          : "No daily metrics stored for this ad yet."
+          ? `This ad has no ${breakdownTitle.toLowerCase()} results in the selected period.`
+          : "This ad has no daily results in the selected period."
       }
     >
       {isBreakdown

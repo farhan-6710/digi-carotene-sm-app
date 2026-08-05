@@ -108,13 +108,14 @@ export function AdsTable({
         : hasPlacement
           ? [{ label: "PLACEMENT" }]
           : [{ label: "AD" }];
+  const breakdownTitle = hasPlacement ? "Placement" : "Age & gender";
 
   return (
     <DirectoryTable
-      title={isBreakdown ? (hasPlacement ? "Placement" : "Age & gender") : "Ads"}
+      title={isBreakdown ? breakdownTitle : "Ads"}
       description={
         isBreakdown
-          ? "Meta breakdown for this ad set in the selected period."
+          ? `Spend and results split by ${breakdownTitle.toLowerCase()} across this ad set.`
           : "Spend and performance by ad in this ad set."
       }
       gridClass={gridClass}
@@ -130,8 +131,8 @@ export function AdsTable({
       isEmpty={isBreakdown ? demographicView.rows.length === 0 : rows.length === 0}
       emptyMessage={
         isBreakdown
-          ? "No breakdown delivery for this ad set in the selected period."
-          : "No ads for this ad set yet."
+          ? `This ad set has no ${breakdownTitle.toLowerCase()} results in the selected period.`
+          : "This ad set has no ads in the selected period."
       }
     >
       {isBreakdown

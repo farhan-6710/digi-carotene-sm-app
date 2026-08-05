@@ -112,8 +112,8 @@ export function CampaignDailyMetricsTable({
       title={isBreakdown ? breakdownTitle : "Daily metrics"}
       description={
         isBreakdown
-          ? "Meta breakdown for the selected period."
-          : "Daily rows for the selected period."
+          ? `Spend and results split by ${breakdownTitle.toLowerCase()} for the selected period.`
+          : "Day-by-day spend and results for the selected period."
       }
       gridClass={gridClass}
       columns={[...leadingColumns, ...METRIC_COLUMNS]}
@@ -127,8 +127,8 @@ export function CampaignDailyMetricsTable({
       isEmpty={isBreakdown ? demographicView.rows.length === 0 : rows.length === 0}
       emptyMessage={
         isBreakdown
-          ? "No breakdown delivery for this campaign in the selected period."
-          : "No daily metrics stored for this campaign yet."
+          ? `This campaign has no ${breakdownTitle.toLowerCase()} results in the selected period.`
+          : "This campaign has no daily results in the selected period."
       }
     >
       {isBreakdown
