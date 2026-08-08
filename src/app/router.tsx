@@ -148,6 +148,10 @@ const NotificationsPage = lazyRoutePage(
   () => import("@/features/notifications/pages/NotificationsPage"),
   "NotificationsPage",
 );
+const ProductionPlannerPage = lazyRoutePage(
+  () => import("@/features/production-planner/pages/ProductionPlannerPage"),
+  "ProductionPlannerPage",
+);
 const ClientDashboardPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientDashboardPage"),
   "ClientDashboardPage",
@@ -240,6 +244,7 @@ export const router = createBrowserRouter([
             path: "post-approvals",
             element: <Navigate to="/team-portal/notifications" replace />,
           },
+          { path: "production-planner", element: <ProductionPlannerPage /> },
           { path: "projects-management", element: <ProjectsManagementPage /> },
           {
             path: "projects-management/:projectId",

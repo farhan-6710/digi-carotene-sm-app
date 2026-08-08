@@ -19,6 +19,11 @@ export const primaryNav: NavItem[] = [
   { label: "Projects", to: `${teamBasePath}/projects-management`, icon: "projects" },
   { label: "Posts", to: `${teamBasePath}/posts-management`, icon: "posts" },
   {
+    label: "Production Planner",
+    to: `${teamBasePath}/production-planner`,
+    icon: "productionPlanner",
+  },
+  {
     label: "Notifications",
     to: `${teamBasePath}/notifications`,
     icon: "notifications",

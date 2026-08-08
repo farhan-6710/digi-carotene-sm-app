@@ -40,6 +40,7 @@ Run only migrations you have **not** applied yet, in order:
 | `026_posts_post_type.sql` | Posts `post_type` column |
 | `027_growth_account_client_link.sql` | Adds nullable `client_id` FK to organic + ads account tables |
 | `028_rename_growth_tables.sql` | Renames Growth tables to `growth_organic_*` / `growth_ads_*` prefixes |
+| `029_production_plans.sql` | Adds `production_plans` table for the Production Planner feature |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

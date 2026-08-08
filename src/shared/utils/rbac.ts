@@ -5,14 +5,19 @@ import type { TeamMemberRole } from "@/features/team-management/constants/teamMe
 // the whole app stays in sync — never sprinkle `role === "admin"` checks
 // around components.
 
-export type RbacResource = "team" | "clients" | "projects" | "posts";
+export type RbacResource =
+  | "team"
+  | "clients"
+  | "projects"
+  | "posts"
+  | "productionPlans";
 export type RbacAction = "create" | "read" | "update" | "delete";
 export type Permission = `${RbacResource}.${RbacAction}`;
 
 // Resources each role has full CRUD on. Extend with finer-grained
 // `Permission[]` lists if a role ever needs partial access to a resource.
 const ROLE_RESOURCES: Record<TeamMemberRole, RbacResource[]> = {
-  admin: ["team", "clients", "projects", "posts"],
+  admin: ["team", "clients", "projects", "posts", "productionPlans"],
   manager: ["clients", "projects", "posts"],
   executive: ["posts"],
 };

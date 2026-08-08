@@ -70,6 +70,25 @@ const APPROVAL_SELECT = `
   )
 `;
 
+const PRODUCTION_PLAN_SELECT = `
+  id,
+  client_id,
+  plan_name,
+  plan_description,
+  start_date,
+  reels_count,
+  images_count,
+  carousels_count,
+  manager_approval,
+  shoot_incharge_approval,
+  created_at,
+  updated_at,
+  clients (
+    id,
+    client_name
+  )
+`;
+
 export const DB = {
   PROFILES: {
     TABLE: "profiles",
@@ -98,6 +117,10 @@ export const DB = {
   POST_APPROVAL_REQUESTS: {
     TABLE: "post_approval_requests",
     SELECT: APPROVAL_SELECT,
+  },
+  PRODUCTION_PLANS: {
+    TABLE: "production_plans",
+    SELECT: PRODUCTION_PLAN_SELECT,
   },
   GROWTH_ORGANIC_ACCOUNTS: {
     TABLE: "growth_organic_accounts",

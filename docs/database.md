@@ -24,6 +24,7 @@ Run only the migrations you have not applied yet, in order (`002` onward). See [
 | `project_team_members` | Extra team on a project (assignment history via `ended_at`) |
 | `posts`                | Scheduled content (`project_id` FK)                         |
 | `post_approval_requests` | Executive backdated post approval workflow              |
+| `production_plans`     | Production plans scheduled for clients, with deliverables and approvals |
 | `profiles`             | Auth user roles + portal `client_id`                        |
 | `growth_organic_accounts` | Connected Instagram/Facebook profiles (Meta token + followers); `client_id` FK links the account to a client |
 | `growth_organic_profiles` | Instagram credentials + follower count |
@@ -64,6 +65,7 @@ projects ──1:N── posts
 | `projects`             | Full CRUD                          | —                                             |
 | `project_team_members` | Full CRUD                          | —                                             |
 | `posts`                | Full CRUD                          | SELECT posts for projects under linked client |
+| `production_plans`     | Full CRUD                          | —                                             |
 | `profiles`             | Read/update own; team update any  | Read/update own                               |
 
 ## After setup
