@@ -37,7 +37,9 @@ export function PostDialogFormFields({
           </span>
           <ProjectSelect
             value={values.projectId}
-            onChange={(projectId) => patchValues({ projectId })}
+            onChange={(projectId, projectName) =>
+              patchValues({ projectId, projectName })
+            }
             disabled={disabled}
             preload={preloadOptions}
             selectedLabel={values.projectName}

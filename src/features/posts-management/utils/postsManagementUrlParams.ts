@@ -6,6 +6,8 @@ import {
 export const POSTS_DATE_PARAM = "date";
 export const POSTS_PROJECT_PARAM = "project";
 export const POSTS_PROJECT_NAME_PARAM = "projectName";
+export const POSTS_FROM_PARAM = "from";
+export const POSTS_FROM_DAY = "day";
 
 export function parsePostsDateFromSearchParams(
   searchParams: URLSearchParams,

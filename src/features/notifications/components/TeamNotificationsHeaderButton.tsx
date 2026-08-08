@@ -1,17 +1,14 @@
 import { Link } from "react-router";
-import { ClipboardCheck } from "lucide-react";
+import { Bell } from "lucide-react";
 
-import { POST_APPROVALS_PATH } from "@/features/post-approvals/constants/postApprovals";
+import { NOTIFICATIONS_PATH } from "@/features/notifications/constants/routes";
 import { useTeamReviewerAccess } from "@/features/post-approvals/providers/teamReviewerAccessContext";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 
-export function TeamApprovalsHeaderButton() {
+export function TeamNotificationsHeaderButton() {
   const { canReview, pendingCount } = useTeamReviewerAccess();
-
-  if (!canReview) {
-    return null;
-  }
+  const showBadge = canReview && pendingCount > 0;
 
   return (
     <Button
@@ -19,11 +16,15 @@ export function TeamApprovalsHeaderButton() {
       type="button"
       variant="secondary"
       className="relative size-9 rounded-xl border border-border p-0"
-      aria-label={`Open approvals${pendingCount > 0 ? `, ${pendingCount} pending` : ""}`}
+      aria-label={
+        showBadge
+          ? `Open notifications, ${pendingCount} pending approvals`
+          : "Open notifications"
+      }
     >
-      <Link to={POST_APPROVALS_PATH}>
-        <ClipboardCheck className="size-4" aria-hidden="true" />
-        {pendingCount > 0 ? (
+      <Link to={NOTIFICATIONS_PATH}>
+        <Bell className="size-4" aria-hidden="true" />
+        {showBadge ? (
           <span
             className={cn(
               "absolute -right-1 -top-2 flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full leading-none",

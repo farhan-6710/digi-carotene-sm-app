@@ -16,8 +16,8 @@ export const projectPostsColumns: DirectoryTableColumn[] = [
 
 export const projectPostsDirectoryConfig = {
   title: "Posts",
-  description: "All posts for this project, newest to-be-posted date first.",
+  description: "Posts scheduled in the selected period for this project.",
   gridClass: PROJECT_POSTS_GRID_CLASS,
   columns: projectPostsColumns,
-  emptyMessage: "No posts for this project in the selected month.",
+  emptyMessage: "No posts for this project in the selected period.",
 } as const;

@@ -2,8 +2,8 @@
 
 Approval workflow when an **executive** creates a post with a **to be posted** date/time in the past.
 
-**Route:** `/team-portal/post-approvals`  
-**Code:** `src/features/post-approvals/`  
+**UI:** Approvals section on `/team-portal/notifications` (role-gated)  
+**Code:** `src/features/post-approvals/` (section), `src/features/notifications/` (page + header bell)  
 **Setup:** `scripts/migrations/013_post_approval_requests.sql`
 
 ---

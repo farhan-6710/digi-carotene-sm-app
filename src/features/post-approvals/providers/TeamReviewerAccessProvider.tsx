@@ -6,9 +6,9 @@ import {
   type ReactNode,
 } from "react";
 
-import { POST_APPROVALS_UPDATED_EVENT } from "@/features/post-approvals/constants/postApprovals";
-import { canAccessApprovalsNav } from "@/features/post-approvals/utils/postApprovalRules";
+import { canAccessApprovalsSection } from "@/features/post-approvals/utils/postApprovalRules";
 import { TeamReviewerAccessContext } from "@/features/post-approvals/providers/teamReviewerAccessContext";
+import { POST_APPROVALS_UPDATED_EVENT } from "@/features/post-approvals/constants/postApprovals";
 import {
   countPendingApprovalsForReviewer,
   managesAnyProject,
@@ -35,7 +35,7 @@ export function TeamReviewerAccessProvider({
 
     try {
       const manages = await managesAnyProject(teamMemberId);
-      const hasAccess = canAccessApprovalsNav(teamRole, manages);
+      const hasAccess = canAccessApprovalsSection(teamRole, manages);
 
       setManagesProject(manages);
       setCanReview(hasAccess);

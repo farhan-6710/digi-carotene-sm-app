@@ -1,12 +1,14 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { statusOptions } from "@/features/posts-management/constants/postsManagement";
 import {
+  buildPostsDayPath,
   POSTS_MANAGEMENT_PATH,
   parseAddPostPrefillDate,
   parseAddPostPrefillProject,
+  parseAddPostReturnToDay,
 } from "@/features/posts-management/constants/routes";
 import { saveDraftDaysMutation } from "@/features/posts-management/utils/postDialogMutations";
 import {
@@ -58,19 +60,31 @@ export function useAddPostsPage() {
   const [searchParams] = useSearchParams();
   const { teamRole, teamMemberId } = useAuth();
 
-  const initialDraft = useMemo(() => {
-    const prefillDate = parseAddPostPrefillDate(searchParams) ?? new Date();
+  const [entryDate] = useState(() => parseAddPostPrefillDate(searchParams));
+  const [returnToDay] = useState(() => parseAddPostReturnToDay(searchParams));
+  const [drafts, setDrafts] = useState<PostDraftDay[]>(() => {
+    const prefillDate = entryDate ?? new Date();
     const prefillProject = parseAddPostPrefillProject(searchParams);
-    return createDraftDay(seedValuesFromDate(prefillDate, prefillProject));
-  }, [searchParams]);
-
-  const [drafts, setDrafts] = useState<PostDraftDay[]>([initialDraft]);
-  const [activeDayId, setActiveDayId] = useState(initialDraft.id);
+    return [createDraftDay(seedValuesFromDate(prefillDate, prefillProject))];
+  });
+  const [activeDayId, setActiveDayId] = useState(() => drafts[0]?.id ?? "");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [removeDayId, setRemoveDayId] = useState<string | null>(null);
 
   const activeDraft = drafts.find((draft) => draft.id === activeDayId) ?? drafts[0];
+  const selectedProjectName = activeDraft?.values.projectName.trim() ?? "";
+  const pageHeading = selectedProjectName
+    ? `Add Posts for ${selectedProjectName}`
+    : "Add posts";
+  const pageDescription = selectedProjectName
+    ? `Create and schedule posts for ${selectedProjectName}.`
+    : "Create and schedule multiple posts in one go.";
+  const backPath =
+    returnToDay && entryDate
+      ? buildPostsDayPath(entryDate)
+      : POSTS_MANAGEMENT_PATH;
+  const backLabel = returnToDay && entryDate ? "Back to day" : "Back to posts";
 
   const selectDay = useCallback((dayId: string) => {
     setActiveDayId(dayId);
@@ -131,7 +145,7 @@ export function useAddPostsPage() {
         return;
       }
 
-      navigate(POSTS_MANAGEMENT_PATH);
+      navigate(returnToDay && entryDate ? buildPostsDayPath(entryDate) : backPath);
     } catch (saveError) {
       const message =
         saveError instanceof Error
@@ -142,7 +156,16 @@ export function useAddPostsPage() {
     } finally {
       setIsSaving(false);
     }
-  }, [drafts, isSaving, navigate, teamMemberId, teamRole]);
+  }, [
+    backPath,
+    drafts,
+    entryDate,
+    isSaving,
+    navigate,
+    returnToDay,
+    teamMemberId,
+    teamRole,
+  ]);
 
   const canSave = drafts.every((draft) => {
     const schedule = draft.values.toBePostedOn;
@@ -159,6 +182,8 @@ export function useAddPostsPage() {
     drafts,
     activeDayId,
     activeDraft,
+    pageHeading,
+    pageDescription,
     statusOptions,
     isSaving,
     error,
@@ -170,6 +195,7 @@ export function useAddPostsPage() {
     patchActiveValues,
     saveAll,
     canSave,
-    backPath: POSTS_MANAGEMENT_PATH,
+    backPath,
+    backLabel,
   };
 }

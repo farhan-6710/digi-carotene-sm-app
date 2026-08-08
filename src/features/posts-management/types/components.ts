@@ -5,7 +5,7 @@ import type { PostFormValues } from "@/features/posts-management/utils/postFormU
 export type ProjectSelectProps = {
   id?: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange: (projectId: string, projectLabel: string) => void;
   disabled?: boolean;
   preload?: boolean;
   selectedLabel?: string;
@@ -60,8 +60,23 @@ export type PostsWeekDayCellProps = {
   isSelected: boolean;
   statusColors: Record<StatusKey, string>;
   statusText: Record<StatusKey, string>;
-  onAdd: () => void;
+  onOpenDay: () => void;
   onEdit: (postId: string) => void;
+};
+
+export type DayPostsTableProps = {
+  posts: import("@/features/posts-management/types/types").Post[];
+  isLoading: boolean;
+  onEditPost: (
+    post: import("@/features/posts-management/types/types").Post,
+  ) => void;
+};
+
+export type DayPostsTableRowProps = {
+  post: import("@/features/posts-management/types/types").Post;
+  onEditPost: (
+    post: import("@/features/posts-management/types/types").Post,
+  ) => void;
 };
 
 export type PostDialogProps = {
@@ -86,7 +101,7 @@ export type PostsManagementWeeksTableProps = {
     month: number,
     date: number,
   ) => import("@/features/posts-management/types/types").Slot | undefined;
-  onAdd: (year: number, month: number, date: number) => void;
+  onOpenDay: (year: number, month: number, date: number) => void;
   onEdit: (year: number, month: number, date: number, postId: string) => void;
   statusColors: Record<StatusKey, string>;
   statusText: Record<StatusKey, string>;

@@ -10,22 +10,20 @@ export const POST_APPROVAL_STATUS_LABELS = {
   rejected: "Rejected",
 } as const;
 
-export const POST_APPROVALS_PATH = "/team-portal/post-approvals";
-
 export const POST_APPROVALS_UPDATED_EVENT = "post-approvals-updated";
 
 export const postApprovalsDirectoryConfig = {
-  title: "Post approvals",
+  title: "Approvals",
   description:
-    "Review backdated post requests from executives before they are added to the calendar.",
+    "Backdated posts from executives waiting for approve or reject.",
   gridClass:
-    "grid grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.8fr)_auto] gap-4",
+    "grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.8fr)_auto]",
   columns: [
-    { label: "Post" },
-    { label: "Project" },
-    { label: "To be posted" },
-    { label: "Requested" },
-    { label: "Actions", align: "right" as const },
+    { label: "POST" },
+    { label: "PROJECT" },
+    { label: "TO BE POSTED" },
+    { label: "REQUESTED" },
+    { label: "ACTIONS", align: "right" as const },
   ],
-  emptyMessage: "No pending approval requests right now.",
+  emptyMessage: "No pending approval requests.",
 } as const;

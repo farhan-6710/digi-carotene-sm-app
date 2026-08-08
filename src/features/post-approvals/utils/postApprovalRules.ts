@@ -28,7 +28,7 @@ export function canReviewPostApprovalRequest(
   return teamMemberId === projectManagerId;
 }
 
-export function canAccessApprovalsNav(
+export function canAccessApprovalsSection(
   teamRole: TeamMemberRole | null,
   managesAnyProject: boolean,
 ): boolean {

@@ -1,8 +1,8 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
+  Bell,
   CalendarClock,
-  ClipboardCheck,
   FileBarChart2,
   FileText,
   FolderKanban,
@@ -26,7 +26,7 @@ export type ShellNavIconKey =
   | "team"
   | "analytics"
   | "reports"
-  | "approvals"
+  | "notifications"
   | "account"
   | "settings"
   | "growth"
@@ -45,7 +45,7 @@ export const shellNavIcons: Record<ShellNavIconKey, LucideIcon> = {
   analytics: BarChart3,
   growth: TrendingUp,
   reports: FileText,
-  approvals: ClipboardCheck,
+  notifications: Bell,
   account: UserRound,
   settings: Settings,
   contentPerformance: LineChart,

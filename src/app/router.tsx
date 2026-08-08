@@ -96,6 +96,10 @@ const AddPostsPage = lazyRoutePage(
   () => import("@/features/posts-management/pages/AddPostsPage"),
   "AddPostsPage",
 );
+const PostsDayPage = lazyRoutePage(
+  () => import("@/features/posts-management/pages/PostsDayPage"),
+  "PostsDayPage",
+);
 const ProjectsManagementPage = lazyRoutePage(
   () => import("@/features/projects-management/pages/ProjectsManagementPage"),
   "ProjectsManagementPage",
@@ -140,9 +144,9 @@ const SettingsPage = lazyRoutePage(
   () => import("@/features/settings/pages/SettingsPage"),
   "SettingsPage",
 );
-const PostApprovalsPage = lazyRoutePage(
-  () => import("@/features/post-approvals/pages/PostApprovalsPage"),
-  "PostApprovalsPage",
+const NotificationsPage = lazyRoutePage(
+  () => import("@/features/notifications/pages/NotificationsPage"),
+  "NotificationsPage",
 );
 const ClientDashboardPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientDashboardPage"),
@@ -224,10 +228,18 @@ export const router = createBrowserRouter([
           },
           { path: "posts-management", element: <PostsManagementPage /> },
           {
+            path: "posts-management/day/:date",
+            element: <PostsDayPage />,
+          },
+          {
             path: "posts-management/add-post",
             element: <AddPostsPage />,
           },
-          { path: "post-approvals", element: <PostApprovalsPage /> },
+          { path: "notifications", element: <NotificationsPage /> },
+          {
+            path: "post-approvals",
+            element: <Navigate to="/team-portal/notifications" replace />,
+          },
           { path: "projects-management", element: <ProjectsManagementPage /> },
           {
             path: "projects-management/:projectId",

@@ -22,7 +22,7 @@ export function PostsWeekDayCell({
   isSelected,
   statusColors,
   statusText,
-  onAdd,
+  onOpenDay,
   onEdit,
 }: PostsWeekDayCellProps) {
   const hasClients = Boolean(slot?.clients.length);
@@ -36,13 +36,13 @@ export function PostsWeekDayCell({
         "group flex min-h-[140px] cursor-pointer flex-col border-r p-4 text-left transition hover:bg-muted/40",
         isSelected ? "border-2 border-primary" : "border-border/70",
       )}
-      aria-label={`Add post for ${dayName} ${formatMonthDayLabel(year, month, dateNumber)}`}
+      aria-label={`View posts for ${dayName} ${formatMonthDayLabel(year, month, dateNumber)}`}
       aria-current={isSelected ? "date" : undefined}
-      onClick={onAdd}
+      onClick={onOpenDay}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
-          onAdd();
+          onOpenDay();
         }
       }}
     >
@@ -120,7 +120,7 @@ export function PostsWeekDayCell({
             })
         ) : (
           <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-border px-3 py-6 text-center text-xs text-muted-foreground">
-            Click to add post
+            Click to view day
           </div>
         )}
       </div>

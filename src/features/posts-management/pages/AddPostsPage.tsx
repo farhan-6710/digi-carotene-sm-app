@@ -16,6 +16,8 @@ export function AddPostsPage() {
     drafts,
     activeDayId,
     activeDraft,
+    pageHeading,
+    pageDescription,
     statusOptions,
     isSaving,
     error,
@@ -28,6 +30,7 @@ export function AddPostsPage() {
     saveAll,
     canSave,
     backPath,
+    backLabel,
   } = useAddPostsPage();
 
   const removeDraft = drafts.find((draft) => draft.id === removeDayId);
@@ -43,13 +46,13 @@ export function AddPostsPage() {
   return (
     <PageContent>
       <PageHeader
-        heading="Add posts"
-        description="Create and schedule multiple posts in one go."
+        heading={pageHeading}
+        description={pageDescription}
         backButton={
           <Button asChild variant="outline" className="rounded-full">
             <Link to={backPath}>
               <ArrowLeft className="mr-2 size-4" />
-              Back to posts
+              {backLabel}
             </Link>
           </Button>
         }

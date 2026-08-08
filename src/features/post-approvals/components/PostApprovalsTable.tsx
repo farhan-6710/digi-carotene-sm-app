@@ -1,16 +1,17 @@
 import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
 
+import { postApprovalsDirectoryConfig } from "@/features/post-approvals/constants/postApprovals";
 import type { PostApprovalsTableProps } from "@/features/post-approvals/types/components";
 import type { PostApprovalRequest } from "@/features/post-approvals/types/types";
 import {
   formatApprovalPostLabel,
-  formatApprovalProjectLabel,
   formatApprovalPostingTimeLabel,
+  formatApprovalProjectLabel,
 } from "@/features/post-approvals/utils/postApprovalDisplayUtils";
-import { DIRECTORY_TABLE_MIN_WIDTH_CLASS, TABLE_HORIZONTAL_SCROLL_CLASS } from "@/shared/constants/directoryTable";
-import { cn } from "@/shared/lib/utils";
+import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { Button } from "@/shared/ui/button";
+import { cn } from "@/shared/lib/utils";
 
 type PostApprovalsTableRowProps = {
   request: PostApprovalRequest;
@@ -26,24 +27,29 @@ function PostApprovalsTableRow({
   onReject,
 }: PostApprovalsTableRowProps) {
   return (
-    <div className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.8fr)_auto] items-center gap-4 border-b border-border/60 px-4 py-4 last:border-b-0">
+    <div
+      className={cn(
+        "grid items-center gap-4 px-6 py-4",
+        postApprovalsDirectoryConfig.gridClass,
+      )}
+    >
       <div className="min-w-0">
-        <div className="truncate text-sm font-medium text-foreground">
+        <p className="truncate text-sm font-medium text-foreground">
           {formatApprovalPostLabel(request)}
-        </div>
-        <div className="mt-1 text-xs text-muted-foreground">
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
           {request.requested_by_name ?? "Unknown requester"}
-        </div>
+        </p>
       </div>
-      <div className="min-w-0 truncate text-sm text-foreground">
+      <p className="min-w-0 truncate text-sm text-foreground">
         {formatApprovalProjectLabel(request)}
-      </div>
-      <div className="text-sm text-foreground">
+      </p>
+      <p className="text-sm text-foreground">
         {formatApprovalPostingTimeLabel(request)}
-      </div>
-      <div className="text-sm text-muted-foreground">
+      </p>
+      <p className="text-sm text-muted-foreground">
         {format(new Date(request.created_at), "MMM d, yyyy")}
-      </div>
+      </p>
       <div className="flex items-center justify-end gap-2">
         <Button
           type="button"
@@ -78,40 +84,25 @@ export function PostApprovalsTable({
   onApprove,
   onReject,
 }: PostApprovalsTableProps) {
-  if (isLoading) {
-    return (
-      <div className="flex min-h-48 items-center justify-center rounded-2xl border border-border bg-card">
-        <Loader2 className="size-6 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
-  if (requests.length === 0) {
-    return (
-      <div className="rounded-2xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground">
-        No pending approval requests right now.
-      </div>
-    );
-  }
-
   return (
-    <div
-      className={cn(
-        TABLE_HORIZONTAL_SCROLL_CLASS,
-        "w-full min-w-0 rounded-2xl border border-border bg-card",
-      )}
+    <DirectoryTable
+      title={postApprovalsDirectoryConfig.title}
+      description={postApprovalsDirectoryConfig.description}
+      gridClass={postApprovalsDirectoryConfig.gridClass}
+      columns={[...postApprovalsDirectoryConfig.columns]}
+      emptyMessage={postApprovalsDirectoryConfig.emptyMessage}
+      isLoading={isLoading}
+      isEmpty={requests.length === 0}
     >
-      <div className={DIRECTORY_TABLE_MIN_WIDTH_CLASS}>
-        {requests.map((request) => (
-          <PostApprovalsTableRow
-            key={request.id}
-            request={request}
-            isReviewing={isReviewingId === request.id}
-            onApprove={onApprove}
-            onReject={onReject}
-          />
-        ))}
-      </div>
-    </div>
+      {requests.map((request) => (
+        <PostApprovalsTableRow
+          key={request.id}
+          request={request}
+          isReviewing={isReviewingId === request.id}
+          onApprove={onApprove}
+          onReject={onReject}
+        />
+      ))}
+    </DirectoryTable>
   );
 }

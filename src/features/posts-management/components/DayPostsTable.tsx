@@ -1,15 +1,11 @@
-import { ProjectPostsTableRow } from "@/features/projects-management/components/ProjectPostsTableRow";
-import { projectPostsDirectoryConfig } from "@/features/projects-management/constants/projectPostsDirectory";
+import { DayPostsTableRow } from "@/features/posts-management/components/DayPostsTableRow";
+import { dayPostsDirectoryConfig } from "@/features/posts-management/constants/dayPostsDirectory";
 import { useProjectPostsFilters } from "@/features/projects-management/hooks/useProjectPostsFilters";
-import type { ProjectPostsTableProps } from "@/features/projects-management/types/components";
+import type { DayPostsTableProps } from "@/features/posts-management/types/components";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { PostStatusFilter } from "@/shared/ui/PostStatusFilter";
 
-export function ProjectPostsTable({
-  posts,
-  isLoading,
-  onEditPost,
-}: ProjectPostsTableProps) {
+export function DayPostsTable({ posts, isLoading, onEditPost }: DayPostsTableProps) {
   const {
     filteredPosts,
     showAll,
@@ -20,11 +16,11 @@ export function ProjectPostsTable({
 
   return (
     <DirectoryTable
-      title={projectPostsDirectoryConfig.title}
-      description={projectPostsDirectoryConfig.description}
-      gridClass={projectPostsDirectoryConfig.gridClass}
-      columns={projectPostsDirectoryConfig.columns}
-      emptyMessage={projectPostsDirectoryConfig.emptyMessage}
+      title={dayPostsDirectoryConfig.title}
+      description={dayPostsDirectoryConfig.description}
+      gridClass={dayPostsDirectoryConfig.gridClass}
+      columns={dayPostsDirectoryConfig.columns}
+      emptyMessage={dayPostsDirectoryConfig.emptyMessage}
       isLoading={isLoading}
       isEmpty={filteredPosts.length === 0}
       headerAside={
@@ -37,7 +33,7 @@ export function ProjectPostsTable({
       }
     >
       {filteredPosts.map((post) => (
-        <ProjectPostsTableRow
+        <DayPostsTableRow
           key={post.id}
           post={post}
           onEditPost={onEditPost}

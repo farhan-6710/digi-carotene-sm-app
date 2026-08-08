@@ -29,16 +29,15 @@ export function ProjectSelect({
   );
 
   const options = useMemo(() => {
-    const seedOptions =
-      value && selectedLabel
-        ? [
-            {
-              value,
-              label: selectedLabel,
-              icon: <FolderKanban className="size-3.5 opacity-70" />,
-            },
-          ]
-        : [];
+    const seedOptions = value
+      ? [
+          {
+            value,
+            label: selectedLabel?.trim() || "Selected project",
+            icon: <FolderKanban className="size-3.5 opacity-70" />,
+          },
+        ]
+      : [];
 
     const fetchedOptions = projects.map((project) => ({
       value: project.id,
@@ -53,7 +52,11 @@ export function ProjectSelect({
     <ComboBox
       id={id}
       value={value}
-      onChange={onChange}
+      onChange={(projectId) => {
+        const label =
+          options.find((option) => option.value === projectId)?.label ?? "";
+        onChange(projectId, label);
+      }}
       options={options}
       isLoading={isLoading}
       disabled={disabled}

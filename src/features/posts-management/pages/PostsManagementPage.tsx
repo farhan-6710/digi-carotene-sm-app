@@ -5,7 +5,10 @@ import { MonthSelector } from "@/shared/ui/MonthSelector";
 import { PostDialog } from "@/features/posts-management/components/PostDialog";
 import { PostsManagementStatusLegend } from "@/features/posts-management/components/PostsManagementStatusLegend";
 import { PostsManagementWeeksTable } from "@/features/posts-management/components/PostsManagementWeeksTable";
-import { buildAddPostsPath } from "@/features/posts-management/constants/routes";
+import {
+  buildAddPostsPath,
+  buildPostsDayPath,
+} from "@/features/posts-management/constants/routes";
 import {
   statusColors,
   statusText,
@@ -28,17 +31,17 @@ export function PostsManagementPage() {
   const { isLoading, error, getSlot, openEditDialog, dialog } =
     usePostsManagement(year, month);
 
-  const goToAddPost = (slotYear: number, slotMonth: number, date: number) => {
+  const goToDay = (slotYear: number, slotMonth: number, date: number) => {
     const target = new Date(slotYear, slotMonth - 1, date);
     selectDate(target);
-    navigate(buildAddPostsPath({ date: target }));
+    navigate(buildPostsDayPath(target));
   };
 
   return (
     <PageContent>
       <PageHeader
         heading="Posts Management"
-        description="Manage daily client posts by time and status. Click any day to add a post or tap one to update it."
+        description="Browse the content calendar by month. Open any day to review its posts, or add a new one."
         actions={
           can("posts.create") ? (
             <Button asChild className="gap-2 rounded-full px-5 shadow-sm">
@@ -74,7 +77,7 @@ export function PostsManagementPage() {
           weeks={calendarWeeks}
           selectedDate={selectedDate}
           getSlot={getSlot}
-          onAdd={goToAddPost}
+          onOpenDay={goToDay}
           onEdit={openEditDialog}
           statusColors={statusColors}
           statusText={statusText}

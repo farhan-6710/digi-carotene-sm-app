@@ -16,7 +16,7 @@ export function PostsManagementWeeksTable({
   weeks,
   selectedDate,
   getSlot,
-  onAdd,
+  onOpenDay,
   onEdit,
   statusColors,
   statusText,
@@ -89,7 +89,7 @@ export function PostsManagementWeeksTable({
                       )}
                       statusColors={statusColors}
                       statusText={statusText}
-                      onAdd={() => onAdd(year, month, dateNumber)}
+                      onOpenDay={() => onOpenDay(year, month, dateNumber)}
                       onEdit={(postId) =>
                         onEdit(year, month, dateNumber, postId)
                       }

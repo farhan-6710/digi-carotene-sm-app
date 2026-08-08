@@ -170,18 +170,37 @@ export async function fetchPostsForClientId(clientId: string): Promise<Post[]> {
   return mapPostRows(data ?? []);
 }
 
-export async function fetchTodayPosts(): Promise<Post[]> {
-  const { data, error } = await supabase
+export async function fetchPostsForDate(
+  date: string,
+  /** When set, only posts on these projects. Empty array → no posts. Omit/null → all. */
+  projectIds?: string[] | null,
+): Promise<Post[]> {
+  if (projectIds && projectIds.length === 0) {
+    return [];
+  }
+
+  let query = supabase
     .from(DB.POSTS.TABLE)
     .select(DB.POSTS.SELECT)
-    .eq("to_be_posted_date", todayDateString())
-    .order("to_be_posted_time", { ascending: true });
+    .eq("to_be_posted_date", date);
+
+  if (projectIds) {
+    query = query.in("project_id", projectIds);
+  }
+
+  const { data, error } = await query.order("to_be_posted_time", {
+    ascending: true,
+  });
 
   if (error) {
     throw error;
   }
 
   return mapPostRows(data ?? []);
+}
+
+export async function fetchTodayPosts(): Promise<Post[]> {
+  return fetchPostsForDate(todayDateString());
 }
 
 export async function fetchNotPostedPosts(limit?: number): Promise<Post[]> {

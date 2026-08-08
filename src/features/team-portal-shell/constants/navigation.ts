@@ -18,6 +18,11 @@ export const primaryNav: NavItem[] = [
   { label: "Clients", to: `${teamBasePath}/clients-management`, icon: "clients" },
   { label: "Projects", to: `${teamBasePath}/projects-management`, icon: "projects" },
   { label: "Posts", to: `${teamBasePath}/posts-management`, icon: "posts" },
+  {
+    label: "Notifications",
+    to: `${teamBasePath}/notifications`,
+    icon: "notifications",
+  },
   { label: "Analytics", to: `${teamBasePath}/analytics`, icon: "analytics" },
   {
     label: "Growth & Analytics",
@@ -29,12 +34,6 @@ export const primaryNav: NavItem[] = [
   { label: "Account", to: `${teamBasePath}/account`, icon: "account" },
   { label: "Settings", to: `${teamBasePath}/settings`, icon: "settings" },
 ];
-
-export const approvalsNavItem: NavItem = {
-  label: "Approvals",
-  to: `${teamBasePath}/post-approvals`,
-  icon: "approvals",
-};
 
 export const appMeta = {
   name: "Digi Carotene",

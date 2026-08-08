@@ -9,34 +9,36 @@ import {
 import { GrowthPortalProvider } from "@/features/growth-and-analytics/providers/GrowthPortalProvider";
 import { GrowthSelectedAccountProvider } from "@/features/growth-and-analytics/providers/GrowthSelectedAccountProvider";
 import { GrowthSelectedAdAccountProvider } from "@/features/growth-and-analytics/providers/GrowthSelectedAdAccountProvider";
-import { TeamApprovalsHeaderButton } from "@/features/post-approvals/components/TeamApprovalsHeaderButton";
-import { useTeamShellConfig } from "@/features/post-approvals/hooks/useTeamShellConfig";
+import { TeamNotificationsHeaderButton } from "@/features/notifications/components/TeamNotificationsHeaderButton";
 import { TeamReviewerAccessProvider } from "@/features/post-approvals/providers/TeamReviewerAccessProvider";
+import { teamShellConfig } from "@/features/team-portal-shell/constants/shellConfig";
 import { AppShellLayout } from "@/shared/layouts/AppShellLayout";
 
 function TeamLayoutShell() {
-  const sidebarConfig = useTeamShellConfig();
   const { pathname } = useLocation();
   const isGrowthRoute = pathname.startsWith(teamGrowthBasePath);
   const accounts = growthHeaderAccounts(pathname);
 
-  let headerActions = <TeamApprovalsHeaderButton />;
+  let growthHeaderActions = null;
   if (isGrowthRoute) {
     if (accounts === "ad") {
-      headerActions = <GrowthAdAccountHeaderMenu />;
+      growthHeaderActions = <GrowthAdAccountHeaderMenu />;
     } else if (accounts === "organic") {
-      headerActions = <GrowthAccountHeaderMenu />;
-    } else {
-      headerActions = <></>;
+      growthHeaderActions = <GrowthAccountHeaderMenu />;
     }
   }
 
   return (
     <AppShellLayout
-      sidebarConfig={sidebarConfig}
+      sidebarConfig={teamShellConfig}
       accountPath="/team-portal/account"
       settingsPath="/team-portal/settings"
-      headerActions={headerActions}
+      headerActions={
+        <div className="flex items-center gap-2">
+          <TeamNotificationsHeaderButton />
+          {growthHeaderActions}
+        </div>
+      }
       mobileNavDescription="Team portal navigation links and quick actions"
     />
   );
