@@ -83,7 +83,7 @@ export function useProductionPlanDialog({
         clientId: values.clientId,
         planName: values.planName.trim(),
         planDescription: values.planDescription.trim() || null,
-        startDate: values.startDate,
+        shootDate: values.shootDate,
         reelsCount: parseInt(values.reelsCount, 10) || 0,
         imagesCount: parseInt(values.imagesCount, 10) || 0,
         carouselsCount: parseInt(values.carouselsCount, 10) || 0,

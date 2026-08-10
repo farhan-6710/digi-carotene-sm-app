@@ -1,6 +1,6 @@
-import type { ProductionPlan, ProductionPlanItem } from "./types";
+import type { ProductionPlan, ProductionPlanContent } from "./types";
 import type { ProductionPlanFormValues } from "../utils/productionPlanFormUtils";
-import type { ProductionPlanItemFormValues } from "../utils/productionPlanItemFormUtils";
+import type { ProductionPlanContentFormValues } from "../utils/productionPlanContentFormUtils";
 
 export type ProductionPlansTableProps = {
   plans: ProductionPlan[];
@@ -20,21 +20,21 @@ export type ProductionPlanDialogProps = {
   onDelete?: () => void;
 };
 
-export type ProductionPlanItemsTableProps = {
-  items: ProductionPlanItem[];
+export type ProductionPlanContentsTableProps = {
+  contents: ProductionPlanContent[];
   isLoading: boolean;
   canEdit: boolean;
-  onEdit: (item: ProductionPlanItem) => void;
+  onEdit: (content: ProductionPlanContent) => void;
 };
 
-export type ProductionPlanItemDialogProps = {
+export type ProductionPlanContentDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isEditing: boolean;
   isSaving?: boolean;
-  values: ProductionPlanItemFormValues;
+  values: ProductionPlanContentFormValues;
   onFieldChange: (
-    field: keyof ProductionPlanItemFormValues,
+    field: keyof ProductionPlanContentFormValues,
     value: string,
   ) => void;
   onSave: () => void;

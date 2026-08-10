@@ -1,12 +1,12 @@
 import { Link, useParams } from "react-router";
 import { ArrowLeft, Plus } from "lucide-react";
 
-import { ProductionPlanItemDialog } from "@/features/production-planner/components/ProductionPlanItemDialog";
-import { ProductionPlanItemsTable } from "@/features/production-planner/components/ProductionPlanItemsTable";
+import { ProductionPlanContentDialog } from "@/features/production-planner/components/ProductionPlanContentDialog";
+import { ProductionPlanContentsTable } from "@/features/production-planner/components/ProductionPlanContentsTable";
 import { ProductionPlanSummaryCard } from "@/features/production-planner/components/ProductionPlanSummaryCard";
 import { PRODUCTION_PLANNER_PATH } from "@/features/production-planner/constants/routes";
 import { useProductionPlanDetailQuery } from "@/features/production-planner/hooks/useProductionPlanDetailQuery";
-import { useProductionPlanItemDialog } from "@/features/production-planner/hooks/useProductionPlanItemDialog";
+import { useProductionPlanContentDialog } from "@/features/production-planner/hooks/useProductionPlanContentDialog";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -32,9 +32,9 @@ export function ProductionPlanDetailPage() {
   const canUpdate = can("productionPlans.update");
   const canManage = canCreate || canUpdate;
 
-  const { plan, items, isLoading, error, setError, reload } =
+  const { plan, contents, isLoading, error, setError, reload } =
     useProductionPlanDetailQuery(planId);
-  const { openAddDialog, openEditDialog, dialog } = useProductionPlanItemDialog(
+  const { openAddDialog, openEditDialog, dialog } = useProductionPlanContentDialog(
     {
       productionPlanId: planId,
       reload,
@@ -59,7 +59,7 @@ export function ProductionPlanDetailPage() {
     <PageContent>
       <PageHeader
         heading={plan.plan_name}
-        description="Review plan details and manage individual items with approval status."
+        description="Review plan details and manage individual content with approval status."
         backButton={<PlanDetailBackButton />}
         actions={
           canCreate ? (
@@ -68,7 +68,7 @@ export function ProductionPlanDetailPage() {
               className="cursor-pointer rounded-full shadow-sm"
             >
               <Plus className="mr-2 size-4" />
-              Add Item
+              Add Content
             </Button>
           ) : null
         }
@@ -78,14 +78,14 @@ export function ProductionPlanDetailPage() {
 
       <ProductionPlanSummaryCard plan={plan} />
 
-      <ProductionPlanItemsTable
-        items={items}
+      <ProductionPlanContentsTable
+        contents={contents}
         isLoading={false}
         canEdit={canUpdate}
         onEdit={openEditDialog}
       />
 
-      {canManage ? <ProductionPlanItemDialog {...dialog} /> : null}
+      {canManage ? <ProductionPlanContentDialog {...dialog} /> : null}
     </PageContent>
   );
 }

@@ -2,7 +2,7 @@ import { useCallback } from "react";
 
 import type {
   ProductionPlan,
-  ProductionPlanItem,
+  ProductionPlanContent,
 } from "@/features/production-planner/types/types";
 import { fetchProductionPlanItems } from "@/services/productionPlanItemsService";
 import { fetchProductionPlanById } from "@/services/productionPlansService";
@@ -10,10 +10,10 @@ import { useFetch } from "@/shared/hooks/useFetch";
 
 type ProductionPlanDetail = {
   plan: ProductionPlan | null;
-  items: ProductionPlanItem[];
+  contents: ProductionPlanContent[];
 };
 
-const EMPTY: ProductionPlanDetail = { plan: null, items: [] };
+const EMPTY: ProductionPlanDetail = { plan: null, contents: [] };
 
 export function useProductionPlanDetailQuery(planId: string) {
   const load = useCallback(async (): Promise<ProductionPlanDetail> => {
@@ -21,19 +21,19 @@ export function useProductionPlanDetailQuery(planId: string) {
       return EMPTY;
     }
 
-    const [plan, items] = await Promise.all([
+    const [plan, contents] = await Promise.all([
       fetchProductionPlanById(planId),
       fetchProductionPlanItems(planId),
     ]);
 
-    return { plan, items };
+    return { plan, contents };
   }, [planId]);
 
   const { data, isLoading, error, setError, reload } = useFetch(load, EMPTY);
 
   return {
     plan: data.plan,
-    items: data.items,
+    contents: data.contents,
     isLoading,
     error,
     setError,

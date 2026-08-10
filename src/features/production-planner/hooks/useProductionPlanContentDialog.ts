@@ -1,12 +1,12 @@
 import { useCallback, useState } from "react";
 
-import type { ProductionPlanItem } from "@/features/production-planner/types/types";
+import type { ProductionPlanContent } from "@/features/production-planner/types/types";
 import {
-  emptyProductionPlanItemFormValues,
-  itemToFormValues,
-  validateProductionPlanItemForm,
-  type ProductionPlanItemFormValues,
-} from "@/features/production-planner/utils/productionPlanItemFormUtils";
+  emptyProductionPlanContentFormValues,
+  contentToFormValues,
+  validateProductionPlanContentForm,
+  type ProductionPlanContentFormValues,
+} from "@/features/production-planner/utils/productionPlanContentFormUtils";
 import {
   createProductionPlanItem,
   deleteProductionPlanItem,
@@ -15,31 +15,31 @@ import {
 import { showToast } from "@/shared/utils/showToast";
 import type { ProductionPlanApprovalStatus } from "@/features/production-planner/types/types";
 
-type UseProductionPlanItemDialogOptions = {
+type UseProductionPlanContentDialogOptions = {
   productionPlanId: string;
   reload: () => Promise<void>;
   setError: (message: string | null) => void;
 };
 
-export function useProductionPlanItemDialog({
+export function useProductionPlanContentDialog({
   productionPlanId,
   reload,
   setError,
-}: UseProductionPlanItemDialogOptions) {
+}: UseProductionPlanContentDialogOptions) {
   const [isOpen, setIsOpen] = useState(false);
-  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [editingContentId, setEditingContentId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [values, setValues] = useState<ProductionPlanItemFormValues>(
-    emptyProductionPlanItemFormValues,
+  const [values, setValues] = useState<ProductionPlanContentFormValues>(
+    emptyProductionPlanContentFormValues,
   );
 
   const resetForm = useCallback(() => {
-    setValues(emptyProductionPlanItemFormValues());
-    setEditingItemId(null);
+    setValues(emptyProductionPlanContentFormValues());
+    setEditingContentId(null);
   }, []);
 
   const onFieldChange = useCallback(
-    (field: keyof ProductionPlanItemFormValues, value: string) => {
+    (field: keyof ProductionPlanContentFormValues, value: string) => {
       setValues((current) => ({ ...current, [field]: value }));
     },
     [],
@@ -60,18 +60,18 @@ export function useProductionPlanItemDialog({
     setIsOpen(true);
   }, [resetForm]);
 
-  const openEditDialog = useCallback((item: ProductionPlanItem) => {
-    setEditingItemId(item.id);
-    setValues(itemToFormValues(item));
+  const openEditDialog = useCallback((content: ProductionPlanContent) => {
+    setEditingContentId(content.id);
+    setValues(contentToFormValues(content));
     setIsOpen(true);
   }, []);
 
-  const saveItem = useCallback(async () => {
+  const saveContent = useCallback(async () => {
     if (isSaving || !productionPlanId) {
       return;
     }
 
-    const validationError = validateProductionPlanItemForm(values);
+    const validationError = validateProductionPlanContentForm(values);
     if (validationError) {
       setError(validationError);
       showToast("error", validationError);
@@ -83,39 +83,39 @@ export function useProductionPlanItemDialog({
 
     try {
       const payload = {
-        itemName: values.itemName.trim(),
-        itemNotes: values.itemNotes.trim() || null,
+        itemName: values.contentName.trim(),
+        itemNotes: values.contentNotes.trim() || null,
         managerApproval:
           values.managerApproval as ProductionPlanApprovalStatus,
         shootInchargeApproval:
           values.shootInchargeApproval as ProductionPlanApprovalStatus,
       };
 
-      const itemName = values.itemName.trim();
+      const contentName = values.contentName.trim();
 
-      if (editingItemId) {
-        await updateProductionPlanItem(editingItemId, payload);
-        showToast("success", `"${itemName}" updated successfully.`);
+      if (editingContentId) {
+        await updateProductionPlanItem(editingContentId, payload);
+        showToast("success", `"${contentName}" updated successfully.`);
       } else {
         await createProductionPlanItem({
           productionPlanId,
           ...payload,
         });
-        showToast("success", `"${itemName}" added successfully.`);
+        showToast("success", `"${contentName}" added successfully.`);
       }
 
       await reload();
       handleOpenChange(false);
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Failed to save plan item.";
+        err instanceof Error ? err.message : "Failed to save plan content.";
       setError(message);
       showToast("error", message);
     } finally {
       setIsSaving(false);
     }
   }, [
-    editingItemId,
+    editingContentId,
     handleOpenChange,
     isSaving,
     productionPlanId,
@@ -124,8 +124,8 @@ export function useProductionPlanItemDialog({
     values,
   ]);
 
-  const removeItem = useCallback(async () => {
-    if (!editingItemId || isSaving) {
+  const removeContent = useCallback(async () => {
+    if (!editingContentId || isSaving) {
       return;
     }
 
@@ -133,26 +133,26 @@ export function useProductionPlanItemDialog({
     setError(null);
 
     try {
-      const itemName = values.itemName.trim();
-      await deleteProductionPlanItem(editingItemId);
+      const contentName = values.contentName.trim();
+      await deleteProductionPlanItem(editingContentId);
       await reload();
       handleOpenChange(false);
-      showToast("success", `"${itemName}" deleted successfully.`);
+      showToast("success", `"${contentName}" deleted successfully.`);
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Failed to delete plan item.";
+        err instanceof Error ? err.message : "Failed to delete plan content.";
       setError(message);
       showToast("error", message);
     } finally {
       setIsSaving(false);
     }
   }, [
-    editingItemId,
+    editingContentId,
     handleOpenChange,
     isSaving,
     reload,
     setError,
-    values.itemName,
+    values.contentName,
   ]);
 
   return {
@@ -161,12 +161,12 @@ export function useProductionPlanItemDialog({
     dialog: {
       open: isOpen,
       onOpenChange: handleOpenChange,
-      isEditing: editingItemId !== null,
+      isEditing: editingContentId !== null,
       isSaving,
       values,
       onFieldChange,
-      onSave: saveItem,
-      onDelete: editingItemId ? removeItem : undefined,
+      onSave: saveContent,
+      onDelete: editingContentId ? removeContent : undefined,
     },
   };
 }

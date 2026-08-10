@@ -13,8 +13,8 @@ export function ProductionPlanSummaryCard({
   const clientName = plan.clients?.client_name ?? "—";
   const managerName = plan.manager?.member_name ?? "—";
   const shootInchargeName = plan.shoot_incharge?.member_name ?? "—";
-  const startDate = plan.start_date
-    ? format(new Date(plan.start_date), "MMMM d, yyyy")
+  const shootDate = plan.shoot_date
+    ? format(new Date(plan.shoot_date), "MMMM d, yyyy")
     : "—";
   const deliverables = formatPlanDeliverables(plan);
 
@@ -50,9 +50,9 @@ export function ProductionPlanSummaryCard({
         </div>
         <div>
           <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-            Start date
+            Shoot date
           </p>
-          <p className="mt-1 font-medium text-foreground">{startDate}</p>
+          <p className="mt-1 font-medium text-foreground">{shootDate}</p>
         </div>
         <div>
           <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">

@@ -66,21 +66,21 @@ export function ProductionPlanDialog({
   const canSave =
     values.clientId &&
     values.planName.trim().length > 0 &&
-    values.startDate &&
+    values.shootDate &&
     values.managerId &&
     values.shootInchargeId;
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="flex max-h-[90vh] max-w-lg flex-col overflow-hidden">
+        <DialogContent className="flex max-h-[85vh] max-w-lg! flex-col overflow-hidden">
           <DialogHeader className="shrink-0">
             <DialogTitle>
               {isEditing ? "Edit Production Plan" : "Add Production Plan"}
             </DialogTitle>
             <DialogDescription>
               Set the client, assignees, schedule, and deliverable targets.
-              Add individual items from the plan page.
+              Add individual content from the plan page.
             </DialogDescription>
           </DialogHeader>
 
@@ -162,9 +162,9 @@ export function ProductionPlanDialog({
 
               <div className="sm:col-span-2">
                 <DatePicker
-                  label="Start Date *"
-                  value={values.startDate}
-                  onChange={(dateStr) => onFieldChange("startDate", dateStr)}
+                  label="Shoot Date *"
+                  value={values.shootDate}
+                  onChange={(dateStr) => onFieldChange("shootDate", dateStr)}
                   disabled={isSaving}
                 />
               </div>
@@ -245,7 +245,7 @@ export function ProductionPlanDialog({
         open={isConfirmOpen}
         onOpenChange={setIsConfirmOpen}
         title="Delete production plan?"
-        description="This permanently deletes the plan and all of its items."
+        description="This permanently deletes the plan and all of its contents."
         confirmLabel="Delete plan"
         confirmVariant="destructive"
         loading={isSaving}

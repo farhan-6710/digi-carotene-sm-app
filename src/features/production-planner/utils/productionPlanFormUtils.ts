@@ -4,7 +4,7 @@ export type ProductionPlanFormValues = {
   clientId: string;
   planName: string;
   planDescription: string;
-  startDate: string;
+  shootDate: string;
   reelsCount: string;
   imagesCount: string;
   carouselsCount: string;
@@ -16,7 +16,7 @@ export const emptyProductionPlanFormValues = (): ProductionPlanFormValues => ({
   clientId: "",
   planName: "",
   planDescription: "",
-  startDate: "",
+  shootDate: "",
   reelsCount: "0",
   imagesCount: "0",
   carouselsCount: "0",
@@ -29,7 +29,7 @@ export function planToFormValues(plan: ProductionPlan): ProductionPlanFormValues
     clientId: plan.client_id,
     planName: plan.plan_name,
     planDescription: plan.plan_description || "",
-    startDate: plan.start_date,
+    shootDate: plan.shoot_date,
     reelsCount: String(plan.reels_count),
     imagesCount: String(plan.images_count),
     carouselsCount: String(plan.carousels_count),
@@ -47,8 +47,8 @@ export function validateProductionPlanForm(
   if (!values.planName.trim()) {
     return "Plan name is required.";
   }
-  if (!values.startDate) {
-    return "Please select a start date.";
+  if (!values.shootDate) {
+    return "Please select a shoot date.";
   }
   if (!values.managerId) {
     return "Please select a manager.";

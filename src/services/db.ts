@@ -75,7 +75,7 @@ const PRODUCTION_PLAN_SELECT = `
   client_id,
   plan_name,
   plan_description,
-  start_date,
+  shoot_date,
   reels_count,
   images_count,
   carousels_count,

@@ -22,8 +22,8 @@ type ProductionPlanRowProps = {
 
 function ProductionPlanRow({ plan, canEdit, onEdit }: ProductionPlanRowProps) {
   const clientName = plan.clients?.client_name ?? "—";
-  const startDateFormatted = plan.start_date
-    ? format(new Date(plan.start_date), "MMM d, yyyy")
+  const shootDateFormatted = plan.shoot_date
+    ? format(new Date(plan.shoot_date), "MMM d, yyyy")
     : "—";
   const deliverables = formatPlanDeliverables(plan);
 
@@ -55,9 +55,9 @@ function ProductionPlanRow({ plan, canEdit, onEdit }: ProductionPlanRowProps) {
 
       <div className="text-sm text-muted-foreground">
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          START DATE
+          SHOOT DATE
         </span>
-        {startDateFormatted}
+        {shootDateFormatted}
       </div>
 
       <div className="text-sm text-muted-foreground">

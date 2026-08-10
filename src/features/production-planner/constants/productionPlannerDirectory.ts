@@ -8,7 +8,7 @@ export const PRODUCTION_PLANNER_ROW_GRID_CLASS =
 export const productionPlannerColumns: DirectoryTableColumn[] = [
   { label: "PLAN" },
   { label: "CLIENT" },
-  { label: "START DATE" },
+  { label: "SHOOT DATE" },
   { label: "DELIVERABLES" },
   { label: "ACTIONS", align: "right" },
 ];
@@ -21,21 +21,21 @@ export const productionPlannerDirectoryConfig = {
   emptyMessage: "No production plans yet.",
 } as const;
 
-export const PRODUCTION_PLAN_ITEMS_GRID_CLASS =
+export const PRODUCTION_PLAN_CONTENTS_GRID_CLASS =
   "grid-cols-[2fr_1fr_1fr_auto]";
 
-export const productionPlanItemsColumns: DirectoryTableColumn[] = [
-  { label: "ITEM" },
+export const productionPlanContentsColumns: DirectoryTableColumn[] = [
+  { label: "CONTENT" },
   { label: "MANAGER/ADMIN APPROVAL" },
   { label: "SHOOT INCHARGE APPROVAL" },
   { label: "ACTIONS", align: "right" },
 ];
 
-export const productionPlanItemsDirectoryConfig = {
-  title: "Plan Items",
+export const productionPlanContentsDirectoryConfig = {
+  title: "Plan Content",
   description:
-    "Individual items in this plan. Each item tracks manager/admin and shoot incharge approval.",
-  gridClass: PRODUCTION_PLAN_ITEMS_GRID_CLASS,
-  columns: productionPlanItemsColumns,
-  emptyMessage: "No items in this plan yet. Add the first item to get started.",
+    "Individual content in this plan. Each content tracks manager/admin and shoot incharge approval.",
+  gridClass: PRODUCTION_PLAN_CONTENTS_GRID_CLASS,
+  columns: productionPlanContentsColumns,
+  emptyMessage: "No content in this plan yet. Add the first content to get started.",
 } as const;

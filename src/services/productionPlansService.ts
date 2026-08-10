@@ -39,7 +39,7 @@ export function mapProductionPlanRow(row: ProductionPlanRow): ProductionPlan {
     client_id: row.client_id,
     plan_name: row.plan_name,
     plan_description: row.plan_description,
-    start_date: row.start_date,
+    shoot_date: row.shoot_date,
     reels_count: row.reels_count,
     images_count: row.images_count,
     carousels_count: row.carousels_count,
@@ -64,7 +64,7 @@ function toProductionPlanColumns(input: CreateProductionPlanInput) {
     client_id: input.clientId,
     plan_name: input.planName,
     plan_description: input.planDescription || null,
-    start_date: input.startDate,
+    shoot_date: input.shootDate,
     reels_count: input.reelsCount,
     images_count: input.imagesCount,
     carousels_count: input.carouselsCount,
@@ -79,7 +79,7 @@ function toProductionPlanUpdateColumns(input: UpdateProductionPlanInput) {
   if (input.planName !== undefined) cols.plan_name = input.planName;
   if (input.planDescription !== undefined)
     cols.plan_description = input.planDescription;
-  if (input.startDate !== undefined) cols.start_date = input.startDate;
+  if (input.shootDate !== undefined) cols.shoot_date = input.shootDate;
   if (input.reelsCount !== undefined) cols.reels_count = input.reelsCount;
   if (input.imagesCount !== undefined) cols.images_count = input.imagesCount;
   if (input.carouselsCount !== undefined)
@@ -94,7 +94,7 @@ export async function fetchProductionPlans(): Promise<ProductionPlan[]> {
   const { data, error } = await supabase
     .from(DB.PRODUCTION_PLANS.TABLE)
     .select(DB.PRODUCTION_PLANS.SELECT)
-    .order("start_date", { ascending: false });
+    .order("shoot_date", { ascending: false });
 
   if (error) {
     throw error;

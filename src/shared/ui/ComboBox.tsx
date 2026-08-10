@@ -65,7 +65,9 @@ export function ComboBox({
   const [query, setQuery] = useState("");
 
   const handleOpenChange = (nextOpen: boolean) => {
-    if (nextOpen && mode === "value") {
+    // Only reset the filter when opening from closed. Calling this on every
+    // keystroke (while already open) was wiping the typed search text.
+    if (nextOpen && !open && mode === "value") {
       setQuery("");
     }
     setOpen(nextOpen);

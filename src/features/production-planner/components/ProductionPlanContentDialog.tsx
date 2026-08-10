@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import type { ProductionPlanItemDialogProps } from "@/features/production-planner/types/components";
+import type { ProductionPlanContentDialogProps } from "@/features/production-planner/types/components";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { formFieldClassName } from "@/shared/constants/formStyles";
 import { Button } from "@/shared/ui/button";
@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from "@/shared/ui/dialog";
 
-export function ProductionPlanItemDialog({
+export function ProductionPlanContentDialog({
   open,
   onOpenChange,
   isEditing,
@@ -23,7 +23,7 @@ export function ProductionPlanItemDialog({
   onFieldChange,
   onSave,
   onDelete,
-}: ProductionPlanItemDialogProps) {
+}: ProductionPlanContentDialogProps) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   useEffect(() => {
@@ -33,28 +33,28 @@ export function ProductionPlanItemDialog({
     }
   }, [open]);
 
-  const canSave = values.itemName.trim().length > 0;
+  const canSave = values.contentName.trim().length > 0;
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="flex max-h-[90vh] max-w-lg flex-col overflow-hidden">
+        <DialogContent className="flex max-h-[85vh] max-w-lg! flex-col overflow-hidden">
           <DialogHeader className="shrink-0">
             <DialogTitle>
-              {isEditing ? "Edit Plan Item" : "Add Plan Item"}
+              {isEditing ? "Edit Content" : "Add Content"}
             </DialogTitle>
             <DialogDescription>
-              Add an item to this production plan. Approval statuses are stored
+              Add content to this production plan. Approval statuses are stored
               here for tracking — full approval workflow comes later.
             </DialogDescription>
           </DialogHeader>
 
           <div className="flex-1 space-y-4 overflow-y-auto py-1 pr-1">
             <label className="block text-xs font-semibold text-muted-foreground">
-              Item Name *
+              Content Name *
               <input
-                value={values.itemName}
-                onChange={(e) => onFieldChange("itemName", e.target.value)}
+                value={values.contentName}
+                onChange={(e) => onFieldChange("contentName", e.target.value)}
                 placeholder="e.g. Reel 1 — Product unboxing"
                 className={formFieldClassName}
                 required
@@ -65,9 +65,9 @@ export function ProductionPlanItemDialog({
             <label className="block text-xs font-semibold text-muted-foreground">
               Notes
               <textarea
-                value={values.itemNotes}
-                onChange={(e) => onFieldChange("itemNotes", e.target.value)}
-                placeholder="Optional notes for this item..."
+                value={values.contentNotes}
+                onChange={(e) => onFieldChange("contentNotes", e.target.value)}
+                placeholder="Optional notes for this content..."
                 className={formFieldClassName}
                 rows={2}
                 disabled={isSaving}
@@ -117,7 +117,7 @@ export function ProductionPlanItemDialog({
                 className="mr-auto"
                 disabled={isSaving}
               >
-                Delete Item
+                Delete Content
               </Button>
             ) : null}
             <DialogClose asChild>
@@ -126,7 +126,7 @@ export function ProductionPlanItemDialog({
               </Button>
             </DialogClose>
             <Button onClick={onSave} disabled={!canSave || isSaving}>
-              {isSaving ? "Saving..." : isEditing ? "Save Changes" : "Add Item"}
+              {isSaving ? "Saving..." : isEditing ? "Save Changes" : "Add Content"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -135,9 +135,9 @@ export function ProductionPlanItemDialog({
       <ConfirmationModal
         open={isConfirmOpen}
         onOpenChange={setIsConfirmOpen}
-        title="Delete plan item?"
-        description="This permanently deletes this item from the plan."
-        confirmLabel="Delete item"
+        title="Delete plan content?"
+        description="This permanently deletes this content from the plan."
+        confirmLabel="Delete content"
         confirmVariant="destructive"
         loading={isSaving}
         onConfirm={async () => {

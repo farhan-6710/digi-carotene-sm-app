@@ -12,7 +12,7 @@ export type ProductionPlan = {
   client_id: string;
   plan_name: string;
   plan_description: string | null;
-  start_date: string;
+  shoot_date: string;
   reels_count: number;
   images_count: number;
   carousels_count: number;
@@ -25,7 +25,7 @@ export type ProductionPlan = {
   shoot_incharge?: ProductionPlanAssignee | null;
 };
 
-export type ProductionPlanItem = {
+export type ProductionPlanContent = {
   id: string;
   production_plan_id: string;
   item_name: string;
@@ -40,7 +40,7 @@ export type CreateProductionPlanInput = {
   clientId: string;
   planName: string;
   planDescription?: string | null;
-  startDate: string;
+  shootDate: string;
   reelsCount: number;
   imagesCount: number;
   carouselsCount: number;
@@ -50,7 +50,7 @@ export type CreateProductionPlanInput = {
 
 export type UpdateProductionPlanInput = Partial<CreateProductionPlanInput>;
 
-export type CreateProductionPlanItemInput = {
+export type CreateProductionPlanContentInput = {
   productionPlanId: string;
   itemName: string;
   itemNotes?: string | null;
@@ -58,6 +58,6 @@ export type CreateProductionPlanItemInput = {
   shootInchargeApproval?: ProductionPlanApprovalStatus;
 };
 
-export type UpdateProductionPlanItemInput = Partial<
-  Omit<CreateProductionPlanItemInput, "productionPlanId">
+export type UpdateProductionPlanContentInput = Partial<
+  Omit<CreateProductionPlanContentInput, "productionPlanId">
 >;
