@@ -1,12 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useClientsQuery } from "@/features/clients-management/hooks/useClientsQuery";
 import type { ProductionPlanDialogProps } from "@/features/production-planner/types/components";
+import type { TeamMember } from "@/features/team-management/types/types";
+import { fetchTeamMembers } from "@/services/teamMembersService";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { DatePicker } from "@/shared/components/DatePicker";
+import { formFieldClassName } from "@/shared/constants/formStyles";
+import { useFetch } from "@/shared/hooks/useFetch";
 import { ComboBox } from "@/shared/ui/ComboBox";
 import { Button } from "@/shared/ui/button";
-import { formFieldClassName } from "@/shared/constants/formStyles";
 import {
   Dialog,
   DialogClose,
@@ -29,6 +32,11 @@ export function ProductionPlanDialog({
 }: ProductionPlanDialogProps) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const { clients, isLoading: isClientsLoading } = useClientsQuery();
+  const loadTeamMembers = useCallback(() => fetchTeamMembers(), []);
+  const { data: teamMembers, isLoading: isTeamLoading } = useFetch<TeamMember[]>(
+    loadTeamMembers,
+    [],
+  );
 
   useEffect(() => {
     if (!open) {
@@ -37,14 +45,30 @@ export function ProductionPlanDialog({
     }
   }, [open]);
 
-  const clientOptions = useMemo(() => {
-    return clients.map((c) => ({
-      value: c.id,
-      label: c.client_name,
-    }));
-  }, [clients]);
+  const clientOptions = useMemo(
+    () =>
+      clients.map((c) => ({
+        value: c.id,
+        label: c.client_name,
+      })),
+    [clients],
+  );
 
-  const canSave = values.clientId && values.planName.trim().length > 0 && values.startDate;
+  const teamMemberOptions = useMemo(
+    () =>
+      teamMembers.map((member) => ({
+        value: member.id,
+        label: member.member_name,
+      })),
+    [teamMembers],
+  );
+
+  const canSave =
+    values.clientId &&
+    values.planName.trim().length > 0 &&
+    values.startDate &&
+    values.managerId &&
+    values.shootInchargeId;
 
   return (
     <>
@@ -55,7 +79,8 @@ export function ProductionPlanDialog({
               {isEditing ? "Edit Production Plan" : "Add Production Plan"}
             </DialogTitle>
             <DialogDescription>
-              Create or modify a scheduled client production plan, including deliverable targets and approval states.
+              Set the client, assignees, schedule, and deliverable targets.
+              Add individual items from the plan page.
             </DialogDescription>
           </DialogHeader>
 
@@ -93,13 +118,47 @@ export function ProductionPlanDialog({
                 Plan Description
                 <textarea
                   value={values.planDescription}
-                  onChange={(e) => onFieldChange("planDescription", e.target.value)}
+                  onChange={(e) =>
+                    onFieldChange("planDescription", e.target.value)
+                  }
                   placeholder="Describe the objective or shoot outline..."
                   className={formFieldClassName}
                   rows={2}
                   disabled={isSaving}
                 />
               </label>
+
+              <div className="space-y-2">
+                <span className="block text-xs font-semibold text-muted-foreground">
+                  Manager *
+                </span>
+                <ComboBox
+                  value={values.managerId}
+                  onChange={(val) => onFieldChange("managerId", val)}
+                  options={teamMemberOptions}
+                  isLoading={isTeamLoading}
+                  placeholder="Select manager..."
+                  listTitle="Team members"
+                  emptyMessage="No team members found."
+                  disabled={isSaving}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <span className="block text-xs font-semibold text-muted-foreground">
+                  Shoot Incharge *
+                </span>
+                <ComboBox
+                  value={values.shootInchargeId}
+                  onChange={(val) => onFieldChange("shootInchargeId", val)}
+                  options={teamMemberOptions}
+                  isLoading={isTeamLoading}
+                  placeholder="Select shoot incharge..."
+                  listTitle="Team members"
+                  emptyMessage="No team members found."
+                  disabled={isSaving}
+                />
+              </div>
 
               <div className="sm:col-span-2">
                 <DatePicker
@@ -110,8 +169,8 @@ export function ProductionPlanDialog({
                 />
               </div>
 
-              <div className="sm:col-span-2 border-t border-border/60 pt-4 mt-2">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
+              <div className="mt-2 border-t border-border/60 pt-4 sm:col-span-2">
+                <h4 className="mb-3 text-xs font-bold tracking-wider text-muted-foreground uppercase">
                   Deliverables
                 </h4>
                 <div className="grid grid-cols-3 gap-3">
@@ -121,7 +180,9 @@ export function ProductionPlanDialog({
                       type="number"
                       min="0"
                       value={values.reelsCount}
-                      onChange={(e) => onFieldChange("reelsCount", e.target.value)}
+                      onChange={(e) =>
+                        onFieldChange("reelsCount", e.target.value)
+                      }
                       className={formFieldClassName}
                       disabled={isSaving}
                     />
@@ -132,7 +193,9 @@ export function ProductionPlanDialog({
                       type="number"
                       min="0"
                       value={values.imagesCount}
-                      onChange={(e) => onFieldChange("imagesCount", e.target.value)}
+                      onChange={(e) =>
+                        onFieldChange("imagesCount", e.target.value)
+                      }
                       className={formFieldClassName}
                       disabled={isSaving}
                     />
@@ -143,42 +206,14 @@ export function ProductionPlanDialog({
                       type="number"
                       min="0"
                       value={values.carouselsCount}
-                      onChange={(e) => onFieldChange("carouselsCount", e.target.value)}
+                      onChange={(e) =>
+                        onFieldChange("carouselsCount", e.target.value)
+                      }
                       className={formFieldClassName}
                       disabled={isSaving}
                     />
                   </label>
                 </div>
-              </div>
-
-              <div className="sm:col-span-2 border-t border-border/60 pt-4 mt-2 grid grid-cols-2 gap-4">
-                <label className="block text-xs font-semibold text-muted-foreground">
-                  Manager Approval
-                  <select
-                    value={values.managerApproval}
-                    onChange={(e) => onFieldChange("managerApproval", e.target.value)}
-                    className={formFieldClassName}
-                    disabled={isSaving}
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
-                </label>
-
-                <label className="block text-xs font-semibold text-muted-foreground">
-                  Shoot Incharge Approval
-                  <select
-                    value={values.shootInchargeApproval}
-                    onChange={(e) => onFieldChange("shootInchargeApproval", e.target.value)}
-                    className={formFieldClassName}
-                    disabled={isSaving}
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
-                </label>
               </div>
             </div>
           </div>
@@ -210,7 +245,7 @@ export function ProductionPlanDialog({
         open={isConfirmOpen}
         onOpenChange={setIsConfirmOpen}
         title="Delete production plan?"
-        description="This will permanently delete this production plan. This action cannot be undone."
+        description="This permanently deletes the plan and all of its items."
         confirmLabel="Delete plan"
         confirmVariant="destructive"
         loading={isSaving}

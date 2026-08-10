@@ -23,7 +23,7 @@ export function ProductionPlannerPage() {
   return (
     <PageShell
       heading="Production Planner"
-      description="Plan and track client production schedules, deliverables (reels, images, carousels), and approval milestones."
+      description="Create production plans for clients, then open a plan to add items and track approvals."
       error={error}
       actions={
         canCreate ? (

@@ -27,7 +27,7 @@ export function useProductionPlanDialog({
   const [editingPlanId, setEditingPlanId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [values, setValues] = useState<ProductionPlanFormValues>(
-    emptyProductionPlanFormValues
+    emptyProductionPlanFormValues,
   );
 
   const resetForm = useCallback(() => {
@@ -39,7 +39,7 @@ export function useProductionPlanDialog({
     (field: keyof ProductionPlanFormValues, value: string) => {
       setValues((current) => ({ ...current, [field]: value }));
     },
-    []
+    [],
   );
 
   const handleOpenChange = useCallback(
@@ -49,7 +49,7 @@ export function useProductionPlanDialog({
         resetForm();
       }
     },
-    [resetForm]
+    [resetForm],
   );
 
   const openAddDialog = useCallback(() => {
@@ -87,18 +87,24 @@ export function useProductionPlanDialog({
         reelsCount: parseInt(values.reelsCount, 10) || 0,
         imagesCount: parseInt(values.imagesCount, 10) || 0,
         carouselsCount: parseInt(values.carouselsCount, 10) || 0,
-        managerApproval: values.managerApproval,
-        shootInchargeApproval: values.shootInchargeApproval,
+        managerId: values.managerId,
+        shootInchargeId: values.shootInchargeId,
       };
 
       const planName = values.planName.trim();
 
       if (editingPlanId) {
         await updateProductionPlan(editingPlanId, payload);
-        showToast("success", `Production plan "${planName}" updated successfully.`);
+        showToast(
+          "success",
+          `Production plan "${planName}" updated successfully.`,
+        );
       } else {
         await createProductionPlan(payload);
-        showToast("success", `Production plan "${planName}" added successfully.`);
+        showToast(
+          "success",
+          `Production plan "${planName}" added successfully.`,
+        );
       }
 
       await reload();
@@ -126,16 +132,28 @@ export function useProductionPlanDialog({
       await deleteProductionPlan(editingPlanId);
       await reload();
       handleOpenChange(false);
-      showToast("success", `Production plan "${planName}" deleted successfully.`);
+      showToast(
+        "success",
+        `Production plan "${planName}" deleted successfully.`,
+      );
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Failed to delete production plan.";
+        err instanceof Error
+          ? err.message
+          : "Failed to delete production plan.";
       setError(message);
       showToast("error", message);
     } finally {
       setIsSaving(false);
     }
-  }, [editingPlanId, handleOpenChange, isSaving, reload, setError, values.planName]);
+  }, [
+    editingPlanId,
+    handleOpenChange,
+    isSaving,
+    reload,
+    setError,
+    values.planName,
+  ]);
 
   return {
     openAddDialog,

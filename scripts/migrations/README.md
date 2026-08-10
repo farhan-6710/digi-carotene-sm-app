@@ -41,6 +41,8 @@ Run only migrations you have **not** applied yet, in order:
 | `027_growth_account_client_link.sql` | Adds nullable `client_id` FK to organic + ads account tables |
 | `028_rename_growth_tables.sql` | Renames Growth tables to `growth_organic_*` / `growth_ads_*` prefixes |
 | `029_production_plans.sql` | Adds `production_plans` table for the Production Planner feature |
+| `030_production_plan_items.sql` | Moves approvals onto `production_plan_items`; drops plan-level approval columns |
+| `031_production_plan_assignees.sql` | Adds `manager_id` + `shoot_incharge_id` on `production_plans` |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

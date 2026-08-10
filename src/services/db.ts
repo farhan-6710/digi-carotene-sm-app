@@ -79,14 +79,33 @@ const PRODUCTION_PLAN_SELECT = `
   reels_count,
   images_count,
   carousels_count,
-  manager_approval,
-  shoot_incharge_approval,
+  manager_id,
+  shoot_incharge_id,
   created_at,
   updated_at,
   clients (
     id,
     client_name
+  ),
+  manager:team_members!manager_id (
+    id,
+    member_name
+  ),
+  shoot_incharge:team_members!shoot_incharge_id (
+    id,
+    member_name
   )
+`;
+
+const PRODUCTION_PLAN_ITEM_SELECT = `
+  id,
+  production_plan_id,
+  item_name,
+  item_notes,
+  manager_approval,
+  shoot_incharge_approval,
+  created_at,
+  updated_at
 `;
 
 export const DB = {
@@ -121,6 +140,10 @@ export const DB = {
   PRODUCTION_PLANS: {
     TABLE: "production_plans",
     SELECT: PRODUCTION_PLAN_SELECT,
+  },
+  PRODUCTION_PLAN_ITEMS: {
+    TABLE: "production_plan_items",
+    SELECT: PRODUCTION_PLAN_ITEM_SELECT,
   },
   GROWTH_ORGANIC_ACCOUNTS: {
     TABLE: "growth_organic_accounts",

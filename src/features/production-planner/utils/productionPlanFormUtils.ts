@@ -1,7 +1,4 @@
-import type {
-  ProductionPlan,
-  ProductionPlanApprovalStatus,
-} from "@/features/production-planner/types/types";
+import type { ProductionPlan } from "@/features/production-planner/types/types";
 
 export type ProductionPlanFormValues = {
   clientId: string;
@@ -11,8 +8,8 @@ export type ProductionPlanFormValues = {
   reelsCount: string;
   imagesCount: string;
   carouselsCount: string;
-  managerApproval: ProductionPlanApprovalStatus;
-  shootInchargeApproval: ProductionPlanApprovalStatus;
+  managerId: string;
+  shootInchargeId: string;
 };
 
 export const emptyProductionPlanFormValues = (): ProductionPlanFormValues => ({
@@ -23,8 +20,8 @@ export const emptyProductionPlanFormValues = (): ProductionPlanFormValues => ({
   reelsCount: "0",
   imagesCount: "0",
   carouselsCount: "0",
-  managerApproval: "pending",
-  shootInchargeApproval: "pending",
+  managerId: "",
+  shootInchargeId: "",
 });
 
 export function planToFormValues(plan: ProductionPlan): ProductionPlanFormValues {
@@ -36,12 +33,14 @@ export function planToFormValues(plan: ProductionPlan): ProductionPlanFormValues
     reelsCount: String(plan.reels_count),
     imagesCount: String(plan.images_count),
     carouselsCount: String(plan.carousels_count),
-    managerApproval: plan.manager_approval,
-    shootInchargeApproval: plan.shoot_incharge_approval,
+    managerId: plan.manager_id ?? "",
+    shootInchargeId: plan.shoot_incharge_id ?? "",
   };
 }
 
-export function validateProductionPlanForm(values: ProductionPlanFormValues): string | null {
+export function validateProductionPlanForm(
+  values: ProductionPlanFormValues,
+): string | null {
   if (!values.clientId) {
     return "Please select a client.";
   }
@@ -50,6 +49,12 @@ export function validateProductionPlanForm(values: ProductionPlanFormValues): st
   }
   if (!values.startDate) {
     return "Please select a start date.";
+  }
+  if (!values.managerId) {
+    return "Please select a manager.";
+  }
+  if (!values.shootInchargeId) {
+    return "Please select a shoot incharge.";
   }
 
   const reels = parseInt(values.reelsCount, 10);
@@ -67,4 +72,20 @@ export function validateProductionPlanForm(values: ProductionPlanFormValues): st
   }
 
   return null;
+}
+
+export function formatPlanDeliverables(plan: ProductionPlan): string {
+  return [
+    plan.reels_count > 0
+      ? `${plan.reels_count} reel${plan.reels_count > 1 ? "s" : ""}`
+      : null,
+    plan.images_count > 0
+      ? `${plan.images_count} image${plan.images_count > 1 ? "s" : ""}`
+      : null,
+    plan.carousels_count > 0
+      ? `${plan.carousels_count} carousel${plan.carousels_count > 1 ? "s" : ""}`
+      : null,
+  ]
+    .filter(Boolean)
+    .join(", ");
 }

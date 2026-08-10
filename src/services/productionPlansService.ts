@@ -2,19 +2,38 @@ import { DB } from "@/services/db";
 import { supabase } from "@/services/supabaseClient";
 import type {
   ProductionPlan,
+  ProductionPlanAssignee,
   CreateProductionPlanInput,
   UpdateProductionPlanInput,
 } from "@/features/production-planner/types/types";
 
-export type ProductionPlanRow = Omit<ProductionPlan, "clients"> & {
+type AssigneeRel =
+  | ProductionPlanAssignee
+  | ProductionPlanAssignee[]
+  | null;
+
+export type ProductionPlanRow = Omit<
+  ProductionPlan,
+  "clients" | "manager" | "shoot_incharge"
+> & {
   clients:
     | { id: string; client_name: string }
     | { id: string; client_name: string }[]
     | null;
+  manager: AssigneeRel;
+  shoot_incharge: AssigneeRel;
 };
 
+function pickRelation<T>(value: T | T[] | null | undefined): T | null {
+  if (!value) return null;
+  return Array.isArray(value) ? (value[0] ?? null) : value;
+}
+
 export function mapProductionPlanRow(row: ProductionPlanRow): ProductionPlan {
-  const client = Array.isArray(row.clients) ? row.clients[0] ?? null : row.clients;
+  const client = pickRelation(row.clients);
+  const manager = pickRelation(row.manager);
+  const shootIncharge = pickRelation(row.shoot_incharge);
+
   return {
     id: row.id,
     client_id: row.client_id,
@@ -24,11 +43,19 @@ export function mapProductionPlanRow(row: ProductionPlanRow): ProductionPlan {
     reels_count: row.reels_count,
     images_count: row.images_count,
     carousels_count: row.carousels_count,
-    manager_approval: row.manager_approval,
-    shoot_incharge_approval: row.shoot_incharge_approval,
+    manager_id: row.manager_id,
+    shoot_incharge_id: row.shoot_incharge_id,
     created_at: row.created_at,
     updated_at: row.updated_at,
-    clients: client ? { id: client.id, client_name: client.client_name } : null,
+    clients: client
+      ? { id: client.id, client_name: client.client_name }
+      : null,
+    manager: manager
+      ? { id: manager.id, member_name: manager.member_name }
+      : null,
+    shoot_incharge: shootIncharge
+      ? { id: shootIncharge.id, member_name: shootIncharge.member_name }
+      : null,
   };
 }
 
@@ -41,8 +68,8 @@ function toProductionPlanColumns(input: CreateProductionPlanInput) {
     reels_count: input.reelsCount,
     images_count: input.imagesCount,
     carousels_count: input.carouselsCount,
-    manager_approval: input.managerApproval || "pending",
-    shoot_incharge_approval: input.shootInchargeApproval || "pending",
+    manager_id: input.managerId,
+    shoot_incharge_id: input.shootInchargeId,
   };
 }
 
@@ -50,13 +77,16 @@ function toProductionPlanUpdateColumns(input: UpdateProductionPlanInput) {
   const cols: Record<string, unknown> = {};
   if (input.clientId !== undefined) cols.client_id = input.clientId;
   if (input.planName !== undefined) cols.plan_name = input.planName;
-  if (input.planDescription !== undefined) cols.plan_description = input.planDescription;
+  if (input.planDescription !== undefined)
+    cols.plan_description = input.planDescription;
   if (input.startDate !== undefined) cols.start_date = input.startDate;
   if (input.reelsCount !== undefined) cols.reels_count = input.reelsCount;
   if (input.imagesCount !== undefined) cols.images_count = input.imagesCount;
-  if (input.carouselsCount !== undefined) cols.carousels_count = input.carouselsCount;
-  if (input.managerApproval !== undefined) cols.manager_approval = input.managerApproval;
-  if (input.shootInchargeApproval !== undefined) cols.shoot_incharge_approval = input.shootInchargeApproval;
+  if (input.carouselsCount !== undefined)
+    cols.carousels_count = input.carouselsCount;
+  if (input.managerId !== undefined) cols.manager_id = input.managerId;
+  if (input.shootInchargeId !== undefined)
+    cols.shoot_incharge_id = input.shootInchargeId;
   return cols;
 }
 
@@ -69,10 +99,14 @@ export async function fetchProductionPlans(): Promise<ProductionPlan[]> {
   if (error) {
     throw error;
   }
-  return (data ?? []).map((row) => mapProductionPlanRow(row as unknown as ProductionPlanRow));
+  return (data ?? []).map((row) =>
+    mapProductionPlanRow(row as unknown as ProductionPlanRow),
+  );
 }
 
-export async function fetchProductionPlanById(id: string): Promise<ProductionPlan | null> {
+export async function fetchProductionPlanById(
+  id: string,
+): Promise<ProductionPlan | null> {
   const { data, error } = await supabase
     .from(DB.PRODUCTION_PLANS.TABLE)
     .select(DB.PRODUCTION_PLANS.SELECT)
@@ -86,7 +120,9 @@ export async function fetchProductionPlanById(id: string): Promise<ProductionPla
   return mapProductionPlanRow(data as unknown as ProductionPlanRow);
 }
 
-export async function createProductionPlan(input: CreateProductionPlanInput): Promise<ProductionPlan> {
+export async function createProductionPlan(
+  input: CreateProductionPlanInput,
+): Promise<ProductionPlan> {
   const { data, error } = await supabase
     .from(DB.PRODUCTION_PLANS.TABLE)
     .insert(toProductionPlanColumns(input))
