@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 
+import { ApprovalStatusSelect } from "@/features/production-planner/components/ApprovalStatusSelect";
 import type { ProductionPlanContentDialogProps } from "@/features/production-planner/types/components";
+import type { ProductionPlanApprovalStatus } from "@/features/production-planner/types/types";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { formFieldClassName } from "@/shared/constants/formStyles";
 import { Button } from "@/shared/ui/button";
@@ -74,38 +76,42 @@ export function ProductionPlanContentDialog({
               />
             </label>
 
-            <div className="grid grid-cols-2 gap-4 border-t border-border/60 pt-4">
-              <label className="block text-xs font-semibold text-muted-foreground">
-                Manager/Admin Approval
-                <select
+            <div className="grid grid-cols-1 gap-4 border-t border-border/60 pt-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <span className="block text-xs font-semibold text-muted-foreground">
+                  Manager/Admin Approval
+                </span>
+                <ApprovalStatusSelect
                   value={values.managerApproval}
-                  onChange={(e) =>
-                    onFieldChange("managerApproval", e.target.value)
+                  onChange={(next) =>
+                    onFieldChange(
+                      "managerApproval",
+                      next as ProductionPlanApprovalStatus,
+                    )
                   }
-                  className={formFieldClassName}
                   disabled={isSaving}
-                >
-                  <option value="pending">Pending</option>
-                  <option value="approved">Approved</option>
-                  <option value="rejected">Rejected</option>
-                </select>
-              </label>
+                  placeholder="Select status"
+                  listTitle="Select manager/admin approval"
+                />
+              </div>
 
-              <label className="block text-xs font-semibold text-muted-foreground">
-                Shoot Incharge Approval
-                <select
+              <div className="space-y-2">
+                <span className="block text-xs font-semibold text-muted-foreground">
+                  Shoot Incharge Approval
+                </span>
+                <ApprovalStatusSelect
                   value={values.shootInchargeApproval}
-                  onChange={(e) =>
-                    onFieldChange("shootInchargeApproval", e.target.value)
+                  onChange={(next) =>
+                    onFieldChange(
+                      "shootInchargeApproval",
+                      next as ProductionPlanApprovalStatus,
+                    )
                   }
-                  className={formFieldClassName}
                   disabled={isSaving}
-                >
-                  <option value="pending">Pending</option>
-                  <option value="approved">Approved</option>
-                  <option value="rejected">Rejected</option>
-                </select>
-              </label>
+                  placeholder="Select status"
+                  listTitle="Select shoot incharge approval"
+                />
+              </div>
             </div>
           </div>
 

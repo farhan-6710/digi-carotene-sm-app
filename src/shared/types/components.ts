@@ -64,6 +64,8 @@ export type DirectoryTableProps = {
   emptyMessage: string;
   headerAside?: ReactNode;
   children: ReactNode;
+  divided?: boolean;
+  gridStyle?: import("react").CSSProperties;
 };
 
 export type PageShellProps = {

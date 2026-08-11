@@ -21,21 +21,12 @@ export const productionPlannerDirectoryConfig = {
   emptyMessage: "No production plans yet.",
 } as const;
 
-export const PRODUCTION_PLAN_CONTENTS_GRID_CLASS =
-  "grid-cols-[2fr_1fr_1fr_auto]";
-
-export const productionPlanContentsColumns: DirectoryTableColumn[] = [
-  { label: "CONTENT" },
-  { label: "MANAGER/ADMIN APPROVAL" },
-  { label: "SHOOT INCHARGE APPROVAL" },
-  { label: "ACTIONS", align: "right" },
-];
-
-export const productionPlanContentsDirectoryConfig = {
+export const productionPlanContentsListConfig = {
   title: "Plan Content",
   description:
-    "Individual content in this plan. Each content tracks manager/admin and shoot incharge approval.",
-  gridClass: PRODUCTION_PLAN_CONTENTS_GRID_CLASS,
-  columns: productionPlanContentsColumns,
+    "Each piece of content is its own card. Scan titles and notes together, then edit when needed.",
   emptyMessage: "No content in this plan yet. Add the first content to get started.",
 } as const;
+
+/** Preview lines shown on content cards before truncating. */
+export const CONTENT_NOTES_PREVIEW_LINES = 8;

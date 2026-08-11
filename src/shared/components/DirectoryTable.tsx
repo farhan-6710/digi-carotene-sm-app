@@ -13,6 +13,8 @@ export function DirectoryTable({
   emptyMessage,
   headerAside,
   children,
+  divided = false,
+  gridStyle,
 }: DirectoryTableProps) {
   return (
     <div className="w-full min-w-0 rounded-2xl border border-border bg-card shadow-sm">
@@ -28,14 +30,23 @@ export function DirectoryTable({
         <div className={DIRECTORY_TABLE_MIN_WIDTH_CLASS}>
           <div
             className={cn(
-              "grid gap-4 bg-muted px-6 py-3 text-xs font-semibold tracking-wider text-muted-foreground max-sm:hidden",
+              "grid text-xs font-semibold tracking-wider text-muted-foreground max-sm:hidden bg-muted px-6",
+              divided
+                ? "items-stretch divide-x divide-border border-b border-border"
+                : "gap-4 py-3",
               gridClass,
             )}
+            style={gridStyle}
           >
-            {columns.map((column) => (
+            {columns.map((column, index) => (
               <div
                 key={column.label}
-                className={column.align === "right" ? "text-right" : undefined}
+                className={cn(
+                  column.align === "right" ? "text-right" : undefined,
+                  divided
+                    ? cn("py-3 pr-4 relative", index === 0 ? "pl-0" : "pl-4")
+                    : undefined,
+                )}
               >
                 {column.label}
               </div>
