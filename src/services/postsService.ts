@@ -126,6 +126,31 @@ export async function fetchPostsForMonth(
   return mapPostRows(data ?? []);
 }
 
+/** Posted posts whose schedule day (`to_be_posted_date`) falls in the month. */
+export async function fetchPostedPostsForMonth(
+  year: number,
+  month: number,
+): Promise<Post[]> {
+  const monthStart = startOfMonth(new Date(year, month - 1, 1));
+  const start = format(monthStart, "yyyy-MM-dd");
+  const end = format(lastDayOfMonth(monthStart), "yyyy-MM-dd");
+
+  const { data, error } = await supabase
+    .from(DB.POSTS.TABLE)
+    .select(DB.POSTS.SELECT)
+    .eq("status", "Posted")
+    .gte("to_be_posted_date", start)
+    .lte("to_be_posted_date", end)
+    .order("to_be_posted_date", { ascending: true })
+    .order("to_be_posted_time", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return mapPostRows(data ?? []);
+}
+
 export async function fetchPostsForProjectId(projectId: string): Promise<Post[]> {
   const { data, error } = await supabase
     .from(DB.POSTS.TABLE)

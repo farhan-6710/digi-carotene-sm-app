@@ -20,6 +20,7 @@ export type ClientDialogProps = {
   isSaving?: boolean;
   values: ClientFormValues;
   onFieldChange: (field: ClientFormField, value: string) => void;
+  onActiveChange: (isActive: boolean) => void;
   onSave: () => void;
   onDelete?: () => void | Promise<void>;
 };
@@ -29,6 +30,10 @@ export type ClientsTableProps = {
   isLoading: boolean;
   canEdit: boolean;
   onEditClient: (client: import("@/features/clients-management/types/types").Client) => void;
+  statusFilter: import("@/shared/constants/activeStatusFilter").ActiveStatusFilterId;
+  onStatusFilterChange: (
+    filter: import("@/shared/constants/activeStatusFilter").ActiveStatusFilterId,
+  ) => void;
   onDeleteClientClick?: (
     client: import("@/features/clients-management/types/types").Client,
   ) => void;

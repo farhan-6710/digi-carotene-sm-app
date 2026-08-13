@@ -11,6 +11,7 @@ import type {
   PostsTopClient,
 } from "@/features/analytics/types/types";
 import type { Post } from "@/features/posts-management/types/types";
+import type { DateFiltersProps } from "@/shared/types/components";
 
 export type AnalyticsTabNavProps = {
   activeTab: AnalyticsTabId;
@@ -37,6 +38,7 @@ export type AnalyticsPanelProps = {
 export type PostsTopClientsTableProps = {
   clients: PostsTopClient[];
   isLoading?: boolean;
+  dateFilterProps?: DateFiltersProps;
 };
 
 export type ChartCardProps = {

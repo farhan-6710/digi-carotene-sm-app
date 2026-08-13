@@ -5,15 +5,17 @@ export type ClientFormValues = {
   email: string;
   mobileNumber: string;
   websiteName: string;
+  isActive: boolean;
 };
 
-export type ClientFormField = keyof ClientFormValues;
+export type ClientFormField = keyof Omit<ClientFormValues, "isActive">;
 
 export const emptyClientFormValues = (): ClientFormValues => ({
   clientName: "",
   email: "",
   mobileNumber: "",
   websiteName: "",
+  isActive: true,
 });
 
 export function clientToFormValues(client: Client): ClientFormValues {
@@ -22,6 +24,7 @@ export function clientToFormValues(client: Client): ClientFormValues {
     email: client.email ?? "",
     mobileNumber: client.mobile_number ?? "",
     websiteName: client.website_name ?? "",
+    isActive: client.is_active,
   };
 }
 

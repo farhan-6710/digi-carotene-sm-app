@@ -22,7 +22,9 @@ export function ProjectMultiSelect({
 
   const options = useMemo(
     () =>
-      projects.map((project) => ({
+      projects
+        .filter((project) => project.is_active)
+        .map((project) => ({
         value: project.id,
         label: getProjectDisplayLabel(project),
         icon: <FolderKanban className="size-3.5 opacity-70" />,

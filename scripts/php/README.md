@@ -6,7 +6,7 @@ One folder → deploy to `public_html/php/` so existing cron URLs stay the same.
 |--------|----------------|
 | `sync_yesterday_organic_acc.php` | Instagram organic posts + follower gain |
 | `sync_yesterday_ads_acc.php` | Meta ads daily metrics |
-| `send_midnight_post_digest.php` | Role-based post digest emails (Resend) |
+| `send_midnight_post_digest.php` | Role-based post digest emails (Resend) + in-app `post_digest` notifications |
 | `test.php` | Smoke test — config + auth only |
 
 Section rules for digests: [`src/shared/constants/postDigestEmail.ts`](../../src/shared/constants/postDigestEmail.ts)

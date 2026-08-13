@@ -1,12 +1,15 @@
 import { Plus } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { ClientDialog } from "@/features/clients-management/components/ClientDialog";
 import { ClientsTable } from "@/features/clients-management/components/ClientsTable";
 import { useClientDialog } from "@/features/clients-management/hooks/useClientDialog";
 import { useClientsQuery } from "@/features/clients-management/hooks/useClientsQuery";
+import type { ActiveStatusFilterId } from "@/shared/constants/activeStatusFilter";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { PageShell } from "@/shared/components/PageShell";
 import { Button } from "@/shared/ui/button";
+import { filterByActiveStatus } from "@/shared/utils/activeStatusFilterUtils";
 
 export function ClientsManagementPage() {
   const { can } = usePermissions();
@@ -15,6 +18,12 @@ export function ClientsManagementPage() {
     reload,
     setError,
   });
+  const [statusFilter, setStatusFilter] = useState<ActiveStatusFilterId>("all");
+
+  const filteredClients = useMemo(
+    () => filterByActiveStatus(clients, statusFilter),
+    [clients, statusFilter],
+  );
 
   return (
     <PageShell
@@ -36,10 +45,12 @@ export function ClientsManagementPage() {
       }
     >
       <ClientsTable
-        clients={clients}
+        clients={filteredClients}
         isLoading={isLoading}
         canEdit={can("clients.update")}
         onEditClient={openEditDialog}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
       />
     </PageShell>
   );

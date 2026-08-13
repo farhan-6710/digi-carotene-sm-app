@@ -42,9 +42,10 @@ try {
     foreach ($members as $member) {
         $email = strtolower(trim((string) ($member['email'] ?? '')));
         $name = (string) ($member['member_name'] ?? 'Team');
-        $role = (string) ($member['role'] ?? '');
+        $role = (string) ($member['team_role'] ?? $member['role'] ?? '');
+        $memberId = (string) ($member['id'] ?? '');
 
-        if ($email === '' || !isset(postDigestSectionsByRole()[$role])) {
+        if ($email === '' || $memberId === '' || !isset(postDigestSectionsByRole()[$role])) {
             $skipped++;
             continue;
         }
@@ -58,11 +59,28 @@ try {
 
         $subject = 'Digi Carotene — post digest ' . $today;
         $html = buildDigestHtml($name, $today, $sections, $portalUrl);
+        $postCount = 0;
+        foreach ($sections as $section) {
+            $postCount += count($section['posts'] ?? []);
+        }
+        $inboxMessage = 'Your daily post digest is ready ('
+            . $postCount
+            . ' post'
+            . ($postCount === 1 ? '' : 's')
+            . '). Open Posts Management or check your email.';
 
         try {
             $result = sendResendEmail($config, $email, $subject, $html);
             $mailId = is_string($result['id'] ?? null) ? $result['id'] : '';
             logLine('Sent to ' . $email . ' (' . $role . ')' . ($mailId !== '' ? ' id=' . $mailId : ''));
+
+            try {
+                createPostDigestNotification($config, $memberId, $subject, $inboxMessage);
+                logLine('Inbox notification created for ' . $email);
+            } catch (Throwable $notifyError) {
+                logLine('Inbox notify failed ' . $email . ': ' . $notifyError->getMessage());
+            }
+
             $sent++;
         } catch (Throwable $error) {
             logLine('Failed ' . $email . ': ' . $error->getMessage());

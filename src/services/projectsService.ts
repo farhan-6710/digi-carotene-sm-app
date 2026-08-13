@@ -15,7 +15,9 @@ export type CreateProjectInput = {
   teamMemberIds?: string[];
 };
 
-export type UpdateProjectInput = CreateProjectInput;
+export type UpdateProjectInput = CreateProjectInput & {
+  isActive?: boolean;
+};
 
 type ProjectRow = {
   id: string;
@@ -23,6 +25,7 @@ type ProjectRow = {
   client_id: string;
   socials: ProjectSocials | null;
   manager_id: string;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
   clients: ProjectListItem["clients"] | ProjectListItem["clients"][];
@@ -44,6 +47,7 @@ function normalizeProjectRow(
     client_id: row.client_id,
     socials: row.socials,
     manager_id: row.manager_id,
+    is_active: row.is_active,
     created_at: row.created_at,
     updated_at: row.updated_at,
     clients: client,
@@ -312,6 +316,7 @@ export async function updateProject(
       client_id: input.clientId,
       manager_id: input.managerId,
       socials: input.socials || {},
+      ...(input.isActive !== undefined ? { is_active: input.isActive } : {}),
     })
     .eq("id", projectId);
 

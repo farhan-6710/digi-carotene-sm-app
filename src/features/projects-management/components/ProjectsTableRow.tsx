@@ -4,6 +4,7 @@ import { Pencil } from "lucide-react";
 import { buildProjectDetailPath } from "@/features/projects-management/constants/routes";
 import { PROJECTS_DIRECTORY_ROW_GRID_CLASS } from "@/features/projects-management/constants/projectsDirectory";
 import type { ProjectsTableRowProps } from "@/features/projects-management/types/components";
+import { ActiveStatusLabel } from "@/shared/components/ActiveStatusSwitchField";
 import { SocialPlatformButtons } from "@/shared/components/SocialPlatformButtons";
 import { cn } from "@/shared/lib/utils";
 
@@ -50,6 +51,13 @@ export function ProjectsTableRow({
           SOCIALS
         </span>
         <SocialPlatformButtons socials={project.socials} />
+      </div>
+
+      <div>
+        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
+          STATUS
+        </span>
+        <ActiveStatusLabel isActive={project.is_active} />
       </div>
 
       <div className="flex justify-end">

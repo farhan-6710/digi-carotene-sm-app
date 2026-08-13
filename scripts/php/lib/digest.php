@@ -39,7 +39,7 @@ function buildDigestSectionsForMember(
     string $today,
     string $yesterday,
 ): array {
-    $role = (string) ($member['role'] ?? '');
+    $role = (string) ($member['team_role'] ?? $member['role'] ?? '');
     $memberId = (string) ($member['id'] ?? '');
     $sectionsByRole = postDigestSectionsByRole();
     $labels = postDigestSectionLabels();

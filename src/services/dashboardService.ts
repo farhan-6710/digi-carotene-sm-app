@@ -1,11 +1,10 @@
 import { DB } from "@/services/db";
 import { supabase } from "@/services/supabaseClient";
 import {
+  fetchAllPosts,
   fetchNotPostedPosts,
-  fetchPostsForMonth,
   fetchTodayPosts,
 } from "@/services/postsService";
-import { getPostsAnalyticsMonthRange } from "@/features/analytics/utils/postsAnalyticsUtils";
 
 export type TeamDashboardCounts = {
   clientsCount: number;
@@ -16,7 +15,7 @@ export type TeamDashboardCounts = {
 
 async function countRows(
   table: string,
-  filter?: { column: string; value: string },
+  filter?: { column: string; value: string | boolean },
 ): Promise<number> {
   let query = supabase.from(table).select("id", { count: "exact", head: true });
 
@@ -36,7 +35,7 @@ async function countRows(
 export async function fetchTeamDashboardCounts(): Promise<TeamDashboardCounts> {
   const [clientsCount, teamMembersCount, totalPostsCount, notPostedPostsCount] =
     await Promise.all([
-      countRows(DB.CLIENTS.TABLE),
+      countRows(DB.CLIENTS.TABLE, { column: "is_active", value: true }),
       countRows(DB.TEAM_MEMBERS.TABLE),
       countRows(DB.POSTS.TABLE),
       countRows(DB.POSTS.TABLE, { column: "status", value: "Not posted" }),
@@ -47,14 +46,17 @@ export async function fetchTeamDashboardCounts(): Promise<TeamDashboardCounts> {
 
 // Loads everything the team dashboard needs in one parallel batch.
 export async function fetchTeamDashboardPostsBundle() {
-  const { currentYear, currentMonth } = getPostsAnalyticsMonthRange();
-
-  const [counts, todayPosts, notPostedPosts, currentMonthPosts] = await Promise.all([
+  const [counts, todayPosts, notPostedPosts, posts] = await Promise.all([
     fetchTeamDashboardCounts(),
     fetchTodayPosts(),
     fetchNotPostedPosts(),
-    fetchPostsForMonth(currentYear, currentMonth),
+    fetchAllPosts(),
   ]);
 
-  return { counts, todayPosts, notPostedPosts, currentMonthPosts };
+  return {
+    counts,
+    todayPosts,
+    notPostedPosts,
+    posts,
+  };
 }

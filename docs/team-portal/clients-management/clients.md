@@ -17,6 +17,7 @@ Company registry: name, contact, website. Social profile URLs live on **projects
 | `email` | text | Yes | Portal user email (unique when set); used to auto-link `profiles.client_id` |
 | `mobile_number` | text | Yes | Contact phone |
 | `website_name` | text | Yes | Website URL or label |
+| `is_active` | boolean | No | Default `true`; inactive clients stay in history but are hidden from pickers |
 | `created_at` | timestamptz | No | Default `now()` |
 | `updated_at` | timestamptz | No | Auto-updated via trigger |
 
@@ -47,6 +48,7 @@ type Client = {
   email: string | null;
   mobile_number: string | null;
   website_name: string | null;
+  is_active: boolean;
   created_at: string;
 };
 ```

@@ -44,6 +44,8 @@ Run only migrations you have **not** applied yet, in order:
 | `030_production_plan_items.sql` | Moves approvals onto `production_plan_items`; drops plan-level approval columns |
 | `031_production_plan_assignees.sql` | Adds `manager_id` + `shoot_incharge_id` on `production_plans` |
 | `032_production_plans_shoot_date.sql` | Renames `production_plans.start_date` → `shoot_date` |
+| `033_notifications.sql` | Team inbox `notifications` (approval alerts + post digests) |
+| `034_clients_projects_is_active.sql` | Adds `is_active` on `clients` and `projects` |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

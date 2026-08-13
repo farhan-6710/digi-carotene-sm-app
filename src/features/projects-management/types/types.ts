@@ -23,6 +23,7 @@ export type Project = {
   client_id: string;
   socials: ProjectSocials | null;
   manager_id: string;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
   clients?: ProjectClient | null;

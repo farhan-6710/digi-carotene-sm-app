@@ -13,7 +13,9 @@ export type CreateClientInput = {
   websiteName?: string | null;
 };
 
-export type UpdateClientInput = CreateClientInput;
+export type UpdateClientInput = CreateClientInput & {
+  isActive?: boolean;
+};
 
 function saveError(error: { code?: string; message?: string }): Error {
   if (error.code === "23505") {
@@ -83,7 +85,10 @@ export async function updateClient(
 ): Promise<Client> {
   const { data, error } = await supabase
     .from(DB.CLIENTS.TABLE)
-    .update(toClientColumns(input))
+    .update({
+      ...toClientColumns(input),
+      ...(input.isActive !== undefined ? { is_active: input.isActive } : {}),
+    })
     .eq("id", clientId)
     .select(DB.CLIENTS.SELECT)
     .single();

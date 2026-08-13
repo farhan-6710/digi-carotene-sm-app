@@ -2,31 +2,36 @@ import { Link } from "react-router";
 import { Loader2 } from "lucide-react";
 
 import type { PostsTopClientsTableProps } from "@/features/analytics/types/components";
+import { DateFilters } from "@/shared/components/DateFilters";
 
 export function PostsTopClientsTable({
   clients,
   isLoading = false,
+  dateFilterProps,
 }: PostsTopClientsTableProps) {
   return (
     <div className="rounded-2xl border border-border bg-card shadow-xs">
-      <div className="flex items-center justify-between border-b border-border px-6 py-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-6 py-5">
         <div className="text-sm font-semibold text-foreground">
           Clients With Most Posts
         </div>
-        <Link
-          to="/team-portal/posts-management"
-          className="text-sm font-medium text-primary hover:underline"
-        >
-          View posts <span aria-hidden="true">↗</span>
-        </Link>
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          {dateFilterProps ? <DateFilters {...dateFilterProps} /> : null}
+          <Link
+            to="/team-portal/posts-management"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            View all <span aria-hidden="true">↗</span>
+          </Link>
+        </div>
       </div>
 
       <div>
-        <div className="grid grid-cols-[1.4fr_0.6fr_0.7fr_0.6fr] gap-4 bg-muted/50 px-6 py-3 text-xs font-semibold tracking-wider text-muted-foreground">
-          <div>CLIENT</div>
-          <div className="text-right">POSTS</div>
-          <div className="text-right">SCHEDULED</div>
-          <div className="text-right">NOT POSTED</div>
+        <div className="grid grid-cols-[1.4fr_0.7fr_0.8fr_0.6fr] gap-4 bg-muted/50 px-6 py-3 text-xs font-semibold tracking-wider text-muted-foreground">
+          <div>CLIENT NAME</div>
+          <div className="text-right">TOTAL POSTS</div>
+          <div className="text-right">TOTAL POSTED</div>
+          <div className="text-right">BACKLOGS</div>
         </div>
 
         {isLoading ? (
@@ -35,7 +40,7 @@ export function PostsTopClientsTable({
           </div>
         ) : clients.length === 0 ? (
           <div className="border-t border-border px-6 py-10 text-center text-sm text-muted-foreground">
-            No posts scheduled this month yet.
+            No posts in this period yet.
           </div>
         ) : (
           <div className="divide-y divide-border border-t">
@@ -43,7 +48,7 @@ export function PostsTopClientsTable({
               <div
                 key={client.name}
                 className={[
-                  "grid grid-cols-[1.4fr_0.6fr_0.7fr_0.6fr] items-center gap-4 px-6 py-3.5",
+                  "grid grid-cols-[1.4fr_0.7fr_0.8fr_0.6fr] items-center gap-4 px-6 py-3.5",
                   index === 0 ? "bg-primary/5" : "",
                 ].join(" ")}
               >
@@ -68,11 +73,11 @@ export function PostsTopClientsTable({
                 >
                   {client.posts}
                 </div>
-                <div className="text-right font-mono text-sm text-status-scheduled">
-                  {client.scheduled}
+                <div className="text-right font-mono text-sm text-status-posted">
+                  {client.posted}
                 </div>
                 <div className="text-right font-mono text-sm text-status-not-posted">
-                  {client.notPosted}
+                  {client.backlogs}
                 </div>
               </div>
             ))}

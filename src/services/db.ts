@@ -137,6 +137,11 @@ export const DB = {
     TABLE: "post_approval_requests",
     SELECT: APPROVAL_SELECT,
   },
+  NOTIFICATIONS: {
+    TABLE: "notifications",
+    SELECT:
+      "id, recipient_team_member_id, notification_type, title, message, status, related_id, created_at, read_at",
+  },
   PRODUCTION_PLANS: {
     TABLE: "production_plans",
     SELECT: PRODUCTION_PLAN_SELECT,

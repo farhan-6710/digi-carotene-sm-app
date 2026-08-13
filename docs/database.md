@@ -16,27 +16,28 @@ Run only the migrations you have not applied yet, in order (`002` onward). See [
 
 ## Tables
 
-| Table                  | Purpose                                                     |
-| ---------------------- | ----------------------------------------------------------- |
-| `clients`              | Company / brand owner (contact only — no social URLs)       |
-| `team_members`         | Internal team                                              |
-| `projects`             | Client engagement: social profile URLs, manager, posts      |
-| `project_team_members` | Extra team on a project (assignment history via `ended_at`) |
-| `posts`                | Scheduled content (`project_id` FK)                         |
-| `post_approval_requests` | Executive backdated post approval workflow              |
-| `production_plans`     | Client production plans (name, shoot date, deliverable targets, manager + shoot incharge) |
-| `production_plan_items` | Items inside a plan; each has manager + shoot incharge approval status |
-| `profiles`             | Auth user roles + portal `client_id`                        |
-| `growth_organic_accounts` | Connected Instagram/Facebook profiles (Meta token + followers); `client_id` FK links the account to a client |
-| `growth_organic_profiles` | Instagram credentials + follower count |
-| `growth_organic_posts_metrics` | Post-level metrics from connect backfill + daily sync |
-| `growth_organic_daily_followers` | Net followers gained per day (backfill + midnight cron) |
-| `growth_ads_accounts` | Connected Meta ad accounts; `client_id` FK links the account to a client |
-| `growth_ads_campaign_daily_metrics` | Campaign daily ad metrics (backfill + cron) |
-| `growth_ads_adsets` | Ad set master rows (targeting / placement summaries) |
-| `growth_ads_adset_daily_metrics` | Ad set daily metrics |
-| `growth_ads_ads` | Ad master rows (name, creative summary) |
-| `growth_ads_ad_daily_metrics` | Ad daily metrics |
+| Table                               | Purpose                                                                                                      |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `clients`                           | Company / brand owner (contact only — no social URLs)                                                        |
+| `team_members`                      | Internal team                                                                                                |
+| `projects`                          | Client engagement: social profile URLs, manager, posts                                                       |
+| `project_team_members`              | Extra team on a project (assignment history via `ended_at`)                                                  |
+| `posts`                             | Scheduled content (`project_id` FK)                                                                          |
+| `post_approval_requests`            | Executive backdated post approval workflow                                                                   |
+| `notifications`                     | Team inbox (approval alerts + post digests; unread/read)                                                     |
+| `production_plans`                  | Client production plans (name, shoot date, deliverable targets, manager + shoot incharge)                    |
+| `production_plan_items`             | Items inside a plan; each has manager + shoot incharge approval status                                       |
+| `profiles`                          | Auth user roles + portal `client_id`                                                                         |
+| `growth_organic_accounts`           | Connected Instagram/Facebook profiles (Meta token + followers); `client_id` FK links the account to a client |
+| `growth_organic_profiles`           | Instagram credentials + follower count                                                                       |
+| `growth_organic_posts_metrics`      | Post-level metrics from connect backfill + daily sync                                                        |
+| `growth_organic_daily_followers`    | Net followers gained per day (backfill + midnight cron)                                                      |
+| `growth_ads_accounts`               | Connected Meta ad accounts; `client_id` FK links the account to a client                                     |
+| `growth_ads_campaign_daily_metrics` | Campaign daily ad metrics (backfill + cron)                                                                  |
+| `growth_ads_adsets`                 | Ad set master rows (targeting / placement summaries)                                                         |
+| `growth_ads_adset_daily_metrics`    | Ad set daily metrics                                                                                         |
+| `growth_ads_ads`                    | Ad master rows (name, creative summary)                                                                      |
+| `growth_ads_ad_daily_metrics`       | Ad daily metrics                                                                                             |
 
 ## Relationships
 
@@ -60,16 +61,16 @@ clients ──1:N── production_plans ──1:N── production_plan_items
 
 ## RLS summary (from 001_initial_schema.sql)
 
-| Table                  | Team (authenticated)              | Client portal (client role)                   |
-| ---------------------- | ---------------------------------- | --------------------------------------------- |
-| `clients`              | Full CRUD                          | SELECT own row (`profiles.client_id`)         |
-| `team_members`         | Full CRUD                          | —                                             |
-| `projects`             | Full CRUD                          | —                                             |
-| `project_team_members` | Full CRUD                          | —                                             |
-| `posts`                | Full CRUD                          | SELECT posts for projects under linked client |
-| `production_plans`     | Full CRUD                          | —                                             |
-| `production_plan_items` | Full CRUD                         | —                                             |
-| `profiles`             | Read/update own; team update any  | Read/update own                               |
+| Table                   | Team (authenticated)             | Client portal (client role)                   |
+| ----------------------- | -------------------------------- | --------------------------------------------- |
+| `clients`               | Full CRUD                        | SELECT own row (`profiles.client_id`)         |
+| `team_members`          | Full CRUD                        | —                                             |
+| `projects`              | Full CRUD                        | —                                             |
+| `project_team_members`  | Full CRUD                        | —                                             |
+| `posts`                 | Full CRUD                        | SELECT posts for projects under linked client |
+| `production_plans`      | Full CRUD                        | —                                             |
+| `production_plan_items` | Full CRUD                        | —                                             |
+| `profiles`              | Read/update own; team update any | Read/update own                               |
 
 ## After setup
 
@@ -90,7 +91,7 @@ See [README.md](./README.md) for per-feature schema details and DTOs.
 
 ### Growth & Analytics
 
-| Doc | Purpose |
-|-----|---------|
+| Doc                                                                | Purpose                                                                 |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------- |
 | [growth-and-analytics/README.md](./growth-and-analytics/README.md) | Instagram backfill, ads campaign analytics, live breakdowns, daily sync |
-| [scripts/php/README.md](../scripts/php/README.md) | Hostinger/GoDaddy PHP cron setup |
+| [scripts/php/README.md](../scripts/php/README.md)                  | Hostinger/GoDaddy PHP cron setup                                        |

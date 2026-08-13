@@ -4,8 +4,11 @@ export type PostApprovalsTableProps = {
   requests: PostApprovalRequest[];
   isLoading: boolean;
   isReviewingId: string | null;
+  dismissingId?: string | null;
+  notificationIdByRequestId?: Record<string, string>;
   onApprove: (requestId: string) => void;
   onReject: (requestId: string) => void;
+  onDismiss?: (requestId: string) => void;
 };
 
 export type PostApprovalRejectDialogProps = {

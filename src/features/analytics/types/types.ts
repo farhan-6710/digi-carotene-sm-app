@@ -52,8 +52,8 @@ export type AnalyticsStatCard = {
 export type PostsTopClient = {
   name: string;
   posts: number;
-  scheduled: number;
-  notPosted: number;
+  posted: number;
+  backlogs: number;
 };
 
 export type AnalyticsDataset = {

@@ -59,6 +59,10 @@ export function useClientDialog({ reload, setError }: UseClientDialogOptions) {
     setIsDialogOpen(true);
   }, []);
 
+  const onActiveChange = useCallback((isActive: boolean) => {
+    setValues((current) => ({ ...current, isActive }));
+  }, []);
+
   const saveClient = useCallback(async () => {
     if (isSaving) {
       return;
@@ -84,7 +88,10 @@ export function useClientDialog({ reload, setError }: UseClientDialogOptions) {
       const clientName = values.clientName.trim();
 
       if (editingClientId) {
-        await updateClient(editingClientId, payload);
+        await updateClient(editingClientId, {
+          ...payload,
+          isActive: values.isActive,
+        });
         showToast("success", `"${clientName}" updated successfully.`);
       } else {
         await createClient(payload);
@@ -136,6 +143,7 @@ export function useClientDialog({ reload, setError }: UseClientDialogOptions) {
       isSaving,
       values,
       onFieldChange,
+      onActiveChange,
       onSave: saveClient,
       onDelete: editingClientId ? removeClient : undefined,
     },

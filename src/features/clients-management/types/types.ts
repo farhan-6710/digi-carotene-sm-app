@@ -4,5 +4,6 @@ export type Client = {
   email: string | null;
   mobile_number: string | null;
   website_name: string | null;
+  is_active: boolean;
   created_at: string;
 };

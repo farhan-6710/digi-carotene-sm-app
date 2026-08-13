@@ -34,6 +34,7 @@ export function ClientCombobox({
         : [];
 
     const fetchedOptions = clients
+      .filter((client) => client.is_active)
       .filter((client) => !activeClientIds.includes(client.id))
       .map((client) => ({
         value: client.id,

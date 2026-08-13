@@ -4,6 +4,7 @@ import { Pencil } from "lucide-react";
 import { buildClientDetailPath } from "@/features/clients-management/constants/routes";
 import { CLIENTS_DIRECTORY_ROW_GRID_CLASS } from "@/features/clients-management/constants/clientsDirectory";
 import type { ClientsTableRowProps } from "@/features/clients-management/types/components";
+import { ActiveStatusLabel } from "@/shared/components/ActiveStatusSwitchField";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 
@@ -56,6 +57,13 @@ export function ClientsTableRow({
         ) : (
           <span className="text-muted-foreground/50">—</span>
         )}
+      </div>
+
+      <div>
+        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
+          STATUS
+        </span>
+        <ActiveStatusLabel isActive={client.is_active} />
       </div>
 
       <div className="flex justify-end gap-2 text-right">

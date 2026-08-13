@@ -17,6 +17,7 @@ Operational unit: social profile URLs, manager, team, and posts. Each project be
 | `client_id` | uuid | No | FK → `clients.id` ON DELETE CASCADE |
 | `socials` | jsonb | No | Default `{}`; profile URLs per platform |
 | `manager_id` | uuid | No | FK → `team_members.id` ON DELETE RESTRICT |
+| `is_active` | boolean | No | Default `true`; inactive projects stay in history but are hidden from pickers |
 | `created_at` | timestamptz | No | |
 | `updated_at` | timestamptz | No | Auto-updated |
 

@@ -35,9 +35,9 @@ export function buildTeamStatCards({
     },
     {
       id: "clients",
-      label: "Total Clients",
+      label: "Total Active Clients",
       value: String(clientsCount ?? 0),
-      description: "Active registered brands",
+      description: "Currently active registered brands",
       icon: Users,
       sparklineData: clientsSparklineData,
       sparklineColor: "var(--accent)",

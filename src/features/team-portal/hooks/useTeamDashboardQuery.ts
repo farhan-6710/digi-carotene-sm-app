@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { PostsTopClient } from "@/features/analytics/types/types";
+import type { AnalyticsDateFilterState } from "@/features/analytics/types/types";
+import { filterPostsByAnalyticsFilter } from "@/features/analytics/utils/analyticsFilterUtils";
 import { buildPostsTopClients } from "@/features/analytics/utils/postsAnalyticsUtils";
-import type { StatusKey } from "@/features/posts-management/types/types";
+import type { Post, StatusKey } from "@/features/posts-management/types/types";
 import { parseDateTime } from "@/features/posts-management/utils/postScheduleUtils";
 import {
   TEAM_NEEDS_ATTENTION_LIMIT,
@@ -18,12 +19,12 @@ import { mapNotPostedPostsToNeedsAttention } from "@/features/team-portal/utils/
 import { mapPostsToTodaysPosts } from "@/features/team-portal/utils/teamTodaysPostsUtils";
 import { buildTeamStatCards } from "@/features/team-portal/utils/teamStatsUtils";
 
-export function useTeamDashboardQuery() {
+export function useTeamDashboardQuery(filter: AnalyticsDateFilterState) {
   const [todaysPosts, setTodaysPosts] = useState<TeamTodaysPostItem[]>([]);
   const [needsAttentionPosts, setNeedsAttentionPosts] = useState<
     TeamNeedsAttentionItem[]
   >([]);
-  const [topClients, setTopClients] = useState<PostsTopClient[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [counts, setCounts] = useState({
     clientsCount: null as number | null,
     teamMembersCount: null as number | null,
@@ -42,7 +43,7 @@ export function useTeamDashboardQuery() {
         counts: nextCounts,
         todayPosts,
         notPostedPosts,
-        currentMonthPosts,
+        posts: nextPosts,
       } = await fetchTeamDashboardPostsBundle();
 
       setCounts({
@@ -60,7 +61,7 @@ export function useTeamDashboardQuery() {
           TEAM_NEEDS_ATTENTION_LIMIT,
         ),
       );
-      setTopClients(buildPostsTopClients(currentMonthPosts));
+      setPosts(nextPosts);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to load dashboard data.",
@@ -133,6 +134,10 @@ export function useTeamDashboardQuery() {
     }));
   }, []);
 
+  const topClients = useMemo(
+    () => buildPostsTopClients(filterPostsByAnalyticsFilter(posts, filter)),
+    [filter, posts],
+  );
   const statCards = useMemo(() => buildTeamStatCards(counts), [counts]);
 
   return {

@@ -1,6 +1,10 @@
 import { DB } from "@/services/db";
 import { supabase } from "@/services/supabaseClient";
 import { createPost } from "@/services/postsService";
+import {
+  createNotifications,
+  markNotificationsReadByRelatedId,
+} from "@/services/notificationsService";
 import type {
   CreatePostApprovalRequestInput,
   PostApprovalRequest,
@@ -9,6 +13,51 @@ import { mapDbRowToPostApprovalRequest } from "@/features/post-approvals/utils/p
 import { canReviewPostApprovalRequest } from "@/features/post-approvals/utils/postApprovalRules";
 import { notifyPostApprovalsUpdated } from "@/features/post-approvals/utils/postApprovalsEvents";
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
+
+async function fetchAdminTeamMemberIds(): Promise<string[]> {
+  const { data, error } = await supabase
+    .from(DB.TEAM_MEMBERS.TABLE)
+    .select("id")
+    .eq("team_role", "admin");
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? [])
+    .map((row) => (typeof row.id === "string" ? row.id : ""))
+    .filter((id) => id !== "");
+}
+
+async function createApprovalNotifications(
+  request: PostApprovalRequest,
+): Promise<void> {
+  const adminIds = await fetchAdminTeamMemberIds();
+  const recipientIds = new Set<string>(adminIds);
+
+  if (request.project_manager_id) {
+    recipientIds.add(request.project_manager_id);
+  }
+
+  recipientIds.delete(request.requested_by_team_member_id);
+
+  const requesterName = request.requested_by_name ?? "A teammate";
+  const projectLabel =
+    request.client_name && request.project_name
+      ? `${request.client_name} · ${request.project_name}`
+      : (request.project_name ?? "a project");
+  const postLabel = request.post_payload.postTitle?.trim() || "Untitled post";
+
+  await createNotifications(
+    [...recipientIds].map((recipientTeamMemberId) => ({
+      recipientTeamMemberId,
+      notificationType: "approval" as const,
+      title: "Post approval requested",
+      message: `${requesterName} requested approval for “${postLabel}” on ${projectLabel}.`,
+      relatedId: request.id,
+    })),
+  );
+}
 
 export async function createPostApprovalRequest(
   input: CreatePostApprovalRequestInput,
@@ -29,8 +78,16 @@ export async function createPostApprovalRequest(
     throw new Error(error.message ?? "Failed to submit approval request.");
   }
 
+  const request = mapDbRowToPostApprovalRequest(data);
+
+  try {
+    await createApprovalNotifications(request);
+  } catch {
+    // Approval request already saved; inbox alert is best-effort for V1.
+  }
+
   notifyPostApprovalsUpdated();
-  return mapDbRowToPostApprovalRequest(data);
+  return request;
 }
 
 export async function fetchPendingApprovalsForReviewer(
@@ -52,6 +109,27 @@ export async function fetchPendingApprovalsForReviewer(
   return requests.filter((request) =>
     canReviewPostApprovalRequest(teamRole, teamMemberId, request.project_manager_id),
   );
+}
+
+export async function fetchPendingApprovalsByIds(
+  requestIds: string[],
+): Promise<PostApprovalRequest[]> {
+  if (requestIds.length === 0) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from(DB.POST_APPROVAL_REQUESTS.TABLE)
+    .select(DB.POST_APPROVAL_REQUESTS.SELECT)
+    .in("id", requestIds)
+    .eq("status", "pending")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map((row) => mapDbRowToPostApprovalRequest(row));
 }
 
 export async function countPendingApprovalsForReviewer(
@@ -140,6 +218,12 @@ export async function approvePostApprovalRequest(
     throw new Error(error.message ?? "Failed to approve request.");
   }
 
+  try {
+    await markNotificationsReadByRelatedId(requestId);
+  } catch {
+    // Review succeeded; clearing inbox is best-effort.
+  }
+
   notifyPostApprovalsUpdated();
   return mapDbRowToPostApprovalRequest(data);
 }
@@ -164,6 +248,12 @@ export async function rejectPostApprovalRequest(
 
   if (error) {
     throw new Error(error.message ?? "Failed to reject request.");
+  }
+
+  try {
+    await markNotificationsReadByRelatedId(requestId);
+  } catch {
+    // Review succeeded; clearing inbox is best-effort.
   }
 
   notifyPostApprovalsUpdated();

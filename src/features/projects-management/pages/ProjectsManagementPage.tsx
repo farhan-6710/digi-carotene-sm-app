@@ -1,12 +1,15 @@
 import { Plus } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { ProjectDialog } from "@/features/projects-management/components/ProjectDialog";
 import { ProjectsTable } from "@/features/projects-management/components/ProjectsTable";
 import { useProjectDialog } from "@/features/projects-management/hooks/useProjectDialog";
 import { useProjectsQuery } from "@/features/projects-management/hooks/useProjectsQuery";
+import type { ActiveStatusFilterId } from "@/shared/constants/activeStatusFilter";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { PageShell } from "@/shared/components/PageShell";
 import { Button } from "@/shared/ui/button";
+import { filterByActiveStatus } from "@/shared/utils/activeStatusFilterUtils";
 
 export function ProjectsManagementPage() {
   const { can } = usePermissions();
@@ -15,6 +18,12 @@ export function ProjectsManagementPage() {
     reload,
     setError,
   });
+  const [statusFilter, setStatusFilter] = useState<ActiveStatusFilterId>("all");
+
+  const filteredProjects = useMemo(
+    () => filterByActiveStatus(projects, statusFilter),
+    [projects, statusFilter],
+  );
 
   return (
     <PageShell
@@ -36,10 +45,12 @@ export function ProjectsManagementPage() {
       }
     >
       <ProjectsTable
-        projects={projects}
+        projects={filteredProjects}
         isLoading={isLoading}
         canEdit={can("projects.update")}
         onEditProject={openEditDialog}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
       />
     </PageShell>
   );

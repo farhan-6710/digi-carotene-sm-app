@@ -14,6 +14,7 @@ export type ProjectFormValues = {
   linkedin: string;
   youtube: string;
   google: string;
+  isActive: boolean;
 };
 
 export type ProjectFormField = keyof Pick<
@@ -31,6 +32,7 @@ export const emptyProjectFormValues = (): ProjectFormValues => ({
   linkedin: "",
   youtube: "",
   google: "",
+  isActive: true,
 });
 
 export function projectToFormValues(project: ProjectListItem): ProjectFormValues {
@@ -44,6 +46,7 @@ export function projectToFormValues(project: ProjectListItem): ProjectFormValues
     linkedin: project.socials?.linkedin ?? "",
     youtube: project.socials?.youtube ?? "",
     google: project.socials?.google ?? "",
+    isActive: project.is_active,
   };
 }
 

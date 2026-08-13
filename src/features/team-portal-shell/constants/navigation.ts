@@ -17,7 +17,7 @@ export const primaryNav: NavItem[] = [
   { label: "Team", to: `${teamBasePath}/team-management`, icon: "team" },
   { label: "Clients", to: `${teamBasePath}/clients-management`, icon: "clients" },
   { label: "Projects", to: `${teamBasePath}/projects-management`, icon: "projects" },
-  { label: "Posts", to: `${teamBasePath}/posts-management`, icon: "posts" },
+  { label: "Postings Calendar", to: `${teamBasePath}/posts-management`, icon: "posts" },
   {
     label: "Production Planner",
     to: `${teamBasePath}/production-planner`,

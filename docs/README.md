@@ -23,6 +23,7 @@ Reference docs for the Digi Carotene service management app: database schema, DT
 | Projects | [team-portal/projects-management/projects.md](./team-portal/projects-management/projects.md) |
 | Posts | [team-portal/posts-management/posts.md](./team-portal/posts-management/posts.md) |
 | Post approvals | [team-portal/post-approvals/post-approval-requests.md](./team-portal/post-approvals/post-approval-requests.md) (lives under Notifications) |
+| Notifications inbox | [team-portal/notifications/notifications.md](./team-portal/notifications/notifications.md) |
 | Growth & Analytics | [growth-and-analytics/README.md](./growth-and-analytics/README.md) |
 | PHP crons (Growth sync + midnight post digest) | [scripts/php/README.md](../scripts/php/README.md) |
 

@@ -9,23 +9,22 @@ export function buildPostsTopClients(
 ): PostsTopClient[] {
   const counts = new Map<
     string,
-    { posts: number; scheduled: number; notPosted: number }
+    { posts: number; posted: number; backlogs: number }
   >();
 
   for (const post of posts) {
     const clientName = post.client_name ?? "Unknown client";
     const entry = counts.get(clientName) ?? {
       posts: 0,
-      scheduled: 0,
-      notPosted: 0,
+      posted: 0,
+      backlogs: 0,
     };
 
     entry.posts += 1;
-    if (post.status === "Scheduled") {
-      entry.scheduled += 1;
-    }
-    if (post.status === "Not posted") {
-      entry.notPosted += 1;
+    if (post.status === "Posted") {
+      entry.posted += 1;
+    } else {
+      entry.backlogs += 1;
     }
 
     counts.set(clientName, entry);

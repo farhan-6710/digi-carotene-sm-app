@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ClientDialogBasicFields } from "@/features/clients-management/components/ClientDialogBasicFields";
 import type { ClientDialogProps } from "@/features/clients-management/types/components";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
+import { ActiveStatusSwitchField } from "@/shared/components/ActiveStatusSwitchField";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -21,6 +22,7 @@ export function ClientDialog({
   isSaving = false,
   values,
   onFieldChange,
+  onActiveChange,
   onSave,
   onDelete,
 }: ClientDialogProps) {
@@ -53,6 +55,14 @@ export function ClientDialog({
               onFieldChange={onFieldChange}
               disabled={isSaving}
             />
+            {isEditing ? (
+              <ActiveStatusSwitchField
+                entityLabel="client"
+                checked={values.isActive}
+                onCheckedChange={onActiveChange}
+                disabled={isSaving}
+              />
+            ) : null}
           </div>
 
           <DialogFooter className="shrink-0 border-t border-border/60 pt-4">

@@ -98,6 +98,10 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
     }
   }, []);
 
+  const onActiveChange = useCallback((isActive: boolean) => {
+    setValues((current) => ({ ...current, isActive }));
+  }, []);
+
   const saveProject = useCallback(async () => {
     if (isSaving) {
       return;
@@ -124,7 +128,10 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
       const projectName = values.projectName.trim();
 
       if (editingProjectId) {
-        await updateProject(editingProjectId, payload);
+        await updateProject(editingProjectId, {
+          ...payload,
+          isActive: values.isActive,
+        });
         showToast("success", `"${projectName}" updated successfully.`);
       } else {
         await createProject(payload);
@@ -179,6 +186,7 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
       onClientChange,
       onManagerChange,
       onTeamMemberIdsChange,
+      onActiveChange,
       onSave: saveProject,
       onDelete: editingProjectId ? removeProject : undefined,
     },

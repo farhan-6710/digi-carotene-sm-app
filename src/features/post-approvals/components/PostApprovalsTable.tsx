@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 import { postApprovalsDirectoryConfig } from "@/features/post-approvals/constants/postApprovals";
 import type { PostApprovalsTableProps } from "@/features/post-approvals/types/components";
@@ -16,15 +16,21 @@ import { cn } from "@/shared/lib/utils";
 type PostApprovalsTableRowProps = {
   request: PostApprovalRequest;
   isReviewing: boolean;
+  isDismissing: boolean;
+  showDismiss: boolean;
   onApprove: (requestId: string) => void;
   onReject: (requestId: string) => void;
+  onDismiss?: (requestId: string) => void;
 };
 
 function PostApprovalsTableRow({
   request,
   isReviewing,
+  isDismissing,
+  showDismiss,
   onApprove,
   onReject,
+  onDismiss,
 }: PostApprovalsTableRowProps) {
   return (
     <div
@@ -51,11 +57,27 @@ function PostApprovalsTableRow({
         {format(new Date(request.created_at), "MMM d, yyyy")}
       </p>
       <div className="flex items-center justify-end gap-2">
+        {showDismiss && onDismiss ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            disabled={isReviewing || isDismissing}
+            aria-label="Dismiss notification"
+            onClick={() => onDismiss(request.id)}
+          >
+            {isDismissing ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <X className="size-4" />
+            )}
+          </Button>
+        ) : null}
         <Button
           type="button"
           size="sm"
           variant="outline"
-          disabled={isReviewing}
+          disabled={isReviewing || isDismissing}
           onClick={() => onReject(request.id)}
         >
           Reject
@@ -63,7 +85,7 @@ function PostApprovalsTableRow({
         <Button
           type="button"
           size="sm"
-          disabled={isReviewing}
+          disabled={isReviewing || isDismissing}
           onClick={() => onApprove(request.id)}
         >
           {isReviewing ? (
@@ -81,8 +103,11 @@ export function PostApprovalsTable({
   requests,
   isLoading,
   isReviewingId,
+  dismissingId = null,
+  notificationIdByRequestId = {},
   onApprove,
   onReject,
+  onDismiss,
 }: PostApprovalsTableProps) {
   return (
     <DirectoryTable
@@ -94,15 +119,23 @@ export function PostApprovalsTable({
       isLoading={isLoading}
       isEmpty={requests.length === 0}
     >
-      {requests.map((request) => (
-        <PostApprovalsTableRow
-          key={request.id}
-          request={request}
-          isReviewing={isReviewingId === request.id}
-          onApprove={onApprove}
-          onReject={onReject}
-        />
-      ))}
+      {requests.map((request) => {
+        const notificationId = notificationIdByRequestId[request.id];
+        return (
+          <PostApprovalsTableRow
+            key={request.id}
+            request={request}
+            isReviewing={isReviewingId === request.id}
+            isDismissing={
+              notificationId != null && dismissingId === notificationId
+            }
+            showDismiss={Boolean(onDismiss && notificationId)}
+            onApprove={onApprove}
+            onReject={onReject}
+            onDismiss={onDismiss}
+          />
+        );
+      })}
     </DirectoryTable>
   );
 }

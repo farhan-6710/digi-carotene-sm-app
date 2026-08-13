@@ -2,13 +2,18 @@ import { Link } from "react-router";
 import { Bell } from "lucide-react";
 
 import { NOTIFICATIONS_PATH } from "@/features/notifications/constants/routes";
-import { useTeamReviewerAccess } from "@/features/post-approvals/providers/teamReviewerAccessContext";
+import { useUnreadNotificationsCount } from "@/features/notifications/hooks/useUnreadNotificationsCount";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 export function TeamNotificationsHeaderButton() {
-  const { canReview, pendingCount } = useTeamReviewerAccess();
-  const showBadge = canReview && pendingCount > 0;
+  const { teamMemberId, teamRole } = useAuth();
+  const { unreadCount } = useUnreadNotificationsCount({
+    teamMemberId,
+    teamRole,
+  });
+  const showBadge = unreadCount > 0;
 
   return (
     <Button
@@ -18,7 +23,7 @@ export function TeamNotificationsHeaderButton() {
       className="relative size-9 rounded-xl border border-border p-0"
       aria-label={
         showBadge
-          ? `Open notifications, ${pendingCount} pending approvals`
+          ? `Open notifications, ${unreadCount} unread`
           : "Open notifications"
       }
     >
@@ -31,7 +36,7 @@ export function TeamNotificationsHeaderButton() {
               "bg-primary px-1 text-[10px] font-semibold text-primary-foreground",
             )}
           >
-            {pendingCount > 9 ? "9+" : pendingCount}
+            {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         ) : null}
       </Link>

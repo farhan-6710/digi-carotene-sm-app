@@ -221,16 +221,38 @@ function upsertAdMetric(array $config, string $adAccountId, array $row): void
 
 // ─── Post digest ─────────────────────────────────────────────────────────────
 
-/** @return list<array{id: string, member_name: string, email: string, role: string}> */
+/** @return list<array{id: string, member_name: string, email: string, team_role: string}> */
 function fetchTeamMembers(array $config): array
 {
     $rows = supabaseRequest(
         $config,
         'GET',
-        'team_members?select=id,member_name,email,role&order=member_name.asc',
+        'team_members?select=id,member_name,email,team_role&order=member_name.asc',
     );
 
     return is_array($rows) ? $rows : [];
+}
+
+function createPostDigestNotification(
+    array $config,
+    string $memberId,
+    string $title,
+    string $message,
+): void {
+    supabaseRequest(
+        $config,
+        'POST',
+        'notifications',
+        [
+            'recipient_team_member_id' => $memberId,
+            'notification_type' => 'post_digest',
+            'title' => $title,
+            'message' => $message,
+            'status' => 'unread',
+            'related_id' => null,
+        ],
+        ['Prefer: return=minimal'],
+    );
 }
 
 /** @return list<string> */

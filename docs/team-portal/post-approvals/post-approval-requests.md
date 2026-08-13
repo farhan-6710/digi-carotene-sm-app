@@ -4,7 +4,8 @@ Approval workflow when an **executive** creates a post with a **to be posted** d
 
 **UI:** Approvals section on `/team-portal/notifications` (role-gated)  
 **Code:** `src/features/post-approvals/` (section), `src/features/notifications/` (page + header bell)  
-**Setup:** `scripts/migrations/013_post_approval_requests.sql`
+**Setup:** `scripts/migrations/013_post_approval_requests.sql`  
+**Inbox:** Creating a request also inserts `notifications` rows (`type = approval`, `related_id` = request id). See [notifications.md](../notifications/notifications.md).
 
 ---
 

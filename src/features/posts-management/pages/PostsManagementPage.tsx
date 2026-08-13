@@ -40,7 +40,7 @@ export function PostsManagementPage() {
   return (
     <PageContent>
       <PageHeader
-        heading="Posts Management"
+        heading="Postings Calendar"
         description="Browse the content calendar by month. Open any day to review its posts, or add a new one."
         actions={
           can("posts.create") ? (

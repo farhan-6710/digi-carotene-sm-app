@@ -34,6 +34,7 @@ export type ProjectDialogProps = {
   onClientChange: (clientId: string) => void;
   onManagerChange: (managerId: string) => void;
   onTeamMemberIdsChange: (teamMemberIds: string[]) => void;
+  onActiveChange: (isActive: boolean) => void;
   onSave: () => void;
   onDelete?: () => void;
 };
@@ -43,6 +44,10 @@ export type ProjectsTableProps = {
   isLoading: boolean;
   canEdit: boolean;
   onEditProject: (project: ProjectListItem) => void;
+  statusFilter: import("@/shared/constants/activeStatusFilter").ActiveStatusFilterId;
+  onStatusFilterChange: (
+    filter: import("@/shared/constants/activeStatusFilter").ActiveStatusFilterId,
+  ) => void;
 };
 
 export type ProjectMultiSelectProps = {

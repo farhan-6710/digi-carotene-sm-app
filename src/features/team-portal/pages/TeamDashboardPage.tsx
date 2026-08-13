@@ -1,15 +1,17 @@
+import { PostsTopClientsTable } from "@/features/analytics/components/PostsTopClientsTable";
+import { useAnalyticsFilters } from "@/features/analytics/hooks/useAnalyticsFilters";
 import { TeamNeedsAttention } from "@/features/team-portal/components/TeamNeedsAttention";
 import { TeamTodaysPosts } from "@/features/team-portal/components/TeamTodaysPosts";
 import { TeamPostingChart } from "@/features/team-portal/components/TeamPostingChart";
 import { useTeamDashboardPostStatusChange } from "@/features/team-portal/hooks/useTeamDashboardPostStatusChange";
 import { useTeamDashboardQuery } from "@/features/team-portal/hooks/useTeamDashboardQuery";
-import { PostsTopClientsTable } from "@/features/analytics/components/PostsTopClientsTable";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { StatsCards } from "@/shared/components/StatsCards";
 
 export function TeamDashboardPage() {
+  const { filter, dateFilterProps } = useAnalyticsFilters();
   const {
     statCards,
     topClients,
@@ -21,14 +23,14 @@ export function TeamDashboardPage() {
     error,
     updateTodayPostStatus,
     removeNeedsAttentionPost,
-  } = useTeamDashboardQuery();
+  } = useTeamDashboardQuery(filter);
   const { changeStatus, updatingPostId } = useTeamDashboardPostStatusChange();
 
   return (
     <PageContent>
       <PageHeader
         heading="Dashboard"
-        description="Agency overview — team workload, publishing performance, and posts needing attention."
+        description="Agency overview — team workload, posts publishing comparison, and posts needing attention."
       />
 
       {error ? <ErrorBanner message={error} /> : null}
@@ -41,6 +43,7 @@ export function TeamDashboardPage() {
           <PostsTopClientsTable
             clients={topClients}
             isLoading={isPostsLoading}
+            dateFilterProps={dateFilterProps}
           />
         </PageContent>
 

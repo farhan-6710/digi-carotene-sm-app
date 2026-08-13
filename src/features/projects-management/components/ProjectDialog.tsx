@@ -7,6 +7,7 @@ import { ProjectManagerSelect } from "@/features/projects-management/components/
 import { ProjectTeamMembersSelect } from "@/features/projects-management/components/ProjectTeamMembersSelect";
 import type { ProjectDialogProps } from "@/features/projects-management/types/components";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
+import { ActiveStatusSwitchField } from "@/shared/components/ActiveStatusSwitchField";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -29,6 +30,7 @@ export function ProjectDialog({
   onClientChange,
   onManagerChange,
   onTeamMemberIdsChange,
+  onActiveChange,
   onSave,
   onDelete,
 }: ProjectDialogProps) {
@@ -106,6 +108,15 @@ export function ProjectDialog({
               preload={open}
               seedMembers={formSeeds?.teamMembers ?? []}
             />
+
+            {isEditing ? (
+              <ActiveStatusSwitchField
+                entityLabel="project"
+                checked={values.isActive}
+                onCheckedChange={onActiveChange}
+                disabled={isSaving}
+              />
+            ) : null}
           </div>
 
           <DialogFooter className="shrink-0 border-t border-border/60 pt-4">

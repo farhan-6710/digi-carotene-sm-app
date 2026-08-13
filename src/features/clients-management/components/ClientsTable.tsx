@@ -1,6 +1,8 @@
 import { ClientsTableRow } from "@/features/clients-management/components/ClientsTableRow";
 import { clientsDirectoryConfig } from "@/features/clients-management/constants/clientsDirectory";
 import type { ClientsTableProps } from "@/features/clients-management/types/components";
+import { ActiveStatusFilter } from "@/shared/components/ActiveStatusFilter";
+import { ACTIVE_STATUS_FILTER_LABELS } from "@/shared/constants/activeStatusFilter";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 
 export function ClientsTable({
@@ -8,6 +10,8 @@ export function ClientsTable({
   isLoading,
   canEdit,
   onEditClient,
+  statusFilter,
+  onStatusFilterChange,
 }: ClientsTableProps) {
   return (
     <DirectoryTable
@@ -18,6 +22,15 @@ export function ClientsTable({
       emptyMessage={clientsDirectoryConfig.emptyMessage}
       isLoading={isLoading}
       isEmpty={clients.length === 0}
+      headerAside={
+        <ActiveStatusFilter
+          value={statusFilter}
+          onChange={onStatusFilterChange}
+          labels={ACTIVE_STATUS_FILTER_LABELS}
+          disabled={isLoading}
+          placeholder="Filter clients"
+        />
+      }
     >
       {clients.map((client) => (
         <ClientsTableRow
