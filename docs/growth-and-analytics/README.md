@@ -3,7 +3,7 @@
 Instagram organic insights + Meta ads campaign analytics. Team connects accounts; client portal is read-only.
 
 **Code:** `src/features/growth-and-analytics/` · **Services:** `src/services/` (Meta + backfill)  
-**Cron:** [scripts/growth-and-analytics/php/README.md](../../scripts/growth-and-analytics/php/README.md)  
+**Cron:** [scripts/php/README.md](../../scripts/php/README.md)  
 **Schema:** [database.md](../database.md)
 
 **Routes**
@@ -107,7 +107,7 @@ Age / gender / placement breakdowns are **not stored** — fetched live from Met
 | **Campaign Analytics** | Campaign → ad set → ad drill-down from stored daily metrics; optional live age/gender/placement breakdowns |
 | **Reports / Custom Report** | Team-built report flows |
 
-Daily sync after connect: [PHP cron README](../../scripts/growth-and-analytics/php/README.md).
+Daily sync after connect: [PHP cron README](../../scripts/php/README.md).
 
 ---
 
@@ -122,5 +122,5 @@ src/services/
   adBackfillService.ts           Ads connect backfill
   pastPostsMetricsService.ts
   instagramDailyFollowersService.ts
-scripts/growth-and-analytics/php/    Midnight yesterday sync
+scripts/php/                         Midnight sync + post digest
 ```

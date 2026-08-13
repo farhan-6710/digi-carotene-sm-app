@@ -18,7 +18,7 @@ import type { StatusKey } from "@/features/posts-management/types/types";
  * which scopes portal lists — digests use the narrower relationships above.
  *
  * Runs once daily at midnight (agency timezone). One email per recipient.
- * PHP cron: scripts/post-digest/php/send_midnight_post_digest.php
+ * PHP cron: scripts/php/send_midnight_post_digest.php
  * Keep PHP lib/digest.php postDigestSectionsByRole() in sync with this map.
  */
 

@@ -7,11 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "backfill:profiles": "node scripts/backfill-profiles.mjs",
-    "backfill:profiles:dry-run": "node scripts/backfill-profiles.mjs -- --dry-run",
-    "link:profiles-clients": "node scripts/link-profiles-to-clients.mjs",
-    "link:profiles-clients:dry-run": "node scripts/link-profiles-to-clients.mjs -- --dry-run"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",

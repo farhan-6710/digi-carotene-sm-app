@@ -32,6 +32,5 @@ dist-ssr
 .env.test.local
 .env.production.local
 
-# GoDaddy PHP cron — do not commit after adding service role key
-scripts/growth-and-analytics/php/config.php
-scripts/post-digest/php/config.php
+# Hostinger / GoDaddy PHP crons — do not commit after adding secrets
+scripts/php/config.php

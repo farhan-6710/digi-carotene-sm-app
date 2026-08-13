@@ -93,4 +93,4 @@ See [README.md](./README.md) for per-feature schema details and DTOs.
 | Doc | Purpose |
 |-----|---------|
 | [growth-and-analytics/README.md](./growth-and-analytics/README.md) | Instagram backfill, ads campaign analytics, live breakdowns, daily sync |
-| [scripts/growth-and-analytics/php/README.md](../scripts/growth-and-analytics/php/README.md) | GoDaddy PHP cron setup |
+| [scripts/php/README.md](../scripts/php/README.md) | Hostinger/GoDaddy PHP cron setup |

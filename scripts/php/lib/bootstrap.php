@@ -6,7 +6,7 @@ function loadConfig(): array
 {
     $path = __DIR__ . '/../config.php';
     if (!is_file($path)) {
-        throw new RuntimeException('Missing config.php — add it next to the sync entry files');
+        throw new RuntimeException('Missing config.php — add it next to the cron entry files');
     }
 
     /** @var array $config */
@@ -102,7 +102,7 @@ function httpJson(string $method, string $url, ?array $body, array $headers = []
             ? $json['message']
             : (is_string($json['error']['message'] ?? null)
                 ? $json['error']['message']
-                : 'HTTP ' . $status);
+                : 'HTTP ' . $status . ': ' . $raw);
         throw new RuntimeException($message);
     }
 

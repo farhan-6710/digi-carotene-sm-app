@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 /**
- * Cron connectivity smoke test — config + auth only (no emails sent).
+ * Cron connectivity smoke test — config + auth only (no Meta sync / no emails).
  *
  * CLI:  php test.php
- * HTTP: https://your-domain.com/.../test.php?secret=YOUR_CRON_SECRET
+ * HTTP: https://your-domain.com/php/test.php?secret=YOUR_CRON_SECRET
  */
 
 require_once __DIR__ . '/lib/bootstrap.php';

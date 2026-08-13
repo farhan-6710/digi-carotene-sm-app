@@ -77,7 +77,7 @@ Services: `fetchProjectsScoped`, `resolveScopedProjectIds` in `projectsService.t
 
 Config matrix (TypeScript): `src/shared/constants/postDigestEmail.ts` (`POST_DIGEST_SECTIONS_BY_ROLE`).
 
-Cron runner (PHP + Resend, same CLI/HTTP pattern as Growth): [`scripts/post-digest/php/README.md`](../../../scripts/post-digest/php/README.md).
+Cron runner (PHP + Resend): [`scripts/php/README.md`](../../../scripts/php/README.md).
 
 | Role | Sections (one email each, midnight `Asia/Kolkata`) |
 |------|-----------------------------------------------------|
