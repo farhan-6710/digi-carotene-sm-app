@@ -1,3 +1,4 @@
+import type { ContentApprovalFilterId } from "@/features/production-planner/constants/contentApprovalFilters";
 import type {
   ProductionPlan,
   ProductionPlanContent,
@@ -70,4 +71,10 @@ export type ApprovalStatusSelectProps = {
   disabled?: boolean;
   placeholder?: string;
   listTitle?: string;
+};
+
+export type ProductionPlanContentApprovalFilterProps = {
+  value: ContentApprovalFilterId;
+  onChange: (value: ContentApprovalFilterId) => void;
+  disabled?: boolean;
 };
