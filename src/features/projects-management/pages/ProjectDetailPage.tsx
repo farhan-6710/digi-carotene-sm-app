@@ -2,8 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { ArrowLeft, Plus } from "lucide-react";
 
-import { useAnalyticsFilters } from "@/features/analytics/hooks/useAnalyticsFilters";
-import { filterPostsByAnalyticsFilter } from "@/features/analytics/utils/analyticsFilterUtils";
+import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
 import { PostDialog } from "@/features/posts-management/components/PostDialog";
 import { buildAddPostsPath } from "@/features/posts-management/constants/routes";
 import { usePostDialog } from "@/features/posts-management/hooks/usePostDialog";
@@ -13,14 +12,16 @@ import { PROJECTS_MANAGEMENT_PATH } from "@/features/projects-management/constan
 import { useProjectDetailQuery } from "@/features/projects-management/hooks/useProjectDetailQuery";
 import { buildProjectPostStats } from "@/features/projects-management/utils/projectPostStatsUtils";
 import { getProjectDisplayLabel } from "@/features/projects-management/utils/projectFormUtils";
-import { DateFilters } from "@/shared/components/DateFilters";
+import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
+import { useDateFiltersTwo } from "@/shared/hooks/useDateFiltersTwo";
 import { usePermissions } from "@/shared/hooks/usePermissions";
-import type { DateFiltersProps } from "@/shared/types/components";
+import type { DateFiltersTwoProps } from "@/shared/types/components";
 import { Button } from "@/shared/ui/button";
+import { resolveDateFiltersTwoRange } from "@/shared/utils/dateFiltersTwoUtils";
 
 function ProjectDetailBackButton() {
   return (
@@ -42,7 +43,7 @@ function ProjectDetailHeaderActions({
   projectId?: string;
   projectName?: string;
   canCreatePosts: boolean;
-  dateFilterProps: DateFiltersProps;
+  dateFilterProps: DateFiltersTwoProps;
 }) {
   return (
     <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -63,7 +64,7 @@ function ProjectDetailHeaderActions({
           </Button>
         ) : null}
       </div>
-      <DateFilters {...dateFilterProps} />
+      <DateFiltersTwo {...dateFilterProps} />
     </div>
   );
 }
@@ -74,11 +75,11 @@ export function ProjectDetailPage() {
   const [dialogError, setDialogError] = useState<string | null>(null);
   const { project, posts, teamMembers, isLoading, error, reload } =
     useProjectDetailQuery(projectId);
-  const { filter, dateFilterProps } = useAnalyticsFilters();
-  const dateFilteredPosts = useMemo(
-    () => filterPostsByAnalyticsFilter(posts, filter),
-    [posts, filter],
-  );
+  const { filter, dateFilterProps } = useDateFiltersTwo();
+  const dateFilteredPosts = useMemo(() => {
+    const range = resolveDateFiltersTwoRange(filter);
+    return range ? filterPostsByDateRange(posts, range) : posts;
+  }, [filter, posts]);
   const postStats = useMemo(
     () => buildProjectPostStats(dateFilteredPosts),
     [dateFilteredPosts],

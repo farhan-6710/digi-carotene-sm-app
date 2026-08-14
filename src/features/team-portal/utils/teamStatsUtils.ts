@@ -14,6 +14,7 @@ type TeamStatCounts = {
   teamMembersCount: number | null;
   totalPostsCount: number | null;
   notPostedPostsCount: number | null;
+  periodLabel: string;
 };
 
 export function buildTeamStatCards({
@@ -21,13 +22,19 @@ export function buildTeamStatCards({
   teamMembersCount,
   totalPostsCount,
   notPostedPostsCount,
+  periodLabel,
 }: TeamStatCounts): StatCardItem[] {
+  const isAll = periodLabel === "All";
+  const period = periodLabel.toLowerCase();
+
   return [
     {
       id: "team-members",
       label: "Team Members",
       value: String(teamMembersCount ?? 0),
-      description: "Active team members",
+      description: isAll
+        ? "Active team members"
+        : `Joined in ${period}`,
       icon: UserRound,
       sparklineData: employeesSparklineData,
       sparklineColor: "var(--primary)",
@@ -37,7 +44,9 @@ export function buildTeamStatCards({
       id: "clients",
       label: "Total Active Clients",
       value: String(clientsCount ?? 0),
-      description: "Currently active registered brands",
+      description: isAll
+        ? "Currently active registered brands"
+        : `Active brands added in ${period}`,
       icon: Users,
       sparklineData: clientsSparklineData,
       sparklineColor: "var(--accent)",
@@ -47,7 +56,9 @@ export function buildTeamStatCards({
       id: "total-posts",
       label: "Total Posts",
       value: String(totalPostsCount ?? 0),
-      description: "All-time content pieces",
+      description: isAll
+        ? "All-time content pieces"
+        : `Content pieces in ${period}`,
       icon: Layers,
       sparklineData: totalPostsSparklineData,
       sparklineColor: "var(--primary)",
@@ -57,7 +68,9 @@ export function buildTeamStatCards({
       id: "not-posted-posts",
       label: "Not Posted Posts",
       value: String(notPostedPostsCount ?? 0),
-      description: "Unpublished or failed slots",
+      description: isAll
+        ? "Unpublished or failed slots"
+        : `Unpublished slots in ${period}`,
       icon: XCircle,
       sparklineData: missedPostsSparklineData,
       sparklineColor: "var(--accent)",

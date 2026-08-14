@@ -85,3 +85,11 @@ export function formatDateFiltersTwoRangeButtonLabel(
 
   return "Date range";
 }
+
+export function isTimestampInRange(
+  timestamp: string,
+  range: DateFiltersTwoResolvedRange,
+): boolean {
+  const date = new Date(timestamp);
+  return date >= range.from && date <= range.to;
+}

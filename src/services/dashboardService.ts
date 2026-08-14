@@ -1,60 +1,35 @@
-import { DB } from "@/services/db";
-import { supabase } from "@/services/supabaseClient";
+import { fetchClients } from "@/services/clientsService";
+import { fetchTeamMembers } from "@/services/teamMembersService";
 import {
   fetchAllPosts,
   fetchNotPostedPosts,
   fetchTodayPosts,
 } from "@/services/postsService";
+import type { Client } from "@/features/clients-management/types/types";
+import type { TeamMember } from "@/features/team-management/types/types";
+import type { Post } from "@/features/posts-management/types/types";
 
-export type TeamDashboardCounts = {
-  clientsCount: number;
-  teamMembersCount: number;
-  totalPostsCount: number;
-  notPostedPostsCount: number;
+export type TeamDashboardPostsBundle = {
+  clients: Client[];
+  teamMembers: TeamMember[];
+  todayPosts: Post[];
+  notPostedPosts: Post[];
+  posts: Post[];
 };
 
-async function countRows(
-  table: string,
-  filter?: { column: string; value: string | boolean },
-): Promise<number> {
-  let query = supabase.from(table).select("id", { count: "exact", head: true });
-
-  if (filter) {
-    query = query.eq(filter.column, filter.value);
-  }
-
-  const { count, error } = await query;
-
-  if (error) {
-    throw error;
-  }
-
-  return count ?? 0;
-}
-
-export async function fetchTeamDashboardCounts(): Promise<TeamDashboardCounts> {
-  const [clientsCount, teamMembersCount, totalPostsCount, notPostedPostsCount] =
+export async function fetchTeamDashboardPostsBundle(): Promise<TeamDashboardPostsBundle> {
+  const [clients, teamMembers, todayPosts, notPostedPosts, posts] =
     await Promise.all([
-      countRows(DB.CLIENTS.TABLE, { column: "is_active", value: true }),
-      countRows(DB.TEAM_MEMBERS.TABLE),
-      countRows(DB.POSTS.TABLE),
-      countRows(DB.POSTS.TABLE, { column: "status", value: "Not posted" }),
+      fetchClients(),
+      fetchTeamMembers(),
+      fetchTodayPosts(),
+      fetchNotPostedPosts(),
+      fetchAllPosts(),
     ]);
 
-  return { clientsCount, teamMembersCount, totalPostsCount, notPostedPostsCount };
-}
-
-// Loads everything the team dashboard needs in one parallel batch.
-export async function fetchTeamDashboardPostsBundle() {
-  const [counts, todayPosts, notPostedPosts, posts] = await Promise.all([
-    fetchTeamDashboardCounts(),
-    fetchTodayPosts(),
-    fetchNotPostedPosts(),
-    fetchAllPosts(),
-  ]);
-
   return {
-    counts,
+    clients,
+    teamMembers,
     todayPosts,
     notPostedPosts,
     posts,

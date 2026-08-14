@@ -22,50 +22,53 @@ export function DateRangePicker({
   onKeyDown,
   error,
 }: DateRangePickerProps) {
-  if (isActive) {
-    return (
-      <div
-        className={cn(
-          "inline-flex h-7 items-center overflow-hidden rounded-full border text-[11px] font-medium",
-          "border-primary bg-primary/10 text-primary",
-        )}
-      >
-        <button
-          type="button"
-          onClick={() => onOpenChange(true)}
-          className="inline-flex h-full items-center gap-1.5 px-2.5 transition hover:bg-primary/15"
-        >
-          <CalendarRange className="size-3 shrink-0" aria-hidden="true" />
-          <span>{rangeLabel}</span>
-        </button>
-        <button
-          type="button"
-          onClick={onClear}
-          className="inline-flex h-full items-center border-l border-primary/20 px-2 transition hover:bg-primary/15"
-          aria-label="Clear date range"
-        >
-          <X className="size-3" />
-        </button>
-      </div>
-    );
-  }
-
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
+      {isActive ? (
+        <div
           className={cn(
-            "inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-full border px-2.5 text-[11px] font-medium transition-colors",
-            "border-border bg-card text-muted-foreground hover:text-foreground",
+            "inline-flex h-7 items-center overflow-hidden rounded-full border text-[11px] font-medium",
+            "border-primary bg-primary/10 text-primary",
           )}
         >
-          <CalendarRange className="size-3 shrink-0" aria-hidden="true" />
-          <span>{rangeLabel}</span>
-        </button>
-      </PopoverTrigger>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="inline-flex h-full cursor-pointer items-center gap-1.5 px-2.5 transition hover:bg-primary/15"
+            >
+              <CalendarRange className="size-3 shrink-0" aria-hidden="true" />
+              <span>{rangeLabel}</span>
+            </button>
+          </PopoverTrigger>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onClear();
+            }}
+            className="inline-flex h-full cursor-pointer items-center border-l border-primary/20 px-2 transition hover:bg-primary/15"
+            aria-label="Clear date range"
+          >
+            <X className="size-3" />
+          </button>
+        </div>
+      ) : (
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className={cn(
+              "inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-full border px-2.5 text-[11px] font-medium transition-colors",
+              "border-border bg-card text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <CalendarRange className="size-3 shrink-0" aria-hidden="true" />
+            <span>{rangeLabel}</span>
+          </button>
+        </PopoverTrigger>
+      )}
       <PopoverContent
-        className="w-auto border-muted-foreground/10 p-0 shadow-2xl"
+        className="z-[80] w-auto border-muted-foreground/10 p-0 shadow-2xl"
         align="end"
         onKeyDown={onKeyDown}
       >

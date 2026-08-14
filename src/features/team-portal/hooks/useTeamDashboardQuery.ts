@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
-import type { DateFiltersTwoFilterState } from "@/shared/types/components";
-import { resolveDateFiltersTwoRange } from "@/shared/utils/dateFiltersTwoUtils";
 import { buildPostsTopClients } from "@/features/analytics/utils/postsAnalyticsUtils";
+import type { Client } from "@/features/clients-management/types/types";
 import type { Post, StatusKey } from "@/features/posts-management/types/types";
 import { parseDateTime } from "@/features/posts-management/utils/postScheduleUtils";
+import type { TeamMember } from "@/features/team-management/types/types";
 import {
   TEAM_NEEDS_ATTENTION_LIMIT,
   TEAM_TODAYS_POSTS_LIMIT,
@@ -19,6 +19,12 @@ import { fetchTeamDashboardPostsBundle } from "@/services/dashboardService";
 import { mapNotPostedPostsToNeedsAttention } from "@/features/team-portal/utils/teamNeedsAttentionUtils";
 import { mapPostsToTodaysPosts } from "@/features/team-portal/utils/teamTodaysPostsUtils";
 import { buildTeamStatCards } from "@/features/team-portal/utils/teamStatsUtils";
+import type { DateFiltersTwoFilterState } from "@/shared/types/components";
+import {
+  formatDateFiltersTwoLabel,
+  isTimestampInRange,
+  resolveDateFiltersTwoRange,
+} from "@/shared/utils/dateFiltersTwoUtils";
 
 export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
   const [todaysPosts, setTodaysPosts] = useState<TeamTodaysPostItem[]>([]);
@@ -26,12 +32,8 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
     TeamNeedsAttentionItem[]
   >([]);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [counts, setCounts] = useState({
-    clientsCount: null as number | null,
-    teamMembersCount: null as number | null,
-    totalPostsCount: null as number | null,
-    notPostedPostsCount: null as number | null,
-  });
+  const [clients, setClients] = useState<Client[]>([]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,29 +42,23 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
     setError(null);
 
     try {
-      const {
-        counts: nextCounts,
-        todayPosts,
-        notPostedPosts,
-        posts: nextPosts,
-      } = await fetchTeamDashboardPostsBundle();
+      const bundle = await fetchTeamDashboardPostsBundle();
 
-      setCounts({
-        clientsCount: nextCounts.clientsCount,
-        teamMembersCount: nextCounts.teamMembersCount,
-        totalPostsCount: nextCounts.totalPostsCount,
-        notPostedPostsCount: nextCounts.notPostedPostsCount,
-      });
+      setClients(bundle.clients);
+      setTeamMembers(bundle.teamMembers);
       setTodaysPosts(
-        mapPostsToTodaysPosts(todayPosts).slice(0, TEAM_TODAYS_POSTS_LIMIT),
+        mapPostsToTodaysPosts(bundle.todayPosts).slice(
+          0,
+          TEAM_TODAYS_POSTS_LIMIT,
+        ),
       );
       setNeedsAttentionPosts(
-        mapNotPostedPostsToNeedsAttention(notPostedPosts).slice(
+        mapNotPostedPostsToNeedsAttention(bundle.notPostedPosts).slice(
           0,
           TEAM_NEEDS_ATTENTION_LIMIT,
         ),
       );
-      setPosts(nextPosts);
+      setPosts(bundle.posts);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to load dashboard data.",
@@ -107,13 +103,6 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
       );
 
       if (status !== "Not posted") {
-        setCounts((current) => ({
-          ...current,
-          notPostedPostsCount:
-            current.notPostedPostsCount === null
-              ? current.notPostedPostsCount
-              : Math.max(0, current.notPostedPostsCount - 1),
-        }));
         setNeedsAttentionPosts((current) =>
           current.filter((item) => item.id !== postId),
         );
@@ -126,21 +115,49 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
     setNeedsAttentionPosts((current) =>
       current.filter((item) => item.id !== postId),
     );
-    setCounts((current) => ({
-      ...current,
-      notPostedPostsCount:
-        current.notPostedPostsCount === null
-          ? current.notPostedPostsCount
-          : Math.max(0, current.notPostedPostsCount - 1),
-    }));
   }, []);
 
-  const topClients = useMemo(() => {
-    const range = resolveDateFiltersTwoRange(filter);
-    const scopedPosts = range ? filterPostsByDateRange(posts, range) : posts;
-    return buildPostsTopClients(scopedPosts);
-  }, [filter, posts]);
-  const statCards = useMemo(() => buildTeamStatCards(counts), [counts]);
+  const range = useMemo(
+    () => resolveDateFiltersTwoRange(filter),
+    [filter],
+  );
+  const periodLabel = useMemo(
+    () => formatDateFiltersTwoLabel(filter),
+    [filter],
+  );
+  const scopedPosts = useMemo(
+    () => (range ? filterPostsByDateRange(posts, range) : posts),
+    [posts, range],
+  );
+
+  const topClients = useMemo(
+    () => buildPostsTopClients(scopedPosts),
+    [scopedPosts],
+  );
+
+  const statCards = useMemo(() => {
+    const activeClients = clients.filter((client) => client.is_active);
+    const clientsCount = range
+      ? activeClients.filter((client) =>
+          isTimestampInRange(client.created_at, range),
+        ).length
+      : activeClients.length;
+    const teamMembersCount = range
+      ? teamMembers.filter((member) =>
+          isTimestampInRange(member.created_at, range),
+        ).length
+      : teamMembers.length;
+
+    return buildTeamStatCards({
+      clientsCount,
+      teamMembersCount,
+      totalPostsCount: scopedPosts.length,
+      notPostedPostsCount: scopedPosts.filter(
+        (post) => post.status === "Not posted",
+      ).length,
+      periodLabel,
+    });
+  }, [clients, periodLabel, range, scopedPosts, teamMembers]);
 
   return {
     statCards,

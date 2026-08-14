@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import { DateRangePicker } from "@/shared/components/DateRangePicker";
 import { DATE_FILTERS_TWO_PERIODS } from "@/shared/constants/dateFiltersTwo";
 import type { DateFiltersTwoProps } from "@/shared/types/components";
@@ -19,7 +21,14 @@ export function DateFiltersTwo({
   onPickerOpenChange,
   onPickerKeyDown,
 }: DateFiltersTwoProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const isAll = activeQuickPeriod === null && !isDateRangeActive;
+
+  useEffect(() => {
+    if (!isPickerOpen) {
+      setIsOpen(false);
+    }
+  }, [isPickerOpen]);
 
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
@@ -57,8 +66,13 @@ export function DateFiltersTwo({
       })}
 
       <DateRangePicker
-        open={isPickerOpen}
-        onOpenChange={onPickerOpenChange}
+        open={isOpen}
+        onOpenChange={(open) => {
+          setIsOpen(open);
+          if (open) {
+            onPickerOpenChange(true);
+          }
+        }}
         range={pickerRange}
         rangeLabel={rangeButtonLabel}
         isActive={isDateRangeActive}

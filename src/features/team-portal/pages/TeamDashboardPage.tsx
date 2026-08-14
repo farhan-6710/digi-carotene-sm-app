@@ -1,4 +1,5 @@
 import { PostsTopClientsTable } from "@/features/analytics/components/PostsTopClientsTable";
+import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { useDateFiltersTwo } from "@/shared/hooks/useDateFiltersTwo";
 import { TeamNeedsAttention } from "@/features/team-portal/components/TeamNeedsAttention";
 import { TeamTodaysPosts } from "@/features/team-portal/components/TeamTodaysPosts";
@@ -31,6 +32,7 @@ export function TeamDashboardPage() {
       <PageHeader
         heading="Dashboard"
         description="Agency overview — team workload, posts publishing comparison, and posts needing attention."
+        actions={<DateFiltersTwo {...dateFilterProps} />}
       />
 
       {error ? <ErrorBanner message={error} /> : null}
