@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { AnalyticsDateFilterState } from "@/features/analytics/types/types";
-import { filterPostsByAnalyticsFilter } from "@/features/analytics/utils/analyticsFilterUtils";
+import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
+import type { DateFiltersTwoFilterState } from "@/shared/types/components";
+import { resolveDateFiltersTwoRange } from "@/shared/utils/dateFiltersTwoUtils";
 import { buildPostsTopClients } from "@/features/analytics/utils/postsAnalyticsUtils";
 import type { Post, StatusKey } from "@/features/posts-management/types/types";
 import { parseDateTime } from "@/features/posts-management/utils/postScheduleUtils";
@@ -19,7 +20,7 @@ import { mapNotPostedPostsToNeedsAttention } from "@/features/team-portal/utils/
 import { mapPostsToTodaysPosts } from "@/features/team-portal/utils/teamTodaysPostsUtils";
 import { buildTeamStatCards } from "@/features/team-portal/utils/teamStatsUtils";
 
-export function useTeamDashboardQuery(filter: AnalyticsDateFilterState) {
+export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
   const [todaysPosts, setTodaysPosts] = useState<TeamTodaysPostItem[]>([]);
   const [needsAttentionPosts, setNeedsAttentionPosts] = useState<
     TeamNeedsAttentionItem[]
@@ -134,10 +135,11 @@ export function useTeamDashboardQuery(filter: AnalyticsDateFilterState) {
     }));
   }, []);
 
-  const topClients = useMemo(
-    () => buildPostsTopClients(filterPostsByAnalyticsFilter(posts, filter)),
-    [filter, posts],
-  );
+  const topClients = useMemo(() => {
+    const range = resolveDateFiltersTwoRange(filter);
+    const scopedPosts = range ? filterPostsByDateRange(posts, range) : posts;
+    return buildPostsTopClients(scopedPosts);
+  }, [filter, posts]);
   const statCards = useMemo(() => buildTeamStatCards(counts), [counts]);
 
   return {

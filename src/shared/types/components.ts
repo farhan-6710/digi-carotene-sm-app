@@ -2,6 +2,7 @@ import type { KeyboardEvent, ReactNode } from "react";
 import type { DateRange } from "react-day-picker";
 
 import type { AnalyticsQuickPeriodId } from "@/features/analytics/constants/analyticsFilters";
+import type { DateFiltersTwoPeriodId } from "@/shared/constants/dateFiltersTwo";
 
 export type ConfirmationModalProps = {
   open: boolean;
@@ -200,6 +201,28 @@ export type DateFiltersProps = {
   isPickerOpen: boolean;
   pickerError: string | null;
   onToggleQuickPeriod: (period: AnalyticsQuickPeriodId) => void;
+  onClearFilters: () => void;
+  onClearDateRange: () => void;
+  onApplyDateRange: () => void;
+  onPickerRangeChange: (range: DateRange | undefined) => void;
+  onPickerOpenChange: (open: boolean) => void;
+  onPickerKeyDown: (event: KeyboardEvent) => void;
+};
+
+export type DateFiltersTwoFilterState =
+  | { mode: "all" }
+  | { mode: "period"; period: DateFiltersTwoPeriodId }
+  | { mode: "range"; from: Date; to: Date };
+
+export type DateFiltersTwoProps = {
+  activeQuickPeriod: DateFiltersTwoPeriodId | null;
+  isDateRangeActive: boolean;
+  periodLabel: string;
+  rangeButtonLabel: string;
+  pickerRange: DateRange | undefined;
+  isPickerOpen: boolean;
+  pickerError: string | null;
+  onToggleQuickPeriod: (period: DateFiltersTwoPeriodId) => void;
   onClearFilters: () => void;
   onClearDateRange: () => void;
   onApplyDateRange: () => void;

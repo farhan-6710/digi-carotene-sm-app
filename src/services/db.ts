@@ -27,6 +27,7 @@ const PROJECT_SELECT = `
   client_id,
   socials,
   manager_id,
+  is_active,
   created_at,
   updated_at,
   clients ( id, client_name ),

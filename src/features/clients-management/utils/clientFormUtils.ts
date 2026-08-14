@@ -24,7 +24,7 @@ export function clientToFormValues(client: Client): ClientFormValues {
     email: client.email ?? "",
     mobileNumber: client.mobile_number ?? "",
     websiteName: client.website_name ?? "",
-    isActive: client.is_active,
+    isActive: client.is_active ?? true,
   };
 }
 

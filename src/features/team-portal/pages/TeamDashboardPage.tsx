@@ -1,5 +1,5 @@
 import { PostsTopClientsTable } from "@/features/analytics/components/PostsTopClientsTable";
-import { useAnalyticsFilters } from "@/features/analytics/hooks/useAnalyticsFilters";
+import { useDateFiltersTwo } from "@/shared/hooks/useDateFiltersTwo";
 import { TeamNeedsAttention } from "@/features/team-portal/components/TeamNeedsAttention";
 import { TeamTodaysPosts } from "@/features/team-portal/components/TeamTodaysPosts";
 import { TeamPostingChart } from "@/features/team-portal/components/TeamPostingChart";
@@ -11,7 +11,7 @@ import { PageHeader } from "@/shared/components/PageHeader";
 import { StatsCards } from "@/shared/components/StatsCards";
 
 export function TeamDashboardPage() {
-  const { filter, dateFilterProps } = useAnalyticsFilters();
+  const { filter, dateFilterProps } = useDateFiltersTwo();
   const {
     statCards,
     topClients,

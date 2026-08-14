@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { Loader2 } from "lucide-react";
 
 import type { PostsTopClientsTableProps } from "@/features/analytics/types/components";
-import { DateFilters } from "@/shared/components/DateFilters";
+import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 
 export function PostsTopClientsTable({
   clients,
@@ -16,7 +16,7 @@ export function PostsTopClientsTable({
           Clients With Most Posts
         </div>
         <div className="flex flex-wrap items-center justify-end gap-3">
-          {dateFilterProps ? <DateFilters {...dateFilterProps} /> : null}
+          {dateFilterProps ? <DateFiltersTwo {...dateFilterProps} /> : null}
           <Link
             to="/team-portal/posts-management"
             className="text-sm font-medium text-primary hover:underline"

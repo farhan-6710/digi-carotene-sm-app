@@ -46,7 +46,7 @@ export function projectToFormValues(project: ProjectListItem): ProjectFormValues
     linkedin: project.socials?.linkedin ?? "",
     youtube: project.socials?.youtube ?? "",
     google: project.socials?.google ?? "",
-    isActive: project.is_active,
+    isActive: project.is_active ?? true,
   };
 }
 

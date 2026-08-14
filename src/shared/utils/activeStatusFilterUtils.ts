@@ -4,12 +4,16 @@ type ActiveStatusItem = {
   is_active: boolean;
 };
 
+export function sortActiveFirst<T extends ActiveStatusItem>(items: T[]): T[] {
+  return [...items].sort((a, b) => Number(b.is_active) - Number(a.is_active));
+}
+
 export function filterByActiveStatus<T extends ActiveStatusItem>(
   items: T[],
   filter: ActiveStatusFilterId,
 ): T[] {
   if (filter === "all") {
-    return items;
+    return sortActiveFirst(items);
   }
 
   if (filter === "active") {
