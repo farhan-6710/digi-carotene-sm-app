@@ -57,3 +57,28 @@ export function projectDataScopeForRole(
 export function seesAllProjects(role: TeamMemberRole | null): boolean {
   return projectDataScopeForRole(role) === "all";
 }
+
+/** `all` = every plan; `assigned` = manager, shoot incharge, or active plan team row. */
+export type ProductionPlanDataScope = "all" | "assigned";
+
+export const PRODUCTION_PLAN_DATA_SCOPE_BY_ROLE: Record<
+  TeamMemberRole,
+  ProductionPlanDataScope
+> = {
+  admin: "all",
+  manager: "assigned",
+  executive: "assigned",
+};
+
+export function productionPlanDataScopeForRole(
+  role: TeamMemberRole | null,
+): ProductionPlanDataScope {
+  if (!role) {
+    return "assigned";
+  }
+  return PRODUCTION_PLAN_DATA_SCOPE_BY_ROLE[role];
+}
+
+export function seesAllProductionPlans(role: TeamMemberRole | null): boolean {
+  return productionPlanDataScopeForRole(role) === "all";
+}

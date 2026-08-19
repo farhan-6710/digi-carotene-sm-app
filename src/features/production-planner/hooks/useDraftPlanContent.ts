@@ -11,9 +11,11 @@ function buildDraftPlanContent(
     id: DRAFT_PLAN_CONTENT_ID,
     production_plan_id: productionPlanId,
     item_name: "",
-    item_notes: null,
+    script: null,
+    reference_link: null,
     manager_approval: "pending",
     shoot_incharge_approval: "pending",
+    client_approval: "pending",
     created_at: "",
     updated_at: "",
   };

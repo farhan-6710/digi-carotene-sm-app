@@ -2,11 +2,10 @@ import type { TeamMemberRole } from "@/features/team-management/constants/teamMe
 import type { StatusKey } from "@/features/posts-management/types/types";
 
 /**
- * Midnight post digest email — which sections each `team_members.role` receives.
+ * Midnight post digest email — which sections each `team_members.team_role` receives.
  *
- * Domain terms (see docs/team-portal/posts-management/posts.md,
- * docs/team-portal/team-management/team-members.md,
- * docs/team-portal/projects-management/projects.md):
+ * Domain: posts.to_be_posted_date, posts.status, projects.manager_id,
+ * active project_team_members (ended_at IS NULL). See docs/auth-and-features.md.
  *
  * - Schedule day  → `posts.to_be_posted_date` (“To be posted on”)
  * - Status        → `posts.status` (`StatusKey`: "Not posted" | "Scheduled" | "Posted")

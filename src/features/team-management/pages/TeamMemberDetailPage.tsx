@@ -2,13 +2,16 @@ import { useState } from "react";
 import { Link, useParams } from "react-router";
 import { ArrowLeft, Pencil } from "lucide-react";
 
+import { TeamMemberActiveProductionPlansSection } from "@/features/team-management/components/TeamMemberActiveProductionPlansSection";
 import { TeamMemberActiveProjectsSection } from "@/features/team-management/components/TeamMemberActiveProjectsSection";
+import { TeamMemberAssignProductionPlanDialog } from "@/features/team-management/components/TeamMemberAssignProductionPlanDialog";
 import { TeamMemberAssignProjectDialog } from "@/features/team-management/components/TeamMemberAssignProjectDialog";
 import { TeamMemberDialog } from "@/features/team-management/components/TeamMemberDialog";
 import { TeamMemberProjectHistorySection } from "@/features/team-management/components/TeamMemberProjectHistorySection";
 import { TeamMemberProfileCard } from "@/features/team-management/components/TeamMemberProfileCard";
 import { TEAM_MANAGEMENT_PATH } from "@/features/team-management/constants/routes";
 import { useTeamMemberDialog } from "@/features/team-management/hooks/useTeamMemberDialog";
+import { useTeamMemberPlanActions } from "@/features/team-management/hooks/useTeamMemberPlanActions";
 import { useTeamMemberProjectActions } from "@/features/team-management/hooks/useTeamMemberProjectActions";
 import { useTeamMemberDetailQuery } from "@/features/team-management/hooks/useTeamMemberDetailQuery";
 import { usePermissions } from "@/shared/hooks/usePermissions";
@@ -34,12 +37,15 @@ export function TeamMemberDetailPage() {
   const { can } = usePermissions();
   const canManageTeam = can("team.update");
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
+  const [isAssignPlanDialogOpen, setIsAssignPlanDialogOpen] = useState(false);
 
   const {
     member,
     assignments,
     activeAssignments,
     managedProjects,
+    activePlanAssignments,
+    roleAssignedPlans,
     isLoading,
     error,
     setError,
@@ -52,11 +58,26 @@ export function TeamMemberDetailPage() {
     setError,
   });
 
+  const {
+    isSaving: isSavingPlan,
+    assignPlan,
+    endAssignment: endPlanAssignment,
+  } = useTeamMemberPlanActions({
+    memberId,
+    reload,
+    setError,
+  });
+
   const { openEditDialog, dialog } = useTeamMemberDialog({ reload, setError });
 
   const activeProjectIds = [
     ...activeAssignments.map((assignment) => assignment.project_id),
     ...managedProjects.map((project) => project.id),
+  ];
+
+  const activePlanIds = [
+    ...activePlanAssignments.map((assignment) => assignment.production_plan_id),
+    ...roleAssignedPlans.map((plan) => plan.id),
   ];
 
   if (isLoading) {
@@ -105,6 +126,16 @@ export function TeamMemberDetailPage() {
         onEndAssignment={endAssignment}
       />
 
+      <TeamMemberActiveProductionPlansSection
+        assignments={activePlanAssignments}
+        roleAssignments={roleAssignedPlans}
+        isLoading={isLoading}
+        isSaving={isSavingPlan}
+        canManage={canManageTeam}
+        onAssignClick={() => setIsAssignPlanDialogOpen(true)}
+        onEndAssignment={endPlanAssignment}
+      />
+
       <TeamMemberProjectHistorySection
         assignments={assignments}
         isLoading={isLoading}
@@ -118,6 +149,13 @@ export function TeamMemberDetailPage() {
             activeProjectIds={activeProjectIds}
             isSaving={isSaving}
             onAssign={assignProject}
+          />
+          <TeamMemberAssignProductionPlanDialog
+            open={isAssignPlanDialogOpen}
+            onOpenChange={setIsAssignPlanDialogOpen}
+            activePlanIds={activePlanIds}
+            isSaving={isSavingPlan}
+            onAssign={assignPlan}
           />
           <TeamMemberDialog {...dialog} />
         </>

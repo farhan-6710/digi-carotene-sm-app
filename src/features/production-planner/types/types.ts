@@ -29,9 +29,11 @@ export type ProductionPlanContent = {
   id: string;
   production_plan_id: string;
   item_name: string;
-  item_notes: string | null;
+  script: string | null;
+  reference_link: string | null;
   manager_approval: ProductionPlanApprovalStatus;
   shoot_incharge_approval: ProductionPlanApprovalStatus;
+  client_approval: ProductionPlanApprovalStatus;
   created_at: string;
   updated_at: string;
 };
@@ -53,9 +55,11 @@ export type UpdateProductionPlanInput = Partial<CreateProductionPlanInput>;
 export type CreateProductionPlanContentInput = {
   productionPlanId: string;
   itemName: string;
-  itemNotes?: string | null;
+  script?: string | null;
+  referenceLink?: string | null;
   managerApproval?: ProductionPlanApprovalStatus;
   shootInchargeApproval?: ProductionPlanApprovalStatus;
+  clientApproval?: ProductionPlanApprovalStatus;
 };
 
 export type UpdateProductionPlanContentInput = Partial<

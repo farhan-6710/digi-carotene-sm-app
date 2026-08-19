@@ -1,6 +1,5 @@
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { Plus } from "lucide-react";
-import { useMemo, useState } from "react";
 
 import { ClientProjectFilters } from "@/features/posts-management/components/ClientProjectFilters";
 import { MonthSelector } from "@/shared/ui/MonthSelector";
@@ -16,6 +15,7 @@ import {
   statusText,
 } from "@/features/posts-management/constants/postsManagement";
 import { usePostsCalendarSelection } from "@/features/posts-management/hooks/usePostsCalendarSelection";
+import { usePostsFilterParams } from "@/features/posts-management/hooks/usePostsFilterParams";
 import { usePostsManagement } from "@/features/posts-management/hooks/usePostsManagement";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { PageContent } from "@/shared/components/PageContent";
@@ -26,52 +26,24 @@ import { Button } from "@/shared/ui/button";
 
 export function PostsManagementPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { can } = usePermissions();
-  const [selectedClientId, setSelectedClientId] = useState("");
-  const [selectedProjectId, setSelectedProjectId] = useState("");
+  const {
+    selectedClientIds,
+    selectedProjectIds,
+    setSelectedClientIds,
+    setSelectedProjectIds,
+  } = usePostsFilterParams();
   const { selectedDate, calendarWeeks, year, month, selectDate } =
     usePostsCalendarSelection();
 
   const { isLoading, error, projects, getSlot, openEditDialog, dialog } =
-    usePostsManagement(year, month, selectedClientId, selectedProjectId);
-
-  const projectsById = useMemo(
-    () => new Map(projects.map((project) => [project.id, project])),
-    [projects],
-  );
-
-  const handleClientChange = (clientId: string) => {
-    setSelectedClientId(clientId);
-
-    if (!clientId) {
-      setSelectedProjectId("");
-      return;
-    }
-
-    const selectedProject = selectedProjectId
-      ? projectsById.get(selectedProjectId)
-      : null;
-
-    if (selectedProject && selectedProject.client_id !== clientId) {
-      setSelectedProjectId("");
-    }
-  };
-
-  const handleProjectChange = (projectId: string) => {
-    setSelectedProjectId(projectId);
-
-    if (!projectId) {
-      return;
-    }
-
-    const project = projectsById.get(projectId);
-    setSelectedClientId(project?.client_id ?? "");
-  };
+    usePostsManagement(year, month, selectedClientIds, selectedProjectIds);
 
   const goToDay = (slotYear: number, slotMonth: number, date: number) => {
     const target = new Date(slotYear, slotMonth - 1, date);
     selectDate(target);
-    navigate(buildPostsDayPath(target));
+    navigate(buildPostsDayPath(target, searchParams));
   };
 
   return (
@@ -104,10 +76,10 @@ export function PostsManagementPage() {
 
         <ClientProjectFilters
           projects={projects}
-          selectedClientId={selectedClientId}
-          selectedProjectId={selectedProjectId}
-          onClientChange={handleClientChange}
-          onProjectChange={handleProjectChange}
+          selectedClientIds={selectedClientIds}
+          selectedProjectIds={selectedProjectIds}
+          onClientChange={setSelectedClientIds}
+          onProjectChange={setSelectedProjectIds}
         />
       </div>
 

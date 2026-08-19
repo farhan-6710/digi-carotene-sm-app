@@ -1,15 +1,15 @@
 import { Link, useParams } from "react-router";
 import { ArrowLeft, Plus } from "lucide-react";
 
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { ProductionPlanContentsList } from "@/features/production-planner/components/ProductionPlanContentsList";
 import { ProductionPlanSummaryCard } from "@/features/production-planner/components/ProductionPlanSummaryCard";
 import { PRODUCTION_PLANNER_PATH } from "@/features/production-planner/constants/routes";
 import { useDraftPlanContent } from "@/features/production-planner/hooks/useDraftPlanContent";
 import { useProductionPlanDetailQuery } from "@/features/production-planner/hooks/useProductionPlanDetailQuery";
-import type {
-  ProductionPlanApprovalStatus,
-  ProductionPlanContent,
-} from "@/features/production-planner/types/types";
+import type { ProductionPlanContentSavePayload } from "@/features/production-planner/types/components";
+import type { ProductionPlanContent } from "@/features/production-planner/types/types";
+import { canEditManagerOrClientApproval } from "@/features/production-planner/utils/contentApprovalUtils";
 import {
   createProductionPlanItem,
   deleteProductionPlanItem,
@@ -19,7 +19,6 @@ import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
-import { usePermissions } from "@/shared/hooks/usePermissions";
 import { Button } from "@/shared/ui/button";
 import { showToast } from "@/shared/utils/showToast";
 
@@ -36,23 +35,20 @@ function PlanDetailBackButton() {
 
 export function ProductionPlanDetailPage() {
   const { planId = "" } = useParams();
-  const { can } = usePermissions();
-  const canCreate = can("productionPlans.create");
-  const canUpdate = can("productionPlans.update");
-
-  const { plan, contents, isLoading, error, setError, reload } =
+  const { teamRole, teamMemberId } = useAuth();
+  const { plan, contents, canEditContent, isLoading, error, setError, reload } =
     useProductionPlanDetailQuery(planId);
   const { draftContent, draftFocusKey, startDraft, discardDraft, isDraftId } =
     useDraftPlanContent(planId);
 
+  const canEditManagerApproval = canEditManagerOrClientApproval(teamRole);
+  const canEditClientApproval = canEditManagerApproval;
+  const canEditShootInchargeApproval =
+    Boolean(teamMemberId) && teamMemberId === plan?.shoot_incharge_id;
+
   const handleSaveContent = async (
     id: string,
-    payload: {
-      itemName: string;
-      itemNotes: string | null;
-      managerApproval: ProductionPlanApprovalStatus;
-      shootInchargeApproval: ProductionPlanApprovalStatus;
-    },
+    payload: ProductionPlanContentSavePayload,
   ) => {
     try {
       if (isDraftId(id)) {
@@ -82,9 +78,11 @@ export function ProductionPlanDetailPage() {
       await createProductionPlanItem({
         productionPlanId: planId,
         itemName: copyName,
-        itemNotes: content.item_notes,
+        script: content.script,
+        referenceLink: content.reference_link,
         managerApproval: "pending",
         shootInchargeApproval: "pending",
+        clientApproval: "pending",
       });
       showToast("success", `"${copyName}" created.`);
       await reload();
@@ -136,7 +134,7 @@ export function ProductionPlanDetailPage() {
         description="Review plan details and manage individual content with approval status."
         backButton={<PlanDetailBackButton />}
         actions={
-          canCreate ? (
+          canEditContent ? (
             <Button
               onClick={startDraft}
               className="cursor-pointer rounded-full shadow-sm"
@@ -155,7 +153,10 @@ export function ProductionPlanDetailPage() {
       <ProductionPlanContentsList
         contents={contents}
         isLoading={false}
-        canEdit={canUpdate}
+        canEdit={canEditContent}
+        canEditManagerApproval={canEditManagerApproval}
+        canEditShootInchargeApproval={canEditShootInchargeApproval}
+        canEditClientApproval={canEditClientApproval}
         draftContent={draftContent}
         draftFocusKey={draftFocusKey}
         onSave={handleSaveContent}

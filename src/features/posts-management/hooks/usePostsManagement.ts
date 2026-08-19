@@ -7,8 +7,8 @@ import { postsToSlots } from "@/features/posts-management/utils/postsSlots";
 export function usePostsManagement(
   year: number,
   month: number,
-  selectedClientId: string,
-  selectedProjectId: string,
+  selectedClientIds: string[],
+  selectedProjectIds: string[],
 ) {
   const query = usePostsQuery(year, month);
   const projectClientMap = useMemo(
@@ -17,18 +17,26 @@ export function usePostsManagement(
     [query.projects],
   );
   const filteredPosts = useMemo(() => {
+    if (selectedClientIds.length === 0 && selectedProjectIds.length === 0) {
+      return query.posts;
+    }
+
     return query.posts.filter((post) => {
-      if (selectedProjectId && post.project_id !== selectedProjectId) {
+      if (
+        selectedProjectIds.length > 0 &&
+        !selectedProjectIds.includes(post.project_id)
+      ) {
         return false;
       }
 
-      if (selectedClientId) {
-        return projectClientMap.get(post.project_id) === selectedClientId;
+      if (selectedClientIds.length > 0) {
+        const clientId = projectClientMap.get(post.project_id);
+        return clientId ? selectedClientIds.includes(clientId) : false;
       }
 
       return true;
     });
-  }, [projectClientMap, query.posts, selectedClientId, selectedProjectId]);
+  }, [projectClientMap, query.posts, selectedClientIds, selectedProjectIds]);
   const filteredSlots = useMemo(
     () => postsToSlots(filteredPosts, year, month),
     [filteredPosts, year, month],

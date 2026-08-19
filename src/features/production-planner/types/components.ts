@@ -11,6 +11,16 @@ export type ProductionPlansTableProps = {
   isLoading: boolean;
   canEdit: boolean;
   onEdit: (plan: ProductionPlan) => void;
+  clientFilter: string;
+  onClientFilterChange: (clientId: string) => void;
+  clientOptions: { value: string; label: string }[];
+};
+
+export type ProductionPlanClientFilterProps = {
+  value: string;
+  onChange: (clientId: string) => void;
+  clients: { value: string; label: string }[];
+  disabled?: boolean;
 };
 
 export type ProductionPlanDialogProps = {
@@ -26,15 +36,20 @@ export type ProductionPlanDialogProps = {
 
 export type ProductionPlanContentSavePayload = {
   itemName: string;
-  itemNotes: string | null;
+  script: string | null;
+  referenceLink: string | null;
   managerApproval: ProductionPlanApprovalStatus;
   shootInchargeApproval: ProductionPlanApprovalStatus;
+  clientApproval: ProductionPlanApprovalStatus;
 };
 
 export type ProductionPlanContentsListProps = {
   contents: ProductionPlanContent[];
   isLoading: boolean;
   canEdit: boolean;
+  canEditManagerApproval: boolean;
+  canEditShootInchargeApproval: boolean;
+  canEditClientApproval: boolean;
   draftContent?: ProductionPlanContent | null;
   draftFocusKey?: number;
   onSave: (id: string, payload: ProductionPlanContentSavePayload) => Promise<void>;
@@ -47,6 +62,9 @@ export type ProductionPlanContentCardProps = {
   content: ProductionPlanContent;
   index: number;
   canEdit: boolean;
+  canEditManagerApproval: boolean;
+  canEditShootInchargeApproval: boolean;
+  canEditClientApproval: boolean;
   isDraft?: boolean;
   onSave: (id: string, payload: ProductionPlanContentSavePayload) => Promise<void>;
   onDuplicate: (content: ProductionPlanContent) => Promise<void>;
@@ -67,4 +85,18 @@ export type ProductionPlanContentApprovalFilterProps = {
   value: ContentApprovalFilterId;
   onChange: (value: ContentApprovalFilterId) => void;
   disabled?: boolean;
+};
+
+export type ClientProductionPlansSectionProps = {
+  plans: ProductionPlan[];
+  isLoading: boolean;
+};
+
+export type ProductionPlanMultiSelectProps = {
+  value: string[];
+  onChange: (planIds: string[]) => void;
+  disabled?: boolean;
+  excludePlanIds?: string[];
+  placeholder?: string;
+  preload?: boolean;
 };

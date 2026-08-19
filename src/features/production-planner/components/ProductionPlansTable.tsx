@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import { Link } from "react-router";
 import { Pencil } from "lucide-react";
 
+import { ProductionPlanClientFilter } from "@/features/production-planner/components/ProductionPlanClientFilter";
 import {
   PRODUCTION_PLANNER_ROW_GRID_CLASS,
   productionPlannerDirectoryConfig,
@@ -91,6 +92,9 @@ export function ProductionPlansTable({
   isLoading,
   canEdit,
   onEdit,
+  clientFilter,
+  onClientFilterChange,
+  clientOptions,
 }: ProductionPlansTableProps) {
   return (
     <DirectoryTable
@@ -101,6 +105,14 @@ export function ProductionPlansTable({
       emptyMessage={productionPlannerDirectoryConfig.emptyMessage}
       isLoading={isLoading}
       isEmpty={plans.length === 0}
+      headerAside={
+        <ProductionPlanClientFilter
+          value={clientFilter}
+          onChange={onClientFilterChange}
+          clients={clientOptions}
+          disabled={isLoading}
+        />
+      }
     >
       {plans.map((plan) => (
         <ProductionPlanRow

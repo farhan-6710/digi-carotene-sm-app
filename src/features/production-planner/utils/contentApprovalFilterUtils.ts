@@ -12,10 +12,15 @@ export function filterContentsByApproval(
   return contents.filter((content) => {
     const manager = content.manager_approval;
     const shoot = content.shoot_incharge_approval;
+    const client = content.client_approval;
 
     switch (filter) {
       case "both_approved":
-        return manager === "approved" && shoot === "approved";
+        return (
+          manager === "approved" &&
+          shoot === "approved" &&
+          client === "approved"
+        );
       case "manager_approved_only":
         return manager === "approved" && shoot !== "approved";
       case "shoot_approved_only":
@@ -24,10 +29,18 @@ export function filterContentsByApproval(
         return manager === "approved";
       case "shoot_approved":
         return shoot === "approved";
+      case "client_approved":
+        return client === "approved";
       case "pending":
-        return manager === "pending" || shoot === "pending";
+        return (
+          manager === "pending" || shoot === "pending" || client === "pending"
+        );
       case "rejected":
-        return manager === "rejected" || shoot === "rejected";
+        return (
+          manager === "rejected" ||
+          shoot === "rejected" ||
+          client === "rejected"
+        );
       default:
         return true;
     }

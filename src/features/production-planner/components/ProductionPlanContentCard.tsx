@@ -3,7 +3,7 @@ import { Copy, Pencil, Trash2 } from "lucide-react";
 
 import { ApprovalStatusBadge } from "@/features/production-planner/components/ApprovalStatusBadge";
 import { ApprovalStatusSelect } from "@/features/production-planner/components/ApprovalStatusSelect";
-import { CONTENT_NOTES_PREVIEW_LINES } from "@/features/production-planner/constants/productionPlannerDirectory";
+import { CONTENT_SCRIPT_PREVIEW_LINES } from "@/features/production-planner/constants/productionPlannerDirectory";
 import type { ProductionPlanContentCardProps } from "@/features/production-planner/types/components";
 import type { ProductionPlanApprovalStatus } from "@/features/production-planner/types/types";
 import {
@@ -19,6 +19,9 @@ export function ProductionPlanContentCard({
   content,
   index,
   canEdit,
+  canEditManagerApproval,
+  canEditShootInchargeApproval,
+  canEditClientApproval,
   isDraft = false,
   onSave,
   onDuplicate,
@@ -27,11 +30,16 @@ export function ProductionPlanContentCard({
 }: ProductionPlanContentCardProps) {
   const [isEditing, setIsEditing] = useState(isDraft);
   const [itemName, setItemName] = useState(content.item_name);
-  const [itemNotes, setItemNotes] = useState(content.item_notes || "");
+  const [script, setScript] = useState(content.script || "");
+  const [referenceLink, setReferenceLink] = useState(
+    content.reference_link || "",
+  );
   const [managerApproval, setManagerApproval] =
     useState<ProductionPlanApprovalStatus>(content.manager_approval);
   const [shootInchargeApproval, setShootInchargeApproval] =
     useState<ProductionPlanApprovalStatus>(content.shoot_incharge_approval);
+  const [clientApproval, setClientApproval] =
+    useState<ProductionPlanApprovalStatus>(content.client_approval);
   const [isSaving, setIsSaving] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
@@ -39,21 +47,26 @@ export function ProductionPlanContentCard({
     if (isEditing) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setItemName(content.item_name);
-    setItemNotes(content.item_notes || "");
+    setScript(content.script || "");
+    setReferenceLink(content.reference_link || "");
     setManagerApproval(content.manager_approval);
     setShootInchargeApproval(content.shoot_incharge_approval);
+    setClientApproval(content.client_approval);
   }, [content, isEditing]);
 
   const overallStatus = getOverallApprovalStatus(
     content.manager_approval,
     content.shoot_incharge_approval,
+    content.client_approval,
   );
 
   const resetForm = () => {
     setItemName(content.item_name);
-    setItemNotes(content.item_notes || "");
+    setScript(content.script || "");
+    setReferenceLink(content.reference_link || "");
     setManagerApproval(content.manager_approval);
     setShootInchargeApproval(content.shoot_incharge_approval);
+    setClientApproval(content.client_approval);
   };
 
   const handleCancel = () => {
@@ -71,9 +84,11 @@ export function ProductionPlanContentCard({
     try {
       await onSave(content.id, {
         itemName: itemName.trim(),
-        itemNotes: itemNotes.trim() || null,
+        script: script.trim() || null,
+        referenceLink: referenceLink.trim() || null,
         managerApproval,
         shootInchargeApproval,
+        clientApproval,
       });
       setIsEditing(false);
     } catch {
@@ -130,52 +145,89 @@ export function ProductionPlanContentCard({
 
           <div>
             <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
-              Notes
+              Script
             </p>
             {isEditing ? (
               <textarea
-                value={itemNotes}
-                onChange={(e) => setItemNotes(e.target.value)}
-                rows={CONTENT_NOTES_PREVIEW_LINES}
+                value={script}
+                onChange={(e) => setScript(e.target.value)}
+                rows={CONTENT_SCRIPT_PREVIEW_LINES}
                 className={cn(formFieldClassName, "mt-0 resize-y")}
-                placeholder="Add notes for this content..."
+                placeholder="Add script for this content..."
                 disabled={isSaving}
               />
-            ) : content.item_notes ? (
+            ) : content.script ? (
               <p
                 className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap"
                 style={{
                   display: "-webkit-box",
-                  WebkitLineClamp: CONTENT_NOTES_PREVIEW_LINES,
+                  WebkitLineClamp: CONTENT_SCRIPT_PREVIEW_LINES,
                   WebkitBoxOrient: "vertical",
                   overflow: "hidden",
                 }}
               >
-                {content.item_notes}
+                {content.script}
               </p>
             ) : (
               <p className="text-sm text-muted-foreground/60 italic">
-                No notes yet.
+                No script yet.
               </p>
             )}
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+              Reference link
+            </p>
+            {isEditing ? (
+              <input
+                value={referenceLink}
+                onChange={(e) => setReferenceLink(e.target.value)}
+                className={cn(formFieldClassName, "mt-0")}
+                placeholder="https://..."
+                disabled={isSaving}
+              />
+            ) : content.reference_link ? (
+              <a
+                href={content.reference_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-primary break-all hover:underline"
+              >
+                {content.reference_link}
+              </a>
+            ) : (
+              <p className="text-sm text-muted-foreground/60 italic">
+                No reference link yet.
+              </p>
+            )}
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
             <ApprovalField
               label="Manager/Admin"
               status={isEditing ? managerApproval : content.manager_approval}
               isEditing={isEditing}
-              disabled={isSaving}
+              disabled={isSaving || !canEditManagerApproval}
               onChange={setManagerApproval}
             />
             <ApprovalField
               label="Shoot Incharge"
               status={
-                isEditing ? shootInchargeApproval : content.shoot_incharge_approval
+                isEditing
+                  ? shootInchargeApproval
+                  : content.shoot_incharge_approval
               }
               isEditing={isEditing}
-              disabled={isSaving}
+              disabled={isSaving || !canEditShootInchargeApproval}
               onChange={setShootInchargeApproval}
+            />
+            <ApprovalField
+              label="Client"
+              status={isEditing ? clientApproval : content.client_approval}
+              isEditing={isEditing}
+              disabled={isSaving || !canEditClientApproval}
+              onChange={setClientApproval}
             />
           </div>
         </div>
@@ -279,7 +331,12 @@ function ApprovalField({
   onChange,
 }: ApprovalFieldProps) {
   return (
-    <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5">
+    <div
+      className={cn(
+        "rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5",
+        isEditing && disabled && "opacity-60",
+      )}
+    >
       <p className="mb-2 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
         {label}
       </p>

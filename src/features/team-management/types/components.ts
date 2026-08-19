@@ -4,6 +4,8 @@ import type {
 } from "@/features/team-management/utils/teamMemberFormUtils";
 import type {
   ManagedProjectSummary,
+  MemberPlanAssignment,
+  MemberPlanRoleAssignment,
   MemberProjectAssignment,
   TeamMember,
 } from "@/features/team-management/types/types";
@@ -69,4 +71,22 @@ export type TeamMemberAssignProjectDialogProps = {
   activeProjectIds: string[];
   isSaving: boolean;
   onAssign: (projectIds: string[]) => void | Promise<void>;
+};
+
+export type TeamMemberActiveProductionPlansSectionProps = {
+  assignments: MemberPlanAssignment[];
+  roleAssignments: MemberPlanRoleAssignment[];
+  isLoading: boolean;
+  isSaving: boolean;
+  canManage: boolean;
+  onAssignClick: () => void;
+  onEndAssignment: (assignmentId: string) => void | Promise<void>;
+};
+
+export type TeamMemberAssignProductionPlanDialogProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  activePlanIds: string[];
+  isSaving: boolean;
+  onAssign: (planIds: string[]) => void | Promise<void>;
 };

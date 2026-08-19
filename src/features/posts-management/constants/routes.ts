@@ -23,18 +23,29 @@ export type AddPostsPathOptions = {
   returnToDay?: boolean;
 };
 
-export function buildPostsDayPath(date: Date): string {
-  return `${POSTS_DAY_PATH}/${serializeUrlDate(date)}`;
+export function buildPostsDayPath(
+  date: Date,
+  searchParams?: URLSearchParams,
+): string {
+  const base = `${POSTS_DAY_PATH}/${serializeUrlDate(date)}`;
+  const query = searchParams?.toString();
+  return query ? `${base}?${query}` : base;
 }
 
-export function buildPostsManagementPath(date?: Date): string {
-  if (!date) {
-    return POSTS_MANAGEMENT_PATH;
+export function buildPostsManagementPath(
+  date?: Date,
+  searchParams?: URLSearchParams,
+): string {
+  const params = new URLSearchParams(searchParams);
+
+  if (date) {
+    params.set(POSTS_DATE_PARAM, serializeUrlDate(date));
   }
 
-  const params = new URLSearchParams();
-  params.set(POSTS_DATE_PARAM, serializeUrlDate(date));
-  return `${POSTS_MANAGEMENT_PATH}?${params.toString()}`;
+  const query = params.toString();
+  return query
+    ? `${POSTS_MANAGEMENT_PATH}?${query}`
+    : POSTS_MANAGEMENT_PATH;
 }
 
 export function buildAddPostsPath(options?: AddPostsPathOptions): string {

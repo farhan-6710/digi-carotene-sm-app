@@ -89,3 +89,8 @@ export function formatPlanDeliverables(plan: ProductionPlan): string {
     .filter(Boolean)
     .join(", ");
 }
+
+export function getProductionPlanDisplayLabel(plan: ProductionPlan): string {
+  const clientName = plan.clients?.client_name;
+  return clientName ? `${plan.plan_name} (${clientName})` : plan.plan_name;
+}

@@ -10,20 +10,25 @@ function toItemColumns(input: CreateProductionPlanContentInput) {
   return {
     production_plan_id: input.productionPlanId,
     item_name: input.itemName,
-    item_notes: input.itemNotes || null,
+    script: input.script || null,
+    reference_link: input.referenceLink || null,
     manager_approval: input.managerApproval || "pending",
     shoot_incharge_approval: input.shootInchargeApproval || "pending",
+    client_approval: input.clientApproval || "pending",
   };
 }
 
 function toItemUpdateColumns(input: UpdateProductionPlanContentInput) {
   const cols: Record<string, unknown> = {};
   if (input.itemName !== undefined) cols.item_name = input.itemName;
-  if (input.itemNotes !== undefined) cols.item_notes = input.itemNotes;
+  if (input.script !== undefined) cols.script = input.script;
+  if (input.referenceLink !== undefined) cols.reference_link = input.referenceLink;
   if (input.managerApproval !== undefined)
     cols.manager_approval = input.managerApproval;
   if (input.shootInchargeApproval !== undefined)
     cols.shoot_incharge_approval = input.shootInchargeApproval;
+  if (input.clientApproval !== undefined)
+    cols.client_approval = input.clientApproval;
   return cols;
 }
 

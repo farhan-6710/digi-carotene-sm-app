@@ -33,3 +33,27 @@ export type ManagedProjectSummary = {
   manager_id: string;
   clients: { id: string; client_name: string } | null;
 };
+
+export type MemberPlanAssignment = {
+  id: string;
+  production_plan_id: string;
+  member_id: string;
+  started_at: string;
+  ended_at: string | null;
+  created_at: string;
+  updated_at: string;
+  production_plans: {
+    id: string;
+    plan_name: string;
+    client_id: string;
+    clients: { id: string; client_name: string } | null;
+  } | null;
+};
+
+export type MemberPlanRoleAssignment = {
+  id: string;
+  plan_name: string;
+  client_id: string;
+  role: "manager" | "shoot_incharge";
+  clients: { id: string; client_name: string } | null;
+};

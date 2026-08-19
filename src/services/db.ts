@@ -98,13 +98,31 @@ const PRODUCTION_PLAN_SELECT = `
   )
 `;
 
+const PLAN_ASSIGNMENT_SELECT = `
+  id,
+  production_plan_id,
+  member_id,
+  started_at,
+  ended_at,
+  created_at,
+  updated_at,
+  production_plans (
+    id,
+    plan_name,
+    client_id,
+    clients ( id, client_name )
+  )
+`;
+
 const PRODUCTION_PLAN_ITEM_SELECT = `
   id,
   production_plan_id,
   item_name,
-  item_notes,
+  script,
+  reference_link,
   manager_approval,
   shoot_incharge_approval,
+  client_approval,
   created_at,
   updated_at
 `;
@@ -150,6 +168,10 @@ export const DB = {
   PRODUCTION_PLAN_ITEMS: {
     TABLE: "production_plan_items",
     SELECT: PRODUCTION_PLAN_ITEM_SELECT,
+  },
+  PRODUCTION_PLAN_TEAM_MEMBERS: {
+    TABLE: "production_plan_team_members",
+    SELECT: PLAN_ASSIGNMENT_SELECT,
   },
   GROWTH_ORGANIC_ACCOUNTS: {
     TABLE: "growth_organic_accounts",

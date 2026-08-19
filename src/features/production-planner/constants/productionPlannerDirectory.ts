@@ -29,4 +29,4 @@ export const productionPlanContentsListConfig = {
 } as const;
 
 /** Preview lines shown on content cards before truncating. */
-export const CONTENT_NOTES_PREVIEW_LINES = 8;
+export const CONTENT_SCRIPT_PREVIEW_LINES = 8;

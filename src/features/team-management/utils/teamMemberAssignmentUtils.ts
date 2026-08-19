@@ -2,6 +2,8 @@ import { format } from "date-fns";
 
 import type {
   ManagedProjectSummary,
+  MemberPlanAssignment,
+  MemberPlanRoleAssignment,
   MemberProjectAssignment,
 } from "@/features/team-management/types/types";
 
@@ -48,4 +50,23 @@ export function getManagedProjectLabel(project: ManagedProjectSummary): string {
   return clientName
     ? `${project.project_name} (${clientName})`
     : project.project_name;
+}
+
+export function splitMemberPlanAssignments(assignments: MemberPlanAssignment[]) {
+  const active = assignments.filter((assignment) => assignment.ended_at === null);
+  const past = assignments.filter((assignment) => assignment.ended_at !== null);
+  return { active, past };
+}
+
+export function getAssignmentPlanName(assignment: MemberPlanAssignment): string {
+  const planName = assignment.production_plans?.plan_name ?? "Unknown plan";
+  const clientName = assignment.production_plans?.clients?.client_name;
+  return clientName ? `${planName} (${clientName})` : planName;
+}
+
+export function getPlanRoleAssignmentLabel(
+  plan: MemberPlanRoleAssignment,
+): string {
+  const clientName = plan.clients?.client_name;
+  return clientName ? `${plan.plan_name} (${clientName})` : plan.plan_name;
 }

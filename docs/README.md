@@ -1,41 +1,111 @@
-# Digi Carotene — Documentation
+# Digi Carotene — docs
 
-Reference docs for the Digi Carotene service management app: database schema, DTOs, and feature behavior for team and client portals.
+Service-management app for **Digi Carotene**, a digital marketing agency.
 
-## Database setup
+The team runs clients, projects, scheduled posts, production shoots, and Meta (Facebook/Instagram) analytics in one portal. Each client can sign in to a read-only portal for their brand.
 
-| Doc | Purpose |
-|-----|---------|
-| [database.md](./database.md) | Migrations, domain model, table overview |
+**Read this folder first** if you are new. Then `AGENTS.md` (how to change code) and `DESIGN.md` (layers).
 
-**Scripts (Supabase SQL Editor):**
+| Doc | What it covers |
+|-----|----------------|
+| [This file](./README.md) | Purpose, stack, commands, architecture, practices |
+| [database.md](./database.md) | Tables, relationships, migrations, RLS |
+| [auth-and-features.md](./auth-and-features.md) | Auth, roles, portals, every feature |
+| [ops.md](./ops.md) | Meta Business setup, PHP crons, Hostinger deploy |
 
-- New project: [`scripts/migrations/001_initial_schema.sql`](../scripts/migrations/001_initial_schema.sql)
-- Existing project: see [`scripts/migrations/README.md`](../scripts/migrations/README.md)
+---
 
-## Team portal features
+## What this app is for
 
-| Feature | Doc |
-|---------|-----|
-| Auth / profiles | [team-portal/auth/profiles.md](./team-portal/auth/profiles.md) |
-| Clients | [team-portal/clients-management/clients.md](./team-portal/clients-management/clients.md) |
-| Team members | [team-portal/team-management/team-members.md](./team-portal/team-management/team-members.md) |
-| Projects | [team-portal/projects-management/projects.md](./team-portal/projects-management/projects.md) |
-| Posts | [team-portal/posts-management/posts.md](./team-portal/posts-management/posts.md) |
-| Post approvals | [team-portal/post-approvals/post-approval-requests.md](./team-portal/post-approvals/post-approval-requests.md) (lives under Notifications) |
-| Notifications inbox | [team-portal/notifications/notifications.md](./team-portal/notifications/notifications.md) |
-| Growth & Analytics | [growth-and-analytics/README.md](./growth-and-analytics/README.md) |
-| PHP crons (Growth sync + midnight post digest) | [scripts/php/README.md](../scripts/php/README.md) |
+Digi Carotene plans and publishes social content for client brands, then reports on organic and ads performance.
 
-## Domain hierarchy
+- **Team portal** (`/team-portal`) — day-to-day work: roster, clients, projects, calendar, production plans, notifications, analytics.
+- **Client portal** (`/client-portal`) — the brand sees their posts and Growth dashboards only.
+- **Public site** — home / about / contact plus `/auth`.
+- **Pending users** (`/user-portal`) — signed up but not yet linked to a team member or client row.
+
+Domain: **client (company) → project (social profiles + team) → posts**. Production plans hang off the **client**. Growth accounts also hang off the **client**.
+
+---
+
+## Tech stack
+
+| Layer | Choice |
+|-------|--------|
+| UI | React 19, React Router 7, Tailwind 4, shadcn/ui, Framer Motion, Recharts |
+| Language | TypeScript |
+| Build | Vite 8, Bun |
+| Backend | Supabase (Postgres + Auth + RLS). No custom Node API. |
+| Crons / email | PHP 8.2 on Hostinger (`scripts/php/`), Resend for digest mail |
+| Meta | Graph API via a **System User** long-lived token |
+
+There is **no `.env` in the repo**. Local Vite still needs two values at **build/dev time** (they are compiled into the JS; production does not read a server env file):
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY` (anon / publishable key)
+
+Put them in a local `.env` that you do not commit, or export them in the shell before `bun run dev` / `bun run build`. PHP secrets live in `public_html/php/config.php` (copied from `scripts/php/config.example.php`), not in env vars.
+
+---
+
+## Commands
+
+```bash
+bun install
+bun run dev      # http://localhost:5173
+bun run build    # writes static files to dist/
+bun run lint
+bun run preview  # serve dist locally
+```
+
+Package manager is **Bun**. Use `bun`, not npm.
+
+---
+
+## Architecture
+
+Data flows one way. Each layer has one job.
 
 ```
-clients (company)
-  └── projects (social URLs, manager, team)
-        └── posts (schedule, platform tags, post links)
-  └── growth_organic_accounts / growth_ads_accounts (Meta assets + client_id)
-team_members (internal team)
-profiles (auth roles + portal client_id)
+page → hook → service → Supabase
+         └ presentational component
 ```
 
-TypeScript types live in `src/features/<feature>/types/types.ts`. Each doc below mirrors those types as DTOs.
+| Layer | Where | Job |
+|-------|--------|-----|
+| Pages | `src/features/*/pages` | Compose hooks + components. No business logic. |
+| Components | `src/features/*/components` | Props in, UI out. |
+| Hooks | `src/features/*/hooks` | One concern each (fetch, dialog, filters). |
+| Services | `src/services/` | **Only** place that imports `supabase`. |
+| Utils | `features/*/utils`, `shared/utils` | Pure helpers. No Supabase. |
+| Shared UI | `src/shared/ui/` | shadcn primitives. |
+
+Query hooks use `useFetch(load, fallback)` (`src/shared/hooks/useFetch.ts`). Services: query → run → throw on error → map to a domain type. Table names live in `src/services/db.ts` (`DB.POSTS.TABLE`, `DB.POSTS.SELECT`).
+
+```
+src/
+  app/          Router, lazy pages
+  services/     Supabase + Meta calls
+  features/     One folder per product area
+  shared/       Cross-feature UI, hooks, layouts
+scripts/
+  migrations/   Numbered SQL
+  php/          Crons (deploy as public_html/php/)
+```
+
+---
+
+## Design principles (V1)
+
+- **Least code, more output.** Smallest change that solves the problem.
+- **One function, one job.** Readable paths over clever abstractions.
+- **DRY when something is used twice**, not preemptively.
+- **Handle V1 edge cases** without extra frameworks.
+- Domain types in `types/types.ts`, props in `types/components.ts`, constants in `constants/`. Nothing of that in `.tsx`.
+- Target ~120 lines per file; split when larger. Named exports.
+- Toasts: `showToast("success" \| "error" \| "info", message)` after mutations.
+- Destructive actions go through `ConfirmationModal`.
+- Frontend RBAC: `src/shared/utils/rbac.ts` from `team_members.team_role`. Do not sprinkle `role === "admin"`.
+- Schema change → **new** `scripts/migrations/00N_*.sql`. Never edit old migrations.
+
+Full change rules: [AGENTS.md](../AGENTS.md). Layers: [DESIGN.md](../DESIGN.md).

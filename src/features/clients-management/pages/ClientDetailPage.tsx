@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { ClientProfileCard } from "@/features/clients-management/components/ClientProfileCard";
 import { CLIENTS_MANAGEMENT_PATH } from "@/features/clients-management/constants/routes";
 import { useClientDetailQuery } from "@/features/clients-management/hooks/useClientDetailQuery";
+import { ClientProductionPlansSection } from "@/features/production-planner/components/ClientProductionPlansSection";
 import { ClientProjectsSection } from "@/features/projects-management/components/ClientProjectsSection";
 import { PageContent } from "@/shared/components/PageContent";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
@@ -25,7 +26,8 @@ function ClientDetailBackButton() {
 export function ClientDetailPage() {
   const { clientId = "" } = useParams();
 
-  const { client, projects, isLoading, error } = useClientDetailQuery(clientId);
+  const { client, projects, productionPlans, isLoading, error } =
+    useClientDetailQuery(clientId);
 
   if (isLoading) {
     return <DetailPageLoading backButton={<ClientDetailBackButton />} />;
@@ -49,6 +51,11 @@ export function ClientDetailPage() {
       <ClientProfileCard client={client} />
 
       <ClientProjectsSection projects={projects} isLoading={isLoading} />
+
+      <ClientProductionPlansSection
+        plans={productionPlans}
+        isLoading={isLoading}
+      />
     </PageContent>
   );
 }

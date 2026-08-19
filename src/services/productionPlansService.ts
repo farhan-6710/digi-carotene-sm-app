@@ -1,11 +1,13 @@
-import { DB } from "@/services/db";
-import { supabase } from "@/services/supabaseClient";
+import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 import type {
   ProductionPlan,
   ProductionPlanAssignee,
   CreateProductionPlanInput,
   UpdateProductionPlanInput,
 } from "@/features/production-planner/types/types";
+import { DB } from "@/services/db";
+import { supabase } from "@/services/supabaseClient";
+import { seesAllProductionPlans } from "@/shared/utils/rbac";
 
 type AssigneeRel =
   | ProductionPlanAssignee
@@ -104,6 +106,24 @@ export async function fetchProductionPlans(): Promise<ProductionPlan[]> {
   );
 }
 
+export async function fetchProductionPlansByClientId(
+  clientId: string,
+): Promise<ProductionPlan[]> {
+  const { data, error } = await supabase
+    .from(DB.PRODUCTION_PLANS.TABLE)
+    .select(DB.PRODUCTION_PLANS.SELECT)
+    .eq("client_id", clientId)
+    .order("shoot_date", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map((row) =>
+    mapProductionPlanRow(row as unknown as ProductionPlanRow),
+  );
+}
+
 export async function fetchProductionPlanById(
   id: string,
 ): Promise<ProductionPlan | null> {
@@ -161,4 +181,81 @@ export async function deleteProductionPlan(id: string): Promise<void> {
   if (error) {
     throw error;
   }
+}
+
+/** Plan ids where the member is manager, shoot incharge, or an active assignee. */
+export async function fetchAssignedProductionPlanIds(
+  teamMemberId: string,
+): Promise<string[]> {
+  const [managedResult, inchargeResult, assignedResult] = await Promise.all([
+    supabase
+      .from(DB.PRODUCTION_PLANS.TABLE)
+      .select("id")
+      .eq("manager_id", teamMemberId),
+    supabase
+      .from(DB.PRODUCTION_PLANS.TABLE)
+      .select("id")
+      .eq("shoot_incharge_id", teamMemberId),
+    supabase
+      .from(DB.PRODUCTION_PLAN_TEAM_MEMBERS.TABLE)
+      .select("production_plan_id")
+      .eq("member_id", teamMemberId)
+      .is("ended_at", null),
+  ]);
+
+  if (managedResult.error) throw managedResult.error;
+  if (inchargeResult.error) throw inchargeResult.error;
+  if (assignedResult.error) throw assignedResult.error;
+
+  const ids = new Set<string>();
+  for (const row of managedResult.data ?? []) ids.add(row.id);
+  for (const row of inchargeResult.data ?? []) ids.add(row.id);
+  for (const row of assignedResult.data ?? []) ids.add(row.production_plan_id);
+  return [...ids];
+}
+
+export async function resolveScopedProductionPlanIds(
+  teamRole: TeamMemberRole | null,
+  teamMemberId: string | null,
+): Promise<string[] | null> {
+  if (seesAllProductionPlans(teamRole)) {
+    return null;
+  }
+  if (!teamMemberId) {
+    return [];
+  }
+  return fetchAssignedProductionPlanIds(teamMemberId);
+}
+
+async function fetchProductionPlansByIds(
+  planIds: string[],
+): Promise<ProductionPlan[]> {
+  if (planIds.length === 0) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from(DB.PRODUCTION_PLANS.TABLE)
+    .select(DB.PRODUCTION_PLANS.SELECT)
+    .in("id", planIds)
+    .order("shoot_date", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map((row) =>
+    mapProductionPlanRow(row as unknown as ProductionPlanRow),
+  );
+}
+
+export async function fetchProductionPlansScoped(
+  teamRole: TeamMemberRole | null,
+  teamMemberId: string | null,
+): Promise<ProductionPlan[]> {
+  const scopedIds = await resolveScopedProductionPlanIds(teamRole, teamMemberId);
+  if (scopedIds === null) {
+    return fetchProductionPlans();
+  }
+  return fetchProductionPlansByIds(scopedIds);
 }

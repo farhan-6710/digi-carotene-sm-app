@@ -1,97 +1,70 @@
-# Database setup
+# Database
 
-Schema is managed with **numbered migrations** in [`scripts/migrations/`](../scripts/migrations/). Run SQL in the Supabase **SQL Editor**.
+Postgres on **Supabase**. Schema lives in numbered SQL files under [`scripts/migrations/`](../scripts/migrations/). Run them in the **Supabase SQL Editor**. Guide: [`scripts/migrations/README.md`](../scripts/migrations/README.md).
 
-See [`scripts/migrations/README.md`](../scripts/migrations/README.md) for the full guide.
+- **New project:** run only `001_initial_schema.sql`.
+- **Existing project:** run only files you have not applied yet, in order (`002` → current).
+- **Never edit** an old migration. Add `037_…sql` (next number) instead.
 
-## Brand-new project
+---
 
-Run **only** [`scripts/migrations/001_initial_schema.sql`](../scripts/migrations/001_initial_schema.sql).
-
-## Existing project
-
-Run only the migrations you have not applied yet, in order (`002` onward). See [`scripts/migrations/README.md`](../scripts/migrations/README.md) for the per-file checklist, and skip any step already reflected in your database.
-
-**Do not** edit old migration files after they have been applied. Add a new numbered file for every schema change.
-
-## Tables
-
-| Table                               | Purpose                                                                                                      |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `clients`                           | Company / brand owner (contact only — no social URLs)                                                        |
-| `team_members`                      | Internal team                                                                                                |
-| `projects`                          | Client engagement: social profile URLs, manager, posts                                                       |
-| `project_team_members`              | Extra team on a project (assignment history via `ended_at`)                                                  |
-| `posts`                             | Scheduled content (`project_id` FK)                                                                          |
-| `post_approval_requests`            | Executive backdated post approval workflow                                                                   |
-| `notifications`                     | Team inbox (approval alerts + post digests; unread/read)                                                     |
-| `production_plans`                  | Client production plans (name, shoot date, deliverable targets, manager + shoot incharge)                    |
-| `production_plan_items`             | Items inside a plan; each has manager + shoot incharge approval status                                       |
-| `profiles`                          | Auth user roles + portal `client_id`                                                                         |
-| `growth_organic_accounts`           | Connected Instagram/Facebook profiles (Meta token + followers); `client_id` FK links the account to a client |
-| `growth_organic_profiles`           | Instagram credentials + follower count                                                                       |
-| `growth_organic_posts_metrics`      | Post-level metrics from connect backfill + daily sync                                                        |
-| `growth_organic_daily_followers`    | Net followers gained per day (backfill + midnight cron)                                                      |
-| `growth_ads_accounts`               | Connected Meta ad accounts; `client_id` FK links the account to a client                                     |
-| `growth_ads_campaign_daily_metrics` | Campaign daily ad metrics (backfill + cron)                                                                  |
-| `growth_ads_adsets`                 | Ad set master rows (targeting / placement summaries)                                                         |
-| `growth_ads_adset_daily_metrics`    | Ad set daily metrics                                                                                         |
-| `growth_ads_ads`                    | Ad master rows (name, creative summary)                                                                      |
-| `growth_ads_ad_daily_metrics`       | Ad daily metrics                                                                                             |
-
-## Relationships
+## Domain
 
 ```
 auth.users ──1:1── profiles
-profiles.client_id ──► clients (portal access)
-clients ──1:N── projects
-projects.manager_id ──► team_members (required)
-projects ──1:N── project_team_members ──► team_members
-projects ──1:N── posts
-clients ──1:N── production_plans ──1:N── production_plan_items
+profiles.client_id ──► clients          (client portal)
+profiles.team_member_id ──► team_members (team portal)
+
+clients
+  ├── projects
+  │     ├── manager_id ──► team_members
+  │     ├── project_team_members ──► team_members   (active when ended_at IS NULL)
+  │     └── posts
+  ├── production_plans
+  │     ├── manager_id / shoot_incharge_id ──► team_members
+  │     ├── production_plan_team_members ──► team_members
+  │     └── production_plan_items
+  ├── growth_organic_accounts
+  └── growth_ads_accounts
 ```
 
-## Domain rules
+Rules: a **client** is a company. A **project** is one engagement (social profile URLs + manager). A **post** belongs to a project. Same brand, different social accounts → another project. No project, no post.
 
-- **Client** — one company; portal users link here via `profiles.client_id`.
-- **Project** — belongs to one client; holds `socials` jsonb + required `manager_id`.
-- **Post** — belongs to one project; `socials` (platform tags) + `post_links` (published URLs) are per post.
-- Same client, different social accounts → create another **project** under that client.
-- Posts require a project — no project, no post.
+---
 
-## RLS summary (from 001_initial_schema.sql)
+## Tables (short)
 
-| Table                   | Team (authenticated)             | Client portal (client role)                   |
-| ----------------------- | -------------------------------- | --------------------------------------------- |
-| `clients`               | Full CRUD                        | SELECT own row (`profiles.client_id`)         |
-| `team_members`          | Full CRUD                        | —                                             |
-| `projects`              | Full CRUD                        | —                                             |
-| `project_team_members`  | Full CRUD                        | —                                             |
-| `posts`                 | Full CRUD                        | SELECT posts for projects under linked client |
-| `production_plans`      | Full CRUD                        | —                                             |
-| `production_plan_items` | Full CRUD                        | —                                             |
-| `profiles`              | Read/update own; team update any | Read/update own                               |
+| Table | Purpose |
+|-------|---------|
+| `profiles` | Auth user → portal (`role`: `team` / `client` / `user`) + `client_id` / `team_member_id` |
+| `clients` | Brand registry (`is_active`) |
+| `team_members` | Internal roster (`team_role`: `admin` / `manager` / `executive`) |
+| `projects` | Client work + `socials` jsonb + `manager_id` + `is_active` |
+| `project_team_members` | Extra people on a project; `ended_at` null = active |
+| `posts` | Calendar row (`to_be_posted_*`, `status`, `socials[]`, `post_links`) |
+| `post_approval_requests` | Executive backdated posts waiting on manager/admin |
+| `notifications` | Team inbox (`approval`, `post_digest`) |
+| `production_plans` | Shoot plan per client |
+| `production_plan_items` | Content in a plan: `script`, `reference_link`, three approvals |
+| `production_plan_team_members` | Extra people on a plan |
+| `growth_organic_*` | Connected IG/Page + post metrics + daily followers |
+| `growth_ads_*` | Connected ad accounts + campaign / ad set / ad daily metrics |
 
-## After setup
+Types for the UI live in `src/features/<feature>/types/types.ts` — not duplicated here.
 
-1. Sign up at `/auth?form-type=signup` — default role is `user` (pending access at `/user-portal`).
-2. To grant team access: add the user's email in **Team Management**, then they refresh → team portal.
-3. Add **clients** (companies).
-4. Add **team members** (at least one with role **manager**).
-5. Add **projects** (client + manager + social URLs).
-6. Add **posts** (each post requires a project).
+---
 
-**Client portal users:** team links `profiles.client_id` after signup (see [team-portal/auth/profiles.md](./team-portal/auth/profiles.md)).
+## RLS (V1)
 
-Suggested team nav / setup order: Clients → Team → Projects → Posts.
+Authenticated **team** users: full CRUD on operational tables. **Client** portal: SELECT own `clients` row and posts under that client’s projects. Growth tables use authenticated access; the UI scopes by `client_id`. PHP crons use the **service_role** key (bypasses RLS).
 
-## Feature docs
+---
 
-See [README.md](./README.md) for per-feature schema details and DTOs.
+## First-time data
 
-### Growth & Analytics
+1. Sign up at `/auth?form-type=signup` → `profiles.role = user` → `/user-portal`.
+2. Add that email as a **team member** (or **client**) → profile auto-links → refresh.
+3. Clients → at least one **manager** team member → Projects → Posts.
+4. Production plans and Growth accounts attach to a client.
 
-| Doc                                                                | Purpose                                                                 |
-| ------------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| [growth-and-analytics/README.md](./growth-and-analytics/README.md) | Instagram backfill, ads campaign analytics, live breakdowns, daily sync |
-| [scripts/php/README.md](../scripts/php/README.md)                  | Hostinger/GoDaddy PHP cron setup                                        |
+Suggested setup order: **Clients → Team → Projects → Posts**.

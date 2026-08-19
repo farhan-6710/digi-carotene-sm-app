@@ -1,6 +1,6 @@
 # Design — Digi Carotene
 
-How the app is built. For product overview see [README.md](README.md); for change conventions see [AGENTS.md](AGENTS.md).
+How the app is built. Product + onboarding: [docs/README.md](docs/README.md). Change rules: [AGENTS.md](AGENTS.md).
 
 ## Layers
 
@@ -23,47 +23,28 @@ All data access lives in `src/services/`. Keep functions plain async/await — n
 
 - `supabaseClient.ts` — the single Supabase client.
 - `db.ts` — `DB` map of table names + select strings: `DB.POSTS.TABLE`, `DB.POSTS.SELECT`.
-- One file per domain: `authService`, `profilesService`, `postsService`, `clientsService`, `teamMembersService`, `projectsService`, `projectTeamMembersService`, `postApprovalsService`, `reportsService`, `dashboardService`.
+- One file per domain.
 
 A service function does one job: build the query → run it → throw on error → map the row to a domain type.
 
-```ts
-export async function fetchClients(): Promise<Client[]> {
-  const { data, error } = await supabase
-    .from(DB.CLIENTS.TABLE)
-    .select(DB.CLIENTS.SELECT)
-    .order("client_name", { ascending: true });
-  if (error) throw error;
-  return (data ?? []) as Client[];
-}
-```
-
 ## Data loading
 
-Query hooks use the shared `useFetch(load, fallback)` helper (`src/shared/hooks/useFetch.ts`). It loads once on mount and returns `{ data, setData, isLoading, error, setError, reload }`. Wrap `load` in `useCallback`.
-
-```ts
-export function useClientsQuery() {
-  const load = useCallback(() => fetchClients(), []);
-  const { data: clients, isLoading, error, reload } = useFetch<Client[]>(load, []);
-  return { clients, isLoading, error, reload };
-}
-```
+Query hooks use `useFetch(load, fallback)` (`src/shared/hooks/useFetch.ts`). Wrap `load` in `useCallback`.
 
 ## Auth & access
 
-- `AuthProvider` loads the session once, then reacts to sign in / sign out. No realtime or focus-refresh.
-- Profile linking is handled by **database triggers** (`link_profile_by_email`, migration 015). The app calls the same RPC as a fallback after creating a team member or client.
-- A pending user signs in and **refreshes** to pick up newly granted access.
-- Route guards (`TeamRoute`, `ClientRoute`, `UserRoute`) redirect by access; pages stay simple.
+- `AuthProvider` loads the session once, then reacts to sign in / sign out.
+- Profile linking is **database triggers** (`link_profile_by_email`) plus an RPC fallback after saving a team member or client.
+- A pending user refreshes to pick up access.
+- Route guards (`TeamRoute`, `ClientRoute`, `UserRoute`) redirect by `profiles.role`. Details: [docs/auth-and-features.md](docs/auth-and-features.md).
 
 ## Domain
 
-`clients` (company) → `projects` (socials, manager, team) → `posts` (`project_id`). Project team: required `projects.manager_id` + extra members in `project_team_members` (active when `ended_at IS NULL`). Schema and RLS: [docs/README.md](docs/README.md).
+`clients` → `projects` → `posts`. Extra project team: `project_team_members` (`ended_at IS NULL`). Production plans hang off **clients**. Schema: [docs/database.md](docs/database.md).
 
 ## Conventions (summary)
 
 - Domain types in `types/types.ts`; prop types in `types/components.ts`; constants in `constants/`.
-- shadcn UI from `src/shared/ui/`. Toasts via `showToast(type, message)`.
+- shadcn from `src/shared/ui/`. Toasts via `showToast(type, message)`.
 - `@/` import alias. `import type` for types.
 - Target ~120 lines per file; split when larger.
