@@ -118,6 +118,9 @@ export function ClientProjectFilters({
     <div className="flex w-full flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
       <div className="grid w-full gap-3 md:grid-cols-2 xl:max-w-3xl">
         <div className="space-y-2">
+          <label className="block text-xs font-semibold text-muted-foreground">
+            Client
+          </label>
           <ComboBox
             value={selectedClientId}
             onChange={onClientChange}
@@ -137,6 +140,9 @@ export function ClientProjectFilters({
         </div>
 
         <div className="space-y-2">
+          <label className="block text-xs font-semibold text-muted-foreground">
+            Project
+          </label>
           <ComboBox
             value={selectedProjectId}
             onChange={onProjectChange}
