@@ -10,6 +10,7 @@ import { usePermissions } from "@/shared/hooks/usePermissions";
 import { PageShell } from "@/shared/components/PageShell";
 import { Button } from "@/shared/ui/button";
 import { filterByActiveStatus } from "@/shared/utils/activeStatusFilterUtils";
+import { matchesListingSearch } from "@/shared/utils/listingSearch";
 
 export function ProjectsManagementPage() {
   const { can } = usePermissions();
@@ -19,11 +20,17 @@ export function ProjectsManagementPage() {
     setError,
   });
   const [statusFilter, setStatusFilter] = useState<ActiveStatusFilterId>("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredProjects = useMemo(
-    () => filterByActiveStatus(projects, statusFilter),
-    [projects, statusFilter],
-  );
+  const filteredProjects = useMemo(() => {
+    return filterByActiveStatus(projects, statusFilter).filter((project) =>
+      matchesListingSearch(searchQuery, [
+        project.project_name,
+        project.clients?.client_name,
+        project.team_members?.member_name,
+      ]),
+    );
+  }, [projects, searchQuery, statusFilter]);
 
   return (
     <PageShell
@@ -51,6 +58,8 @@ export function ProjectsManagementPage() {
         onEditProject={openEditDialog}
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
       />
     </PageShell>
   );

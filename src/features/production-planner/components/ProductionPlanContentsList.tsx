@@ -18,6 +18,8 @@ export function ProductionPlanContentsList({
   canEditManagerApproval,
   canEditShootInchargeApproval,
   canEditClientApproval,
+  lockDetails = false,
+  showMutations = true,
   draftContent = null,
   draftFocusKey = 0,
   onSave,
@@ -93,6 +95,8 @@ export function ProductionPlanContentsList({
                   canEditManagerApproval={canEditManagerApproval}
                   canEditShootInchargeApproval={canEditShootInchargeApproval}
                   canEditClientApproval={canEditClientApproval}
+                  lockDetails={lockDetails}
+                  showMutations={showMutations}
                   onSave={onSave}
                   onDuplicate={onDuplicate}
                   onDelete={onDelete}
@@ -109,6 +113,8 @@ export function ProductionPlanContentsList({
                   canEditManagerApproval={canEditManagerApproval}
                   canEditShootInchargeApproval={canEditShootInchargeApproval}
                   canEditClientApproval={canEditClientApproval}
+                  lockDetails={lockDetails}
+                  showMutations={showMutations}
                   isDraft
                   onSave={onSave}
                   onDuplicate={onDuplicate}

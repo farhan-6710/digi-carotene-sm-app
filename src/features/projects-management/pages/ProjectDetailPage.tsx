@@ -8,10 +8,14 @@ import { buildAddPostsPath } from "@/features/posts-management/constants/routes"
 import { usePostDialog } from "@/features/posts-management/hooks/usePostDialog";
 import { ProjectPostsTable } from "@/features/projects-management/components/ProjectPostsTable";
 import { ProjectProfileCard } from "@/features/projects-management/components/ProjectProfileCard";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { PROJECTS_MANAGEMENT_PATH } from "@/features/projects-management/constants/routes";
 import { useProjectDetailQuery } from "@/features/projects-management/hooks/useProjectDetailQuery";
+import { ShareLinkButton } from "@/features/share/components/ShareLinkButton";
+import { canGenerateShareLink } from "@/features/share/utils/shareAccess";
 import { buildProjectPostStats } from "@/features/projects-management/utils/projectPostStatsUtils";
 import { getProjectDisplayLabel } from "@/features/projects-management/utils/projectFormUtils";
+import { copyProjectShareLink } from "@/services/shareService";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
@@ -38,11 +42,13 @@ function ProjectDetailHeaderActions({
   projectId,
   projectName,
   canCreatePosts,
+  canShare,
   dateFilterProps,
 }: {
   projectId?: string;
   projectName?: string;
   canCreatePosts: boolean;
+  canShare: boolean;
   dateFilterProps: DateFiltersTwoProps;
 }) {
   return (
@@ -63,6 +69,12 @@ function ProjectDetailHeaderActions({
             </Link>
           </Button>
         ) : null}
+        {projectId ? (
+          <ShareLinkButton
+            canShare={canShare}
+            onCopy={() => copyProjectShareLink(projectId)}
+          />
+        ) : null}
       </div>
       <DateFiltersTwo {...dateFilterProps} />
     </div>
@@ -72,6 +84,7 @@ function ProjectDetailHeaderActions({
 export function ProjectDetailPage() {
   const { projectId = "" } = useParams();
   const { can } = usePermissions();
+  const { teamRole, teamMemberId } = useAuth();
   const [dialogError, setDialogError] = useState<string | null>(null);
   const { project, posts, teamMembers, isLoading, error, reload } =
     useProjectDetailQuery(projectId);
@@ -90,6 +103,11 @@ export function ProjectDetailPage() {
     setError: setDialogError,
   });
   const canCreatePosts = can("posts.create");
+  const canShare = canGenerateShareLink(
+    teamRole,
+    teamMemberId,
+    project?.manager_id,
+  );
 
   if (isLoading) {
     return <DetailPageLoading backButton={<ProjectDetailBackButton />} />;
@@ -102,6 +120,7 @@ export function ProjectDetailPage() {
           actions={
             <ProjectDetailHeaderActions
               canCreatePosts={false}
+              canShare={false}
               dateFilterProps={dateFilterProps}
             />
           }
@@ -119,6 +138,7 @@ export function ProjectDetailPage() {
             projectId={project.id}
             projectName={getProjectDisplayLabel(project)}
             canCreatePosts={canCreatePosts}
+            canShare={canShare}
             dateFilterProps={dateFilterProps}
           />
         }

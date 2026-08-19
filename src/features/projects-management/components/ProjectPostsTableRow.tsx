@@ -53,14 +53,16 @@ export function ProjectPostsTableRow({
         {post.status}
       </span>
       <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={() => onEditPost(post)}
-          className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
-        >
-          <Pencil className="size-3.5" />
-          <span className="sr-only">Edit post</span>
-        </button>
+        {onEditPost ? (
+          <button
+            type="button"
+            onClick={() => onEditPost(post)}
+            className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          >
+            <Pencil className="size-3.5" />
+            <span className="sr-only">Edit post</span>
+          </button>
+        ) : null}
       </div>
     </div>
   );

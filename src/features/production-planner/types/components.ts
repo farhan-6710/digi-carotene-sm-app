@@ -50,6 +50,8 @@ export type ProductionPlanContentsListProps = {
   canEditManagerApproval: boolean;
   canEditShootInchargeApproval: boolean;
   canEditClientApproval: boolean;
+  lockDetails?: boolean;
+  showMutations?: boolean;
   draftContent?: ProductionPlanContent | null;
   draftFocusKey?: number;
   onSave: (id: string, payload: ProductionPlanContentSavePayload) => Promise<void>;
@@ -65,6 +67,8 @@ export type ProductionPlanContentCardProps = {
   canEditManagerApproval: boolean;
   canEditShootInchargeApproval: boolean;
   canEditClientApproval: boolean;
+  lockDetails?: boolean;
+  showMutations?: boolean;
   isDraft?: boolean;
   onSave: (id: string, payload: ProductionPlanContentSavePayload) => Promise<void>;
   onDuplicate: (content: ProductionPlanContent) => Promise<void>;

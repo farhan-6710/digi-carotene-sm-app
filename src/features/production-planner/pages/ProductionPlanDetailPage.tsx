@@ -5,6 +5,9 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { ProductionPlanContentsList } from "@/features/production-planner/components/ProductionPlanContentsList";
 import { ProductionPlanSummaryCard } from "@/features/production-planner/components/ProductionPlanSummaryCard";
 import { PRODUCTION_PLANNER_PATH } from "@/features/production-planner/constants/routes";
+import { ShareLinkButton } from "@/features/share/components/ShareLinkButton";
+import { canGenerateShareLink } from "@/features/share/utils/shareAccess";
+import { copyProductionPlanShareLink } from "@/services/shareService";
 import { useDraftPlanContent } from "@/features/production-planner/hooks/useDraftPlanContent";
 import { useProductionPlanDetailQuery } from "@/features/production-planner/hooks/useProductionPlanDetailQuery";
 import type { ProductionPlanContentSavePayload } from "@/features/production-planner/types/components";
@@ -134,15 +137,25 @@ export function ProductionPlanDetailPage() {
         description="Review plan details and manage individual content with approval status."
         backButton={<PlanDetailBackButton />}
         actions={
-          canEditContent ? (
-            <Button
-              onClick={startDraft}
-              className="cursor-pointer rounded-full shadow-sm"
-            >
-              <Plus className="mr-2 size-4" />
-              Add Content
-            </Button>
-          ) : null
+          <div className="flex flex-wrap items-center gap-2">
+            <ShareLinkButton
+              canShare={canGenerateShareLink(
+                teamRole,
+                teamMemberId,
+                plan.manager_id,
+              )}
+              onCopy={() => copyProductionPlanShareLink(plan.id)}
+            />
+            {canEditContent ? (
+              <Button
+                onClick={startDraft}
+                className="cursor-pointer rounded-full shadow-sm"
+              >
+                <Plus className="mr-2 size-4" />
+                Add Content
+              </Button>
+            ) : null}
+          </div>
         }
       />
 

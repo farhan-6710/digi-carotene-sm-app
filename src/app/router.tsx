@@ -173,6 +173,18 @@ const ClientAccountPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientAccountPage"),
   "ClientAccountPage",
 );
+const ShareLayout = lazyRoutePage(
+  () => import("@/shared/layouts/ShareLayout"),
+  "ShareLayout",
+);
+const SharedProjectPage = lazyRoutePage(
+  () => import("@/features/share/pages/SharedProjectPage"),
+  "SharedProjectPage",
+);
+const SharedProductionPlanPage = lazyRoutePage(
+  () => import("@/features/share/pages/SharedProductionPlanPage"),
+  "SharedProductionPlanPage",
+);
 
 export const router = createBrowserRouter([
   {
@@ -185,6 +197,15 @@ export const router = createBrowserRouter([
     ],
   },
   { path: "/auth", element: <AuthPage /> },
+  {
+    path: "/share",
+    element: <ShareLayout />,
+    errorElement: <RouteErrorPage />,
+    children: [
+      { path: "project/:token", element: <SharedProjectPage /> },
+      { path: "plan/:token", element: <SharedProductionPlanPage /> },
+    ],
+  },
   {
     path: "/user-portal",
     element: <UserRoute />,

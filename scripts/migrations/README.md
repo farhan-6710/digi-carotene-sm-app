@@ -48,6 +48,7 @@ Run only migrations you have **not** applied yet, in order:
 | `034_clients_projects_is_active.sql` | Adds `is_active` on `clients` and `projects` |
 | `035_production_plan_team_members.sql` | Extra team on a production plan (`ended_at` for history) |
 | `036_production_plan_items_script_and_client_approval.sql` | Renames `item_notes` → `script`; adds `reference_link` + `client_approval` |
+| `037_share_tokens.sql` | `share_token` on projects + production plans; public fetch RPCs + client-approval RPC |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

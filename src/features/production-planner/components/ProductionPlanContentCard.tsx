@@ -22,6 +22,8 @@ export function ProductionPlanContentCard({
   canEditManagerApproval,
   canEditShootInchargeApproval,
   canEditClientApproval,
+  lockDetails = false,
+  showMutations = true,
   isDraft = false,
   onSave,
   onDuplicate,
@@ -79,13 +81,16 @@ export function ProductionPlanContentCard({
   };
 
   const handleSave = async () => {
-    if (!itemName.trim() || isSaving) return;
+    if (isSaving) return;
+    if (!lockDetails && !itemName.trim()) return;
     setIsSaving(true);
     try {
       await onSave(content.id, {
-        itemName: itemName.trim(),
-        script: script.trim() || null,
-        referenceLink: referenceLink.trim() || null,
+        itemName: lockDetails ? content.item_name : itemName.trim(),
+        script: lockDetails ? content.script : script.trim() || null,
+        referenceLink: lockDetails
+          ? content.reference_link
+          : referenceLink.trim() || null,
         managerApproval,
         shootInchargeApproval,
         clientApproval,
@@ -113,7 +118,7 @@ export function ProductionPlanContentCard({
             <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums text-muted-foreground">
               {formatContentIndex(index)}
             </span>
-            {isEditing ? (
+            {isEditing && !lockDetails ? (
               <p className="text-xs font-medium text-muted-foreground">
                 {isDraft ? "New content" : "Editing content"}
               </p>
@@ -127,7 +132,7 @@ export function ProductionPlanContentCard({
         </header>
 
         <div className="space-y-4 px-4 py-4 sm:px-5">
-          {isEditing ? (
+          {isEditing && !lockDetails ? (
             <div>
               <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
                 Title
@@ -147,7 +152,7 @@ export function ProductionPlanContentCard({
             <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
               Script
             </p>
-            {isEditing ? (
+            {isEditing && !lockDetails ? (
               <textarea
                 value={script}
                 onChange={(e) => setScript(e.target.value)}
@@ -179,7 +184,7 @@ export function ProductionPlanContentCard({
             <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
               Reference link
             </p>
-            {isEditing ? (
+            {isEditing && !lockDetails ? (
               <input
                 value={referenceLink}
                 onChange={(e) => setReferenceLink(e.target.value)}
@@ -247,7 +252,7 @@ export function ProductionPlanContentCard({
                 <Button
                   size="sm"
                   onClick={handleSave}
-                  disabled={isSaving || !itemName.trim()}
+                  disabled={isSaving || (!lockDetails && !itemName.trim())}
                 >
                   {isSaving ? "Saving..." : "Save"}
                 </Button>
@@ -262,31 +267,35 @@ export function ProductionPlanContentCard({
                   <Pencil className="mr-1.5 size-3.5" />
                   Edit
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={isSaving}
-                  onClick={async () => {
-                    setIsSaving(true);
-                    try {
-                      await onDuplicate(content);
-                    } finally {
-                      setIsSaving(false);
-                    }
-                  }}
-                >
-                  <Copy className="mr-1.5 size-3.5" />
-                  Duplicate
-                </Button>
-                <Button
-                  variant="destructive-outline"
-                  size="sm"
-                  onClick={() => setIsConfirmOpen(true)}
-                  disabled={isSaving}
-                >
-                  <Trash2 className="mr-1.5 size-3.5" />
-                  Delete
-                </Button>
+                {showMutations ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={isSaving}
+                      onClick={async () => {
+                        setIsSaving(true);
+                        try {
+                          await onDuplicate(content);
+                        } finally {
+                          setIsSaving(false);
+                        }
+                      }}
+                    >
+                      <Copy className="mr-1.5 size-3.5" />
+                      Duplicate
+                    </Button>
+                    <Button
+                      variant="destructive-outline"
+                      size="sm"
+                      onClick={() => setIsConfirmOpen(true)}
+                      disabled={isSaving}
+                    >
+                      <Trash2 className="mr-1.5 size-3.5" />
+                      Delete
+                    </Button>
+                  </>
+                ) : null}
               </>
             )}
           </footer>

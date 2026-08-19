@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { TeamMemberDialog } from "@/features/team-management/components/TeamMemberDialog";
 import { TeamMembersTable } from "@/features/team-management/components/TeamMembersTable";
@@ -7,6 +8,7 @@ import { useTeamMembersQuery } from "@/features/team-management/hooks/useTeamMem
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { PageShell } from "@/shared/components/PageShell";
 import { Button } from "@/shared/ui/button";
+import { matchesListingSearch } from "@/shared/utils/listingSearch";
 
 export function TeamManagementPage() {
   const { can } = usePermissions();
@@ -15,6 +17,20 @@ export function TeamManagementPage() {
     reload,
     setError,
   });
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredMembers = useMemo(
+    () =>
+      members.filter((member) =>
+        matchesListingSearch(searchQuery, [
+          member.member_name,
+          member.email,
+          member.mobile_number,
+          member.team_role,
+        ]),
+      ),
+    [members, searchQuery],
+  );
 
   return (
     <PageShell
@@ -36,10 +52,12 @@ export function TeamManagementPage() {
       }
     >
       <TeamMembersTable
-        members={members}
+        members={filteredMembers}
         isLoading={isLoading}
         canEdit={can("team.update")}
         onEditMember={openEditDialog}
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
       />
     </PageShell>
   );

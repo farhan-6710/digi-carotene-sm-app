@@ -34,6 +34,8 @@ export type ClientsTableProps = {
   onStatusFilterChange: (
     filter: import("@/shared/constants/activeStatusFilter").ActiveStatusFilterId,
   ) => void;
+  searchQuery: string;
+  onSearchQueryChange: (query: string) => void;
   onDeleteClientClick?: (
     client: import("@/features/clients-management/types/types").Client,
   ) => void;

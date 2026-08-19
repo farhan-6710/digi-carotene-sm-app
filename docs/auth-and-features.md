@@ -45,7 +45,7 @@ Content approvals on a plan item:
 | Dropdown | Who can change it |
 |----------|-------------------|
 | Manager/Admin | `admin` or `manager` role |
-| Client | `admin` or `manager` role |
+| Client | `admin` or `manager` role on the team portal; on a **share link**, only a logged-in user whose email matches `clients.email` for that plan’s client |
 | Shoot incharge | the plan’s `shoot_incharge_id` only |
 
 ---
@@ -86,4 +86,6 @@ Same Growth charts and a posts view, scoped to `profiles.client_id`. No Manage A
 
 ## Public
 
-`/`, `/about`, `/contact`, `/auth`.
+`/`, `/about`, `/auth`.
+
+Share links (no sidebar, view-only): `/share/project/:token`, `/share/plan/:token`. Generated from project / plan detail by **admin** or that entity’s **manager** (`manager_id`). Guests see the page without login. Client approval on a shared plan is editable only when the visitor is signed in with the client email on that plan’s `clients` row.

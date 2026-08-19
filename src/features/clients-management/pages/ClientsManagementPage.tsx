@@ -10,6 +10,7 @@ import { usePermissions } from "@/shared/hooks/usePermissions";
 import { PageShell } from "@/shared/components/PageShell";
 import { Button } from "@/shared/ui/button";
 import { filterByActiveStatus } from "@/shared/utils/activeStatusFilterUtils";
+import { matchesListingSearch } from "@/shared/utils/listingSearch";
 
 export function ClientsManagementPage() {
   const { can } = usePermissions();
@@ -19,11 +20,18 @@ export function ClientsManagementPage() {
     setError,
   });
   const [statusFilter, setStatusFilter] = useState<ActiveStatusFilterId>("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredClients = useMemo(
-    () => filterByActiveStatus(clients, statusFilter),
-    [clients, statusFilter],
-  );
+  const filteredClients = useMemo(() => {
+    return filterByActiveStatus(clients, statusFilter).filter((client) =>
+      matchesListingSearch(searchQuery, [
+        client.client_name,
+        client.email,
+        client.mobile_number,
+        client.website_name,
+      ]),
+    );
+  }, [clients, searchQuery, statusFilter]);
 
   return (
     <PageShell
@@ -51,6 +59,8 @@ export function ClientsManagementPage() {
         onEditClient={openEditDialog}
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
       />
     </PageShell>
   );

@@ -26,6 +26,8 @@ export type TeamMembersTableProps = {
   isLoading: boolean;
   canEdit: boolean;
   onEditMember: (member: TeamMember) => void;
+  searchQuery: string;
+  onSearchQueryChange: (query: string) => void;
 };
 
 export type TeamMemberDialogFormFieldsProps = {

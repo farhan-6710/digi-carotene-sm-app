@@ -4,7 +4,7 @@ Postgres on **Supabase**. Schema lives in numbered SQL files under [`scripts/mig
 
 - **New project:** run only `001_initial_schema.sql`.
 - **Existing project:** run only files you have not applied yet, in order (`002` → current).
-- **Never edit** an old migration. Add `037_…sql` (next number) instead.
+- **Never edit** an old migration. Add `038_…sql` (next number) instead.
 
 ---
 
@@ -39,12 +39,12 @@ Rules: a **client** is a company. A **project** is one engagement (social profil
 | `profiles` | Auth user → portal (`role`: `team` / `client` / `user`) + `client_id` / `team_member_id` |
 | `clients` | Brand registry (`is_active`) |
 | `team_members` | Internal roster (`team_role`: `admin` / `manager` / `executive`) |
-| `projects` | Client work + `socials` jsonb + `manager_id` + `is_active` |
+| `projects` | Client work + `socials` jsonb + `manager_id` + `is_active` + `share_token` |
 | `project_team_members` | Extra people on a project; `ended_at` null = active |
 | `posts` | Calendar row (`to_be_posted_*`, `status`, `socials[]`, `post_links`) |
 | `post_approval_requests` | Executive backdated posts waiting on manager/admin |
 | `notifications` | Team inbox (`approval`, `post_digest`) |
-| `production_plans` | Shoot plan per client |
+| `production_plans` | Shoot plan per client + `share_token` |
 | `production_plan_items` | Content in a plan: `script`, `reference_link`, three approvals |
 | `production_plan_team_members` | Extra people on a plan |
 | `growth_organic_*` | Connected IG/Page + post metrics + daily followers |
@@ -57,6 +57,8 @@ Types for the UI live in `src/features/<feature>/types/types.ts` — not duplica
 ## RLS (V1)
 
 Authenticated **team** users: full CRUD on operational tables. **Client** portal: SELECT own `clients` row and posts under that client’s projects. Growth tables use authenticated access; the UI scopes by `client_id`. PHP crons use the **service_role** key (bypasses RLS).
+
+Public share links (`/share/project/:token`, `/share/plan/:token`) load one record via `fetch_shared_project` / `fetch_shared_production_plan` (security definer, granted to `anon`). Matching client email can update Client approval on a shared plan via `update_shared_plan_item_client_approval`.
 
 ---
 

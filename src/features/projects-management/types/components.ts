@@ -48,6 +48,8 @@ export type ProjectsTableProps = {
   onStatusFilterChange: (
     filter: import("@/shared/constants/activeStatusFilter").ActiveStatusFilterId,
   ) => void;
+  searchQuery: string;
+  onSearchQueryChange: (query: string) => void;
 };
 
 export type ProjectMultiSelectProps = {
@@ -89,17 +91,18 @@ export type ProjectProfileCardProps = {
   project: ProjectListItem;
   postStats: ProjectPostStats;
   teamMembers: Pick<TeamMember, "id" | "member_name">[];
+  hideClientLink?: boolean;
 };
 
 export type ProjectPostsTableProps = {
   posts: Post[];
   isLoading: boolean;
-  onEditPost: (post: Post) => void;
+  onEditPost?: (post: Post) => void;
 };
 
 export type ProjectPostsTableRowProps = {
   post: Post;
-  onEditPost: (post: Post) => void;
+  onEditPost?: (post: Post) => void;
 };
 
 export type ProjectDialogSocialFieldsProps = {

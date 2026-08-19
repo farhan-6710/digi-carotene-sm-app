@@ -12,22 +12,24 @@ export function ProjectProfileCard({
   project,
   postStats,
   teamMembers,
+  hideClientLink = false,
 }: ProjectProfileCardProps) {
   const clientName = project.clients?.client_name ?? "—";
 
   const details = [
     {
       label: "Client",
-      value: project.client_id ? (
-        <Link
-          to={buildClientDetailPath(project.client_id)}
-          className="text-primary hover:underline"
-        >
-          {clientName}
-        </Link>
-      ) : (
-        clientName
-      ),
+      value:
+        project.client_id && !hideClientLink ? (
+          <Link
+            to={buildClientDetailPath(project.client_id)}
+            className="text-primary hover:underline"
+          >
+            {clientName}
+          </Link>
+        ) : (
+          clientName
+        ),
     },
     {
       label: "Manager",
