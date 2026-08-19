@@ -19,11 +19,13 @@ export function ProductionPlanContentCard({
   content,
   index,
   canEdit,
+  isDraft = false,
   onSave,
   onDuplicate,
   onDelete,
+  onDiscard,
 }: ProductionPlanContentCardProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(isDraft);
   const [itemName, setItemName] = useState(content.item_name);
   const [itemNotes, setItemNotes] = useState(content.item_notes || "");
   const [managerApproval, setManagerApproval] =
@@ -55,6 +57,10 @@ export function ProductionPlanContentCard({
   };
 
   const handleCancel = () => {
+    if (isDraft) {
+      onDiscard?.();
+      return;
+    }
     resetForm();
     setIsEditing(false);
   };
@@ -71,7 +77,9 @@ export function ProductionPlanContentCard({
       });
       setIsEditing(false);
     } catch {
-      resetForm();
+      if (!isDraft) {
+        resetForm();
+      }
     } finally {
       setIsSaving(false);
     }
@@ -92,7 +100,7 @@ export function ProductionPlanContentCard({
             </span>
             {isEditing ? (
               <p className="text-xs font-medium text-muted-foreground">
-                Editing content
+                {isDraft ? "New content" : "Editing content"}
               </p>
             ) : (
               <h3 className="min-w-0 truncate text-sm font-semibold text-foreground">

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { ProductionPlanContentApprovalFilter } from "@/features/production-planner/components/ProductionPlanContentApprovalFilter";
 import { ProductionPlanContentCard } from "@/features/production-planner/components/ProductionPlanContentCard";
@@ -15,10 +15,14 @@ export function ProductionPlanContentsList({
   contents,
   isLoading,
   canEdit,
+  draftContent = null,
+  draftFocusKey = 0,
   onSave,
   onDuplicate,
   onDelete,
+  onDiscardDraft,
 }: ProductionPlanContentsListProps) {
+  const draftRef = useRef<HTMLDivElement>(null);
   const [approvalFilter, setApprovalFilter] = useState<ContentApprovalFilterId>(
     DEFAULT_CONTENT_APPROVAL_FILTER,
   );
@@ -28,10 +32,25 @@ export function ProductionPlanContentsList({
     [contents, approvalFilter],
   );
 
+  useEffect(() => {
+    if (!draftContent) return;
+    let innerFrame = 0;
+    const outerFrame = requestAnimationFrame(() => {
+      innerFrame = requestAnimationFrame(() => {
+        draftRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+      });
+    });
+    return () => {
+      cancelAnimationFrame(outerFrame);
+      if (innerFrame) cancelAnimationFrame(innerFrame);
+    };
+  }, [draftContent, draftFocusKey]);
+
   const emptyMessage =
     contents.length === 0
       ? productionPlanContentsListConfig.emptyMessage
       : "No content matches this approval filter.";
+  const hasVisibleContent = filteredContents.length > 0 || Boolean(draftContent);
 
   return (
     <section className="w-full min-w-0 rounded-2xl border border-border bg-card shadow-sm">
@@ -54,7 +73,7 @@ export function ProductionPlanContentsList({
       <div className="p-4 sm:p-5">
         {isLoading ? (
           <TableLoadingState />
-        ) : filteredContents.length === 0 ? (
+        ) : !hasVisibleContent ? (
           <div className="rounded-xl border border-dashed border-border px-6 py-10 text-center text-sm text-muted-foreground">
             {emptyMessage}
           </div>
@@ -74,6 +93,21 @@ export function ProductionPlanContentsList({
                 />
               );
             })}
+            {draftContent ? (
+              <div ref={draftRef} className="scroll-mb-6">
+                <ProductionPlanContentCard
+                  key={draftContent.id}
+                  content={draftContent}
+                  index={contents.length}
+                  canEdit
+                  isDraft
+                  onSave={onSave}
+                  onDuplicate={onDuplicate}
+                  onDelete={onDelete}
+                  onDiscard={onDiscardDraft}
+                />
+              </div>
+            ) : null}
           </div>
         )}
       </div>

@@ -1,12 +1,11 @@
 import { Link, useParams } from "react-router";
 import { ArrowLeft, Plus } from "lucide-react";
 
-import { ProductionPlanContentDialog } from "@/features/production-planner/components/ProductionPlanContentDialog";
 import { ProductionPlanContentsList } from "@/features/production-planner/components/ProductionPlanContentsList";
 import { ProductionPlanSummaryCard } from "@/features/production-planner/components/ProductionPlanSummaryCard";
 import { PRODUCTION_PLANNER_PATH } from "@/features/production-planner/constants/routes";
+import { useDraftPlanContent } from "@/features/production-planner/hooks/useDraftPlanContent";
 import { useProductionPlanDetailQuery } from "@/features/production-planner/hooks/useProductionPlanDetailQuery";
-import { useProductionPlanContentDialog } from "@/features/production-planner/hooks/useProductionPlanContentDialog";
 import type {
   ProductionPlanApprovalStatus,
   ProductionPlanContent,
@@ -40,15 +39,11 @@ export function ProductionPlanDetailPage() {
   const { can } = usePermissions();
   const canCreate = can("productionPlans.create");
   const canUpdate = can("productionPlans.update");
-  const canManage = canCreate || canUpdate;
 
   const { plan, contents, isLoading, error, setError, reload } =
     useProductionPlanDetailQuery(planId);
-  const { openAddDialog, dialog } = useProductionPlanContentDialog({
-    productionPlanId: planId,
-    reload,
-    setError,
-  });
+  const { draftContent, draftFocusKey, startDraft, discardDraft, isDraftId } =
+    useDraftPlanContent(planId);
 
   const handleSaveContent = async (
     id: string,
@@ -60,12 +55,21 @@ export function ProductionPlanDetailPage() {
     },
   ) => {
     try {
-      await updateProductionPlanItem(id, payload);
-      showToast("success", `"${payload.itemName}" updated successfully.`);
+      if (isDraftId(id)) {
+        await createProductionPlanItem({
+          productionPlanId: planId,
+          ...payload,
+        });
+        showToast("success", `"${payload.itemName}" added successfully.`);
+        discardDraft();
+      } else {
+        await updateProductionPlanItem(id, payload);
+        showToast("success", `"${payload.itemName}" updated successfully.`);
+      }
       await reload();
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Failed to update content.";
+        err instanceof Error ? err.message : "Failed to save content.";
       setError(message);
       showToast("error", message);
       throw err;
@@ -94,6 +98,11 @@ export function ProductionPlanDetailPage() {
   };
 
   const handleDeleteContent = async (id: string) => {
+    if (isDraftId(id)) {
+      discardDraft();
+      return;
+    }
+
     try {
       await deleteProductionPlanItem(id);
       showToast("success", "Content deleted successfully.");
@@ -129,7 +138,7 @@ export function ProductionPlanDetailPage() {
         actions={
           canCreate ? (
             <Button
-              onClick={openAddDialog}
+              onClick={startDraft}
               className="cursor-pointer rounded-full shadow-sm"
             >
               <Plus className="mr-2 size-4" />
@@ -147,12 +156,13 @@ export function ProductionPlanDetailPage() {
         contents={contents}
         isLoading={false}
         canEdit={canUpdate}
+        draftContent={draftContent}
+        draftFocusKey={draftFocusKey}
         onSave={handleSaveContent}
         onDuplicate={handleDuplicateContent}
         onDelete={handleDeleteContent}
+        onDiscardDraft={discardDraft}
       />
-
-      {canManage ? <ProductionPlanContentDialog {...dialog} /> : null}
     </PageContent>
   );
 }

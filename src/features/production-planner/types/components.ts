@@ -5,7 +5,6 @@ import type {
   ProductionPlanApprovalStatus,
 } from "./types";
 import type { ProductionPlanFormValues } from "../utils/productionPlanFormUtils";
-import type { ProductionPlanContentFormValues } from "../utils/productionPlanContentFormUtils";
 
 export type ProductionPlansTableProps = {
   plans: ProductionPlan[];
@@ -36,32 +35,23 @@ export type ProductionPlanContentsListProps = {
   contents: ProductionPlanContent[];
   isLoading: boolean;
   canEdit: boolean;
+  draftContent?: ProductionPlanContent | null;
+  draftFocusKey?: number;
   onSave: (id: string, payload: ProductionPlanContentSavePayload) => Promise<void>;
   onDuplicate: (content: ProductionPlanContent) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  onDiscardDraft?: () => void;
 };
 
 export type ProductionPlanContentCardProps = {
   content: ProductionPlanContent;
   index: number;
   canEdit: boolean;
+  isDraft?: boolean;
   onSave: (id: string, payload: ProductionPlanContentSavePayload) => Promise<void>;
   onDuplicate: (content: ProductionPlanContent) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
-};
-
-export type ProductionPlanContentDialogProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  isEditing: boolean;
-  isSaving?: boolean;
-  values: ProductionPlanContentFormValues;
-  onFieldChange: (
-    field: keyof ProductionPlanContentFormValues,
-    value: string,
-  ) => void;
-  onSave: () => void;
-  onDelete?: () => void;
+  onDiscard?: () => void;
 };
 
 export type ApprovalStatusSelectProps = {

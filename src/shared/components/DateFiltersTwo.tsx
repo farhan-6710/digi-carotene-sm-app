@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { DateRangePicker } from "@/shared/components/DateRangePicker";
 import { DATE_FILTERS_TWO_PERIODS } from "@/shared/constants/dateFiltersTwo";
@@ -11,7 +11,6 @@ export function DateFiltersTwo({
   periodLabel,
   rangeButtonLabel,
   pickerRange,
-  isPickerOpen,
   pickerError,
   onToggleQuickPeriod,
   onClearFilters,
@@ -24,17 +23,14 @@ export function DateFiltersTwo({
   const [isOpen, setIsOpen] = useState(false);
   const isAll = activeQuickPeriod === null && !isDateRangeActive;
 
-  useEffect(() => {
-    if (!isPickerOpen) {
-      setIsOpen(false);
-    }
-  }, [isPickerOpen]);
-
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
       <button
         type="button"
-        onClick={onClearFilters}
+        onClick={() => {
+          setIsOpen(false);
+          onClearFilters();
+        }}
         className={cn(
           "inline-flex h-7 cursor-pointer items-center rounded-full border px-2.5 text-[11px] font-medium transition-colors",
           isAll
@@ -52,7 +48,10 @@ export function DateFiltersTwo({
           <button
             key={period.id}
             type="button"
-            onClick={() => onToggleQuickPeriod(period.id)}
+            onClick={() => {
+              setIsOpen(false);
+              onToggleQuickPeriod(period.id);
+            }}
             className={cn(
               "inline-flex h-7 cursor-pointer items-center rounded-full border px-2.5 text-[11px] font-medium transition-colors",
               isActive
@@ -77,8 +76,14 @@ export function DateFiltersTwo({
         rangeLabel={rangeButtonLabel}
         isActive={isDateRangeActive}
         onRangeChange={onPickerRangeChange}
-        onApply={onApplyDateRange}
-        onClear={onClearDateRange}
+        onApply={() => {
+          setIsOpen(false);
+          onApplyDateRange();
+        }}
+        onClear={() => {
+          setIsOpen(false);
+          onClearDateRange();
+        }}
         onKeyDown={onPickerKeyDown}
         error={pickerError}
       />
