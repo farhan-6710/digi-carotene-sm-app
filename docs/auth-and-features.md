@@ -97,4 +97,9 @@ The brand sees only their own data (`profiles.client_id`). No team CRUD, no Mana
 
 `/`, `/about`, `/auth`.
 
-Share links (no sidebar, **view-only**): `/share/project/:token`, `/share/plan/:token`. Generated from project / plan detail by **admin** or that entity’s **manager**. No login. Opening or refreshing the page loads **current** data from the database (not a snapshot, and not a live websocket). Approvals are edited in the **client portal**, not on the share link.
+Share links (no sidebar, **view-only**): `/share/project/:token`, `/share/plan/:token`.
+
+- **Who copies:** admin, or the manager on that project/plan (`manager_id`). Button is UI-only.
+- **What is stored:** one UUID on `share_token`. Same link forever until you change the token (V1 does not rotate it).
+- **Who opens:** anyone with the URL. No login. No buttons. Refresh to see updates.
+- **Why two DB functions:** guests use the anon key; we cannot let them `select *` from projects/plans. The functions take the token and return that one page’s data.

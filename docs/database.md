@@ -4,7 +4,7 @@ Postgres on **Supabase**. Schema lives in numbered SQL files under [`scripts/mig
 
 - **New project:** run only `001_initial_schema.sql`.
 - **Existing project:** run only files you have not applied yet, in order (`002` → current).
-- **Never edit** an old migration. Add `039_…sql` (next number) instead.
+- **Never edit** an old migration. Add `040_…sql` (next number) instead.
 
 ---
 
@@ -58,7 +58,13 @@ Types for the UI live in `src/features/<feature>/types/types.ts` — not duplica
 
 Authenticated **team** users: full CRUD on operational tables. **Client** portal: SELECT own `clients` row and posts under that client’s projects. Growth tables use authenticated access; the UI scopes by `client_id`. PHP crons use the **service_role** key (bypasses RLS).
 
-Public share links (`/share/project/:token`, `/share/plan/:token`) load one record via `fetch_shared_project` / `fetch_shared_production_plan` (security definer, granted to `anon`). Links are view-only. Client approval is updated in the client portal.
+Public share links:
+
+1. Team user copies a link → app writes a UUID into `projects.share_token` or `production_plans.share_token` (once).
+2. Guest opens `/share/project/:token` or `/share/plan/:token` with **no login**.
+3. The page calls `fetch_shared_project` / `fetch_shared_production_plan` (those two functions exist so guests can read **one** shared record without opening the whole table). View-only. Refresh to see new data.
+
+Client approval is edited in the **client portal**, not on the share URL.
 
 ---
 

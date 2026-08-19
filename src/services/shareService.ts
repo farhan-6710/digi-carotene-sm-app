@@ -14,6 +14,7 @@ import {
   buildSharedPlanPath,
   buildSharedProjectPath,
 } from "@/features/share/constants/routes";
+import { copyTextToClipboard } from "@/shared/utils/copyTextToClipboard";
 import { DB } from "@/services/db";
 import { supabase } from "@/services/supabaseClient";
 
@@ -37,15 +38,13 @@ async function ensureShareToken(
   if (existing?.share_token) return existing.share_token as string;
 
   const token = crypto.randomUUID();
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from(table)
     .update({ share_token: token })
-    .eq("id", entityId)
-    .select("share_token")
-    .single();
+    .eq("id", entityId);
 
   if (error) throw error;
-  return (data?.share_token as string) ?? token;
+  return token;
 }
 
 export function buildAbsoluteShareUrl(path: string): string {
@@ -54,16 +53,12 @@ export function buildAbsoluteShareUrl(path: string): string {
 
 export async function copyProjectShareLink(projectId: string): Promise<void> {
   const token = await ensureShareToken(DB.PROJECTS.TABLE, projectId);
-  await navigator.clipboard.writeText(
-    buildAbsoluteShareUrl(buildSharedProjectPath(token)),
-  );
+  await copyTextToClipboard(buildAbsoluteShareUrl(buildSharedProjectPath(token)));
 }
 
 export async function copyProductionPlanShareLink(planId: string): Promise<void> {
   const token = await ensureShareToken(DB.PRODUCTION_PLANS.TABLE, planId);
-  await navigator.clipboard.writeText(
-    buildAbsoluteShareUrl(buildSharedPlanPath(token)),
-  );
+  await copyTextToClipboard(buildAbsoluteShareUrl(buildSharedPlanPath(token)));
 }
 
 export async function fetchSharedProject(

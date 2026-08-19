@@ -50,6 +50,7 @@ Run only migrations you have **not** applied yet, in order:
 | `036_production_plan_items_script_and_client_approval.sql` | Renames `item_notes` → `script`; adds `reference_link` + `client_approval` |
 | `037_share_tokens.sql` | `share_token` on projects + production plans; public fetch RPCs |
 | `038_drop_shared_plan_approval_rpc.sql` | Drops unused share-link approval RPC (approvals stay in the client portal) |
+| `039_ensure_share_token_rpc.sql` | Drops unused `ensure_share_token` if it was created |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 
