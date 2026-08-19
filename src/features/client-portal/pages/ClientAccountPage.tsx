@@ -18,9 +18,10 @@ import {
 
 export function ClientAccountPage() {
   const { user } = useAuth();
-  const { client, projects, posts, loading, error } = useClientPortal();
+  const { client, projects, posts, productionPlans, loading, error } =
+    useClientPortal();
 
-  const stats = buildClientStatCards(posts).map((stat) => ({
+  const stats = buildClientStatCards(posts, projects, productionPlans).map((stat) => ({
     label: stat.label,
     value: loading ? "—" : stat.value,
   }));
@@ -44,7 +45,7 @@ export function ClientAccountPage() {
       ];
 
   const bio = client
-    ? `Client portal account for ${client.client_name}. View your content schedule, brand details, and sign out here.`
+    ? `Client portal account for ${client.client_name}. View posts, projects, production plans, and sign out here.`
     : "Your Digi Carotene client portal account.";
 
   return (

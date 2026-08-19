@@ -58,6 +58,7 @@ export type ProductionPlanContentsListProps = {
   onDuplicate: (content: ProductionPlanContent) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onDiscardDraft?: () => void;
+  emptyMessage?: string;
 };
 
 export type ProductionPlanContentCardProps = {

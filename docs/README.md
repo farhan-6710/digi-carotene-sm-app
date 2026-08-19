@@ -20,7 +20,7 @@ The team runs clients, projects, scheduled posts, production shoots, and Meta (F
 Digi Carotene plans and publishes social content for client brands, then reports on organic and ads performance.
 
 - **Team portal** (`/team-portal`) — day-to-day work: roster, clients, projects, calendar, production plans, notifications, analytics.
-- **Client portal** (`/client-portal`) — the brand sees their posts and Growth dashboards only.
+- **Client portal** (`/client-portal`) — the brand sees their projects, posts, production plans (client approval), and Growth dashboards.
 - **Public site** — home / about / contact plus `/auth`.
 - **Pending users** (`/user-portal`) — signed up but not yet linked to a team member or client row.
 

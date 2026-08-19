@@ -16,14 +16,15 @@ import { PageHeader } from "@/shared/components/PageHeader";
 import { StatsCards } from "@/shared/components/StatsCards";
 
 export function ClientDashboardPage() {
-  const { client, projects, posts, loading, error } = useClientPortal();
-  const statCards = buildClientStatCards(posts);
+  const { client, projects, posts, productionPlans, loading, error } =
+    useClientPortal();
+  const statCards = buildClientStatCards(posts, projects, productionPlans);
   const upcoming = getUpcomingPosts(posts);
 
   return (
     <PageShell
       heading={client?.client_name ?? "Your brand"}
-      description="Overview of your content schedule, social profiles, and Digi Carotene account."
+      description="Overview of your content schedule, projects, production plans, and social profiles."
       error={error && !loading ? error : null}
     >
       <StatsCards cards={statCards} isLoading={loading} />
@@ -61,6 +62,7 @@ export function ClientDashboardPage() {
                         {post.post_title?.trim() || "Untitled post"}
                       </p>
                       <p className="text-xs text-muted-foreground">
+                        {post.project_name ? `${post.project_name} · ` : ""}
                         {format(parseISO(post.to_be_posted_date), "MMM d, yyyy")}
                         {post.to_be_posted_time ? ` · ${post.to_be_posted_time}` : ""}
                       </p>

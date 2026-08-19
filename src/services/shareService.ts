@@ -1,7 +1,5 @@
 import type { Post } from "@/features/posts-management/types/types";
-import type {
-  ProductionPlanContent,
-} from "@/features/production-planner/types/types";
+import type { ProductionPlanContent } from "@/features/production-planner/types/types";
 import {
   mapProductionPlanRow,
   type ProductionPlanRow,
@@ -116,7 +114,6 @@ export async function fetchSharedProject(
   return {
     project,
     posts,
-    clientEmail: client?.email ?? null,
   };
 }
 
@@ -157,23 +154,5 @@ export async function fetchSharedProductionPlan(
   return {
     plan,
     contents: payload.items ?? [],
-    clientEmail: payload.client?.email ?? null,
-    shareToken: token,
   };
-}
-
-export async function updateSharedPlanItemClientApproval(
-  token: string,
-  itemId: string,
-  clientApproval: ProductionPlanContent["client_approval"],
-): Promise<void> {
-  const { error } = await supabase.rpc(
-    "update_shared_plan_item_client_approval",
-    {
-      p_token: token,
-      p_item_id: itemId,
-      p_status: clientApproval,
-    },
-  );
-  if (error) throw error;
 }

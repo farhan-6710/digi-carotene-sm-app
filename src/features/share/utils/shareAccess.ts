@@ -8,18 +8,3 @@ export function canGenerateShareLink(
   if (teamRole === "admin") return true;
   return Boolean(teamMemberId && managerId && teamMemberId === managerId);
 }
-
-export function isAssociatedClient(input: {
-  userEmail: string | null | undefined;
-  profileClientId: string | null | undefined;
-  entityClientId: string | null | undefined;
-  clientEmail: string | null | undefined;
-}): boolean {
-  const { userEmail, profileClientId, entityClientId, clientEmail } = input;
-  if (profileClientId && entityClientId && profileClientId === entityClientId) {
-    return true;
-  }
-  const a = userEmail?.trim().toLowerCase();
-  const b = clientEmail?.trim().toLowerCase();
-  return Boolean(a && b && a === b);
-}

@@ -11,7 +11,7 @@ export const clientShellConfig: ShellSidebarConfig = {
   searchPlaceholder: "Search client portal pages...",
   quickAction: {
     title: "Your content",
-    description: "View scheduled posts and account details for your brand.",
+    description: "View your posts, projects, and production plans.",
     buttonLabel: "View Posts",
     buttonTo: "/client-portal/posts",
   },

@@ -173,6 +173,22 @@ const ClientAccountPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientAccountPage"),
   "ClientAccountPage",
 );
+const ClientProjectsPage = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientProjectsPage"),
+  "ClientProjectsPage",
+);
+const ClientProjectDetailPage = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientProjectDetailPage"),
+  "ClientProjectDetailPage",
+);
+const ClientProductionPlannerPage = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientProductionPlannerPage"),
+  "ClientProductionPlannerPage",
+);
+const ClientProductionPlanDetailPage = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientProductionPlanDetailPage"),
+  "ClientProductionPlanDetailPage",
+);
 const ShareLayout = lazyRoutePage(
   () => import("@/shared/layouts/ShareLayout"),
   "ShareLayout",
@@ -312,7 +328,20 @@ export const router = createBrowserRouter([
         element: <ClientLayout />,
         children: [
           { path: "dashboard", element: <ClientDashboardPage /> },
+          { path: "projects", element: <ClientProjectsPage /> },
+          {
+            path: "projects/:projectId",
+            element: <ClientProjectDetailPage />,
+          },
           { path: "posts", element: <ClientPostsPage /> },
+          {
+            path: "production-planner",
+            element: <ClientProductionPlannerPage />,
+          },
+          {
+            path: "production-planner/:planId",
+            element: <ClientProductionPlanDetailPage />,
+          },
           {
             path: "growth-and-analytics",
             element: <ClientGrowthOutlet />,

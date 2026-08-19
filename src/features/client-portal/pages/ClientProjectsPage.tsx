@@ -1,34 +1,32 @@
 import { useMemo, useState } from "react";
 
-import { ClientPostsTable } from "@/features/client-portal/components/ClientPostsTable";
+import { ClientProjectsTable } from "@/features/client-portal/components/ClientProjectsTable";
 import { useClientPortal } from "@/features/client-portal/hooks/useClientPortal";
 import { PageShell } from "@/shared/components/PageShell";
 import { matchesListingSearch } from "@/shared/utils/listingSearch";
 
-export function ClientPostsPage() {
-  const { posts, loading, error } = useClientPortal();
+export function ClientProjectsPage() {
+  const { projects, loading, error } = useClientPortal();
   const [searchQuery, setSearchQuery] = useState("");
-  const filteredPosts = useMemo(
+  const filteredProjects = useMemo(
     () =>
-      posts.filter((post) =>
+      projects.filter((project) =>
         matchesListingSearch(searchQuery, [
-          post.post_title,
-          post.project_name,
-          (post.socials ?? []).join(" "),
-          post.status,
+          project.project_name,
+          project.team_members?.member_name,
         ]),
       ),
-    [posts, searchQuery],
+    [projects, searchQuery],
   );
 
   return (
     <PageShell
-      heading="My Posts"
-      description="Read-only view of every post scheduled for your brand."
+      heading="Projects"
+      description="View-only list of your brand’s projects and social profiles."
       error={error && !loading ? error : null}
     >
-      <ClientPostsTable
-        posts={filteredPosts}
+      <ClientProjectsTable
+        projects={filteredProjects}
         isLoading={loading}
         searchQuery={searchQuery}
         onSearchQueryChange={setSearchQuery}

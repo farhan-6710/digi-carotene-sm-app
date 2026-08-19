@@ -45,7 +45,7 @@ Content approvals on a plan item:
 | Dropdown | Who can change it |
 |----------|-------------------|
 | Manager/Admin | `admin` or `manager` role |
-| Client | `admin` or `manager` role on the team portal; on a **share link**, only a logged-in user whose email matches `clients.email` for that plan’s client |
+| Client | `admin` or `manager` role on the team portal; the **linked client** on the client portal (their own plans only) |
 | Shoot incharge | the plan’s `shoot_incharge_id` only |
 
 ---
@@ -80,7 +80,16 @@ Unread inbox. Types: `approval` (linked to a request id) and `post_digest` (inse
 
 ## Client portal
 
-Same Growth charts and a posts view, scoped to `profiles.client_id`. No Manage Accounts, no team CRUD.
+The brand sees only their own data (`profiles.client_id`). No team CRUD, no Manage Accounts.
+
+| Area | Path | What |
+|------|------|------|
+| Dashboard | `/client-portal/dashboard` | Post stats, projects/plans counts, upcoming posts, socials |
+| Projects | `/client-portal/projects` | Read-only projects; detail is view-only (no add/edit) |
+| Posts | `/client-portal/posts` | Read-only post list with search |
+| Production planner | `/client-portal/production-planner` | Their plans; detail: **Client approval** dropdown only |
+| Growth | `/client-portal/growth-and-analytics` | Same charts as team, scoped to linked accounts |
+| Account | `/client-portal/account` | Brand details, password |
 
 ---
 
@@ -88,4 +97,4 @@ Same Growth charts and a posts view, scoped to `profiles.client_id`. No Manage A
 
 `/`, `/about`, `/auth`.
 
-Share links (no sidebar, view-only): `/share/project/:token`, `/share/plan/:token`. Generated from project / plan detail by **admin** or that entity’s **manager** (`manager_id`). Guests see the page without login. Client approval on a shared plan is editable only when the visitor is signed in with the client email on that plan’s `clients` row.
+Share links (no sidebar, **view-only**): `/share/project/:token`, `/share/plan/:token`. Generated from project / plan detail by **admin** or that entity’s **manager**. No login. Opening or refreshing the page loads **current** data from the database (not a snapshot, and not a live websocket). Approvals are edited in the **client portal**, not on the share link.

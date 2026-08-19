@@ -26,6 +26,7 @@ export function ProductionPlanContentsList({
   onDuplicate,
   onDelete,
   onDiscardDraft,
+  emptyMessage: emptyMessageOverride,
 }: ProductionPlanContentsListProps) {
   const draftRef = useRef<HTMLDivElement>(null);
   const [approvalFilter, setApprovalFilter] = useState<ContentApprovalFilterId>(
@@ -53,7 +54,7 @@ export function ProductionPlanContentsList({
 
   const emptyMessage =
     contents.length === 0
-      ? productionPlanContentsListConfig.emptyMessage
+      ? (emptyMessageOverride ?? productionPlanContentsListConfig.emptyMessage)
       : "No content matches this approval filter.";
   const hasVisibleContent = filteredContents.length > 0 || Boolean(draftContent);
 

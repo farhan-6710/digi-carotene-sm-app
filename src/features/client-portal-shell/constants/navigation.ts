@@ -3,7 +3,7 @@ import { clientGrowthNav } from "@/features/growth-and-analytics/constants/navig
 
 export type ClientNavIconKey = Extract<
   ShellNavIconKey,
-  "dashboard" | "posts" | "growth" | "account"
+  "dashboard" | "posts" | "projects" | "productionPlanner" | "growth" | "account"
 >;
 
 export type ClientNavItem = {
@@ -15,7 +15,13 @@ export type ClientNavItem = {
 
 export const clientNav: ClientNavItem[] = [
   { label: "Dashboard", to: "/client-portal/dashboard", icon: "dashboard" },
+  { label: "Projects", to: "/client-portal/projects", icon: "projects" },
   { label: "Posts", to: "/client-portal/posts", icon: "posts" },
+  {
+    label: "Production Planner",
+    to: "/client-portal/production-planner",
+    icon: "productionPlanner",
+  },
   {
     label: "Growth & Analytics",
     to: "/client-portal/growth-and-analytics",

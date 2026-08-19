@@ -1,18 +1,22 @@
 import {
   CalendarClock,
   CheckCircle2,
+  ClipboardList,
   FileText,
+  FolderKanban,
   XCircle,
 } from "lucide-react";
 
+import type { ProductionPlan } from "@/features/production-planner/types/types";
 import type { Post } from "@/features/posts-management/types/types";
+import type { ProjectListItem } from "@/features/projects-management/types/types";
 import type { StatCardItem } from "@/shared/types/statsCards";
 
-function countByStatus(posts: Post[], status: Post["status"]): number {
-  return posts.filter((post) => post.status === status).length;
-}
-
-export function buildClientStatCards(posts: Post[]): StatCardItem[] {
+export function buildClientStatCards(
+  posts: Post[],
+  projects: ProjectListItem[] = [],
+  plans: ProductionPlan[] = [],
+): StatCardItem[] {
   return [
     {
       id: "client-total-posts",
@@ -25,7 +29,7 @@ export function buildClientStatCards(posts: Post[]): StatCardItem[] {
     {
       id: "client-scheduled",
       label: "Scheduled",
-      value: String(countByStatus(posts, "Scheduled")),
+      value: String(posts.filter((post) => post.status === "Scheduled").length),
       description: "Waiting to go live",
       icon: CalendarClock,
       href: "/client-portal/posts",
@@ -33,7 +37,7 @@ export function buildClientStatCards(posts: Post[]): StatCardItem[] {
     {
       id: "client-posted",
       label: "Posted",
-      value: String(countByStatus(posts, "Posted")),
+      value: String(posts.filter((post) => post.status === "Posted").length),
       description: "Published successfully",
       icon: CheckCircle2,
       href: "/client-portal/posts",
@@ -41,10 +45,26 @@ export function buildClientStatCards(posts: Post[]): StatCardItem[] {
     {
       id: "client-not-posted",
       label: "Not posted",
-      value: String(countByStatus(posts, "Not posted")),
+      value: String(posts.filter((post) => post.status === "Not posted").length),
       description: "Awaiting publish or follow-up",
       icon: XCircle,
       href: "/client-portal/posts",
+    },
+    {
+      id: "client-projects",
+      label: "Projects",
+      value: String(projects.length),
+      description: "Social accounts for your brand",
+      icon: FolderKanban,
+      href: "/client-portal/projects",
+    },
+    {
+      id: "client-plans",
+      label: "Production plans",
+      value: String(plans.length),
+      description: "Review content and client approval",
+      icon: ClipboardList,
+      href: "/client-portal/production-planner",
     },
   ];
 }

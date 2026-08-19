@@ -31,6 +31,9 @@ export function ClientPostsTableRow({ post }: ClientPostsTableRowProps) {
           {formatToBePostedOn(post)}
         </p>
       </div>
+      <p className="text-sm text-muted-foreground">
+        {post.project_name ?? "—"}
+      </p>
       <p className="hidden text-sm text-muted-foreground sm:block">
         {formatToBePostedOn(post)}
       </p>
