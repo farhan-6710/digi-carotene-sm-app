@@ -62,6 +62,12 @@ src/
 - New project → `scripts/migrations/001_initial_schema.sql`. Existing → only unapplied numbered files. **Never edit old migrations** — add a new one.
 - Schema/RLS live in `docs/` (start at [docs/README.md](docs/README.md)). Keep backend V1 simple.
 
+### Must follow — V1 SQL
+
+- **SQL queries as simple as possible.** No massive DB operations.
+- **Beginner-friendly V1.** Prefer flat tables + simple filters over RPCs, complex triggers, or audit/activity chains unless unavoidable.
+- One insert/update/select per service function when you can. Avoid multi-step SQL that is hard to read or debug.
+
 ## Don't
 
 - Call `supabase` outside `src/services/`; add `models/` or `interfaces/` folders.

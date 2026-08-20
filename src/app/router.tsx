@@ -152,6 +152,14 @@ const ProductionPlannerPage = lazyRoutePage(
   () => import("@/features/production-planner/pages/ProductionPlannerPage"),
   "ProductionPlannerPage",
 );
+const TasksManagementPage = lazyRoutePage(
+  () => import("@/features/tasks-management/pages/TasksManagementPage"),
+  "TasksManagementPage",
+);
+const TaskDetailPage = lazyRoutePage(
+  () => import("@/features/tasks-management/pages/TaskDetailPage"),
+  "TaskDetailPage",
+);
 const ProductionPlanDetailPage = lazyRoutePage(
   () =>
     import("@/features/production-planner/pages/ProductionPlanDetailPage"),
@@ -285,6 +293,11 @@ export const router = createBrowserRouter([
           {
             path: "post-approvals",
             element: <Navigate to="/team-portal/notifications" replace />,
+          },
+          { path: "tasks-management", element: <TasksManagementPage /> },
+          {
+            path: "tasks-management/:taskId",
+            element: <TaskDetailPage />,
           },
           { path: "production-planner", element: <ProductionPlannerPage /> },
           {

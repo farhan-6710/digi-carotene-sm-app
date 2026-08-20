@@ -107,5 +107,6 @@ scripts/
 - Destructive actions go through `ConfirmationModal`.
 - Frontend RBAC: `src/shared/utils/rbac.ts` from `team_members.team_role`. Do not sprinkle `role === "admin"`.
 - Schema change → **new** `scripts/migrations/00N_*.sql`. Never edit old migrations.
+- **Must follow:** SQL queries as simple as possible; no massive DB operations; beginner-friendly V1. Prefer flat tables + simple filters over RPCs/triggers/audit chains unless unavoidable.
 
 Full change rules: [AGENTS.md](../AGENTS.md). Layers: [DESIGN.md](../DESIGN.md).

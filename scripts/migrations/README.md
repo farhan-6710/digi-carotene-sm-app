@@ -51,6 +51,10 @@ Run only migrations you have **not** applied yet, in order:
 | `037_share_tokens.sql` | `share_token` on projects + production plans; public fetch RPCs |
 | `038_drop_shared_plan_approval_rpc.sql` | Drops unused share-link approval RPC (approvals stay in the client portal) |
 | `039_ensure_share_token_rpc.sql` | Drops unused `ensure_share_token` if it was created |
+| `040_tasks.sql` | `tasks` + `task_tags`; project-scoped task management |
+| `041_notifications_task_type.sql` | Extends `notifications.notification_type` with `'task'` |
+| `042_tasks_eta.sql` | Adds required `eta_date` + `eta_time`; drops `is_blocker` |
+| `043_task_messages.sql` | Simple task chat messages (`task_messages`) |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

@@ -10,6 +10,7 @@ import {
   FolderOpen,
   LayoutDashboard,
   LineChart,
+  ListTodo,
   Megaphone,
   PlugZap,
   Settings,
@@ -36,7 +37,8 @@ export type ShellNavIconKey =
   | "customReport"
   | "reportLibrary"
   | "manageAccounts"
-  | "productionPlanner";
+  | "productionPlanner"
+  | "tasks";
 
 export const shellNavIcons: Record<ShellNavIconKey, LucideIcon> = {
   dashboard: LayoutDashboard,
@@ -56,4 +58,5 @@ export const shellNavIcons: Record<ShellNavIconKey, LucideIcon> = {
   reportLibrary: FolderOpen,
   manageAccounts: PlugZap,
   productionPlanner: ClipboardList,
+  tasks: ListTodo,
 };

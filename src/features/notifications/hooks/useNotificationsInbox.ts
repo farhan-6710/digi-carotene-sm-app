@@ -28,6 +28,9 @@ export function useNotificationsInbox({
   const [digestNotifications, setDigestNotifications] = useState<
     AppNotification[]
   >([]);
+  const [taskNotifications, setTaskNotifications] = useState<
+    AppNotification[]
+  >([]);
   const [approvalRequests, setApprovalRequests] = useState<
     PostApprovalRequest[]
   >([]);
@@ -42,6 +45,7 @@ export function useNotificationsInbox({
   const reload = useCallback(async () => {
     if (!teamMemberId) {
       setDigestNotifications([]);
+      setTaskNotifications([]);
       setApprovalRequests([]);
       setNotificationIdByRequestId({});
       setIsLoading(false);
@@ -54,16 +58,19 @@ export function useNotificationsInbox({
     try {
       // Pending approvals come from the workflow table (includes pre-notification rows).
       // Unread approval notifications only drive the dismiss (X) mapping.
-      const [pendingRequests, approvalNotifs, digests] = await Promise.all([
-        teamRole
-          ? fetchPendingApprovalsForReviewer(teamMemberId, teamRole)
-          : Promise.resolve([] as PostApprovalRequest[]),
-        fetchUnreadNotifications(teamMemberId, "approval"),
-        fetchUnreadNotifications(teamMemberId, "post_digest"),
-      ]);
+      const [pendingRequests, approvalNotifs, digests, tasks] =
+        await Promise.all([
+          teamRole
+            ? fetchPendingApprovalsForReviewer(teamMemberId, teamRole)
+            : Promise.resolve([] as PostApprovalRequest[]),
+          fetchUnreadNotifications(teamMemberId, "approval"),
+          fetchUnreadNotifications(teamMemberId, "post_digest"),
+          fetchUnreadNotifications(teamMemberId, "task"),
+        ]);
 
       setApprovalRequests(pendingRequests);
       setDigestNotifications(digests);
+      setTaskNotifications(tasks);
 
       const idMap: Record<string, string> = {};
       for (const notification of approvalNotifs) {
@@ -77,6 +84,7 @@ export function useNotificationsInbox({
         err instanceof Error ? err.message : "Failed to load notifications.",
       );
       setDigestNotifications([]);
+      setTaskNotifications([]);
       setApprovalRequests([]);
       setNotificationIdByRequestId({});
     } finally {
@@ -187,6 +195,7 @@ export function useNotificationsInbox({
 
   return {
     digestNotifications,
+    taskNotifications,
     approvalRequests,
     notificationIdByRequestId,
     isLoading,

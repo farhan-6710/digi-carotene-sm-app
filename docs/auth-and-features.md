@@ -59,6 +59,7 @@ Content approvals on a plan item:
 | Clients | `/team-portal/clients-management` | Brands, `is_active`; detail lists projects and plans |
 | Projects | `/team-portal/projects-management` | Social URLs, manager, extra team; `is_active` |
 | Postings calendar | `/team-portal/posts-management` | Month grid; client/project filters in the URL; day page reuses them |
+| Tasks | `/team-portal/tasks-management` | Project-scoped tasks; assign/tag; tabs All · Raised by me · Raised for me; detail + chat |
 | Production planner | `/team-portal/production-planner` | Plans per client (`?client=` filter); detail = script, reference link, approvals |
 | Notifications | `/team-portal/notifications` | Inbox + executive **approval queue** |
 | Analytics | `/team-portal/analytics` | Agency activity |
@@ -74,7 +75,21 @@ If an **executive** creates a post whose to-be-posted time is already past, it g
 
 ### Notifications
 
-Unread inbox. Types: `approval` (linked to a request id) and `post_digest` (inserted by the midnight cron when email is sent). Dismiss / review marks `read`.
+Unread inbox. Types: `approval` (linked to a request id), `post_digest` (inserted by the midnight cron when email is sent), and `task` (assigned, tagged, or project oversight). Dismiss / review marks `read`.
+
+### Tasks
+
+Project-scoped only. Status: `pending` → `in_progress` → `completed`. Priority: `normal` | `high`. Required **ETA** (`eta_date` + `eta_time`) is the estimated deadline. Use the description to note blockers (no separate blocker flag).
+
+Visibility:
+
+- **Admin** — all tasks
+- **Project manager** (`projects.manager_id`) — all tasks on projects they manage
+- **Everyone else** — raised by them, assigned to them, or tagged
+
+On create, notify assignee, tagged members, project manager, and admins (excluding the raiser).
+
+Task detail (`/team-portal/tasks-management/:taskId`) includes a simple DB-backed chat for the raiser, assignee, tagged members, project manager, and admins. No websockets — refresh after send.
 
 ---
 

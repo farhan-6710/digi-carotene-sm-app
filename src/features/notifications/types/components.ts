@@ -6,3 +6,10 @@ export type PostDigestNotificationsTableProps = {
   dismissingId: string | null;
   onDismiss: (notificationId: string) => void;
 };
+
+export type TaskNotificationsTableProps = {
+  notifications: AppNotification[];
+  isLoading: boolean;
+  dismissingId: string | null;
+  onDismiss: (notificationId: string) => void;
+};

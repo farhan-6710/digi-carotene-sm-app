@@ -13,7 +13,7 @@ type UseUnreadNotificationsCountOptions = {
 
 /**
  * Bell badge = pending approvals for this reviewer
- * + unread post_digest inbox rows (approval alerts are covered by pending count).
+ * + unread post_digest and task inbox rows (approval alerts are covered by pending count).
  */
 export function useUnreadNotificationsCount({
   teamMemberId,
@@ -28,13 +28,14 @@ export function useUnreadNotificationsCount({
     }
 
     try {
-      const [pendingApprovals, unreadDigests] = await Promise.all([
+      const [pendingApprovals, unreadDigests, unreadTasks] = await Promise.all([
         teamRole
           ? countPendingApprovalsForReviewer(teamMemberId, teamRole)
           : Promise.resolve(0),
         countUnreadNotifications(teamMemberId, "post_digest"),
+        countUnreadNotifications(teamMemberId, "task"),
       ]);
-      setUnreadCount(pendingApprovals + unreadDigests);
+      setUnreadCount(pendingApprovals + unreadDigests + unreadTasks);
     } catch {
       setUnreadCount(0);
     }

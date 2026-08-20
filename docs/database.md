@@ -4,7 +4,11 @@ Postgres on **Supabase**. Schema lives in numbered SQL files under [`scripts/mig
 
 - **New project:** run only `001_initial_schema.sql`.
 - **Existing project:** run only files you have not applied yet, in order (`002` → current).
-- **Never edit** an old migration. Add `040_…sql` (next number) instead.
+- **Never edit** an old migration. Add `042_…sql` (next number) instead.
+
+### Must follow — V1 SQL
+
+SQL queries as simple as possible. No massive DB operations. Beginner-friendly V1: flat tables + simple filters; avoid RPCs, heavy triggers, and audit chains unless there is no simpler way.
 
 ---
 
@@ -19,7 +23,9 @@ clients
   ├── projects
   │     ├── manager_id ──► team_members
   │     ├── project_team_members ──► team_members   (active when ended_at IS NULL)
-  │     └── posts
+  │     ├── posts
+  │     └── tasks ──► task_tags ──► team_members
+  │            └── task_messages ──► team_members
   ├── production_plans
   │     ├── manager_id / shoot_incharge_id ──► team_members
   │     ├── production_plan_team_members ──► team_members
@@ -43,7 +49,10 @@ Rules: a **client** is a company. A **project** is one engagement (social profil
 | `project_team_members` | Extra people on a project; `ended_at` null = active |
 | `posts` | Calendar row (`to_be_posted_*`, `status`, `socials[]`, `post_links`) |
 | `post_approval_requests` | Executive backdated posts waiting on manager/admin |
-| `notifications` | Team inbox (`approval`, `post_digest`) |
+| `notifications` | Team inbox (`approval`, `post_digest`, `task`) |
+| `tasks` | Project task: raiser, assignee, priority, ETA (`eta_date` / `eta_time`), status |
+| `task_tags` | Extra teammates tagged on a task |
+| `task_messages` | Simple task chat (no realtime); raiser, assignee, tags, project manager, admins |
 | `production_plans` | Shoot plan per client + `share_token` |
 | `production_plan_items` | Content in a plan: `script`, `reference_link`, three approvals |
 | `production_plan_team_members` | Extra people on a plan |

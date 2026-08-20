@@ -3,6 +3,7 @@ import { useState } from "react";
 import { PostApprovalRejectDialog } from "@/features/post-approvals/components/PostApprovalRejectDialog";
 import { PostApprovalsTable } from "@/features/post-approvals/components/PostApprovalsTable";
 import { PostDigestNotificationsTable } from "@/features/notifications/components/PostDigestNotificationsTable";
+import { TaskNotificationsTable } from "@/features/notifications/components/TaskNotificationsTable";
 import { useNotificationsInbox } from "@/features/notifications/hooks/useNotificationsInbox";
 import type { PostApprovalRequest } from "@/features/post-approvals/types/types";
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -16,6 +17,7 @@ export function NotificationsPage() {
 
   const {
     digestNotifications,
+    taskNotifications,
     approvalRequests,
     notificationIdByRequestId,
     isLoading,
@@ -60,6 +62,15 @@ export function NotificationsPage() {
             setRejectingRequest(request);
           }}
           onDismiss={(requestId) => void dismissApprovalByRequestId(requestId)}
+        />
+
+        <TaskNotificationsTable
+          notifications={taskNotifications}
+          isLoading={isLoading}
+          dismissingId={dismissingId}
+          onDismiss={(notificationId) =>
+            void dismissNotification(notificationId)
+          }
         />
 
         <PostDigestNotificationsTable

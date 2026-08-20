@@ -127,6 +127,58 @@ const PRODUCTION_PLAN_ITEM_SELECT = `
   updated_at
 `;
 
+const TASK_SELECT = `
+  id,
+  project_id,
+  title,
+  description,
+  created_by_team_member_id,
+  assigned_to_team_member_id,
+  priority,
+  eta_date,
+  eta_time,
+  status,
+  created_at,
+  updated_at,
+  projects (
+    id,
+    project_name,
+    manager_id,
+    clients ( id, client_name )
+  ),
+  created_by:team_members!created_by_team_member_id (
+    id,
+    member_name
+  ),
+  assigned_to:team_members!assigned_to_team_member_id (
+    id,
+    member_name
+  ),
+  task_tags (
+    team_member_id,
+    team_members ( id, member_name )
+  )
+`;
+
+const TASK_TAG_SELECT = `
+  id,
+  task_id,
+  team_member_id,
+  created_at
+`;
+
+const TASK_MESSAGE_SELECT = `
+  id,
+  task_id,
+  author_team_member_id,
+  body,
+  created_at,
+  author:team_members!author_team_member_id (
+    id,
+    member_name
+  )
+`;
+
 export const DB = {
   PROFILES: {
     TABLE: "profiles",
@@ -172,6 +224,18 @@ export const DB = {
   PRODUCTION_PLAN_TEAM_MEMBERS: {
     TABLE: "production_plan_team_members",
     SELECT: PLAN_ASSIGNMENT_SELECT,
+  },
+  TASKS: {
+    TABLE: "tasks",
+    SELECT: TASK_SELECT,
+  },
+  TASK_TAGS: {
+    TABLE: "task_tags",
+    SELECT: TASK_TAG_SELECT,
+  },
+  TASK_MESSAGES: {
+    TABLE: "task_messages",
+    SELECT: TASK_MESSAGE_SELECT,
   },
   GROWTH_ORGANIC_ACCOUNTS: {
     TABLE: "growth_organic_accounts",
