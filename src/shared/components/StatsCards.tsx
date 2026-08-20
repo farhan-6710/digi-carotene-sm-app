@@ -51,6 +51,12 @@ function StatCardContent({
   isLoading: boolean;
 }) {
   const Icon = card.icon;
+  const tooltipText =
+    card.descriptionTooltip ??
+    (card.description
+      ? `${card.label}\n${card.description}`
+      : null);
+
   const body = (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0 flex-1">
@@ -100,7 +106,7 @@ function StatCardContent({
 
   return (
     <>
-      {card.descriptionTooltip && !isLoading ? (
+      {tooltipText && !isLoading ? (
         <Tooltip>
           <TooltipTrigger asChild>
             <div className="w-full cursor-default text-left">{body}</div>
@@ -109,7 +115,7 @@ function StatCardContent({
             side="bottom"
             className="max-w-xs whitespace-pre-line"
           >
-            {card.descriptionTooltip}
+            {tooltipText}
           </TooltipContent>
         </Tooltip>
       ) : (

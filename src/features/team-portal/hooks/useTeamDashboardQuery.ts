@@ -22,7 +22,6 @@ import { buildTeamStatCards } from "@/features/team-portal/utils/teamStatsUtils"
 import type { DateFiltersTwoFilterState } from "@/shared/types/components";
 import {
   formatDateFiltersTwoLabel,
-  isTimestampInRange,
   resolveDateFiltersTwoRange,
 } from "@/shared/utils/dateFiltersTwoUtils";
 
@@ -136,17 +135,9 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
   );
 
   const statCards = useMemo(() => {
-    const activeClients = clients.filter((client) => client.is_active);
-    const clientsCount = range
-      ? activeClients.filter((client) =>
-          isTimestampInRange(client.created_at, range),
-        ).length
-      : activeClients.length;
-    const teamMembersCount = range
-      ? teamMembers.filter((member) =>
-          isTimestampInRange(member.created_at, range),
-        ).length
-      : teamMembers.length;
+    // Roster metrics are a current snapshot — date filters only apply to posts.
+    const clientsCount = clients.filter((client) => client.is_active).length;
+    const teamMembersCount = teamMembers.length;
 
     return buildTeamStatCards({
       clientsCount,
@@ -157,7 +148,7 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
       ).length,
       periodLabel,
     });
-  }, [clients, periodLabel, range, scopedPosts, teamMembers]);
+  }, [clients, periodLabel, scopedPosts, teamMembers]);
 
   return {
     statCards,

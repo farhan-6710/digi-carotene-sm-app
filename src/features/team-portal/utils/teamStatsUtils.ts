@@ -10,9 +10,13 @@ import { TEAM_MANAGEMENT_PATH } from "@/features/team-management/constants/route
 import type { StatCardItem } from "@/shared/types/statsCards";
 
 type TeamStatCounts = {
+  /** Current active clients (not date-scoped). */
   clientsCount: number | null;
+  /** Current team roster size (not date-scoped). */
   teamMembersCount: number | null;
+  /** Posts in the selected period (or all-time when filter is All). */
   totalPostsCount: number | null;
+  /** Not-posted posts in the selected period (or all-time when filter is All). */
   notPostedPostsCount: number | null;
   periodLabel: string;
 };
@@ -32,9 +36,7 @@ export function buildTeamStatCards({
       id: "team-members",
       label: "Team Members",
       value: String(teamMembersCount ?? 0),
-      description: isAll
-        ? "Active team members"
-        : `Joined in ${period}`,
+      description: "People currently on the team",
       icon: UserRound,
       sparklineData: employeesSparklineData,
       sparklineColor: "var(--primary)",
@@ -42,11 +44,9 @@ export function buildTeamStatCards({
     },
     {
       id: "clients",
-      label: "Total Active Clients",
+      label: "Active Clients",
       value: String(clientsCount ?? 0),
-      description: isAll
-        ? "Currently active registered brands"
-        : `Active brands added in ${period}`,
+      description: "Brands currently marked active",
       icon: Users,
       sparklineData: clientsSparklineData,
       sparklineColor: "var(--accent)",
@@ -54,10 +54,10 @@ export function buildTeamStatCards({
     },
     {
       id: "total-posts",
-      label: "Total Posts",
+      label: isAll ? "Total Posts" : "Posts",
       value: String(totalPostsCount ?? 0),
       description: isAll
-        ? "All-time content pieces"
+        ? "All content pieces"
         : `Content pieces in ${period}`,
       icon: Layers,
       sparklineData: totalPostsSparklineData,
@@ -66,10 +66,10 @@ export function buildTeamStatCards({
     },
     {
       id: "not-posted-posts",
-      label: "Not Posted Posts",
+      label: isAll ? "Not Posted" : "Not Posted",
       value: String(notPostedPostsCount ?? 0),
       description: isAll
-        ? "Unpublished or failed slots"
+        ? "Unpublished or missed slots"
         : `Unpublished slots in ${period}`,
       icon: XCircle,
       sparklineData: missedPostsSparklineData,
