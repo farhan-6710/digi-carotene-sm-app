@@ -5,7 +5,7 @@ Service management app for **Digi Carotene**, a digital marketing agency.
 **Team portal** — clients, projects, posts, production plans, team, Growth (Meta), reports.  
 **Client portal** — read-only posts and analytics for that brand.
 
-New developers: start at **[docs/README.md](docs/README.md)**.
+New developers: start at **[docs-2026-08-21/README.md](docs-2026-08-21/README.md)**.
 
 ```bash
 bun install
@@ -16,4 +16,4 @@ bun run lint
 
 Supabase SQL: new project → `scripts/migrations/001_initial_schema.sql`. Existing → only unapplied files in `scripts/migrations/` ([guide](scripts/migrations/README.md)).
 
-Architecture: [DESIGN.md](DESIGN.md) · Code rules: [AGENTS.md](AGENTS.md) · Crons & Meta: [docs/ops.md](docs/ops.md)
+Architecture: [DESIGN.md](DESIGN.md) · Code rules: [AGENTS.md](AGENTS.md) · Crons & Meta: [docs-2026-08-21/ops.md](docs-2026-08-21/ops.md)

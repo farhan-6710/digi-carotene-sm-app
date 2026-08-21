@@ -11,14 +11,15 @@ type UseTaskChatOptions = {
 };
 
 export function useTaskChat({ taskId, reload, setError }: UseTaskChatOptions) {
-  const { teamMemberId } = useAuth();
+  const { teamMemberId, clientId } = useAuth();
   const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
 
   const sendMessage = useCallback(async () => {
-    if (!teamMemberId || isSending) return;
+    if (isSending) return;
     const body = draft.trim();
     if (!body) return;
+    if (!teamMemberId && !clientId) return;
 
     setIsSending(true);
     setError(null);
@@ -26,6 +27,7 @@ export function useTaskChat({ taskId, reload, setError }: UseTaskChatOptions) {
       await createTaskMessage({
         taskId,
         authorTeamMemberId: teamMemberId,
+        authorClientId: teamMemberId ? null : clientId,
         body,
       });
       setDraft("");
@@ -38,7 +40,7 @@ export function useTaskChat({ taskId, reload, setError }: UseTaskChatOptions) {
     } finally {
       setIsSending(false);
     }
-  }, [draft, isSending, reload, setError, taskId, teamMemberId]);
+  }, [clientId, draft, isSending, reload, setError, taskId, teamMemberId]);
 
   return {
     draft,

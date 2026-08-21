@@ -197,6 +197,14 @@ const ClientProductionPlanDetailPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientProductionPlanDetailPage"),
   "ClientProductionPlanDetailPage",
 );
+const ClientTasksPage = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientTasksPage"),
+  "ClientTasksPage",
+);
+const ClientTaskDetailPage = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientTaskDetailPage"),
+  "ClientTaskDetailPage",
+);
 const ShareLayout = lazyRoutePage(
   () => import("@/shared/layouts/ShareLayout"),
   "ShareLayout",
@@ -347,6 +355,11 @@ export const router = createBrowserRouter([
             element: <ClientProjectDetailPage />,
           },
           { path: "posts", element: <ClientPostsPage /> },
+          { path: "tasks-management", element: <ClientTasksPage /> },
+          {
+            path: "tasks-management/:taskId",
+            element: <ClientTaskDetailPage />,
+          },
           {
             path: "production-planner",
             element: <ClientProductionPlannerPage />,

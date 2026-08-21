@@ -15,7 +15,7 @@ export const projectsDirectoryColumns: DirectoryTableColumn[] = [
 ];
 
 export const projectsDirectoryConfig = {
-  title: "Projects Directory",
+  title: "SM Projects Directory",
   description:
     "Each project belongs to a client and has its own social accounts and team.",
   gridClass: PROJECTS_DIRECTORY_GRID_CLASS,

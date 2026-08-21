@@ -8,12 +8,17 @@ import type {
   TaskPriority,
   TaskStatus,
 } from "@/features/tasks-management/types/types";
+import {
+  encodeTaskAssignee,
+  parseTaskAssignee,
+} from "@/features/tasks-management/utils/taskAssigneeUtils";
 
 export type TaskFormValues = {
   projectId: string;
+  /** Encoded `team:<id>` or `client:<id>`. */
+  assigneeKey: string;
   title: string;
   description: string;
-  assignedToTeamMemberId: string;
   taggedTeamMemberIds: string[];
   priority: TaskPriority;
   eta: PostDateTimeValue | null;
@@ -22,21 +27,28 @@ export type TaskFormValues = {
 
 export const emptyTaskFormValues = (): TaskFormValues => ({
   projectId: "",
+  assigneeKey: "",
   title: "",
   description: "",
-  assignedToTeamMemberId: "",
   taggedTeamMemberIds: [],
-  priority: "normal",
+  priority: "medium",
   eta: null,
   status: "pending",
 });
 
 export function taskToFormValues(task: Task): TaskFormValues {
+  let assigneeKey = "";
+  if (task.assigned_to_team_member_id) {
+    assigneeKey = encodeTaskAssignee("team", task.assigned_to_team_member_id);
+  } else if (task.client_id) {
+    assigneeKey = encodeTaskAssignee("client", task.client_id);
+  }
+
   return {
     projectId: task.project_id,
+    assigneeKey,
     title: task.title,
     description: task.description ?? "",
-    assignedToTeamMemberId: task.assigned_to_team_member_id,
     taggedTeamMemberIds: task.tagged_members.map((member) => member.id),
     priority: task.priority,
     eta: toPostDateTimeValue(task.eta_date, task.eta_time),
@@ -47,7 +59,9 @@ export function taskToFormValues(task: Task): TaskFormValues {
 export function validateTaskForm(values: TaskFormValues): string | null {
   if (!values.projectId) return "Select a project.";
   if (!values.title.trim()) return "Enter a title.";
-  if (!values.assignedToTeamMemberId) return "Select an assignee.";
+  if (!parseTaskAssignee(values.assigneeKey)) {
+    return "Select a teammate or client to assign.";
+  }
   if (!toRepositoryDateTime(values.eta)) {
     return "ETA requires both date and time.";
   }

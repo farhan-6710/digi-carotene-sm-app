@@ -9,7 +9,10 @@ import type { Client } from "@/features/clients-management/types/types";
 export type CreateClientInput = {
   clientName: string;
   email?: string | null;
+  primaryContactName?: string | null;
   mobileNumber?: string | null;
+  secondaryContactName?: string | null;
+  secondaryMobileNumber?: string | null;
   websiteName?: string | null;
 };
 
@@ -29,7 +32,10 @@ function toClientColumns(input: CreateClientInput) {
   return {
     client_name: input.clientName,
     email: input.email?.trim().toLowerCase() || null,
+    primary_contact_name: input.primaryContactName?.trim() || null,
     mobile_number: input.mobileNumber || null,
+    secondary_contact_name: input.secondaryContactName?.trim() || null,
+    secondary_mobile_number: input.secondaryMobileNumber?.trim() || null,
     website_name: input.websiteName || null,
   };
 }

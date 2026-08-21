@@ -25,7 +25,7 @@ export const postDigestDirectoryConfig = {
 
 export const taskNotificationsDirectoryConfig = {
   title: "Tasks",
-  description: "Alerts when you are assigned, tagged, or need project oversight.",
+  description: "Alerts when you are assigned, listed as a dependency, or need project oversight.",
   gridClass: "grid-cols-[minmax(0,1.4fr)_minmax(0,2fr)_minmax(0,0.8fr)_auto]",
   columns: [
     { label: "TITLE" },

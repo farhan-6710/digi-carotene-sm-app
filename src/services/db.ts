@@ -130,6 +130,7 @@ const PRODUCTION_PLAN_ITEM_SELECT = `
 const TASK_SELECT = `
   id,
   project_id,
+  client_id,
   title,
   description,
   created_by_team_member_id,
@@ -144,7 +145,12 @@ const TASK_SELECT = `
     id,
     project_name,
     manager_id,
+    manager:team_members!manager_id ( id, member_name ),
     clients ( id, client_name )
+  ),
+  client:clients!client_id (
+    id,
+    client_name
   ),
   created_by:team_members!created_by_team_member_id (
     id,
@@ -171,11 +177,16 @@ const TASK_MESSAGE_SELECT = `
   id,
   task_id,
   author_team_member_id,
+  author_client_id,
   body,
   created_at,
   author:team_members!author_team_member_id (
     id,
     member_name
+  ),
+  author_client:clients!author_client_id (
+    id,
+    client_name
   )
 `;
 

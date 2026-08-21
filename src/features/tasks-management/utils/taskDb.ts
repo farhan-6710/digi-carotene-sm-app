@@ -1,5 +1,6 @@
 import type {
   Task,
+  TaskClientRef,
   TaskMemberRef,
   TaskProjectRef,
 } from "@/features/tasks-management/types/types";
@@ -19,10 +20,11 @@ type TaskTagRow = {
 export type TaskRow = {
   id: string;
   project_id: string;
+  client_id: string | null;
   title: string;
   description: string | null;
   created_by_team_member_id: string;
-  assigned_to_team_member_id: string;
+  assigned_to_team_member_id: string | null;
   priority: Task["priority"];
   eta_date: string;
   eta_time: string;
@@ -33,8 +35,10 @@ export type TaskRow = {
     id: string;
     project_name: string;
     manager_id: string;
+    manager: Rel<TaskMemberRef>;
     clients: Rel<{ id: string; client_name: string }>;
   }>;
+  client: Rel<TaskClientRef>;
   created_by: Rel<TaskMemberRef>;
   assigned_to: Rel<TaskMemberRef>;
   task_tags: TaskTagRow[] | null;
@@ -42,15 +46,32 @@ export type TaskRow = {
 
 export function mapTaskRow(row: TaskRow): Task {
   const project = pickRelation(row.projects);
-  const client = project ? pickRelation(project.clients) : null;
+  const projectClient = project ? pickRelation(project.clients) : null;
+  const manager = project ? pickRelation(project.manager) : null;
   const projects: TaskProjectRef | null = project
     ? {
         id: project.id,
         project_name: project.project_name,
         manager_id: project.manager_id,
-        clients: client,
+        manager: manager ?? (project.manager_id
+          ? { id: project.manager_id, member_name: "—" }
+          : null),
+        clients: projectClient,
       }
     : null;
+
+  const embeddedClient = pickRelation(row.client);
+  const client: TaskClientRef | null =
+    embeddedClient ??
+    (row.client_id && projectClient && projectClient.id === row.client_id
+      ? projectClient
+      : null) ??
+    (row.client_id
+      ? {
+          id: row.client_id,
+          client_name: projectClient?.client_name ?? "—",
+        }
+      : null);
 
   const tagged_members: TaskMemberRef[] = (row.task_tags ?? [])
     .map((tag) => {
@@ -63,6 +84,7 @@ export function mapTaskRow(row: TaskRow): Task {
   return {
     id: row.id,
     project_id: row.project_id,
+    client_id: row.client_id,
     title: row.title,
     description: row.description,
     created_by_team_member_id: row.created_by_team_member_id,
@@ -74,6 +96,7 @@ export function mapTaskRow(row: TaskRow): Task {
     created_at: row.created_at,
     updated_at: row.updated_at,
     projects,
+    client,
     created_by: pickRelation(row.created_by),
     assigned_to: pickRelation(row.assigned_to),
     tagged_members,

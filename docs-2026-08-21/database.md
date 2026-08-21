@@ -43,16 +43,16 @@ Rules: a **client** is a company. A **project** is one engagement (social profil
 | Table | Purpose |
 |-------|---------|
 | `profiles` | Auth user → portal (`role`: `team` / `client` / `user`) + `client_id` / `team_member_id` |
-| `clients` | Brand registry (`is_active`) |
+| `clients` | Brand registry (`is_active`, primary/secondary contact name + mobile) |
 | `team_members` | Internal roster (`team_role`: `admin` / `manager` / `executive`) |
 | `projects` | Client work + `socials` jsonb + `manager_id` + `is_active` + `share_token` |
 | `project_team_members` | Extra people on a project; `ended_at` null = active |
 | `posts` | Calendar row (`to_be_posted_*`, `status`, `socials[]`, `post_links`) |
 | `post_approval_requests` | Executive backdated posts waiting on manager/admin |
 | `notifications` | Team inbox (`approval`, `post_digest`, `task`) |
-| `tasks` | Project task: raiser, assignee, priority, ETA (`eta_date` / `eta_time`), status |
-| `task_tags` | Extra teammates tagged on a task |
-| `task_messages` | Simple task chat (no realtime); raiser, assignee, tags, project manager, admins |
+| `tasks` | Project task: raiser, assignee is teammate **or** client (`assigned_to_team_member_id` XOR `client_id`), priority, ETA, status |
+| `task_tags` | Task dependencies (extra teammates only — not clients) |
+| `task_messages` | Task chat; author is teammate **or** client (`author_team_member_id` / `author_client_id`) |
 | `production_plans` | Shoot plan per client + `share_token` |
 | `production_plan_items` | Content in a plan: `script`, `reference_link`, three approvals |
 | `production_plan_team_members` | Extra people on a plan |

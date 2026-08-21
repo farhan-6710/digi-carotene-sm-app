@@ -7,13 +7,14 @@ import { formatTaskEta } from "@/features/tasks-management/utils/taskDisplayUtil
 import { cn } from "@/shared/lib/utils";
 
 export function TaskDetailSummary({ task }: TaskDetailSummaryProps) {
-  const projectLabel = task.projects
-    ? task.projects.clients
-      ? `${task.projects.clients.client_name} · ${task.projects.project_name}`
-      : task.projects.project_name
-    : "—";
+  const projectLabel = task.projects?.project_name ?? "—";
+  const assigneeLabel =
+    task.assigned_to?.member_name ??
+    (task.client?.client_name
+      ? `${task.client.client_name} (client)`
+      : "—");
 
-  const taggedLabel =
+  const dependenciesLabel =
     task.tagged_members.length > 0
       ? task.tagged_members.map((m) => m.member_name).join(", ")
       : "—";
@@ -29,9 +30,13 @@ export function TaskDetailSummary({ task }: TaskDetailSummaryProps) {
     },
     {
       label: "Assigned to",
-      value: task.assigned_to?.member_name ?? "—",
+      value: assigneeLabel,
     },
-    { label: "Tagged", value: taggedLabel },
+    {
+      label: "Project manager",
+      value: task.projects?.manager?.member_name ?? "—",
+    },
+    { label: "Dependencies", value: dependenciesLabel },
     {
       label: "Priority",
       value: (
@@ -40,7 +45,9 @@ export function TaskDetailSummary({ task }: TaskDetailSummaryProps) {
             "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
             task.priority === "high"
               ? "bg-destructive/10 text-destructive"
-              : "bg-muted text-muted-foreground",
+              : task.priority === "medium"
+                ? "bg-primary/10 text-primary"
+                : "bg-muted text-muted-foreground",
           )}
         >
           {TASK_PRIORITY_LABELS[task.priority]}

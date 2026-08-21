@@ -36,6 +36,15 @@ export function ClientsTableRow({
 
       <div className="text-sm text-muted-foreground">
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
+          PRIMARY CONTACT PERSON
+        </span>
+        {client.primary_contact_name || (
+          <span className="text-muted-foreground/50">—</span>
+        )}
+      </div>
+
+      <div className="text-sm text-muted-foreground">
+        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           MOBILE NUMBER
         </span>
         {client.mobile_number || <span className="text-muted-foreground/50">—</span>}

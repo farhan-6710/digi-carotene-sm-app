@@ -81,7 +81,10 @@ export function useClientDialog({ reload, setError }: UseClientDialogOptions) {
       const payload = {
         clientName: values.clientName.trim(),
         email: normalizeClientEmail(values.email),
+        primaryContactName: values.primaryContactName.trim() || null,
         mobileNumber: values.mobileNumber.trim() || null,
+        secondaryContactName: values.secondaryContactName.trim() || null,
+        secondaryMobileNumber: values.secondaryMobileNumber.trim() || null,
         websiteName: values.websiteName.trim() || null,
       };
 

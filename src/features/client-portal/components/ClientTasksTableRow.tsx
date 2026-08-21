@@ -1,32 +1,23 @@
-import { Pencil } from "lucide-react";
 import { Link } from "react-router";
 
+import { buildClientTaskDetailPath } from "@/features/client-portal/constants/taskRoutes";
+import { CLIENT_TASKS_ROW_GRID_CLASS } from "@/features/client-portal/constants/tasksDirectory";
 import { TASK_PRIORITY_LABELS } from "@/features/tasks-management/constants/taskPriorities";
 import { TASK_STATUS_LABELS } from "@/features/tasks-management/constants/taskStatuses";
-import { TASKS_ROW_GRID_CLASS } from "@/features/tasks-management/constants/tasksDirectory";
-import { buildTaskDetailPath } from "@/features/tasks-management/constants/routes";
-import type { TasksTableRowProps } from "@/features/tasks-management/types/components";
+import type { Task } from "@/features/tasks-management/types/types";
 import { formatTaskEta } from "@/features/tasks-management/utils/taskDisplayUtils";
 import { cn } from "@/shared/lib/utils";
 
-export function TasksTableRow({
-  task,
-  canEdit,
-  onEdit,
-  detailPath,
-}: TasksTableRowProps) {
-  const projectLabel = task.projects?.project_name ?? "—";
-  const assigneeLabel =
-    task.assigned_to?.member_name ??
-    task.client?.client_name ??
-    "—";
-  const href = detailPath ?? buildTaskDetailPath(task.id);
+type ClientTasksTableRowProps = {
+  task: Task;
+};
 
+export function ClientTasksTableRow({ task }: ClientTasksTableRowProps) {
   return (
     <div
       className={cn(
         "grid grid-cols-1 items-start gap-3 px-6 py-4 transition-colors hover:bg-muted/10 sm:items-center sm:gap-4",
-        TASKS_ROW_GRID_CLASS,
+        CLIENT_TASKS_ROW_GRID_CLASS,
       )}
     >
       <div className="min-w-0">
@@ -34,7 +25,7 @@ export function TasksTableRow({
           TITLE
         </span>
         <Link
-          to={href}
+          to={buildClientTaskDetailPath(task.id)}
           className="text-sm font-medium text-foreground hover:text-primary hover:underline"
         >
           {task.title}
@@ -50,15 +41,8 @@ export function TasksTableRow({
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           PROJECT
         </span>
-        <p className="truncate text-sm text-muted-foreground">{projectLabel}</p>
-      </div>
-
-      <div className="min-w-0">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          RAISED BY
-        </span>
         <p className="truncate text-sm text-muted-foreground">
-          {task.created_by?.member_name ?? "—"}
+          {task.projects?.project_name ?? "—"}
         </p>
       </div>
 
@@ -66,7 +50,9 @@ export function TasksTableRow({
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           ASSIGNED TO
         </span>
-        <p className="truncate text-sm text-muted-foreground">{assigneeLabel}</p>
+        <p className="truncate text-sm text-muted-foreground">
+          {task.assigned_to?.member_name ?? "—"}
+        </p>
       </div>
 
       <div>
@@ -103,19 +89,6 @@ export function TasksTableRow({
         <span className="inline-flex w-fit rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">
           {TASK_STATUS_LABELS[task.status]}
         </span>
-      </div>
-
-      <div className="flex justify-end">
-        {canEdit ? (
-          <button
-            type="button"
-            onClick={() => onEdit(task)}
-            className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
-          >
-            <Pencil className="size-3.5" />
-            <span className="sr-only">Edit task</span>
-          </button>
-        ) : null}
       </div>
     </div>
   );

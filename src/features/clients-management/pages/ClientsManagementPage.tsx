@@ -27,6 +27,7 @@ export function ClientsManagementPage() {
       matchesListingSearch(searchQuery, [
         client.client_name,
         client.email,
+        client.primary_contact_name,
         client.mobile_number,
         client.website_name,
       ]),

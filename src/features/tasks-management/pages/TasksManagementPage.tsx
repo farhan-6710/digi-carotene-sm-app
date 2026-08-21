@@ -36,6 +36,7 @@ export function TasksManagementPage() {
         task.title,
         task.description,
         task.projects?.project_name,
+        task.client?.client_name,
         task.projects?.clients?.client_name,
         task.created_by?.member_name,
         task.assigned_to?.member_name,
@@ -49,7 +50,7 @@ export function TasksManagementPage() {
 
   return (
     <PageShell
-      heading="Tasks Management"
+      heading="Task Management"
       description="Create and assign project tasks. Admins and project managers see full oversight for their scope."
       error={error}
       actions={

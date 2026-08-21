@@ -23,17 +23,25 @@ export async function fetchTaskMessages(
 
 export async function createTaskMessage(input: {
   taskId: string;
-  authorTeamMemberId: string;
+  authorTeamMemberId?: string | null;
+  authorClientId?: string | null;
   body: string;
 }): Promise<TaskMessage> {
   const body = input.body.trim();
   if (!body) throw new Error("Message cannot be empty.");
 
+  const authorTeamMemberId = input.authorTeamMemberId?.trim() || null;
+  const authorClientId = input.authorClientId?.trim() || null;
+  if (Boolean(authorTeamMemberId) === Boolean(authorClientId)) {
+    throw new Error("Message needs exactly one author (teammate or client).");
+  }
+
   const { data, error } = await supabase
     .from(DB.TASK_MESSAGES.TABLE)
     .insert({
       task_id: input.taskId,
-      author_team_member_id: input.authorTeamMemberId,
+      author_team_member_id: authorTeamMemberId,
+      author_client_id: authorClientId,
       body,
     })
     .select(DB.TASK_MESSAGES.SELECT)

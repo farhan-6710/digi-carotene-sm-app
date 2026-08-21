@@ -16,10 +16,14 @@ export const primaryNav: NavItem[] = [
   { label: "Dashboard", to: `${teamBasePath}/dashboard`, icon: "dashboard" },
   { label: "Team", to: `${teamBasePath}/team-management`, icon: "team" },
   { label: "Clients", to: `${teamBasePath}/clients-management`, icon: "clients" },
-  { label: "Projects", to: `${teamBasePath}/projects-management`, icon: "projects" },
+  {
+    label: "SM Projects Management",
+    to: `${teamBasePath}/projects-management`,
+    icon: "projects",
+  },
   { label: "Postings Calendar", to: `${teamBasePath}/posts-management`, icon: "posts" },
   {
-    label: "Tasks",
+    label: "Task Management",
     to: `${teamBasePath}/tasks-management`,
     icon: "tasks",
   },

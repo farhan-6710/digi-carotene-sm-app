@@ -63,7 +63,7 @@ function ShellNavLink({
       onClick={onNavigate}
       className={navLinkClass(isActive, collapsed)}
     >
-      <Icon className="size-4" aria-hidden="true" />
+      <Icon className="size-4 shrink-0" aria-hidden="true" />
       {collapsed ? (
         <span className="sr-only">{item.label}</span>
       ) : (

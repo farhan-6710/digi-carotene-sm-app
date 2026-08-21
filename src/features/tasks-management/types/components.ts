@@ -5,6 +5,7 @@ import type {
   TaskPriority,
   TaskStatus,
 } from "@/features/tasks-management/types/types";
+import type { TaskChatParticipant } from "@/features/tasks-management/utils/taskChatMentionUtils";
 import type { TaskFormValues } from "@/features/tasks-management/utils/taskFormUtils";
 
 export type TasksTableProps = {
@@ -22,6 +23,23 @@ export type TasksTableRowProps = {
   task: Task;
   canEdit: boolean;
   onEdit: (task: Task) => void;
+  /** Override detail link (client portal uses a different path). */
+  detailPath?: string;
+};
+
+export type TaskChatProps = {
+  messages: TaskMessage[];
+  currentTeamMemberId: string | null;
+  /** When the viewer is a client portal user. */
+  currentClientId?: string | null;
+  /** Raiser, assignee, dependencies, client, PM, admins (for @mentions). */
+  chatParticipants: TaskChatParticipant[];
+  draft: string;
+  onDraftChange: (value: string) => void;
+  onSend: () => void;
+  onRefresh: () => void;
+  isSending: boolean;
+  isRefreshing?: boolean;
 };
 
 export type TaskDialogProps = {
@@ -30,6 +48,7 @@ export type TaskDialogProps = {
   isEditing: boolean;
   isSaving?: boolean;
   values: TaskFormValues;
+  currentTeamMemberId?: string | null;
   onFieldChange: <K extends keyof TaskFormValues>(
     field: K,
     value: TaskFormValues[K],
@@ -58,15 +77,4 @@ export type TaskStatusSelectProps = {
 
 export type TaskDetailSummaryProps = {
   task: Task;
-};
-
-export type TaskChatProps = {
-  messages: TaskMessage[];
-  currentTeamMemberId: string | null;
-  draft: string;
-  onDraftChange: (value: string) => void;
-  onSend: () => void;
-  onRefresh: () => void;
-  isSending: boolean;
-  isRefreshing?: boolean;
 };

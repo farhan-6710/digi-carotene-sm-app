@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { toRepositoryDateTime } from "@/features/posts-management/utils/postScheduleUtils";
 import type { Task } from "@/features/tasks-management/types/types";
+import { parseTaskAssignee } from "@/features/tasks-management/utils/taskAssigneeUtils";
 import {
   emptyTaskFormValues,
   taskToFormValues,
@@ -74,17 +75,28 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
       return;
     }
 
+    const assignee = parseTaskAssignee(values.assigneeKey);
+    if (!assignee) {
+      setError("Select a teammate or client to assign.");
+      return;
+    }
+
     setIsSaving(true);
     setError(null);
 
     try {
       const title = values.title.trim();
+      const assignedToTeamMemberId =
+        assignee.kind === "team" ? assignee.id : null;
+      const clientId = assignee.kind === "client" ? assignee.id : null;
+
       if (editingTaskId) {
         await updateTask(editingTaskId, {
           projectId: values.projectId,
+          clientId,
           title,
           description: values.description,
-          assignedToTeamMemberId: values.assignedToTeamMemberId,
+          assignedToTeamMemberId,
           priority: values.priority,
           etaDate: eta.date,
           etaTime: eta.time,
@@ -96,9 +108,10 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
         await createTask(
           {
             projectId: values.projectId,
+            clientId,
             title,
             description: values.description,
-            assignedToTeamMemberId: values.assignedToTeamMemberId,
+            assignedToTeamMemberId,
             priority: values.priority,
             etaDate: eta.date,
             etaTime: eta.time,
@@ -156,6 +169,7 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
       isEditing: Boolean(editingTaskId),
       isSaving,
       values,
+      currentTeamMemberId: teamMemberId,
       onFieldChange,
       onSave: () => void saveTask(),
       onDelete: editingTaskId ? () => void removeTask() : undefined,

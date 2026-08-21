@@ -10,8 +10,20 @@ export function ClientProfileCard({ client }: ClientProfileCardProps) {
       value: client.email || "—",
     },
     {
-      label: "Mobile",
+      label: "Primary contact person",
+      value: client.primary_contact_name || "—",
+    },
+    {
+      label: "Primary mobile",
       value: client.mobile_number || "—",
+    },
+    {
+      label: "Secondary contact person",
+      value: client.secondary_contact_name || "—",
+    },
+    {
+      label: "Secondary mobile",
+      value: client.secondary_mobile_number || "—",
     },
     {
       label: "Website",

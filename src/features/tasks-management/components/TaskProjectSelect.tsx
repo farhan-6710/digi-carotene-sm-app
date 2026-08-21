@@ -8,7 +8,7 @@ import { ComboBox } from "@/shared/ui/ComboBox";
 
 type TaskProjectSelectProps = {
   value: string;
-  onChange: (projectId: string) => void;
+  onChange: (next: { projectId: string; clientId: string | null }) => void;
   disabled?: boolean;
   preload?: boolean;
 };
@@ -39,7 +39,13 @@ export function TaskProjectSelect({
   return (
     <ComboBox
       value={value}
-      onChange={onChange}
+      onChange={(projectId) => {
+        const project = projects.find((row) => row.id === projectId);
+        onChange({
+          projectId,
+          clientId: project?.client_id ?? project?.clients?.id ?? null,
+        });
+      }}
       options={options}
       isLoading={isLoading}
       disabled={disabled}

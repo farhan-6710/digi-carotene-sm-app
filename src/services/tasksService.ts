@@ -97,7 +97,9 @@ async function notifyTaskCreated(
   taggedTeamMemberIds: string[],
 ): Promise<void> {
   const recipientIds = new Set<string>();
-  recipientIds.add(task.assigned_to_team_member_id);
+  if (task.assigned_to_team_member_id) {
+    recipientIds.add(task.assigned_to_team_member_id);
+  }
   for (const id of taggedTeamMemberIds) {
     recipientIds.add(id);
   }
@@ -113,10 +115,16 @@ async function notifyTaskCreated(
 
   recipientIds.delete(task.created_by_team_member_id);
 
+  if (recipientIds.size === 0) return;
+
   const raiserName = task.created_by?.member_name ?? "A teammate";
   const projectLabel = task.projects?.project_name ?? "a project";
   const flags = [
-    task.priority === "high" ? "High priority" : null,
+    task.priority === "high"
+      ? "High priority"
+      : task.priority === "low"
+        ? "Low priority"
+        : null,
     task.eta_date && task.eta_time
       ? `ETA ${task.eta_date} · ${task.eta_time}`
       : null,
@@ -201,10 +209,11 @@ export async function createTask(
     .from(DB.TASKS.TABLE)
     .insert({
       project_id: input.projectId,
+      client_id: input.clientId?.trim() || null,
       title: input.title.trim(),
       description: input.description?.trim() || null,
       created_by_team_member_id: createdByTeamMemberId,
-      assigned_to_team_member_id: input.assignedToTeamMemberId,
+      assigned_to_team_member_id: input.assignedToTeamMemberId?.trim() || null,
       priority: input.priority,
       eta_date: input.etaDate,
       eta_time: input.etaTime,
@@ -239,12 +248,16 @@ export async function updateTask(
 ): Promise<Task> {
   const cols: Record<string, unknown> = {};
   if (input.projectId !== undefined) cols.project_id = input.projectId;
+  if (input.clientId !== undefined) {
+    cols.client_id = input.clientId?.trim() || null;
+  }
   if (input.title !== undefined) cols.title = input.title.trim();
   if (input.description !== undefined) {
     cols.description = input.description?.trim() || null;
   }
   if (input.assignedToTeamMemberId !== undefined) {
-    cols.assigned_to_team_member_id = input.assignedToTeamMemberId;
+    cols.assigned_to_team_member_id =
+      input.assignedToTeamMemberId?.trim() || null;
   }
   if (input.priority !== undefined) cols.priority = input.priority;
   if (input.etaDate !== undefined) cols.eta_date = input.etaDate;
@@ -285,6 +298,21 @@ export async function updateTask(
 
   if (error) throw error;
   return mapTaskRow(data as unknown as TaskRow);
+}
+
+export async function fetchTasksForClient(
+  clientId: string | null,
+): Promise<Task[]> {
+  if (!clientId) return [];
+
+  const { data, error } = await supabase
+    .from(DB.TASKS.TABLE)
+    .select(DB.TASKS.SELECT)
+    .eq("client_id", clientId)
+    .order("updated_at", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []).map((row) => mapTaskRow(row as unknown as TaskRow));
 }
 
 export async function fetchTaskById(taskId: string): Promise<Task | null> {

@@ -33,7 +33,20 @@ export function ClientDialogBasicFields({
       </label>
 
       <label className="block text-xs font-semibold text-muted-foreground">
-        Mobile number
+        Primary contact person
+        <input
+          value={values.primaryContactName}
+          onChange={(event) =>
+            onFieldChange("primaryContactName", event.target.value)
+          }
+          placeholder="e.g. Jane Doe"
+          className={formFieldClassName}
+          disabled={disabled}
+        />
+      </label>
+
+      <label className="block text-xs font-semibold text-muted-foreground">
+        Primary mobile number
         <input
           value={values.mobileNumber}
           onChange={(event) => onFieldChange("mobileNumber", event.target.value)}
@@ -44,6 +57,38 @@ export function ClientDialogBasicFields({
       </label>
 
       <label className="block text-xs font-semibold text-muted-foreground">
+        Secondary contact person
+        <span className="ml-1 font-normal text-muted-foreground/80">
+          (optional)
+        </span>
+        <input
+          value={values.secondaryContactName}
+          onChange={(event) =>
+            onFieldChange("secondaryContactName", event.target.value)
+          }
+          placeholder="e.g. John Smith"
+          className={formFieldClassName}
+          disabled={disabled}
+        />
+      </label>
+
+      <label className="block text-xs font-semibold text-muted-foreground">
+        Secondary mobile number
+        <span className="ml-1 font-normal text-muted-foreground/80">
+          (optional)
+        </span>
+        <input
+          value={values.secondaryMobileNumber}
+          onChange={(event) =>
+            onFieldChange("secondaryMobileNumber", event.target.value)
+          }
+          placeholder="e.g. +1 555-0188"
+          className={formFieldClassName}
+          disabled={disabled}
+        />
+      </label>
+
+      <label className="block text-xs font-semibold text-muted-foreground sm:col-span-2">
         Website name / URL
         <input
           value={values.websiteName}

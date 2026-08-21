@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 
 import { PostDateTimePicker } from "@/features/posts-management/components/PostDateTimePicker";
-import { TaskAssigneeSelect, TaskTagsSelect } from "@/features/tasks-management/components/TaskMemberSelects";
+import { TaskAssigneePicker } from "@/features/tasks-management/components/TaskAssigneePicker";
+import { TaskDependenciesSelect } from "@/features/tasks-management/components/TaskMemberSelects";
 import { TaskPrioritySelect } from "@/features/tasks-management/components/TaskPrioritySelect";
 import { TaskProjectSelect } from "@/features/tasks-management/components/TaskProjectSelect";
 import { TaskStatusSelect } from "@/features/tasks-management/components/TaskStatusSelect";
 import type { TaskDialogProps } from "@/features/tasks-management/types/components";
+import {
+  encodeTaskAssignee,
+  parseTaskAssignee,
+} from "@/features/tasks-management/utils/taskAssigneeUtils";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { formFieldClassName } from "@/shared/constants/formStyles";
 import { Button } from "@/shared/ui/button";
@@ -26,6 +31,7 @@ export function TaskDialog({
   isEditing,
   isSaving = false,
   values,
+  currentTeamMemberId = null,
   onFieldChange,
   onSave,
   onDelete,
@@ -39,10 +45,14 @@ export function TaskDialog({
     }
   }, [open]);
 
+  const assignee = parseTaskAssignee(values.assigneeKey);
+  const assignedTeamMemberId =
+    assignee?.kind === "team" ? assignee.id : null;
+
   const canSave =
     values.projectId.length > 0 &&
     values.title.trim().length > 0 &&
-    values.assignedToTeamMemberId.length > 0 &&
+    Boolean(assignee) &&
     Boolean(values.eta?.time.trim() && values.eta.day && values.eta.month && values.eta.year);
 
   return (
@@ -52,8 +62,8 @@ export function TaskDialog({
           <DialogHeader className="shrink-0">
             <DialogTitle>{isEditing ? "Edit Task" : "Add Task"}</DialogTitle>
             <DialogDescription>
-              Tie the task to a project, assign a teammate, set priority, and
-              set an ETA deadline.
+              Tie the task to a project, assign a teammate or client, set
+              priority, and set an ETA deadline.
             </DialogDescription>
           </DialogHeader>
 
@@ -85,7 +95,9 @@ export function TaskDialog({
               <div className="mt-2">
                 <TaskProjectSelect
                   value={values.projectId}
-                  onChange={(projectId) => onFieldChange("projectId", projectId)}
+                  onChange={({ projectId }) =>
+                    onFieldChange("projectId", projectId)
+                  }
                   disabled={isSaving}
                   preload={open}
                 />
@@ -94,23 +106,46 @@ export function TaskDialog({
 
             <label className="block text-xs font-semibold text-muted-foreground">
               Assign to
-              <div className="mt-2">
-                <TaskAssigneeSelect
-                  value={values.assignedToTeamMemberId}
-                  onChange={(id) => onFieldChange("assignedToTeamMemberId", id)}
-                  disabled={isSaving}
-                  preload={open}
-                />
+              <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
+                <div className="min-w-0 flex-1">
+                  <TaskAssigneePicker
+                    value={values.assigneeKey}
+                    onChange={(assigneeKey) =>
+                      onFieldChange("assigneeKey", assigneeKey)
+                    }
+                    disabled={isSaving}
+                    preload={open}
+                  />
+                </div>
+                {currentTeamMemberId ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0"
+                    disabled={
+                      isSaving ||
+                      values.assigneeKey ===
+                        encodeTaskAssignee("team", currentTeamMemberId)
+                    }
+                    onClick={() =>
+                      onFieldChange(
+                        "assigneeKey",
+                        encodeTaskAssignee("team", currentTeamMemberId),
+                      )
+                    }
+                  >
+                    Assign myself
+                  </Button>
+                ) : null}
               </div>
             </label>
 
-            <TaskTagsSelect
+            <TaskDependenciesSelect
               value={values.taggedTeamMemberIds}
               onChange={(ids) => onFieldChange("taggedTeamMemberIds", ids)}
               excludeMemberIds={
-                values.assignedToTeamMemberId
-                  ? [values.assignedToTeamMemberId]
-                  : []
+                assignedTeamMemberId ? [assignedTeamMemberId] : []
               }
               disabled={isSaving}
               preload={open}

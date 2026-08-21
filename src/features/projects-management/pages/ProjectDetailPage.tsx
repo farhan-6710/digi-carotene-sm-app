@@ -32,7 +32,7 @@ function ProjectDetailBackButton() {
     <Button asChild variant="outline" className="rounded-full">
       <Link to={PROJECTS_MANAGEMENT_PATH}>
         <ArrowLeft className="mr-2 size-4" />
-        Back to projects
+        Back to SM projects
       </Link>
     </Button>
   );

@@ -3,11 +3,11 @@ import { useMemo } from "react";
 import { Link, useParams } from "react-router";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { CLIENT_TASKS_PATH } from "@/features/client-portal/constants/taskRoutes";
+import { useClientTaskDetailQuery } from "@/features/client-portal/hooks/useClientTaskDetailQuery";
 import { TaskChat } from "@/features/tasks-management/components/TaskChat";
 import { TaskDetailSummary } from "@/features/tasks-management/components/TaskDetailSummary";
-import { TASKS_MANAGEMENT_PATH } from "@/features/tasks-management/constants/routes";
 import { useTaskChat } from "@/features/tasks-management/hooks/useTaskChat";
-import { useTaskDetailQuery } from "@/features/tasks-management/hooks/useTaskDetailQuery";
 import { buildTaskChatParticipants } from "@/features/tasks-management/utils/taskChatMentionUtils";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
@@ -15,10 +15,10 @@ import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { Button } from "@/shared/ui/button";
 
-function TaskDetailBackButton() {
+function ClientTaskBackButton() {
   return (
     <Button asChild variant="outline" className="rounded-full">
-      <Link to={TASKS_MANAGEMENT_PATH}>
+      <Link to={CLIENT_TASKS_PATH}>
         <ArrowLeft className="mr-2 size-4" />
         Back to tasks
       </Link>
@@ -26,11 +26,11 @@ function TaskDetailBackButton() {
   );
 }
 
-export function TaskDetailPage() {
+export function ClientTaskDetailPage() {
   const { taskId = "" } = useParams();
-  const { teamMemberId } = useAuth();
-  const { task, messages, adminMembers, isLoading, error, setError, reload } =
-    useTaskDetailQuery(taskId);
+  const { clientId } = useAuth();
+  const { task, messages, isLoading, error, setError, reload } =
+    useClientTaskDetailQuery(taskId);
   const { draft, setDraft, isSending, sendMessage } = useTaskChat({
     taskId,
     reload,
@@ -38,13 +38,12 @@ export function TaskDetailPage() {
   });
 
   const chatParticipants = useMemo(
-    () =>
-      task ? buildTaskChatParticipants(task, { admins: adminMembers }) : [],
-    [adminMembers, task],
+    () => (task ? buildTaskChatParticipants(task) : []),
+    [task],
   );
 
   if (isLoading && !task) {
-    return <DetailPageLoading backButton={<TaskDetailBackButton />} />;
+    return <DetailPageLoading backButton={<ClientTaskBackButton />} />;
   }
 
   if (!task) {
@@ -53,7 +52,7 @@ export function TaskDetailPage() {
         <PageHeader
           heading="Task"
           description="Task details and chat."
-          backButton={<TaskDetailBackButton />}
+          backButton={<ClientTaskBackButton />}
         />
         <ErrorBanner message={error ?? "Task not found."} />
       </section>
@@ -64,15 +63,16 @@ export function TaskDetailPage() {
     <PageContent>
       <PageHeader
         heading={task.title}
-        description="Review this task and chat with everyone involved."
-        backButton={<TaskDetailBackButton />}
+        description="Review this task and chat with the Digi Carotene team."
+        backButton={<ClientTaskBackButton />}
       />
       {error ? <ErrorBanner message={error} /> : null}
       <div className="grid items-start gap-4 lg:grid-cols-2 lg:items-stretch">
         <TaskDetailSummary task={task} />
         <TaskChat
           messages={messages}
-          currentTeamMemberId={teamMemberId}
+          currentTeamMemberId={null}
+          currentClientId={clientId}
           chatParticipants={chatParticipants}
           draft={draft}
           onDraftChange={setDraft}

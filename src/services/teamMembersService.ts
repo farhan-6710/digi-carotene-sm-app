@@ -89,6 +89,22 @@ export async function fetchProjectManagers(): Promise<TeamMember[]> {
   return members.filter((member) => isProjectManagerRole(member.team_role));
 }
 
+export async function fetchAdminTeamMembers(): Promise<
+  Pick<TeamMember, "id" | "member_name">[]
+> {
+  const { data, error } = await supabase
+    .from(DB.TEAM_MEMBERS.TABLE)
+    .select("id, member_name")
+    .eq("team_role", "admin")
+    .order("member_name", { ascending: true });
+
+  if (error) throw error;
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    member_name: row.member_name,
+  }));
+}
+
 export async function createTeamMember(
   input: CreateTeamMemberInput,
 ): Promise<TeamMember> {

@@ -51,7 +51,7 @@ export function TaskAssigneeSelect({
   );
 }
 
-type TaskTagsSelectProps = {
+type TaskDependenciesSelectProps = {
   value: string[];
   onChange: (memberIds: string[]) => void;
   excludeMemberIds?: string[];
@@ -59,13 +59,13 @@ type TaskTagsSelectProps = {
   preload?: boolean;
 };
 
-export function TaskTagsSelect({
+export function TaskDependenciesSelect({
   value,
   onChange,
   excludeMemberIds = [],
   disabled = false,
   preload = false,
-}: TaskTagsSelectProps) {
+}: TaskDependenciesSelectProps) {
   const { items: members, isLoading, handleOpenChange } = useLazyEntityList(
     fetchTeamMembers,
     { preload },
@@ -87,8 +87,8 @@ export function TaskTagsSelect({
       options={options}
       isLoading={isLoading}
       disabled={disabled}
-      label="Tag teammates"
-      placeholder="Tag teammates"
+      label="Dependencies"
+      placeholder="Add dependencies"
       emptyMessage="No team members available."
       excludeValues={excludeMemberIds}
       onOpenChange={handleOpenChange}

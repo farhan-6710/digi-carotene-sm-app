@@ -35,7 +35,7 @@ export function canEditTaskAccess(input: {
   return false;
 }
 
-/** View + chat: raiser, assignee, tagged, project manager, admin. */
+/** View + chat: raiser, assignee, dependencies, project manager, admin. */
 export function canAccessTask(input: {
   task: Task;
   teamRole: string | null;
@@ -45,4 +45,12 @@ export function canAccessTask(input: {
   const { task, teamMemberId } = input;
   if (!teamMemberId) return false;
   return task.tagged_members.some((member) => member.id === teamMemberId);
+}
+
+/** Client portal: only tasks that explicitly include this client. */
+export function canClientAccessTask(
+  task: Task,
+  clientId: string | null,
+): boolean {
+  return Boolean(clientId && task.client_id === clientId);
 }

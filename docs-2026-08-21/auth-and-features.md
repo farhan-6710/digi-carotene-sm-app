@@ -57,9 +57,9 @@ Content approvals on a plan item:
 | Dashboard | `/team-portal/dashboard` | Active-client stats, publishing chart, today’s posts, missed posts |
 | Team | `/team-portal/team-management` | Roster; member detail = active projects + **active production plans** (assign / end) |
 | Clients | `/team-portal/clients-management` | Brands, `is_active`; detail lists projects and plans |
-| Projects | `/team-portal/projects-management` | Social URLs, manager, extra team; `is_active` |
+| SM Projects Management | `/team-portal/projects-management` | Social URLs, manager, extra team; `is_active` |
 | Postings calendar | `/team-portal/posts-management` | Month grid; client/project filters in the URL; day page reuses them |
-| Tasks | `/team-portal/tasks-management` | Project-scoped tasks; assign/tag; tabs All · Raised by me · Raised for me; detail + chat |
+| Task Management | `/team-portal/tasks-management` | Project-scoped tasks; assign + dependencies; tabs All · Raised by me · Raised for me; detail + chat |
 | Production planner | `/team-portal/production-planner` | Plans per client (`?client=` filter); detail = script, reference link, approvals |
 | Notifications | `/team-portal/notifications` | Inbox + executive **approval queue** |
 | Analytics | `/team-portal/analytics` | Agency activity |
@@ -75,21 +75,28 @@ If an **executive** creates a post whose to-be-posted time is already past, it g
 
 ### Notifications
 
-Unread inbox. Types: `approval` (linked to a request id), `post_digest` (inserted by the midnight cron when email is sent), and `task` (assigned, tagged, or project oversight). Dismiss / review marks `read`.
+Unread inbox. Types: `approval` (linked to a request id), `post_digest` (inserted by the midnight cron when email is sent), and `task` (assigned, dependency, or project oversight). Dismiss / review marks `read`.
 
 ### Tasks
 
-Project-scoped only. Status: `pending` → `in_progress` → `completed`. Priority: `normal` | `high`. Required **ETA** (`eta_date` + `eta_time`) is the estimated deadline. Use the description to note blockers (no separate blocker flag).
+Project-scoped only. Status: `pending` → `in_progress` → `completed`. Priority: `low` | `medium` | `high`. Required **ETA** (`eta_date` + `eta_time`) is the estimated deadline. Use the description to note blockers (no separate blocker flag).
 
-Visibility:
+**People on a task (keep roles separate):**
+
+- **Assign to** — required; pick a **teammate** or a **client** from one dropdown (grouped list). Exactly one assignee is stored (`assigned_to_team_member_id` **or** `client_id`)
+- **Dependencies** — optional extra teammates only
+
+Visibility (team):
 
 - **Admin** — all tasks
 - **Project manager** (`projects.manager_id`) — all tasks on projects they manage
-- **Everyone else** — raised by them, assigned to them, or tagged
+- **Everyone else** — raised by them, assigned to them, or listed as a dependency
 
-On create, notify assignee, tagged members, project manager, and admins (excluding the raiser).
+Visibility (client): tasks where `client_id` matches (i.e. assigned to that client).
 
-Task detail (`/team-portal/tasks-management/:taskId`) includes a simple DB-backed chat for the raiser, assignee, tagged members, project manager, and admins. No websockets — refresh after send.
+On create, notify the team assignee (if teammate), dependency members, project manager, and admins (excluding the raiser). Clients see the task in their portal list (no separate client inbox in V1).
+
+Task detail includes DB-backed chat. Authors are a teammate **or** the task client. `@` mentions cover raiser, assignee, dependencies, project manager, task client, and admins. No websockets — refresh after send.
 
 ---
 
@@ -101,6 +108,7 @@ The brand sees only their own data (`profiles.client_id`). No team CRUD, no Mana
 |------|------|------|
 | Dashboard | `/client-portal/dashboard` | Post stats, projects/plans counts, upcoming posts, socials |
 | Projects | `/client-portal/projects` | Read-only projects; detail is view-only (no add/edit) |
+| Task Management | `/client-portal/tasks-management` | Tasks that include this client; detail + chat |
 | Posts | `/client-portal/posts` | Read-only post list with search |
 | Production planner | `/client-portal/production-planner` | Their plans; detail: **Client approval** dropdown only |
 | Growth | `/client-portal/growth-and-analytics` | Same charts as team, scoped to linked accounts |

@@ -5,7 +5,7 @@ import type { StatusKey } from "@/features/posts-management/types/types";
  * Midnight post digest email — which sections each `team_members.team_role` receives.
  *
  * Domain: posts.to_be_posted_date, posts.status, projects.manager_id,
- * active project_team_members (ended_at IS NULL). See docs/auth-and-features.md.
+ * active project_team_members (ended_at IS NULL). See docs-2026-08-21/auth-and-features.md.
  *
  * - Schedule day  → `posts.to_be_posted_date` (“To be posted on”)
  * - Status        → `posts.status` (`StatusKey`: "Not posted" | "Scheduled" | "Posted")
