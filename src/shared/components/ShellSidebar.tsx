@@ -208,7 +208,7 @@ export function ShellSidebarContent({
         </div>
       </TransitionLink>
 
-      <nav className="min-h-0 flex-1 space-y-1.5 overflow-y-auto p-4">
+      <nav className={cn("min-h-0 flex-1 space-y-1.5 overflow-y-auto", collapsed ? "p-3" : "p-4")}>
         {config.nav.map((item) =>
           item.children && item.children.length > 0 ? (
             <ShellNavGroup
