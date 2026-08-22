@@ -1,5 +1,7 @@
 # Digi Carotene — docs
 
+*Snapshot: 2026-08-22*
+
 Service-management app for **Digi Carotene**, a digital marketing agency.
 
 The team runs clients, projects, scheduled posts, production shoots, and Meta (Facebook/Instagram) analytics in one portal. Each client can sign in to a read-only portal for their brand.
@@ -12,6 +14,8 @@ The team runs clients, projects, scheduled posts, production shoots, and Meta (F
 | [database.md](./database.md) | Tables, relationships, migrations, RLS |
 | [auth-and-features.md](./auth-and-features.md) | Auth, roles, portals, every feature |
 | [ops.md](./ops.md) | Meta Business setup, PHP crons, Hostinger deploy |
+| [meta-business-structure.md](./meta-business-structure.md) | Meta terminology and setup (Ravi's example) |
+| [growth-analytics-legacy-meta-setup.md](./growth-analytics-legacy-meta-setup.md) | Legacy Growth Meta setup (pre-refactor baseline) |
 
 ---
 

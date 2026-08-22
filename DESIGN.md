@@ -1,6 +1,6 @@
 # Design — Digi Carotene
 
-How the app is built. Product + onboarding: [docs-2026-08-21/README.md](docs-2026-08-21/README.md). Change rules: [AGENTS.md](AGENTS.md).
+How the app is built. Product + onboarding: [docs-2026-08-22/README.md](docs-2026-08-22/README.md). Change rules: [AGENTS.md](AGENTS.md).
 
 ## Layers
 
@@ -36,11 +36,11 @@ Query hooks use `useFetch(load, fallback)` (`src/shared/hooks/useFetch.ts`). Wra
 - `AuthProvider` loads the session once, then reacts to sign in / sign out.
 - Profile linking is **database triggers** (`link_profile_by_email`) plus an RPC fallback after saving a team member or client.
 - A pending user refreshes to pick up access.
-- Route guards (`TeamRoute`, `ClientRoute`, `UserRoute`) redirect by `profiles.role`. Details: [docs-2026-08-21/auth-and-features.md](docs-2026-08-21/auth-and-features.md).
+- Route guards (`TeamRoute`, `ClientRoute`, `UserRoute`) redirect by `profiles.role`. Details: [docs-2026-08-22/auth-and-features.md](docs-2026-08-22/auth-and-features.md).
 
 ## Domain
 
-`clients` → `projects` → `posts`. Extra project team: `project_team_members` (`ended_at IS NULL`). Production plans hang off **clients**. Schema: [docs-2026-08-21/database.md](docs-2026-08-21/database.md).
+`clients` → `projects` → `posts`. Extra project team: `project_team_members` (`ended_at IS NULL`). Production plans hang off **clients**. Schema: [docs-2026-08-22/database.md](docs-2026-08-22/database.md).
 
 ## Conventions (summary)
 

@@ -64,6 +64,6 @@ Skip any step that is already reflected in your database.
 
 1. Create the next file: `009_<short_description>.sql`
 2. Document what it does in a header comment
-3. Update [`docs-2026-08-21/database.md`](../docs-2026-08-21/database.md) if tables or relationships change.
+3. Update [`docs-2026-08-22/database.md`](../docs-2026-08-22/database.md) if tables or relationships change.
 
 Do **not** recreate monolithic setup/reset scripts.
