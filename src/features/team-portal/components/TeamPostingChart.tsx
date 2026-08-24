@@ -1,5 +1,5 @@
 import { TrendingDown, TrendingUp } from "lucide-react";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import { usePublishingComparisonChart } from "@/features/team-portal/hooks/usePublishingComparisonChart";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
@@ -121,7 +121,7 @@ export function TeamPostingChart() {
             config={chartConfig}
             className="aspect-auto h-full w-full"
           >
-            <LineChart
+            <AreaChart
               accessibilityLayer
               data={chart.points}
               margin={{
@@ -131,6 +131,44 @@ export function TeamPostingChart() {
                 bottom: 0,
               }}
             >
+              <defs>
+                <linearGradient
+                  id="postsPublishingCurrent"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-currentMonth)"
+                    stopOpacity={0.35}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-currentMonth)"
+                    stopOpacity={0}
+                  />
+                </linearGradient>
+                <linearGradient
+                  id="postsPublishingPrevious"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-previousMonth)"
+                    stopOpacity={0.22}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-previousMonth)"
+                    stopOpacity={0}
+                  />
+                </linearGradient>
+              </defs>
               <CartesianGrid
                 vertical={false}
                 strokeDasharray="3 3"
@@ -145,6 +183,7 @@ export function TeamPostingChart() {
               />
               <YAxis
                 allowDecimals={false}
+                domain={[0, "auto"]}
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
@@ -154,38 +193,26 @@ export function TeamPostingChart() {
                 cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
                 content={<ChartTooltipContent />}
               />
-              <Line
-                dataKey="currentMonth"
-                type="monotone"
-                stroke="var(--color-currentMonth)"
-                strokeWidth={3}
-                dot={{
-                  r: 3,
-                  fill: "var(--color-currentMonth)",
-                  strokeWidth: 0,
-                }}
-                activeDot={{
-                  r: 5,
-                  strokeWidth: 0,
-                }}
-              />
-              <Line
+              <Area
                 dataKey="previousMonth"
                 type="monotone"
                 stroke="var(--color-previousMonth)"
-                strokeWidth={3}
-                dot={{
-                  r: 3,
-                  fill: "var(--color-previousMonth)",
-                  strokeWidth: 0,
-                }}
-                activeDot={{
-                  r: 5,
-                  strokeWidth: 0,
-                }}
+                strokeWidth={2}
+                fill="url(#postsPublishingPrevious)"
+                fillOpacity={1}
+                activeDot={{ r: 5, strokeWidth: 0 }}
+              />
+              <Area
+                dataKey="currentMonth"
+                type="monotone"
+                stroke="var(--color-currentMonth)"
+                strokeWidth={2.5}
+                fill="url(#postsPublishingCurrent)"
+                fillOpacity={1}
+                activeDot={{ r: 5, strokeWidth: 0 }}
               />
               <ChartLegend content={<ChartLegendContent />} />
-            </LineChart>
+            </AreaChart>
           </ChartContainer>
         )}
       </div>
