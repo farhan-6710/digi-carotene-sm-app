@@ -12,5 +12,5 @@ export const LEAD_SCORE_LABELS: Record<LeadScoreValue, string> = {
 
 export const DEFAULT_LEAD_SCORE = 1 as const;
 
-/** Score 5 means the lead converted successfully — shown on Contacts. */
+/** Score 5 means the lead converted successfully — shown on Conversions. */
 export const CONVERTED_LEAD_SCORE = 5 as const;

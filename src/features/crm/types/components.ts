@@ -24,12 +24,12 @@ export type LeadsTableProps = {
   onSearchQueryChange: (query: string) => void;
 };
 
-export type ContactsTableRowProps = {
-  contact: Lead;
+export type ConversionsTableRowProps = {
+  conversion: Lead;
 };
 
-export type ContactsTableProps = {
-  contacts: Lead[];
+export type ConversionsTableProps = {
+  conversions: Lead[];
   isLoading: boolean;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;

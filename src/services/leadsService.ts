@@ -46,7 +46,7 @@ export async function fetchLeads(): Promise<Lead[]> {
   return (data ?? []) as Lead[];
 }
 
-/** Contacts = leads that converted (lead_score = 5). */
+/** Conversions = leads that converted (lead_score = 5). */
 export async function fetchConvertedLeads(
   convertedScore: LeadScore,
 ): Promise<Lead[]> {

@@ -1,28 +1,30 @@
 import { LEAD_SOURCE_LABELS } from "@/features/crm/constants/leadSources";
-import { CONTACTS_ROW_GRID_CLASS } from "@/features/crm/constants/contactsDirectory";
-import type { ContactsTableRowProps } from "@/features/crm/types/components";
+import { CONVERSIONS_ROW_GRID_CLASS } from "@/features/crm/constants/conversionsDirectory";
+import type { ConversionsTableRowProps } from "@/features/crm/types/components";
 import { cn } from "@/shared/lib/utils";
 
-export function ContactsTableRow({ contact }: ContactsTableRowProps) {
+export function ConversionsTableRow({ conversion }: ConversionsTableRowProps) {
   return (
     <div
       className={cn(
         "grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:gap-4",
-        CONTACTS_ROW_GRID_CLASS,
+        CONVERSIONS_ROW_GRID_CLASS,
       )}
     >
       <div className="text-sm font-medium text-foreground">
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           NAME
         </span>
-        {contact.name}
+        {conversion.name}
       </div>
 
       <div className="text-sm text-muted-foreground">
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           COMPANY
         </span>
-        {contact.company || <span className="text-muted-foreground/50">—</span>}
+        {conversion.company || (
+          <span className="text-muted-foreground/50">—</span>
+        )}
       </div>
 
       <div className="min-w-0 text-sm text-muted-foreground">
@@ -30,7 +32,7 @@ export function ContactsTableRow({ contact }: ContactsTableRowProps) {
           EMAIL
         </span>
         <span className="block truncate">
-          {contact.email || (
+          {conversion.email || (
             <span className="text-muted-foreground/50">—</span>
           )}
         </span>
@@ -40,14 +42,14 @@ export function ContactsTableRow({ contact }: ContactsTableRowProps) {
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           PHONE
         </span>
-        {contact.phone || <span className="text-muted-foreground/50">—</span>}
+        {conversion.phone || <span className="text-muted-foreground/50">—</span>}
       </div>
 
       <div className="text-sm text-muted-foreground">
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           INDUSTRY
         </span>
-        {contact.industry || (
+        {conversion.industry || (
           <span className="text-muted-foreground/50">—</span>
         )}
       </div>
@@ -56,7 +58,7 @@ export function ContactsTableRow({ contact }: ContactsTableRowProps) {
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           SOURCE
         </span>
-        {LEAD_SOURCE_LABELS[contact.lead_source]}
+        {LEAD_SOURCE_LABELS[conversion.lead_source]}
       </div>
     </div>
   );
