@@ -4,6 +4,7 @@ import {
   Bell,
   CalendarClock,
   ClipboardList,
+  ContactRound,
   FileBarChart2,
   FileText,
   FolderKanban,
@@ -38,7 +39,8 @@ export type ShellNavIconKey =
   | "reportLibrary"
   | "manageAccounts"
   | "productionPlanner"
-  | "tasks";
+  | "tasks"
+  | "crm";
 
 export const shellNavIcons: Record<ShellNavIconKey, LucideIcon> = {
   dashboard: LayoutDashboard,
@@ -59,4 +61,5 @@ export const shellNavIcons: Record<ShellNavIconKey, LucideIcon> = {
   manageAccounts: PlugZap,
   productionPlanner: ClipboardList,
   tasks: ListTodo,
+  crm: ContactRound,
 };

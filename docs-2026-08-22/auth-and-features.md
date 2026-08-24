@@ -33,9 +33,9 @@ Deleting a team member resets linked profiles to `role = user`.
 
 | Role | Full CRUD on | List scope |
 |------|----------------|------------|
-| `admin` | team, clients, projects, posts, production plans | All projects and plans |
-| `manager` | clients, projects, posts | Assigned projects / plans only |
-| `executive` | posts | Assigned projects / plans only |
+| `admin` | team, clients, projects, posts, production plans, tasks, leads | All projects and plans |
+| `manager` | clients, projects, posts, tasks, leads | Assigned projects / plans only |
+| `executive` | posts, tasks, leads | Assigned projects / plans only |
 
 **Assigned project** = `projects.manager_id` **or** active `project_team_members`.  
 **Assigned plan** = plan manager, shoot incharge, **or** active `production_plan_team_members`. Assigned people can add/edit **content** on that plan; creating/editing the plan record stays **admin**.
@@ -61,6 +61,7 @@ Content approvals on a plan item:
 | Postings calendar | `/team-portal/posts-management` | Month grid; client/project filters in the URL; day page reuses them |
 | Task Management | `/team-portal/tasks-management` | Project-scoped tasks; assign + dependencies; tabs All · Raised by me · Raised for me; detail + chat |
 | Production planner | `/team-portal/production-planner` | Plans per client (`?client=` filter); detail = script, reference link, approvals |
+| CRM | `/team-portal/crm` | Leads management; Contacts (converted leads with score 5) |
 | Notifications | `/team-portal/notifications` | Inbox + executive **approval queue** |
 | Analytics | `/team-portal/analytics` | Agency activity |
 | Growth | `/team-portal/growth-and-analytics` | Meta organic + ads; Manage Accounts (token) |

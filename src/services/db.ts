@@ -248,6 +248,11 @@ export const DB = {
     TABLE: "task_messages",
     SELECT: TASK_MESSAGE_SELECT,
   },
+  LEADS: {
+    TABLE: "leads",
+    SELECT:
+      "id, name, company, email, phone, industry, lead_score, status, lead_source, created_at, updated_at",
+  },
   GROWTH_ORGANIC_ACCOUNTS: {
     TABLE: "growth_organic_accounts",
     SELECT:

@@ -55,6 +55,12 @@ Run only migrations you have **not** applied yet, in order:
 | `041_notifications_task_type.sql` | Extends `notifications.notification_type` with `'task'` |
 | `042_tasks_eta.sql` | Adds required `eta_date` + `eta_time`; drops `is_blocker` |
 | `043_task_messages.sql` | Simple task chat messages (`task_messages`) |
+| `044_clients_primary_contact_name.sql` | Adds `primary_contact_name` on clients |
+| `045_tasks_client_id.sql` | Adds nullable `client_id` on tasks |
+| `046_clients_secondary_contact_and_task_assignee.sql` | Secondary contact on clients; task assignee can be client |
+| `047_tasks_priority_low_medium_high.sql` | Task priority: `low` \| `medium` \| `high` |
+| `048_leads.sql` | CRM `leads` table (name, company, email, phone, industry, lead score, status, lead source) |
+| `049_leads_industry_score_enums.sql` | If you already ran the first 048: add industry + lead_score; expand status/source enums |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

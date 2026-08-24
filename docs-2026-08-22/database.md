@@ -32,6 +32,8 @@ clients
   │     └── production_plan_items
   ├── growth_organic_accounts
   └── growth_ads_accounts
+
+leads   (flat CRM table — not tied to a client in V1)
 ```
 
 Rules: a **client** is a company. A **project** is one engagement (social profile URLs + manager). A **post** belongs to a project. Same brand, different social accounts → another project. No project, no post.
@@ -53,6 +55,7 @@ Rules: a **client** is a company. A **project** is one engagement (social profil
 | `tasks` | Project task: raiser, assignee is teammate **or** client (`assigned_to_team_member_id` XOR `client_id`), priority, ETA, status |
 | `task_tags` | Task dependencies (extra teammates only — not clients) |
 | `task_messages` | Task chat; author is teammate **or** client (`author_team_member_id` / `author_client_id`) |
+| `leads` | CRM leads: name, company, email, phone, industry, lead score (1–5), status, lead source |
 | `production_plans` | Shoot plan per client + `share_token` |
 | `production_plan_items` | Content in a plan: `script`, `reference_link`, three approvals |
 | `production_plan_team_members` | Extra people on a plan |

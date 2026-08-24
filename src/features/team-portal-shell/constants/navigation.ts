@@ -1,4 +1,6 @@
 import type { ShellNavIconKey } from "@/shared/constants/shellNavIcons";
+import { crmNav } from "@/features/crm/constants/navigation";
+import { LEADS_MANAGEMENT_PATH } from "@/features/crm/constants/routes";
 import { growthNav } from "@/features/growth-and-analytics/constants/navigation";
 
 export type NavIconKey = ShellNavIconKey;
@@ -31,6 +33,12 @@ export const primaryNav: NavItem[] = [
     label: "Production Planner",
     to: `${teamBasePath}/production-planner`,
     icon: "productionPlanner",
+  },
+  {
+    label: "CRM",
+    to: LEADS_MANAGEMENT_PATH,
+    icon: "crm",
+    children: crmNav,
   },
   {
     label: "Notifications",

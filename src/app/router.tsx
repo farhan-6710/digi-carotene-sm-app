@@ -160,6 +160,14 @@ const TaskDetailPage = lazyRoutePage(
   () => import("@/features/tasks-management/pages/TaskDetailPage"),
   "TaskDetailPage",
 );
+const LeadsManagementPage = lazyRoutePage(
+  () => import("@/features/crm/pages/LeadsManagementPage"),
+  "LeadsManagementPage",
+);
+const ContactsManagementPage = lazyRoutePage(
+  () => import("@/features/crm/pages/ContactsManagementPage"),
+  "ContactsManagementPage",
+);
 const ProductionPlanDetailPage = lazyRoutePage(
   () =>
     import("@/features/production-planner/pages/ProductionPlanDetailPage"),
@@ -306,6 +314,14 @@ export const router = createBrowserRouter([
           {
             path: "tasks-management/:taskId",
             element: <TaskDetailPage />,
+          },
+          {
+            path: "crm",
+            children: [
+              { index: true, element: <Navigate to="leads" replace /> },
+              { path: "leads", element: <LeadsManagementPage /> },
+              { path: "contacts", element: <ContactsManagementPage /> },
+            ],
           },
           { path: "production-planner", element: <ProductionPlannerPage /> },
           {

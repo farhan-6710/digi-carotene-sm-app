@@ -11,16 +11,25 @@ export type RbacResource =
   | "projects"
   | "posts"
   | "productionPlans"
-  | "tasks";
+  | "tasks"
+  | "leads";
 export type RbacAction = "create" | "read" | "update" | "delete";
 export type Permission = `${RbacResource}.${RbacAction}`;
 
 // Resources each role has full CRUD on. Extend with finer-grained
 // `Permission[]` lists if a role ever needs partial access to a resource.
 const ROLE_RESOURCES: Record<TeamMemberRole, RbacResource[]> = {
-  admin: ["team", "clients", "projects", "posts", "productionPlans", "tasks"],
-  manager: ["clients", "projects", "posts", "tasks"],
-  executive: ["posts", "tasks"],
+  admin: [
+    "team",
+    "clients",
+    "projects",
+    "posts",
+    "productionPlans",
+    "tasks",
+    "leads",
+  ],
+  manager: ["clients", "projects", "posts", "tasks", "leads"],
+  executive: ["posts", "tasks", "leads"],
 };
 
 export function can(role: TeamMemberRole | null, permission: Permission): boolean {
