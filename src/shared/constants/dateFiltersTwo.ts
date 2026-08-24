@@ -6,3 +6,8 @@ export const DATE_FILTERS_TWO_PERIODS = [
 
 export type DateFiltersTwoPeriodId =
   (typeof DATE_FILTERS_TWO_PERIODS)[number]["id"];
+
+export const DEFAULT_DATE_FILTERS_TWO_FILTER = {
+  mode: "period",
+  period: "this_month",
+} as const;

@@ -31,6 +31,7 @@ export function AddPostsPage() {
     canSave,
     backPath,
     backLabel,
+    lockProject,
   } = useAddPostsPage();
 
   const removeDraft = drafts.find((draft) => draft.id === removeDayId);
@@ -92,6 +93,7 @@ export function AddPostsPage() {
               statusOptions={statusOptions}
               disabled={isSaving}
               preloadOptions
+              lockProject={lockProject}
               patchValues={patchActiveValues}
             />
           ) : null}

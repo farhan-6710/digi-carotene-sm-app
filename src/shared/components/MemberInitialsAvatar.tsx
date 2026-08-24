@@ -15,7 +15,7 @@ export function MemberInitialsAvatar({
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center justify-center rounded-full bg-primary/15 font-semibold text-primary",
+        "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/15 font-semibold text-primary leading-none",
         sizeClasses[size],
         className,
       )}

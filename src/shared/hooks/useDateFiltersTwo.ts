@@ -1,7 +1,10 @@
 import { useCallback, useMemo, useState, type KeyboardEvent } from "react";
 import type { DateRange } from "react-day-picker";
 
-import type { DateFiltersTwoPeriodId } from "@/shared/constants/dateFiltersTwo";
+import {
+  DEFAULT_DATE_FILTERS_TWO_FILTER,
+  type DateFiltersTwoPeriodId,
+} from "@/shared/constants/dateFiltersTwo";
 import type {
   DateFiltersTwoFilterState,
   DateFiltersTwoProps,
@@ -13,9 +16,9 @@ import {
 } from "@/shared/utils/dateFiltersTwoUtils";
 
 export function useDateFiltersTwo() {
-  const [filter, setFilter] = useState<DateFiltersTwoFilterState>({
-    mode: "all",
-  });
+  const [filter, setFilter] = useState<DateFiltersTwoFilterState>(
+    DEFAULT_DATE_FILTERS_TWO_FILTER,
+  );
   const [pickerRange, setPickerRange] = useState<DateRange | undefined>();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [pickerError, setPickerError] = useState<string | null>(null);

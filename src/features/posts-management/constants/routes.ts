@@ -7,6 +7,7 @@ import {
   POSTS_DATE_PARAM,
   POSTS_FROM_DAY,
   POSTS_FROM_PARAM,
+  POSTS_FROM_PROJECT,
   POSTS_PROJECT_NAME_PARAM,
   POSTS_PROJECT_PARAM,
 } from "../utils/postsManagementUrlParams";
@@ -21,6 +22,8 @@ export type AddPostsPathOptions = {
   projectName?: string;
   /** When true, Add Posts back/save returns to this day's page. */
   returnToDay?: boolean;
+  /** When true, project is locked and back/save returns to project detail. */
+  returnToProject?: boolean;
 };
 
 export function buildPostsDayPath(
@@ -63,7 +66,9 @@ export function buildAddPostsPath(options?: AddPostsPathOptions): string {
     params.set(POSTS_PROJECT_NAME_PARAM, options.projectName);
   }
 
-  if (options?.returnToDay) {
+  if (options?.returnToProject) {
+    params.set(POSTS_FROM_PARAM, POSTS_FROM_PROJECT);
+  } else if (options?.returnToDay) {
     params.set(POSTS_FROM_PARAM, POSTS_FROM_DAY);
   }
 
@@ -87,6 +92,12 @@ export function parseAddPostReturnToDay(
   searchParams: URLSearchParams,
 ): boolean {
   return searchParams.get(POSTS_FROM_PARAM) === POSTS_FROM_DAY;
+}
+
+export function parseAddPostReturnToProject(
+  searchParams: URLSearchParams,
+): boolean {
+  return searchParams.get(POSTS_FROM_PARAM) === POSTS_FROM_PROJECT;
 }
 
 export function parseAddPostPrefillProject(

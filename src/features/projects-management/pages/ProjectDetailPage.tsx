@@ -62,6 +62,7 @@ function ProjectDetailHeaderActions({
                 date: new Date(),
                 projectId,
                 projectName,
+                returnToProject: true,
               })}
             >
               <Plus className="mr-2 size-4" />

@@ -9,7 +9,9 @@ import {
   parseAddPostPrefillDate,
   parseAddPostPrefillProject,
   parseAddPostReturnToDay,
+  parseAddPostReturnToProject,
 } from "@/features/posts-management/constants/routes";
+import { buildProjectDetailPath } from "@/features/projects-management/constants/routes";
 import { saveDraftDaysMutation } from "@/features/posts-management/utils/postDialogMutations";
 import {
   buildAddFormValues,
@@ -62,9 +64,15 @@ export function useAddPostsPage() {
 
   const [entryDate] = useState(() => parseAddPostPrefillDate(searchParams));
   const [returnToDay] = useState(() => parseAddPostReturnToDay(searchParams));
+  const [returnToProject] = useState(() =>
+    parseAddPostReturnToProject(searchParams),
+  );
+  const [prefillProject] = useState(() =>
+    parseAddPostPrefillProject(searchParams),
+  );
+  const lockProject = returnToProject && Boolean(prefillProject?.projectId);
   const [drafts, setDrafts] = useState<PostDraftDay[]>(() => {
     const prefillDate = entryDate ?? new Date();
-    const prefillProject = parseAddPostPrefillProject(searchParams);
     return [createDraftDay(seedValuesFromDate(prefillDate, prefillProject))];
   });
   const [activeDayId, setActiveDayId] = useState(() => drafts[0]?.id ?? "");
@@ -81,10 +89,16 @@ export function useAddPostsPage() {
     ? `Create and schedule posts for ${selectedProjectName}.`
     : "Create and schedule multiple posts in one go.";
   const backPath =
-    returnToDay && entryDate
-      ? buildPostsDayPath(entryDate)
-      : POSTS_MANAGEMENT_PATH;
-  const backLabel = returnToDay && entryDate ? "Back to day" : "Back to posts";
+    returnToProject && prefillProject?.projectId
+      ? buildProjectDetailPath(prefillProject.projectId)
+      : returnToDay && entryDate
+        ? buildPostsDayPath(entryDate)
+        : POSTS_MANAGEMENT_PATH;
+  const backLabel = returnToProject
+    ? "Back to project"
+    : returnToDay && entryDate
+      ? "Back to day"
+      : "Back to posts";
 
   const selectDay = useCallback((dayId: string) => {
     setActiveDayId(dayId);
@@ -145,7 +159,7 @@ export function useAddPostsPage() {
         return;
       }
 
-      navigate(returnToDay && entryDate ? buildPostsDayPath(entryDate) : backPath);
+      navigate(backPath);
     } catch (saveError) {
       const message =
         saveError instanceof Error
@@ -159,10 +173,8 @@ export function useAddPostsPage() {
   }, [
     backPath,
     drafts,
-    entryDate,
     isSaving,
     navigate,
-    returnToDay,
     teamMemberId,
     teamRole,
   ]);
@@ -197,5 +209,6 @@ export function useAddPostsPage() {
     canSave,
     backPath,
     backLabel,
+    lockProject,
   };
 }

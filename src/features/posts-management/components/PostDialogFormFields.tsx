@@ -13,6 +13,7 @@ export function PostDialogFormFields({
   statusOptions,
   disabled = false,
   preloadOptions = false,
+  lockProject = false,
   patchValues,
 }: PostDialogFormFieldsProps) {
   const showPostedOn =
@@ -40,7 +41,7 @@ export function PostDialogFormFields({
             onChange={(projectId, projectName) =>
               patchValues({ projectId, projectName })
             }
-            disabled={disabled}
+            disabled={disabled || lockProject}
             preload={preloadOptions}
             selectedLabel={values.projectName}
           />

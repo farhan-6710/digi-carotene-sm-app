@@ -87,16 +87,16 @@ export function ProjectProfileCard({
         ))}
       </div>
 
-      <div className="divide-y divide-border">
+      <div className="divide-y divide-border overflow-visible">
         {details.map((detail) => (
           <div
             key={detail.label}
-            className="flex flex-wrap items-center justify-between gap-2 px-6 py-3"
+            className="flex flex-wrap items-center justify-between gap-2 overflow-visible px-6 py-3"
           >
             <span className="text-xs font-semibold tracking-wider text-muted-foreground">
               {detail.label.toUpperCase()}
             </span>
-            <span className="text-sm text-foreground">{detail.value}</span>
+            <div className="shrink-0 text-sm text-foreground">{detail.value}</div>
           </div>
         ))}
       </div>

@@ -35,7 +35,7 @@ export function resolveDateFiltersTwoRange(
   if (filter.period === "this_month") {
     return {
       from: startOfMonth(today),
-      to: today,
+      to: endOfMonth(today),
     };
   }
 
@@ -47,9 +47,10 @@ export function resolveDateFiltersTwoRange(
     };
   }
 
+  // Last 3 calendar months through end of current month (includes future posts).
   return {
     from: startOfMonth(subMonths(today, 2)),
-    to: today,
+    to: endOfMonth(today),
   };
 }
 

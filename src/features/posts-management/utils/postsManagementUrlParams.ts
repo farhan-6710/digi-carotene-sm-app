@@ -8,6 +8,7 @@ export const POSTS_PROJECT_PARAM = "project";
 export const POSTS_PROJECT_NAME_PARAM = "projectName";
 export const POSTS_FROM_PARAM = "from";
 export const POSTS_FROM_DAY = "day";
+export const POSTS_FROM_PROJECT = "project";
 export const POSTS_CLIENTS_PARAM = "clients";
 export const POSTS_PROJECTS_PARAM = "projects";
 

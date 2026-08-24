@@ -3,7 +3,6 @@ import { Link } from "react-router";
 import { buildTeamMemberDetailPath } from "@/features/team-management/constants/routes";
 import type { ProjectTeamMemberAvatarsProps } from "@/features/projects-management/types/components";
 import { MemberInitialsAvatar } from "@/shared/components/MemberInitialsAvatar";
-import { cn } from "@/shared/lib/utils";
 import {
   Tooltip,
   TooltipContent,
@@ -20,17 +19,13 @@ export function ProjectTeamMemberAvatars({
 
   return (
     <TooltipProvider>
-      <div className="flex items-center">
-        {members.map((member, index) => (
+      <div className="flex flex-wrap items-center justify-end gap-1.5">
+        {members.map((member) => (
           <Tooltip key={member.id}>
             <TooltipTrigger asChild>
               <Link
                 to={buildTeamMemberDetailPath(member.id)}
-                className={cn(
-                  "relative rounded-full ring-2 ring-card transition hover:z-10 hover:scale-105",
-                  index > 0 && "-ml-2",
-                )}
-                style={{ zIndex: members.length - index }}
+                className="inline-flex shrink-0 rounded-full"
                 aria-label={member.member_name}
               >
                 <MemberInitialsAvatar name={member.member_name} />

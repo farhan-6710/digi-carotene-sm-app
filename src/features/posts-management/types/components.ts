@@ -33,6 +33,7 @@ export type PostDialogFormFieldsProps = {
   statusOptions: StatusKey[];
   disabled?: boolean;
   preloadOptions?: boolean;
+  lockProject?: boolean;
   patchValues: (patch: Partial<PostFormValues>) => void;
 };
 
