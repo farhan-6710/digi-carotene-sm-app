@@ -1,9 +1,9 @@
 import type { DirectoryTableColumn } from "@/shared/types/components";
 
 export const DAY_POSTS_GRID_CLASS =
-  "grid-cols-[1.4fr_1fr_0.9fr_0.8fr_0.7fr_0.5fr]";
+  "grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.7fr)_minmax(0,0.5fr)]";
 export const DAY_POSTS_ROW_GRID_CLASS =
-  "sm:grid-cols-[1.4fr_1fr_0.9fr_0.8fr_0.7fr_0.5fr]";
+  "sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.7fr)_minmax(0,0.5fr)]";
 
 export const dayPostsColumns: DirectoryTableColumn[] = [
   { label: "PROJECT" },

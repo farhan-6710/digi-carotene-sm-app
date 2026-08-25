@@ -1,9 +1,9 @@
 import type { DirectoryTableColumn } from "@/shared/types/components";
 
 export const CLIENT_TASKS_GRID_CLASS =
-  "grid-cols-[1.4fr_1fr_0.9fr_0.55fr_1fr_0.6fr]";
+  "grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.55fr)_minmax(0,1fr)_minmax(0,0.6fr)]";
 export const CLIENT_TASKS_ROW_GRID_CLASS =
-  "sm:grid-cols-[1.4fr_1fr_0.9fr_0.55fr_1fr_0.6fr]";
+  "sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.55fr)_minmax(0,1fr)_minmax(0,0.6fr)]";
 
 export const clientTasksColumns: DirectoryTableColumn[] = [
   { label: "TITLE" },

@@ -1,8 +1,17 @@
 import { cn } from "@/shared/lib/utils";
 import { TableLoadingState } from "@/shared/components/LoadingSpinner";
-import { DIRECTORY_TABLE_MIN_WIDTH_CLASS, TABLE_HORIZONTAL_SCROLL_CLASS } from "@/shared/constants/directoryTable";
+import {
+  DIRECTORY_TABLE_MIN_WIDTH_CLASS,
+  DIRECTORY_TABLE_TRACK_ALIGN_CLASS,
+  TABLE_HORIZONTAL_SCROLL_CLASS,
+} from "@/shared/constants/directoryTable";
 import type { DirectoryTableProps } from "@/shared/types/components";
 
+/**
+ * Shared directory listing table.
+ * Track align class keeps header + body column widths in sync when cell
+ * content length differs (default grid min-width:auto otherwise blows tracks).
+ */
 export function DirectoryTable({
   title,
   description,
@@ -26,11 +35,17 @@ export function DirectoryTable({
         {headerAside ? <div className="shrink-0">{headerAside}</div> : null}
       </div>
 
-      <div className={cn(TABLE_HORIZONTAL_SCROLL_CLASS, "border-t border-border")}>
+      <div
+        className={cn(
+          TABLE_HORIZONTAL_SCROLL_CLASS,
+          "border-t border-border",
+          DIRECTORY_TABLE_TRACK_ALIGN_CLASS,
+        )}
+      >
         <div className={DIRECTORY_TABLE_MIN_WIDTH_CLASS}>
           <div
             className={cn(
-              "grid text-xs font-semibold tracking-wider text-muted-foreground max-sm:hidden bg-muted px-6",
+              "grid w-full text-xs font-semibold tracking-wider text-muted-foreground max-sm:hidden bg-muted px-6",
               divided
                 ? "items-stretch divide-x divide-border border-b border-border"
                 : "gap-4 py-3",
@@ -42,9 +57,13 @@ export function DirectoryTable({
               <div
                 key={column.label}
                 className={cn(
+                  "min-w-0",
                   column.align === "right" ? "text-right" : undefined,
                   divided
-                    ? cn("py-3 pr-4 relative", index === 0 ? "pl-0" : "pl-4")
+                    ? cn(
+                        "py-3 pr-4 relative",
+                        index === 0 ? "pl-0" : "pl-4",
+                      )
                     : undefined,
                 )}
               >

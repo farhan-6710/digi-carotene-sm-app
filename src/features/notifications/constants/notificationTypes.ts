@@ -13,7 +13,7 @@ export const NOTIFICATIONS_UPDATED_EVENT = "notifications-updated";
 export const postDigestDirectoryConfig = {
   title: "Post digest",
   description: "Daily posting reminders sent with your midnight email.",
-  gridClass: "grid-cols-[minmax(0,1.4fr)_minmax(0,2fr)_minmax(0,0.8fr)_auto]",
+  gridClass: "grid-cols-[minmax(0,1.4fr)_minmax(0,2fr)_minmax(0,0.8fr)_5rem]",
   columns: [
     { label: "TITLE" },
     { label: "MESSAGE" },
@@ -26,7 +26,7 @@ export const postDigestDirectoryConfig = {
 export const taskNotificationsDirectoryConfig = {
   title: "Tasks",
   description: "Alerts when you are assigned, listed as a dependency, or need project oversight.",
-  gridClass: "grid-cols-[minmax(0,1.4fr)_minmax(0,2fr)_minmax(0,0.8fr)_auto]",
+  gridClass: "grid-cols-[minmax(0,1.4fr)_minmax(0,2fr)_minmax(0,0.8fr)_5rem]",
   columns: [
     { label: "TITLE" },
     { label: "MESSAGE" },

@@ -1,9 +1,9 @@
 import type { DirectoryTableColumn } from "@/shared/types/components";
 
 export const CLIENT_POSTS_GRID_CLASS =
-  "grid-cols-[1.2fr_0.9fr_1fr_0.8fr_0.7fr]";
+  "grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.7fr)]";
 export const CLIENT_POSTS_ROW_GRID_CLASS =
-  "sm:grid-cols-[1.2fr_0.9fr_1fr_0.8fr_0.7fr]";
+  "sm:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.7fr)]";
 
 export const clientPostsColumns: DirectoryTableColumn[] = [
   { label: "TITLE" },

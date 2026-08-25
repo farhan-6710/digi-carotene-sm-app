@@ -1,9 +1,9 @@
 import type { DirectoryTableColumn } from "@/shared/types/components";
 
 export const LEADS_GRID_CLASS =
-  "grid-cols-[1.1fr_1fr_1.1fr_0.9fr_0.9fr_0.55fr_1fr_0.9fr_auto]";
+  "grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,0.55fr)_minmax(0,1fr)_minmax(0,0.9fr)_5rem]";
 export const LEADS_ROW_GRID_CLASS =
-  "sm:grid-cols-[1.1fr_1fr_1.1fr_0.9fr_0.9fr_0.55fr_1fr_0.9fr_auto]";
+  "sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,0.55fr)_minmax(0,1fr)_minmax(0,0.9fr)_5rem]";
 
 export const leadsDirectoryColumns: DirectoryTableColumn[] = [
   { label: "NAME" },

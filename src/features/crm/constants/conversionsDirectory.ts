@@ -1,9 +1,9 @@
 import type { DirectoryTableColumn } from "@/shared/types/components";
 
 export const CONVERSIONS_GRID_CLASS =
-  "grid-cols-[1.2fr_1.1fr_1.3fr_1fr_1fr_1fr]";
+  "grid-cols-[minmax(0,1.2fr)_minmax(0,1.1fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]";
 export const CONVERSIONS_ROW_GRID_CLASS =
-  "sm:grid-cols-[1.2fr_1.1fr_1.3fr_1fr_1fr_1fr]";
+  "sm:grid-cols-[minmax(0,1.2fr)_minmax(0,1.1fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]";
 
 export const conversionsDirectoryColumns: DirectoryTableColumn[] = [
   { label: "NAME" },

@@ -1,9 +1,9 @@
 import type { DirectoryTableColumn } from "@/shared/types/components";
 
 export const CLIENT_PROJECTS_GRID_CLASS =
-  "grid-cols-[1.2fr_0.8fr_0.8fr_0.6fr]";
+  "grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.6fr)]";
 export const CLIENT_PROJECTS_ROW_GRID_CLASS =
-  "sm:grid-cols-[1.2fr_0.8fr_0.8fr_0.6fr]";
+  "sm:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.6fr)]";
 
 export const clientProjectsColumns: DirectoryTableColumn[] = [
   { label: "PROJECT" },

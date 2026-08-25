@@ -17,7 +17,7 @@ export const postApprovalsDirectoryConfig = {
   description:
     "Backdated posts from executives waiting for approve or reject.",
   gridClass:
-    "grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.8fr)_auto]",
+    "grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.8fr)_5rem]",
   columns: [
     { label: "POST" },
     { label: "PROJECT" },
