@@ -4,6 +4,7 @@ import { lazyRoutePage } from "@/app/lazyRoute";
 import { TeamRoute } from "@/features/auth/components/TeamRoute";
 import { ClientRoute } from "@/features/auth/components/ClientRoute";
 import { UserRoute } from "@/features/auth/components/UserRoute";
+import { CrmAccessGate } from "@/features/crm/components/CrmAccessGate";
 import { RouteErrorPage } from "@/shared/pages/RouteErrorPage";
 
 const PublicLayout = lazyRoutePage(
@@ -168,9 +169,9 @@ const LeadsManagementPage = lazyRoutePage(
   () => import("@/features/crm/pages/LeadsManagementPage"),
   "LeadsManagementPage",
 );
-const ConversionsManagementPage = lazyRoutePage(
-  () => import("@/features/crm/pages/ConversionsManagementPage"),
-  "ConversionsManagementPage",
+const ContactManagementPage = lazyRoutePage(
+  () => import("@/features/crm/pages/ContactManagementPage"),
+  "ContactManagementPage",
 );
 const ProductionPlanDetailPage = lazyRoutePage(
   () =>
@@ -329,10 +330,15 @@ export const router = createBrowserRouter([
           },
           {
             path: "crm",
+            element: <CrmAccessGate />,
             children: [
               { index: true, element: <Navigate to="leads" replace /> },
               { path: "leads", element: <LeadsManagementPage /> },
-              { path: "conversions", element: <ConversionsManagementPage /> },
+              { path: "contact", element: <ContactManagementPage /> },
+              {
+                path: "conversions",
+                element: <Navigate to="../contact" replace />,
+              },
             ],
           },
           { path: "production-planner", element: <ProductionPlannerPage /> },

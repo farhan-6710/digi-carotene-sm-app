@@ -12,7 +12,8 @@ export type RbacResource =
   | "posts"
   | "productionPlans"
   | "tasks"
-  | "leads";
+  | "leads"
+  | "crm";
 export type RbacAction = "create" | "read" | "update" | "delete";
 export type Permission = `${RbacResource}.${RbacAction}`;
 
@@ -27,9 +28,10 @@ const ROLE_RESOURCES: Record<TeamMemberRole, RbacResource[]> = {
     "productionPlans",
     "tasks",
     "leads",
+    "crm",
   ],
-  manager: ["clients", "projects", "posts", "tasks", "leads"],
-  executive: ["posts", "tasks", "leads"],
+  manager: ["clients", "projects", "posts", "tasks"],
+  executive: ["posts", "tasks"],
 };
 
 export function can(role: TeamMemberRole | null, permission: Permission): boolean {

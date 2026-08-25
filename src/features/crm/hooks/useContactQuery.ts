@@ -5,18 +5,18 @@ import type { Lead } from "@/features/crm/types/types";
 import { fetchConvertedLeads } from "@/services/leadsService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
-export function useConversionsQuery() {
+export function useContactQuery() {
   const load = useCallback(
     () => fetchConvertedLeads(CONVERTED_LEAD_SCORE),
     [],
   );
   const {
-    data: conversions,
+    data: contacts,
     isLoading,
     error,
     setError,
     reload,
   } = useFetch<Lead[]>(load, []);
 
-  return { conversions, isLoading, error, setError, reload };
+  return { contacts, isLoading, error, setError, reload };
 }

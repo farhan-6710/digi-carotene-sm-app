@@ -11,11 +11,12 @@ import { GrowthSelectedAccountProvider } from "@/features/growth-and-analytics/p
 import { GrowthSelectedAdAccountProvider } from "@/features/growth-and-analytics/providers/GrowthSelectedAdAccountProvider";
 import { TeamNotificationsHeaderButton } from "@/features/notifications/components/TeamNotificationsHeaderButton";
 import { TeamReviewerAccessProvider } from "@/features/post-approvals/providers/TeamReviewerAccessProvider";
-import { teamShellConfig } from "@/features/team-portal-shell/constants/shellConfig";
+import { useTeamShellConfig } from "@/features/team-portal-shell/hooks/useTeamShellConfig";
 import { AppShellLayout } from "@/shared/layouts/AppShellLayout";
 
 function TeamLayoutShell() {
   const { pathname } = useLocation();
+  const sidebarConfig = useTeamShellConfig();
   const isGrowthRoute = pathname.startsWith(teamGrowthBasePath);
   const accounts = growthHeaderAccounts(pathname);
 
@@ -30,7 +31,7 @@ function TeamLayoutShell() {
 
   return (
     <AppShellLayout
-      sidebarConfig={teamShellConfig}
+      sidebarConfig={sidebarConfig}
       accountPath="/team-portal/account"
       settingsPath="/team-portal/settings"
       headerActions={
