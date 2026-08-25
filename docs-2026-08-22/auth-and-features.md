@@ -84,7 +84,7 @@ Project-scoped only. Status: `pending` → `in_progress` → `completed`. Priori
 
 **People on a task (keep roles separate):**
 
-- **Assign to** — required; pick a **teammate** or a **client** from one dropdown (grouped list). Exactly one assignee is stored (`assigned_to_team_member_id` **or** `client_id`)
+- **Assign to** — required; pick **one or more** project teammates and/or the project client (MultiSelect). Stored in `task_assignees` (teammate XOR client per row). Legacy `assigned_to_team_member_id` / `client_id` stay synced to the first of each kind for portal lists.
 - **Dependencies** — optional project teammates (`task_tags`) and/or the project client (`tasks.dependency_client_id`). The assignee cannot also be listed as a dependency.
 
 Visibility (team):
@@ -97,7 +97,11 @@ Visibility (client): tasks where `client_id` matches (i.e. assigned to that clie
 
 On create, notify the team assignee (if teammate), dependency members, project manager, and admins (excluding the raiser). Clients see the task in their portal list (no separate client inbox in V1).
 
-Task detail includes DB-backed chat. Authors are a teammate **or** the task client. `@` mentions cover raiser, assignee, dependencies, project manager, task client, and admins. No websockets — refresh after send.
+Task detail includes DB-backed chat. Authors are a teammate **or** the task client. `@` mentions cover raiser, assignees, dependencies, project manager, task client, and admins. `/` mentions list this task’s subtasks by title. No websockets — refresh after send.
+
+**Edit** — only the person who raised the task (team list pencil). Admins / PMs / assignees who did not raise it can still view and chat.
+
+**Subtasks** — full-width block below chat on task detail (team + client). Anyone who can open the task can add a subtask (title + description + assign to someone already on that task). Click a subtask title to open its detail page (full description + meta). Subtask **full edit/delete** is only for that subtask’s raiser; the **assignee** can update status (`pending` → `in_progress` → `completed`).
 
 ---
 

@@ -13,6 +13,11 @@ export type TaskChatParticipant = {
   roles: TaskChatMentionRole[];
 };
 
+export type TaskChatSubtaskOption = {
+  id: string;
+  title: string;
+};
+
 type BuildTaskChatParticipantsOptions = {
   /** All team members with team_role = admin. */
   admins?: TaskMemberRef[];
@@ -25,8 +30,7 @@ function sortRoles(roles: TaskChatMentionRole[]): TaskChatMentionRole[] {
 
 /**
  * People who can be @mentioned in task chat:
- * raiser, assignee, dependencies, project manager, task client, and admins.
- * One person can carry multiple role labels (e.g. manager + admin).
+ * raiser, assignees, dependencies, project manager, task client, and admins.
  */
 export function buildTaskChatParticipants(
   task: Task,
@@ -59,6 +63,19 @@ export function buildTaskChatParticipants(
 
   add(task.created_by, "raiser");
   add(task.assigned_to, "assignee");
+  for (const assignee of task.assignees) {
+    if (assignee.team_member) add(assignee.team_member, "assignee");
+    if (assignee.client) {
+      add(
+        { id: assignee.client.id, member_name: assignee.client.client_name },
+        "assignee",
+      );
+      add(
+        { id: assignee.client.id, member_name: assignee.client.client_name },
+        "client",
+      );
+    }
+  }
   for (const member of task.tagged_members) {
     add(member, "dependency");
   }
@@ -73,10 +90,7 @@ export function buildTaskChatParticipants(
   }
   add(task.projects?.manager ?? null, "manager");
 
-  if (task.client && !task.assigned_to_team_member_id) {
-    add({ id: task.client.id, member_name: task.client.client_name }, "assignee");
-    add({ id: task.client.id, member_name: task.client.client_name }, "client");
-  } else if (task.client) {
+  if (task.client && !task.assignees.some((row) => row.client_id === task.client_id)) {
     add({ id: task.client.id, member_name: task.client.client_name }, "client");
   }
 
@@ -90,30 +104,53 @@ export function buildTaskChatParticipants(
 }
 
 export type ActiveMention = {
-  /** Start index of the `@` in the draft. */
+  /** Start index of the `@` or `/` in the draft. */
   startIndex: number;
-  /** Text typed after `@` (may be empty). */
+  /** Text typed after the trigger (may be empty). */
   query: string;
+  kind: "person" | "subtask";
 };
+
+function getActiveTriggerMention(
+  text: string,
+  cursorIndex: number,
+  trigger: "@" | "/",
+  kind: ActiveMention["kind"],
+): ActiveMention | null {
+  const before = text.slice(0, cursorIndex);
+  const triggerIndex = before.lastIndexOf(trigger);
+  if (triggerIndex < 0) return null;
+
+  if (triggerIndex > 0) {
+    const charBefore = before[triggerIndex - 1];
+    if (charBefore && !/\s/.test(charBefore)) return null;
+  }
+
+  const query = before.slice(triggerIndex + 1);
+  if (/\s/.test(query)) return null;
+
+  return { startIndex: triggerIndex, query, kind };
+}
 
 /** Detect an open `@mention` at the caret (no whitespace after `@`). */
 export function getActiveMention(
   text: string,
   cursorIndex: number,
 ): ActiveMention | null {
-  const before = text.slice(0, cursorIndex);
-  const atIndex = before.lastIndexOf("@");
-  if (atIndex < 0) return null;
+  const atMention = getActiveTriggerMention(text, cursorIndex, "@", "person");
+  const slashMention = getActiveTriggerMention(
+    text,
+    cursorIndex,
+    "/",
+    "subtask",
+  );
 
-  if (atIndex > 0) {
-    const charBefore = before[atIndex - 1];
-    if (charBefore && !/\s/.test(charBefore)) return null;
+  if (atMention && slashMention) {
+    return atMention.startIndex >= slashMention.startIndex
+      ? atMention
+      : slashMention;
   }
-
-  const query = before.slice(atIndex + 1);
-  if (/\s/.test(query)) return null;
-
-  return { startIndex: atIndex, query };
+  return atMention ?? slashMention;
 }
 
 export function filterMentionParticipants(
@@ -127,46 +164,115 @@ export function filterMentionParticipants(
   );
 }
 
+export function filterSubtaskMentionOptions(
+  subtasks: TaskChatSubtaskOption[],
+  query: string,
+): TaskChatSubtaskOption[] {
+  const normalized = query.trim().toLowerCase();
+  if (!normalized) return subtasks;
+  return subtasks.filter((subtask) =>
+    subtask.title.toLowerCase().includes(normalized),
+  );
+}
+
 export function insertMention(
   text: string,
   cursorIndex: number,
   mention: ActiveMention,
-  memberName: string,
+  label: string,
 ): { nextText: string; nextCursor: number } {
   const before = text.slice(0, mention.startIndex);
   const after = text.slice(cursorIndex);
-  const inserted = `@${memberName} `;
+  const prefix = mention.kind === "subtask" ? "/" : "@";
+  const inserted = `${prefix}${label} `;
   const nextText = `${before}${inserted}${after}`;
   const nextCursor = before.length + inserted.length;
   return { nextText, nextCursor };
 }
 
-/** Split message body so `@Name` tokens can be highlighted. */
+type MessagePart = {
+  text: string;
+  isMention: boolean;
+  isSubtaskMention?: boolean;
+};
+
+/** Split message body so `@Name` and `/Title` tokens can be highlighted. */
 export function splitMessageWithMentions(
   body: string,
   participantNames: string[],
-): Array<{ text: string; isMention: boolean }> {
-  if (!body || participantNames.length === 0) {
+  subtaskTitles: string[] = [],
+): MessagePart[] {
+  if (!body) return [{ text: body, isMention: false }];
+
+  const personEscaped = [...participantNames]
+    .sort((a, b) => b.length - a.length)
+    .map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const subtaskEscaped = [...subtaskTitles]
+    .sort((a, b) => b.length - a.length)
+    .map((title) => title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+
+  const patterns: Array<{
+    regex: RegExp;
+    isSubtaskMention: boolean;
+  }> = [];
+
+  if (personEscaped.length > 0) {
+    patterns.push({
+      regex: new RegExp(
+        `(@(?:${personEscaped.join("|")}))(?=\\s|$|[.,!?;:])`,
+        "g",
+      ),
+      isSubtaskMention: false,
+    });
+  }
+  if (subtaskEscaped.length > 0) {
+    patterns.push({
+      regex: new RegExp(
+        `(/(?:${subtaskEscaped.join("|")}))(?=\\s|$|[.,!?;:])`,
+        "g",
+      ),
+      isSubtaskMention: true,
+    });
+  }
+
+  if (patterns.length === 0) {
     return [{ text: body, isMention: false }];
   }
 
-  const escaped = [...participantNames]
-    .sort((a, b) => b.length - a.length)
-    .map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-  const pattern = new RegExp(
-    `(@(?:${escaped.join("|")}))(?=\\s|$|[.,!?;:])`,
-    "g",
-  );
+  type Hit = {
+    index: number;
+    length: number;
+    text: string;
+    isSubtaskMention: boolean;
+  };
 
-  const parts: Array<{ text: string; isMention: boolean }> = [];
-  let lastIndex = 0;
-  for (const match of body.matchAll(pattern)) {
-    const index = match.index ?? 0;
-    if (index > lastIndex) {
-      parts.push({ text: body.slice(lastIndex, index), isMention: false });
+  const hits: Hit[] = [];
+  for (const pattern of patterns) {
+    for (const match of body.matchAll(pattern.regex)) {
+      hits.push({
+        index: match.index ?? 0,
+        length: match[0].length,
+        text: match[1] ?? match[0],
+        isSubtaskMention: pattern.isSubtaskMention,
+      });
     }
-    parts.push({ text: match[1] ?? match[0], isMention: true });
-    lastIndex = index + match[0].length;
+  }
+
+  hits.sort((a, b) => a.index - b.index || b.length - a.length);
+
+  const parts: MessagePart[] = [];
+  let lastIndex = 0;
+  for (const hit of hits) {
+    if (hit.index < lastIndex) continue;
+    if (hit.index > lastIndex) {
+      parts.push({ text: body.slice(lastIndex, hit.index), isMention: false });
+    }
+    parts.push({
+      text: hit.text,
+      isMention: true,
+      isSubtaskMention: hit.isSubtaskMention,
+    });
+    lastIndex = hit.index + hit.length;
   }
   if (lastIndex < body.length) {
     parts.push({ text: body.slice(lastIndex), isMention: false });

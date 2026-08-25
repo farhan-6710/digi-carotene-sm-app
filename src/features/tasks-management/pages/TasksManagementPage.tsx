@@ -21,7 +21,7 @@ import { matchesListingSearch } from "@/shared/utils/listingSearch";
 
 export function TasksManagementPage() {
   const { can } = usePermissions();
-  const { teamRole, teamMemberId } = useAuth();
+  const { teamMemberId } = useAuth();
   const { tasks, isLoading, error, setError, reload } = useTasksQuery();
   const { openAddDialog, openEditDialog, dialog } = useTaskDialog({
     reload,
@@ -69,7 +69,7 @@ export function TasksManagementPage() {
         tasks={filteredTasks}
         isLoading={isLoading}
         canEditTask={(task) =>
-          canEditTaskAccess({ task, teamRole, teamMemberId })
+          canEditTaskAccess({ task, teamMemberId })
         }
         onEditTask={openEditDialog}
         searchQuery={searchQuery}

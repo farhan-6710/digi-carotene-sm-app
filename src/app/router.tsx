@@ -160,6 +160,10 @@ const TaskDetailPage = lazyRoutePage(
   () => import("@/features/tasks-management/pages/TaskDetailPage"),
   "TaskDetailPage",
 );
+const SubtaskDetailPage = lazyRoutePage(
+  () => import("@/features/tasks-management/pages/SubtaskDetailPage"),
+  "SubtaskDetailPage",
+);
 const LeadsManagementPage = lazyRoutePage(
   () => import("@/features/crm/pages/LeadsManagementPage"),
   "LeadsManagementPage",
@@ -212,6 +216,10 @@ const ClientTasksPage = lazyRoutePage(
 const ClientTaskDetailPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientTaskDetailPage"),
   "ClientTaskDetailPage",
+);
+const ClientSubtaskDetailPage = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientSubtaskDetailPage"),
+  "ClientSubtaskDetailPage",
 );
 const ShareLayout = lazyRoutePage(
   () => import("@/shared/layouts/ShareLayout"),
@@ -312,6 +320,10 @@ export const router = createBrowserRouter([
           },
           { path: "tasks-management", element: <TasksManagementPage /> },
           {
+            path: "tasks-management/:taskId/subtasks/:subtaskId",
+            element: <SubtaskDetailPage />,
+          },
+          {
             path: "tasks-management/:taskId",
             element: <TaskDetailPage />,
           },
@@ -372,6 +384,10 @@ export const router = createBrowserRouter([
           },
           { path: "posts", element: <ClientPostsPage /> },
           { path: "tasks-management", element: <ClientTasksPage /> },
+          {
+            path: "tasks-management/:taskId/subtasks/:subtaskId",
+            element: <ClientSubtaskDetailPage />,
+          },
           {
             path: "tasks-management/:taskId",
             element: <ClientTaskDetailPage />,

@@ -8,16 +8,13 @@ import type {
   TaskPriority,
   TaskStatus,
 } from "@/features/tasks-management/types/types";
-import {
-  encodeTaskAssignee,
-  parseTaskAssignee,
-} from "@/features/tasks-management/utils/taskAssigneeUtils";
+import { assigneeKeysFromTask } from "@/features/tasks-management/utils/taskAssigneeListUtils";
 import { dependencyKeysFromTask } from "@/features/tasks-management/utils/taskDependencyUtils";
 
 export type TaskFormValues = {
   projectId: string;
-  /** Encoded `team:<id>` or `client:<id>`. */
-  assigneeKey: string;
+  /** Encoded `team:<id>` / `client:<id>` keys. */
+  assigneeKeys: string[];
   title: string;
   description: string;
   /** Encoded dependency keys: `team:<id>` and/or `client:<id>`. */
@@ -29,7 +26,7 @@ export type TaskFormValues = {
 
 export const emptyTaskFormValues = (): TaskFormValues => ({
   projectId: "",
-  assigneeKey: "",
+  assigneeKeys: [],
   title: "",
   description: "",
   dependencyKeys: [],
@@ -39,16 +36,9 @@ export const emptyTaskFormValues = (): TaskFormValues => ({
 });
 
 export function taskToFormValues(task: Task): TaskFormValues {
-  let assigneeKey = "";
-  if (task.assigned_to_team_member_id) {
-    assigneeKey = encodeTaskAssignee("team", task.assigned_to_team_member_id);
-  } else if (task.client_id) {
-    assigneeKey = encodeTaskAssignee("client", task.client_id);
-  }
-
   return {
     projectId: task.project_id,
-    assigneeKey,
+    assigneeKeys: assigneeKeysFromTask(task),
     title: task.title,
     description: task.description ?? "",
     dependencyKeys: dependencyKeysFromTask(task),
@@ -61,8 +51,8 @@ export function taskToFormValues(task: Task): TaskFormValues {
 export function validateTaskForm(values: TaskFormValues): string | null {
   if (!values.projectId) return "Select a project.";
   if (!values.title.trim()) return "Enter a title.";
-  if (!parseTaskAssignee(values.assigneeKey)) {
-    return "Select a teammate or client to assign.";
+  if (values.assigneeKeys.length === 0) {
+    return "Assign to at least one teammate or client.";
   }
   if (!toRepositoryDateTime(values.eta)) {
     return "ETA requires both date and time.";

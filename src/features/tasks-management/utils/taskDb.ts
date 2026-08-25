@@ -1,5 +1,6 @@
 import type {
   Task,
+  TaskAssigneeRef,
   TaskClientRef,
   TaskMemberRef,
   TaskProjectRef,
@@ -15,6 +16,13 @@ function pickRelation<T>(value: Rel<T>): T | null {
 type TaskTagRow = {
   team_member_id: string;
   team_members: Rel<TaskMemberRef>;
+};
+
+type TaskAssigneeRow = {
+  team_member_id: string | null;
+  client_id: string | null;
+  team_members: Rel<TaskMemberRef>;
+  clients: Rel<TaskClientRef>;
 };
 
 export type TaskRow = {
@@ -44,7 +52,31 @@ export type TaskRow = {
   created_by: Rel<TaskMemberRef>;
   assigned_to: Rel<TaskMemberRef>;
   task_tags: TaskTagRow[] | null;
+  task_assignees: TaskAssigneeRow[] | null;
 };
+
+function mapAssigneeRows(rows: TaskAssigneeRow[] | null): TaskAssigneeRef[] {
+  return (rows ?? [])
+    .map((row) => {
+      const team_member = pickRelation(row.team_members);
+      const client = pickRelation(row.clients);
+      return {
+        team_member_id: row.team_member_id,
+        client_id: row.client_id,
+        team_member:
+          team_member ??
+          (row.team_member_id
+            ? { id: row.team_member_id, member_name: "—" }
+            : null),
+        client:
+          client ??
+          (row.client_id
+            ? { id: row.client_id, client_name: "—" }
+            : null),
+      };
+    })
+    .filter((row) => Boolean(row.team_member_id || row.client_id));
+}
 
 export function mapTaskRow(row: TaskRow): Task {
   const project = pickRelation(row.projects);
@@ -98,6 +130,33 @@ export function mapTaskRow(row: TaskRow): Task {
     })
     .filter((member) => Boolean(member.id));
 
+  let assignees = mapAssigneeRows(row.task_assignees);
+  if (assignees.length === 0) {
+    if (row.assigned_to_team_member_id) {
+      assignees = [
+        {
+          team_member_id: row.assigned_to_team_member_id,
+          client_id: null,
+          team_member:
+            pickRelation(row.assigned_to) ?? {
+              id: row.assigned_to_team_member_id,
+              member_name: "—",
+            },
+          client: null,
+        },
+      ];
+    } else if (row.client_id) {
+      assignees = [
+        {
+          team_member_id: null,
+          client_id: row.client_id,
+          team_member: null,
+          client: client ?? { id: row.client_id, client_name: "—" },
+        },
+      ];
+    }
+  }
+
   return {
     id: row.id,
     project_id: row.project_id,
@@ -119,5 +178,6 @@ export function mapTaskRow(row: TaskRow): Task {
     created_by: pickRelation(row.created_by),
     assigned_to: pickRelation(row.assigned_to),
     tagged_members,
+    assignees,
   };
 }

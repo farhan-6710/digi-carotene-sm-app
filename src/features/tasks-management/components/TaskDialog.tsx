@@ -1,16 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { PostDateTimePicker } from "@/features/posts-management/components/PostDateTimePicker";
-import { TaskAssigneePicker } from "@/features/tasks-management/components/TaskAssigneePicker";
-import { TaskDependenciesSelect } from "@/features/tasks-management/components/TaskMemberSelects";
+import {
+  TaskAssigneesSelect,
+  TaskDependenciesSelect,
+} from "@/features/tasks-management/components/TaskMemberSelects";
 import { TaskPrioritySelect } from "@/features/tasks-management/components/TaskPrioritySelect";
 import { TaskProjectSelect } from "@/features/tasks-management/components/TaskProjectSelect";
 import { TaskStatusSelect } from "@/features/tasks-management/components/TaskStatusSelect";
 import type { TaskDialogProps } from "@/features/tasks-management/types/components";
-import {
-  encodeTaskAssignee,
-  parseTaskAssignee,
-} from "@/features/tasks-management/utils/taskAssigneeUtils";
+import { encodeTaskAssignee } from "@/features/tasks-management/utils/taskAssigneeUtils";
 import {
   getProjectAssociatedMemberIds,
   getProjectClientId,
@@ -71,16 +70,23 @@ export function TaskDialog({
     ? getProjectClientId(selectedProject)
     : null;
 
-  const assignee = parseTaskAssignee(values.assigneeKey);
+  const myselfKey = currentTeamMemberId
+    ? encodeTaskAssignee("team", currentTeamMemberId)
+    : null;
   const canAssignMyself =
-    Boolean(currentTeamMemberId) &&
+    Boolean(myselfKey) &&
     Boolean(projectMemberIds?.includes(currentTeamMemberId ?? ""));
 
   const canSave =
     values.projectId.length > 0 &&
     values.title.trim().length > 0 &&
-    Boolean(assignee) &&
-    Boolean(values.eta?.time.trim() && values.eta.day && values.eta.month && values.eta.year);
+    values.assigneeKeys.length > 0 &&
+    Boolean(
+      values.eta?.time.trim() &&
+        values.eta.day &&
+        values.eta.month &&
+        values.eta.year,
+    );
 
   return (
     <>
@@ -89,8 +95,8 @@ export function TaskDialog({
           <DialogHeader className="shrink-0">
             <DialogTitle>{isEditing ? "Edit Task" : "Add Task"}</DialogTitle>
             <DialogDescription>
-              Tie the task to a project, assign a project teammate or that
-              project’s client, set priority, and set an ETA deadline.
+              Tie the task to a project, assign one or more people, set
+              priority, and set an ETA deadline.
             </DialogDescription>
           </DialogHeader>
 
@@ -131,52 +137,43 @@ export function TaskDialog({
               </div>
             </label>
 
-            <label className="block text-xs font-semibold text-muted-foreground">
-              Assign to
-              <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
-                <div className="min-w-0 flex-1">
-                  <TaskAssigneePicker
-                    value={values.assigneeKey}
-                    onChange={(assigneeKey) =>
-                      onFieldChange("assigneeKey", assigneeKey)
-                    }
-                    allowedMemberIds={projectMemberIds}
-                    allowedClientId={projectClientId}
-                    disabled={isSaving}
-                    preload={open}
-                  />
-                </div>
-                {currentTeamMemberId ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="shrink-0"
-                    disabled={
-                      isSaving ||
-                      !canAssignMyself ||
-                      values.assigneeKey ===
-                        encodeTaskAssignee("team", currentTeamMemberId)
-                    }
-                    onClick={() =>
-                      onFieldChange(
-                        "assigneeKey",
-                        encodeTaskAssignee("team", currentTeamMemberId),
-                      )
-                    }
-                  >
-                    Assign myself
-                  </Button>
-                ) : null}
-              </div>
-            </label>
+            <div className="space-y-2">
+              <TaskAssigneesSelect
+                value={values.assigneeKeys}
+                onChange={(keys) => onFieldChange("assigneeKeys", keys)}
+                allowedMemberIds={projectMemberIds}
+                allowedClientId={projectClientId}
+                disabled={isSaving}
+                preload={open}
+              />
+              {myselfKey ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={
+                    isSaving ||
+                    !canAssignMyself ||
+                    values.assigneeKeys.includes(myselfKey)
+                  }
+                  onClick={() =>
+                    onFieldChange("assigneeKeys", [
+                      ...values.assigneeKeys,
+                      myselfKey,
+                    ])
+                  }
+                >
+                  Assign myself
+                </Button>
+              ) : null}
+            </div>
 
             <TaskDependenciesSelect
               value={values.dependencyKeys}
               onChange={(keys) => onFieldChange("dependencyKeys", keys)}
               allowedMemberIds={projectMemberIds}
               allowedClientId={projectClientId}
-              excludeKeys={values.assigneeKey ? [values.assigneeKey] : []}
+              excludeKeys={values.assigneeKeys}
               disabled={isSaving}
               preload={open}
             />

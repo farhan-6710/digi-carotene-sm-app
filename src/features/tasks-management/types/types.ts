@@ -20,6 +20,13 @@ export type TaskClientRef = {
   client_name: string;
 };
 
+export type TaskAssigneeRef = {
+  team_member_id: string | null;
+  client_id: string | null;
+  team_member: TaskMemberRef | null;
+  client: TaskClientRef | null;
+};
+
 export type Task = {
   id: string;
   project_id: string;
@@ -41,6 +48,7 @@ export type Task = {
   created_by: TaskMemberRef | null;
   assigned_to: TaskMemberRef | null;
   tagged_members: TaskMemberRef[];
+  assignees: TaskAssigneeRef[];
 };
 
 export type TaskMessage = {
@@ -56,10 +64,10 @@ export type TaskMessage = {
 
 export type CreateTaskInput = {
   projectId: string;
-  clientId?: string | null;
   title: string;
   description?: string | null;
-  assignedToTeamMemberId?: string | null;
+  assigneeTeamMemberIds?: string[];
+  assigneeClientIds?: string[];
   priority: TaskPriority;
   etaDate: string;
   etaTime: string;
@@ -69,14 +77,58 @@ export type CreateTaskInput = {
 
 export type UpdateTaskInput = {
   projectId?: string;
-  clientId?: string | null;
   title?: string;
   description?: string | null;
-  assignedToTeamMemberId?: string | null;
+  assigneeTeamMemberIds?: string[];
+  assigneeClientIds?: string[];
   priority?: TaskPriority;
   etaDate?: string;
   etaTime?: string;
   status?: TaskStatus;
   taggedTeamMemberIds?: string[];
   dependencyClientId?: string | null;
+};
+
+export type Subtask = {
+  id: string;
+  parent_task_id: string;
+  title: string;
+  description: string;
+  created_by_team_member_id: string | null;
+  created_by_client_id: string | null;
+  assigned_to_team_member_id: string | null;
+  assigned_to_client_id: string | null;
+  priority: TaskPriority;
+  eta_date: string;
+  eta_time: string;
+  status: TaskStatus;
+  created_at: string;
+  updated_at: string;
+  created_by: TaskMemberRef | null;
+  created_by_client: TaskClientRef | null;
+  assigned_to: TaskMemberRef | null;
+  assigned_to_client: TaskClientRef | null;
+  assignees: TaskAssigneeRef[];
+};
+
+export type CreateSubtaskInput = {
+  parentTaskId: string;
+  title: string;
+  description: string;
+  assigneeTeamMemberIds?: string[];
+  assigneeClientIds?: string[];
+  priority: TaskPriority;
+  etaDate: string;
+  etaTime: string;
+};
+
+export type UpdateSubtaskInput = {
+  title?: string;
+  description?: string;
+  assigneeTeamMemberIds?: string[];
+  assigneeClientIds?: string[];
+  priority?: TaskPriority;
+  etaDate?: string;
+  etaTime?: string;
+  status?: TaskStatus;
 };

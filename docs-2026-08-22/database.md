@@ -25,7 +25,8 @@ clients
   │     ├── project_team_members ──► team_members   (active when ended_at IS NULL)
   │     ├── posts
   │     └── tasks ──► task_tags ──► team_members
-  │            └── task_messages ──► team_members
+  │            ├── task_messages ──► team_members
+  │            └── subtasks ──► team_members / clients
   ├── production_plans
   │     ├── manager_id / shoot_incharge_id ──► team_members
   │     ├── production_plan_team_members ──► team_members
@@ -52,9 +53,12 @@ Rules: a **client** is a company. A **project** is one engagement (social profil
 | `posts` | Calendar row (`to_be_posted_*`, `status`, `socials[]`, `post_links`) |
 | `post_approval_requests` | Executive backdated posts waiting on manager/admin |
 | `notifications` | Team inbox (`approval`, `post_digest`, `task`) |
-| `tasks` | Project task: raiser, assignee is teammate **or** client (`assigned_to_team_member_id` XOR `client_id`), optional `dependency_client_id`, priority, ETA, status |
+| `tasks` | Project task: raiser, multi-assignees via `task_assignees`, optional `dependency_client_id`, priority, ETA, status |
 | `task_tags` | Task dependencies for extra teammates (`team_member_id`) |
+| `task_assignees` | Task assignees: teammate **or** client per row |
 | `task_messages` | Task chat; author is teammate **or** client (`author_team_member_id` / `author_client_id`) |
+| `subtasks` | Nested under a task; title + description; creator XOR; multi-assignees via `subtask_assignees` |
+| `subtask_assignees` | Subtask assignees: teammate **or** client per row |
 | `leads` | CRM leads: name, company, email, phone, industry, lead score (1–5), status, lead source |
 | `production_plans` | Shoot plan per client + `share_token` |
 | `production_plan_items` | Content in a plan: `script`, `reference_link`, three approvals |

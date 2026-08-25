@@ -168,6 +168,12 @@ const TASK_SELECT = `
   task_tags (
     team_member_id,
     team_members ( id, member_name )
+  ),
+  task_assignees (
+    team_member_id,
+    client_id,
+    team_members ( id, member_name ),
+    clients ( id, client_name )
   )
 `;
 
@@ -192,6 +198,45 @@ const TASK_MESSAGE_SELECT = `
   author_client:clients!author_client_id (
     id,
     client_name
+  )
+`;
+
+const SUBTASK_SELECT = `
+  id,
+  parent_task_id,
+  title,
+  description,
+  created_by_team_member_id,
+  created_by_client_id,
+  assigned_to_team_member_id,
+  assigned_to_client_id,
+  priority,
+  eta_date,
+  eta_time,
+  status,
+  created_at,
+  updated_at,
+  created_by:team_members!created_by_team_member_id (
+    id,
+    member_name
+  ),
+  created_by_client:clients!created_by_client_id (
+    id,
+    client_name
+  ),
+  assigned_to:team_members!assigned_to_team_member_id (
+    id,
+    member_name
+  ),
+  assigned_to_client:clients!assigned_to_client_id (
+    id,
+    client_name
+  ),
+  subtask_assignees (
+    team_member_id,
+    client_id,
+    team_members ( id, member_name ),
+    clients ( id, client_name )
   )
 `;
 
@@ -249,9 +294,21 @@ export const DB = {
     TABLE: "task_tags",
     SELECT: TASK_TAG_SELECT,
   },
+  TASK_ASSIGNEES: {
+    TABLE: "task_assignees",
+    SELECT: "id, task_id, team_member_id, client_id, created_at",
+  },
   TASK_MESSAGES: {
     TABLE: "task_messages",
     SELECT: TASK_MESSAGE_SELECT,
+  },
+  SUBTASKS: {
+    TABLE: "subtasks",
+    SELECT: SUBTASK_SELECT,
+  },
+  SUBTASK_ASSIGNEES: {
+    TABLE: "subtask_assignees",
+    SELECT: "id, subtask_id, team_member_id, client_id, created_at",
   },
   LEADS: {
     TABLE: "leads",

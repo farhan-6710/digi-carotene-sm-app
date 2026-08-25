@@ -32,7 +32,8 @@ export function TaskAssigneePicker({
   value,
   onChange,
   allowedMemberIds,
-  allowedClientId,
+  allowedClientId = null,
+  allowedClientIds = [],
   disabled = false,
   preload = false,
 }: TaskAssigneePickerProps) {
@@ -76,6 +77,9 @@ export function TaskAssigneePicker({
     if (allowedClientId) {
       clientIds.add(allowedClientId);
     }
+    for (const id of allowedClientIds) {
+      if (id) clientIds.add(id);
+    }
     if (selected?.kind === "client") {
       clientIds.add(selected.id);
     }
@@ -89,7 +93,15 @@ export function TaskAssigneePicker({
       }));
 
     return [...teamOptions, ...clientOptions];
-  }, [allowedClientId, allowedMemberIds, clients, hasProject, members, value]);
+  }, [
+    allowedClientId,
+    allowedClientIds,
+    allowedMemberIds,
+    clients,
+    hasProject,
+    members,
+    value,
+  ]);
 
   const selected = useMemo(
     () => options.find((option) => option.value === value) ?? null,

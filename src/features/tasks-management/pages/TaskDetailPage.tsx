@@ -3,11 +3,16 @@ import { useMemo } from "react";
 import { Link, useParams } from "react-router";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { SubtasksSection } from "@/features/tasks-management/components/SubtasksSection";
 import { TaskChat } from "@/features/tasks-management/components/TaskChat";
 import { TaskDetailSummary } from "@/features/tasks-management/components/TaskDetailSummary";
-import { TASKS_MANAGEMENT_PATH } from "@/features/tasks-management/constants/routes";
+import {
+  buildSubtaskDetailPath,
+  TASKS_MANAGEMENT_PATH,
+} from "@/features/tasks-management/constants/routes";
 import { useTaskChat } from "@/features/tasks-management/hooks/useTaskChat";
 import { useTaskDetailQuery } from "@/features/tasks-management/hooks/useTaskDetailQuery";
+import { useSubtasksQuery } from "@/features/tasks-management/hooks/useSubtasksQuery";
 import { buildTaskChatParticipants } from "@/features/tasks-management/utils/taskChatMentionUtils";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
@@ -31,6 +36,7 @@ export function TaskDetailPage() {
   const { teamMemberId } = useAuth();
   const { task, messages, adminMembers, isLoading, error, setError, reload } =
     useTaskDetailQuery(taskId);
+  const { subtasks } = useSubtasksQuery(taskId);
   const { draft, setDraft, isSending, sendMessage } = useTaskChat({
     taskId,
     reload,
@@ -41,6 +47,10 @@ export function TaskDetailPage() {
     () =>
       task ? buildTaskChatParticipants(task, { admins: adminMembers }) : [],
     [adminMembers, task],
+  );
+  const chatSubtasks = useMemo(
+    () => subtasks.map((subtask) => ({ id: subtask.id, title: subtask.title })),
+    [subtasks],
   );
 
   if (isLoading && !task) {
@@ -74,6 +84,7 @@ export function TaskDetailPage() {
           messages={messages}
           currentTeamMemberId={teamMemberId}
           chatParticipants={chatParticipants}
+          subtasks={chatSubtasks}
           draft={draft}
           onDraftChange={setDraft}
           onSend={() => void sendMessage()}
@@ -82,6 +93,12 @@ export function TaskDetailPage() {
           isRefreshing={isLoading}
         />
       </div>
+      <SubtasksSection
+        parentTask={task}
+        buildDetailPath={(subtaskId) =>
+          buildSubtaskDetailPath(task.id, subtaskId)
+        }
+      />
     </PageContent>
   );
 }

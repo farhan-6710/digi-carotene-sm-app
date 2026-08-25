@@ -2,85 +2,74 @@ import type { ReactNode } from "react";
 
 import { TASK_PRIORITY_LABELS } from "@/features/tasks-management/constants/taskPriorities";
 import { TASK_STATUS_LABELS } from "@/features/tasks-management/constants/taskStatuses";
-import type { TaskDetailSummaryProps } from "@/features/tasks-management/types/components";
+import type { SubtaskDetailSummaryProps } from "@/features/tasks-management/types/components";
 import { formatAssigneeLabels } from "@/features/tasks-management/utils/taskAssigneeListUtils";
 import { formatTaskEta } from "@/features/tasks-management/utils/taskDisplayUtils";
 import { cn } from "@/shared/lib/utils";
 
-export function TaskDetailSummary({ task }: TaskDetailSummaryProps) {
-  const projectLabel = task.projects?.project_name ?? "—";
-  const assigneeMembers = task.assignees
+export function SubtaskDetailSummary({
+  subtask,
+  parentTaskTitle,
+}: SubtaskDetailSummaryProps) {
+  const raiserLabel =
+    subtask.created_by?.member_name ??
+    (subtask.created_by_client?.client_name
+      ? `${subtask.created_by_client.client_name} (client)`
+      : "—");
+  const assigneeMembers = subtask.assignees
     .filter((row) => row.team_member)
     .map((row) => row.team_member!);
-  const assigneeClients = task.assignees
+  const assigneeClients = subtask.assignees
     .filter((row) => row.client)
-    .map((row) => ({
-      client_name: `${row.client!.client_name} (client)`,
-    }));
+    .map((row) =>
+      row.client
+        ? { client_name: `${row.client.client_name} (client)` }
+        : null,
+    )
+    .filter(Boolean) as { client_name: string }[];
   const assigneeLabel =
     assigneeMembers.length > 0 || assigneeClients.length > 0
       ? formatAssigneeLabels({
           members: assigneeMembers,
           clients: assigneeClients,
         })
-      : (task.assigned_to?.member_name ??
-        (task.client?.client_name
-          ? `${task.client.client_name} (client)`
+      : (subtask.assigned_to?.member_name ??
+        (subtask.assigned_to_client?.client_name
+          ? `${subtask.assigned_to_client.client_name} (client)`
           : "—"));
 
-  const dependencyParts = [
-    ...task.tagged_members.map((m) => m.member_name),
-    ...(task.dependency_client
-      ? [`${task.dependency_client.client_name} (client)`]
+  const details: Array<{ label: string; value: ReactNode }> = [
+    ...(parentTaskTitle
+      ? [{ label: "Parent task", value: parentTaskTitle }]
       : []),
-  ];
-  const dependenciesLabel =
-    dependencyParts.length > 0 ? dependencyParts.join(", ") : "—";
-
-  const details: Array<{
-    label: string;
-    value: ReactNode;
-  }> = [
-    { label: "Project", value: projectLabel },
-    {
-      label: "Raised by",
-      value: task.created_by?.member_name ?? "—",
-    },
-    {
-      label: "Assigned to",
-      value: assigneeLabel,
-    },
-    {
-      label: "Project manager",
-      value: task.projects?.manager?.member_name ?? "—",
-    },
-    { label: "Dependencies", value: dependenciesLabel },
+    { label: "Raised by", value: raiserLabel },
+    { label: "Assigned to", value: assigneeLabel },
     {
       label: "Priority",
       value: (
         <span
           className={cn(
             "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
-            task.priority === "high"
+            subtask.priority === "high"
               ? "bg-destructive/10 text-destructive"
-              : task.priority === "medium"
+              : subtask.priority === "medium"
                 ? "bg-primary/10 text-primary"
                 : "bg-muted text-muted-foreground",
           )}
         >
-          {TASK_PRIORITY_LABELS[task.priority]}
+          {TASK_PRIORITY_LABELS[subtask.priority]}
         </span>
       ),
     },
     {
       label: "ETA",
-      value: formatTaskEta(task.eta_date, task.eta_time),
+      value: formatTaskEta(subtask.eta_date, subtask.eta_time),
     },
     {
       label: "Status",
       value: (
         <span className="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">
-          {TASK_STATUS_LABELS[task.status]}
+          {TASK_STATUS_LABELS[subtask.status]}
         </span>
       ),
     },
@@ -90,11 +79,11 @@ export function TaskDetailSummary({ task }: TaskDetailSummaryProps) {
     <div className="flex h-full flex-col rounded-2xl border border-border bg-card shadow-sm">
       <div className="border-b border-border px-5 py-4 sm:px-6 sm:py-5">
         <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-          Task details
+          Subtask details
         </p>
-        {task.description ? (
+        {subtask.description ? (
           <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
-            {task.description}
+            {subtask.description}
           </p>
         ) : (
           <p className="mt-2 text-sm text-muted-foreground">No description.</p>

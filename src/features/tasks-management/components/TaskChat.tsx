@@ -12,9 +12,11 @@ import type { TaskChatProps } from "@/features/tasks-management/types/components
 import { taskChatMentionRoleLabel } from "@/features/tasks-management/constants/taskChatMentionRoles";
 import type {
   TaskChatParticipant,
+  TaskChatSubtaskOption,
 } from "@/features/tasks-management/utils/taskChatMentionUtils";
 import {
   filterMentionParticipants,
+  filterSubtaskMentionOptions,
   getActiveMention,
   insertMention,
   splitMessageWithMentions,
@@ -27,13 +29,19 @@ import { Button } from "@/shared/ui/button";
 function MessageBody({
   body,
   participantNames,
+  subtaskTitles,
   isMine,
 }: {
   body: string;
   participantNames: string[];
+  subtaskTitles: string[];
   isMine: boolean;
 }) {
-  const parts = splitMessageWithMentions(body, participantNames);
+  const parts = splitMessageWithMentions(
+    body,
+    participantNames,
+    subtaskTitles,
+  );
 
   return (
     <p className="whitespace-pre-wrap break-words">
@@ -61,6 +69,7 @@ export function TaskChat({
   currentTeamMemberId,
   currentClientId = null,
   chatParticipants,
+  subtasks = [],
   draft,
   onDraftChange,
   onSend,
@@ -89,12 +98,14 @@ export function TaskChat({
     () => chatParticipants.map((member) => member.member_name),
     [chatParticipants],
   );
+  const subtaskTitles = useMemo(
+    () => subtasks.map((subtask) => subtask.title),
+    [subtasks],
+  );
 
   const mentionParticipants = useMemo(
     () =>
       chatParticipants.filter((member) => {
-        // Don't offer @yourself for teammates. Clients still see themselves as
-        // "Myself" so the label is clear, but selecting it is harmless.
         if (currentTeamMemberId && member.id === currentTeamMemberId) {
           return false;
         }
@@ -103,20 +114,39 @@ export function TaskChat({
     [chatParticipants, currentTeamMemberId],
   );
 
-  const mentionOptions = useMemo(() => {
-    if (!activeMention) return [] as TaskChatParticipant[];
+  const personOptions = useMemo(() => {
+    if (!activeMention || activeMention.kind !== "person") {
+      return [] as TaskChatParticipant[];
+    }
     return filterMentionParticipants(
       mentionParticipants,
       activeMention.query,
     );
   }, [activeMention, mentionParticipants]);
 
+  const subtaskOptions = useMemo(() => {
+    if (!activeMention || activeMention.kind !== "subtask") {
+      return [] as TaskChatSubtaskOption[];
+    }
+    return filterSubtaskMentionOptions(subtasks, activeMention.query);
+  }, [activeMention, subtasks]);
+
+  const pickerOpen =
+    Boolean(activeMention) &&
+    ((activeMention?.kind === "person" && mentionParticipants.length > 0) ||
+      (activeMention?.kind === "subtask" && subtasks.length > 0));
+
+  const optionCount =
+    activeMention?.kind === "subtask"
+      ? subtaskOptions.length
+      : personOptions.length;
+
   const syncMentionState = (text: string, nextCursor: number) => {
     setCursorIndex(nextCursor);
     const nextMention = getActiveMention(text, nextCursor);
     setActiveMention(nextMention);
     const nextKey = nextMention
-      ? `${nextMention.startIndex}:${nextMention.query}`
+      ? `${nextMention.kind}:${nextMention.startIndex}:${nextMention.query}`
       : "";
     if (nextKey !== mentionKeyRef.current) {
       mentionKeyRef.current = nextKey;
@@ -124,8 +154,8 @@ export function TaskChat({
     }
   };
 
-  const applyMention = (member: TaskChatParticipant) => {
-    if (!activeMention) return;
+  const applyPersonMention = (member: TaskChatParticipant) => {
+    if (!activeMention || activeMention.kind !== "person") return;
     const { nextText, nextCursor } = insertMention(
       draft,
       cursorIndex,
@@ -144,26 +174,51 @@ export function TaskChat({
     });
   };
 
+  const applySubtaskMention = (subtask: TaskChatSubtaskOption) => {
+    if (!activeMention || activeMention.kind !== "subtask") return;
+    const { nextText, nextCursor } = insertMention(
+      draft,
+      cursorIndex,
+      activeMention,
+      subtask.title,
+    );
+    onDraftChange(nextText);
+    setActiveMention(null);
+    mentionKeyRef.current = "";
+    setCursorIndex(nextCursor);
+    requestAnimationFrame(() => {
+      const el = textareaRef.current;
+      if (!el) return;
+      el.focus();
+      el.setSelectionRange(nextCursor, nextCursor);
+    });
+  };
+
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (activeMention && mentionOptions.length > 0) {
+    if (pickerOpen && optionCount > 0) {
       if (event.key === "ArrowDown") {
         event.preventDefault();
         setHighlightIndex((current) =>
-          current + 1 >= mentionOptions.length ? 0 : current + 1,
+          current + 1 >= optionCount ? 0 : current + 1,
         );
         return;
       }
       if (event.key === "ArrowUp") {
         event.preventDefault();
         setHighlightIndex((current) =>
-          current - 1 < 0 ? mentionOptions.length - 1 : current - 1,
+          current - 1 < 0 ? optionCount - 1 : current - 1,
         );
         return;
       }
       if (event.key === "Enter" || event.key === "Tab") {
         event.preventDefault();
-        const selected = mentionOptions[highlightIndex];
-        if (selected) applyMention(selected);
+        if (activeMention?.kind === "subtask") {
+          const selected = subtaskOptions[highlightIndex];
+          if (selected) applySubtaskMention(selected);
+        } else {
+          const selected = personOptions[highlightIndex];
+          if (selected) applyPersonMention(selected);
+        }
         return;
       }
       if (event.key === "Escape") {
@@ -185,8 +240,8 @@ export function TaskChat({
         <div className="min-w-0">
           <h3 className="text-sm font-semibold text-foreground">Task chat</h3>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            Use @ to mention teammates or the client on this task. Refresh for
-            new replies.
+            Use @ to mention people and / to mention a subtask. Refresh for new
+            replies.
           </p>
         </div>
         <Button
@@ -254,6 +309,7 @@ export function TaskChat({
                 <MessageBody
                   body={message.body}
                   participantNames={participantNames}
+                  subtaskTitles={subtaskTitles}
                   isMine={isMine}
                 />
               </div>
@@ -263,15 +319,45 @@ export function TaskChat({
       </div>
 
       <div className="relative shrink-0 border-t border-border px-4 py-4 sm:px-5">
-        {activeMention && mentionParticipants.length > 0 ? (
+        {pickerOpen ? (
           <div className="absolute inset-x-4 bottom-full z-20 mb-2 overflow-hidden rounded-xl border border-border bg-popover shadow-lg sm:inset-x-5">
-            {mentionOptions.length === 0 ? (
+            {activeMention?.kind === "subtask" ? (
+              subtaskOptions.length === 0 ? (
+                <p className="px-3 py-2 text-xs text-muted-foreground">
+                  No matching subtasks.
+                </p>
+              ) : (
+                <ul className="max-h-40 overflow-y-auto py-1">
+                  {subtaskOptions.map((subtask, index) => (
+                    <li key={subtask.id}>
+                      <button
+                        type="button"
+                        className={cn(
+                          "flex w-full items-center px-3 py-2 text-left text-sm transition-colors",
+                          index === highlightIndex
+                            ? "bg-primary/10 text-primary"
+                            : "text-foreground hover:bg-muted",
+                        )}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          applySubtaskMention(subtask);
+                        }}
+                      >
+                        <span className="min-w-0 truncate font-medium">
+                          /{subtask.title}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )
+            ) : personOptions.length === 0 ? (
               <p className="px-3 py-2 text-xs text-muted-foreground">
                 No matching people on this task.
               </p>
             ) : (
               <ul className="max-h-40 overflow-y-auto py-1">
-                {mentionOptions.map((member, index) => (
+                {personOptions.map((member, index) => (
                   <li key={member.id}>
                     <button
                       type="button"
@@ -283,7 +369,7 @@ export function TaskChat({
                       )}
                       onMouseDown={(event) => {
                         event.preventDefault();
-                        applyMention(member);
+                        applyPersonMention(member);
                       }}
                     >
                       <span className="min-w-0 truncate font-medium">
@@ -332,7 +418,7 @@ export function TaskChat({
             syncMentionState(draft, nextCursor);
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Write a message… Use @ to mention someone"
+          placeholder="Write a message… @ people, / subtasks"
           disabled={isSending}
           className={cn(formFieldClassName, "max-h-32 min-h-20 resize-none")}
         />

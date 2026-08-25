@@ -44,6 +44,30 @@ async function fetchTaggedTaskIds(teamMemberId: string): Promise<string[]> {
   return (data ?? []).map((row) => row.task_id);
 }
 
+async function fetchAssignedTaskIdsForMember(
+  teamMemberId: string,
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from(DB.TASK_ASSIGNEES.TABLE)
+    .select("task_id")
+    .eq("team_member_id", teamMemberId);
+
+  if (error) throw error;
+  return (data ?? []).map((row) => row.task_id);
+}
+
+async function fetchAssignedTaskIdsForClient(
+  clientId: string,
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from(DB.TASK_ASSIGNEES.TABLE)
+    .select("task_id")
+    .eq("client_id", clientId);
+
+  if (error) throw error;
+  return (data ?? []).map((row) => row.task_id);
+}
+
 async function fetchTasksByIds(taskIds: string[]): Promise<Task[]> {
   if (taskIds.length === 0) return [];
   const { data, error } = await supabase
@@ -92,13 +116,58 @@ async function replaceTaskTags(
   if (insertError) throw insertError;
 }
 
+async function replaceTaskAssignees(
+  taskId: string,
+  teamMemberIds: string[],
+  clientIds: string[],
+): Promise<void> {
+  const { error: deleteError } = await supabase
+    .from(DB.TASK_ASSIGNEES.TABLE)
+    .delete()
+    .eq("task_id", taskId);
+
+  if (deleteError) throw deleteError;
+
+  const teamRows = [...new Set(teamMemberIds)].filter(Boolean).map((id) => ({
+    task_id: taskId,
+    team_member_id: id,
+    client_id: null,
+  }));
+  const clientRows = [...new Set(clientIds)].filter(Boolean).map((id) => ({
+    task_id: taskId,
+    team_member_id: null,
+    client_id: id,
+  }));
+  const rows = [...teamRows, ...clientRows];
+  if (rows.length === 0) return;
+
+  const { error: insertError } = await supabase
+    .from(DB.TASK_ASSIGNEES.TABLE)
+    .insert(rows);
+
+  if (insertError) throw insertError;
+}
+
+function syncAssigneeColumns(
+  teamMemberIds: string[],
+  clientIds: string[],
+): {
+  assigned_to_team_member_id: string | null;
+  client_id: string | null;
+} {
+  return {
+    assigned_to_team_member_id: teamMemberIds[0] ?? null,
+    client_id: clientIds[0] ?? null,
+  };
+}
+
 async function notifyTaskCreated(
   task: Task,
   taggedTeamMemberIds: string[],
 ): Promise<void> {
   const recipientIds = new Set<string>();
-  if (task.assigned_to_team_member_id) {
-    recipientIds.add(task.assigned_to_team_member_id);
+  for (const assignee of task.assignees) {
+    if (assignee.team_member_id) recipientIds.add(assignee.team_member_id);
   }
   for (const id of taggedTeamMemberIds) {
     recipientIds.add(id);
@@ -173,29 +242,22 @@ export async function fetchTasksForMember(
     return (data ?? []).map((row) => mapTaskRow(row as unknown as TaskRow));
   }
 
-  const [raisedResult, assignedResult, taggedIds] = await Promise.all([
+  const [raisedResult, assignedIds, taggedIds] = await Promise.all([
     supabase
       .from(DB.TASKS.TABLE)
       .select(DB.TASKS.SELECT)
       .eq("created_by_team_member_id", teamMemberId)
       .order("updated_at", { ascending: false }),
-    supabase
-      .from(DB.TASKS.TABLE)
-      .select(DB.TASKS.SELECT)
-      .eq("assigned_to_team_member_id", teamMemberId)
-      .order("updated_at", { ascending: false }),
+    fetchAssignedTaskIdsForMember(teamMemberId),
     fetchTaggedTaskIds(teamMemberId),
   ]);
 
   if (raisedResult.error) throw raisedResult.error;
-  if (assignedResult.error) throw assignedResult.error;
 
   const raised = (raisedResult.data ?? []).map((row) =>
     mapTaskRow(row as unknown as TaskRow),
   );
-  const assigned = (assignedResult.data ?? []).map((row) =>
-    mapTaskRow(row as unknown as TaskRow),
-  );
+  const assigned = await fetchTasksByIds(assignedIds);
   const tagged = await fetchTasksByIds(taggedIds);
 
   return mergeTasksById([raised, assigned, tagged]);
@@ -205,28 +267,39 @@ export async function createTask(
   input: CreateTaskInput,
   createdByTeamMemberId: string,
 ): Promise<Task> {
+  const teamMemberIds = input.assigneeTeamMemberIds ?? [];
+  const clientIds = input.assigneeClientIds ?? [];
+  if (teamMemberIds.length === 0 && clientIds.length === 0) {
+    throw new Error("Assign the task to at least one teammate or client.");
+  }
+
+  const sync = syncAssigneeColumns(teamMemberIds, clientIds);
+
   const { data, error } = await supabase
     .from(DB.TASKS.TABLE)
     .insert({
       project_id: input.projectId,
-      client_id: input.clientId?.trim() || null,
+      client_id: sync.client_id,
       dependency_client_id: input.dependencyClientId?.trim() || null,
       title: input.title.trim(),
       description: input.description?.trim() || null,
       created_by_team_member_id: createdByTeamMemberId,
-      assigned_to_team_member_id: input.assignedToTeamMemberId?.trim() || null,
+      assigned_to_team_member_id: sync.assigned_to_team_member_id,
       priority: input.priority,
       eta_date: input.etaDate,
       eta_time: input.etaTime,
       status: "pending",
     })
-    .select(DB.TASKS.SELECT)
+    .select("id")
     .single();
 
   if (error) throw error;
 
+  await replaceTaskAssignees(data.id, teamMemberIds, clientIds);
+
+  const assigneeIdSet = new Set(teamMemberIds);
   const taggedIds = (input.taggedTeamMemberIds ?? []).filter(
-    (id) => id && id !== input.assignedToTeamMemberId,
+    (id) => id && !assigneeIdSet.has(id),
   );
   await replaceTaskTags(data.id, taggedIds);
 
@@ -249,9 +322,6 @@ export async function updateTask(
 ): Promise<Task> {
   const cols: Record<string, unknown> = {};
   if (input.projectId !== undefined) cols.project_id = input.projectId;
-  if (input.clientId !== undefined) {
-    cols.client_id = input.clientId?.trim() || null;
-  }
   if (input.dependencyClientId !== undefined) {
     cols.dependency_client_id = input.dependencyClientId?.trim() || null;
   }
@@ -259,14 +329,25 @@ export async function updateTask(
   if (input.description !== undefined) {
     cols.description = input.description?.trim() || null;
   }
-  if (input.assignedToTeamMemberId !== undefined) {
-    cols.assigned_to_team_member_id =
-      input.assignedToTeamMemberId?.trim() || null;
-  }
   if (input.priority !== undefined) cols.priority = input.priority;
   if (input.etaDate !== undefined) cols.eta_date = input.etaDate;
   if (input.etaTime !== undefined) cols.eta_time = input.etaTime;
   if (input.status !== undefined) cols.status = input.status;
+
+  if (
+    input.assigneeTeamMemberIds !== undefined ||
+    input.assigneeClientIds !== undefined
+  ) {
+    const teamMemberIds = input.assigneeTeamMemberIds ?? [];
+    const clientIds = input.assigneeClientIds ?? [];
+    if (teamMemberIds.length === 0 && clientIds.length === 0) {
+      throw new Error("Assign the task to at least one teammate or client.");
+    }
+    const sync = syncAssigneeColumns(teamMemberIds, clientIds);
+    cols.assigned_to_team_member_id = sync.assigned_to_team_member_id;
+    cols.client_id = sync.client_id;
+    await replaceTaskAssignees(taskId, teamMemberIds, clientIds);
+  }
 
   if (Object.keys(cols).length > 0) {
     const { error } = await supabase
@@ -278,18 +359,20 @@ export async function updateTask(
   }
 
   if (input.taggedTeamMemberIds !== undefined) {
-    const assigneeId =
-      input.assignedToTeamMemberId ??
+    const assigneeIds =
+      input.assigneeTeamMemberIds ??
       (
         await supabase
-          .from(DB.TASKS.TABLE)
-          .select("assigned_to_team_member_id")
-          .eq("id", taskId)
-          .single()
-      ).data?.assigned_to_team_member_id;
+          .from(DB.TASK_ASSIGNEES.TABLE)
+          .select("team_member_id")
+          .eq("task_id", taskId)
+          .not("team_member_id", "is", null)
+      ).data?.map((row) => row.team_member_id as string) ??
+      [];
 
+    const assigneeIdSet = new Set(assigneeIds);
     const taggedIds = input.taggedTeamMemberIds.filter(
-      (id) => id && id !== assigneeId,
+      (id) => id && !assigneeIdSet.has(id),
     );
     await replaceTaskTags(taskId, taggedIds);
   }
@@ -309,6 +392,7 @@ export async function fetchTasksForClient(
 ): Promise<Task[]> {
   if (!clientId) return [];
 
+  const assignedIds = await fetchAssignedTaskIdsForClient(clientId);
   const { data, error } = await supabase
     .from(DB.TASKS.TABLE)
     .select(DB.TASKS.SELECT)
@@ -316,7 +400,11 @@ export async function fetchTasksForClient(
     .order("updated_at", { ascending: false });
 
   if (error) throw error;
-  return (data ?? []).map((row) => mapTaskRow(row as unknown as TaskRow));
+  const byClientColumn = (data ?? []).map((row) =>
+    mapTaskRow(row as unknown as TaskRow),
+  );
+  const byJunction = await fetchTasksByIds(assignedIds);
+  return mergeTasksById([byClientColumn, byJunction]);
 }
 
 export async function fetchTaskById(taskId: string): Promise<Task | null> {

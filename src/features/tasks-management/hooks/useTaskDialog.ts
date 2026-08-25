@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { toRepositoryDateTime } from "@/features/posts-management/utils/postScheduleUtils";
 import type { Task } from "@/features/tasks-management/types/types";
-import { parseTaskAssignee } from "@/features/tasks-management/utils/taskAssigneeUtils";
+import { parseAssigneeKeys } from "@/features/tasks-management/utils/taskAssigneeListUtils";
 import { parseDependencyKeys } from "@/features/tasks-management/utils/taskDependencyUtils";
 import {
   emptyTaskFormValues,
@@ -41,17 +41,15 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
         const next: TaskFormValues = { ...current, [field]: value };
 
         if (field === "projectId" && value !== current.projectId) {
-          next.assigneeKey = "";
+          next.assigneeKeys = [];
           next.dependencyKeys = [];
         }
 
-        if (field === "assigneeKey") {
-          const key = String(value);
-          if (key) {
-            next.dependencyKeys = current.dependencyKeys.filter(
-              (dependencyKey) => dependencyKey !== key,
-            );
-          }
+        if (field === "assigneeKeys") {
+          const keys = value as string[];
+          next.dependencyKeys = current.dependencyKeys.filter(
+            (dependencyKey) => !keys.includes(dependencyKey),
+          );
         }
 
         return next;
@@ -94,9 +92,9 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
       return;
     }
 
-    const assignee = parseTaskAssignee(values.assigneeKey);
-    if (!assignee) {
-      setError("Select a teammate or client to assign.");
+    const { teamMemberIds, clientIds } = parseAssigneeKeys(values.assigneeKeys);
+    if (teamMemberIds.length === 0 && clientIds.length === 0) {
+      setError("Assign to at least one teammate or client.");
       return;
     }
 
@@ -105,20 +103,18 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
 
     try {
       const title = values.title.trim();
-      const assignedToTeamMemberId =
-        assignee.kind === "team" ? assignee.id : null;
-      const clientId = assignee.kind === "client" ? assignee.id : null;
+      const assigneeKeySet = new Set(values.assigneeKeys);
       const { taggedTeamMemberIds, dependencyClientId } = parseDependencyKeys(
-        values.dependencyKeys.filter((key) => key !== values.assigneeKey),
+        values.dependencyKeys.filter((key) => !assigneeKeySet.has(key)),
       );
 
       if (editingTaskId) {
         await updateTask(editingTaskId, {
           projectId: values.projectId,
-          clientId,
           title,
           description: values.description,
-          assignedToTeamMemberId,
+          assigneeTeamMemberIds: teamMemberIds,
+          assigneeClientIds: clientIds,
           priority: values.priority,
           etaDate: eta.date,
           etaTime: eta.time,
@@ -131,10 +127,10 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
         await createTask(
           {
             projectId: values.projectId,
-            clientId,
             title,
             description: values.description,
-            assignedToTeamMemberId,
+            assigneeTeamMemberIds: teamMemberIds,
+            assigneeClientIds: clientIds,
             priority: values.priority,
             etaDate: eta.date,
             etaTime: eta.time,

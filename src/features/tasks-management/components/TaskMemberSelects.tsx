@@ -1,7 +1,10 @@
 import { UserRound } from "lucide-react";
 import { useMemo } from "react";
 
-import type { TaskDependenciesSelectProps } from "@/features/tasks-management/types/components";
+import type {
+  TaskAssigneesSelectProps,
+  TaskDependenciesSelectProps,
+} from "@/features/tasks-management/types/components";
 import {
   encodeTaskAssignee,
   parseTaskAssignee,
@@ -57,48 +60,42 @@ export function TaskAssigneeSelect({
   );
 }
 
-export function TaskDependenciesSelect({
-  value,
-  onChange,
-  allowedMemberIds,
-  allowedClientId,
-  excludeKeys = [],
-  disabled = false,
-  preload = false,
-}: TaskDependenciesSelectProps) {
+function usePeopleOptions(input: {
+  allowedMemberIds: string[] | null;
+  allowedClientId?: string | null;
+  allowedClientIds?: string[];
+  value: string[];
+  preload: boolean;
+}) {
   const {
     items: members,
     isLoading: membersLoading,
     handleOpenChange: onMembersOpen,
-  } = useLazyEntityList(fetchTeamMembers, { preload });
+  } = useLazyEntityList(fetchTeamMembers, { preload: input.preload });
   const {
     items: clients,
     isLoading: clientsLoading,
     handleOpenChange: onClientsOpen,
-  } = useLazyEntityList(fetchClients, { preload });
+  } = useLazyEntityList(fetchClients, { preload: input.preload });
 
-  const hasProject = allowedMemberIds !== null;
+  const hasScope = input.allowedMemberIds !== null;
   const isLoading = membersLoading || clientsLoading;
 
   const options = useMemo(() => {
-    if (!hasProject) {
-      return [];
-    }
+    if (!hasScope) return [];
 
-    const memberIdSet = new Set(allowedMemberIds);
+    const memberIdSet = new Set(input.allowedMemberIds);
     const clientIdSet = new Set<string>();
-    if (allowedClientId) {
-      clientIdSet.add(allowedClientId);
+    if (input.allowedClientId) clientIdSet.add(input.allowedClientId);
+    for (const id of input.allowedClientIds ?? []) {
+      if (id) clientIdSet.add(id);
     }
 
-    for (const key of value) {
+    for (const key of input.value) {
       const parsed = parseTaskAssignee(key);
       if (!parsed) continue;
-      if (parsed.kind === "team") {
-        memberIdSet.add(parsed.id);
-      } else {
-        clientIdSet.add(parsed.id);
-      }
+      if (parsed.kind === "team") memberIdSet.add(parsed.id);
+      else clientIdSet.add(parsed.id);
     }
 
     const teamOptions = members
@@ -117,18 +114,80 @@ export function TaskDependenciesSelect({
 
     return [...teamOptions, ...clientOptions];
   }, [
-    allowedClientId,
-    allowedMemberIds,
     clients,
-    hasProject,
+    hasScope,
+    input.allowedClientId,
+    input.allowedClientIds,
+    input.allowedMemberIds,
+    input.value,
     members,
-    value,
   ]);
 
   const handleOpenChange = (nextOpen: boolean) => {
     onMembersOpen(nextOpen);
     onClientsOpen(nextOpen);
   };
+
+  return { options, isLoading, hasScope, handleOpenChange };
+}
+
+export function TaskAssigneesSelect({
+  value,
+  onChange,
+  allowedMemberIds,
+  allowedClientId = null,
+  allowedClientIds = [],
+  excludeKeys = [],
+  disabled = false,
+  preload = false,
+}: TaskAssigneesSelectProps) {
+  const { options, isLoading, hasScope, handleOpenChange } = usePeopleOptions({
+    allowedMemberIds,
+    allowedClientId,
+    allowedClientIds,
+    value,
+    preload,
+  });
+
+  return (
+    <MultiSelect
+      value={value}
+      onChange={onChange}
+      options={options}
+      isLoading={isLoading}
+      disabled={disabled || !hasScope}
+      label="Assign to"
+      placeholder={
+        hasScope
+          ? "Add project teammates or client"
+          : "Select a project first"
+      }
+      emptyMessage={
+        hasScope
+          ? "No project teammates or client available."
+          : "Select a project first."
+      }
+      excludeValues={excludeKeys}
+      onOpenChange={handleOpenChange}
+    />
+  );
+}
+
+export function TaskDependenciesSelect({
+  value,
+  onChange,
+  allowedMemberIds,
+  allowedClientId,
+  excludeKeys = [],
+  disabled = false,
+  preload = false,
+}: TaskDependenciesSelectProps) {
+  const { options, isLoading, hasScope, handleOpenChange } = usePeopleOptions({
+    allowedMemberIds,
+    allowedClientId,
+    value,
+    preload,
+  });
 
   const handleChange = (keys: string[]) => {
     // V1: at most one client dependency (single DB column).
@@ -152,15 +211,15 @@ export function TaskDependenciesSelect({
       onChange={handleChange}
       options={options}
       isLoading={isLoading}
-      disabled={disabled || !hasProject}
+      disabled={disabled || !hasScope}
       label="Dependencies"
       placeholder={
-        hasProject
+        hasScope
           ? "Add project teammates or client"
           : "Select a project first"
       }
       emptyMessage={
-        hasProject
+        hasScope
           ? "No project teammates or client available."
           : "Select a project first."
       }
