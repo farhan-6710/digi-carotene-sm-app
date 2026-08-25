@@ -85,7 +85,7 @@ Project-scoped only. Status: `pending` → `in_progress` → `completed`. Priori
 **People on a task (keep roles separate):**
 
 - **Assign to** — required; pick a **teammate** or a **client** from one dropdown (grouped list). Exactly one assignee is stored (`assigned_to_team_member_id` **or** `client_id`)
-- **Dependencies** — optional extra teammates only
+- **Dependencies** — optional project teammates (`task_tags`) and/or the project client (`tasks.dependency_client_id`). The assignee cannot also be listed as a dependency.
 
 Visibility (team):
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { PostDateTimePicker } from "@/features/posts-management/components/PostDateTimePicker";
 import { TaskAssigneePicker } from "@/features/tasks-management/components/TaskAssigneePicker";
@@ -11,8 +11,14 @@ import {
   encodeTaskAssignee,
   parseTaskAssignee,
 } from "@/features/tasks-management/utils/taskAssigneeUtils";
+import {
+  getProjectAssociatedMemberIds,
+  getProjectClientId,
+} from "@/features/tasks-management/utils/taskProjectPeopleUtils";
+import { fetchProjects } from "@/services/projectsService";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { formFieldClassName } from "@/shared/constants/formStyles";
+import { useLazyEntityList } from "@/shared/hooks/useLazyEntityList";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -37,6 +43,9 @@ export function TaskDialog({
   onDelete,
 }: TaskDialogProps) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const { items: projects } = useLazyEntityList(fetchProjects, {
+    preload: open,
+  });
 
   useEffect(() => {
     if (!open) {
@@ -45,9 +54,27 @@ export function TaskDialog({
     }
   }, [open]);
 
+  const selectedProject = useMemo(
+    () => projects.find((project) => project.id === values.projectId) ?? null,
+    [projects, values.projectId],
+  );
+
+  const projectMemberIds = useMemo(
+    () =>
+      selectedProject
+        ? getProjectAssociatedMemberIds(selectedProject)
+        : null,
+    [selectedProject],
+  );
+
+  const projectClientId = selectedProject
+    ? getProjectClientId(selectedProject)
+    : null;
+
   const assignee = parseTaskAssignee(values.assigneeKey);
-  const assignedTeamMemberId =
-    assignee?.kind === "team" ? assignee.id : null;
+  const canAssignMyself =
+    Boolean(currentTeamMemberId) &&
+    Boolean(projectMemberIds?.includes(currentTeamMemberId ?? ""));
 
   const canSave =
     values.projectId.length > 0 &&
@@ -62,8 +89,8 @@ export function TaskDialog({
           <DialogHeader className="shrink-0">
             <DialogTitle>{isEditing ? "Edit Task" : "Add Task"}</DialogTitle>
             <DialogDescription>
-              Tie the task to a project, assign a teammate or client, set
-              priority, and set an ETA deadline.
+              Tie the task to a project, assign a project teammate or that
+              project’s client, set priority, and set an ETA deadline.
             </DialogDescription>
           </DialogHeader>
 
@@ -113,6 +140,8 @@ export function TaskDialog({
                     onChange={(assigneeKey) =>
                       onFieldChange("assigneeKey", assigneeKey)
                     }
+                    allowedMemberIds={projectMemberIds}
+                    allowedClientId={projectClientId}
                     disabled={isSaving}
                     preload={open}
                   />
@@ -125,6 +154,7 @@ export function TaskDialog({
                     className="shrink-0"
                     disabled={
                       isSaving ||
+                      !canAssignMyself ||
                       values.assigneeKey ===
                         encodeTaskAssignee("team", currentTeamMemberId)
                     }
@@ -142,11 +172,11 @@ export function TaskDialog({
             </label>
 
             <TaskDependenciesSelect
-              value={values.taggedTeamMemberIds}
-              onChange={(ids) => onFieldChange("taggedTeamMemberIds", ids)}
-              excludeMemberIds={
-                assignedTeamMemberId ? [assignedTeamMemberId] : []
-              }
+              value={values.dependencyKeys}
+              onChange={(keys) => onFieldChange("dependencyKeys", keys)}
+              allowedMemberIds={projectMemberIds}
+              allowedClientId={projectClientId}
+              excludeKeys={values.assigneeKey ? [values.assigneeKey] : []}
               disabled={isSaving}
               preload={open}
             />

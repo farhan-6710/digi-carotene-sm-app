@@ -12,6 +12,7 @@ import {
   encodeTaskAssignee,
   parseTaskAssignee,
 } from "@/features/tasks-management/utils/taskAssigneeUtils";
+import { dependencyKeysFromTask } from "@/features/tasks-management/utils/taskDependencyUtils";
 
 export type TaskFormValues = {
   projectId: string;
@@ -19,7 +20,8 @@ export type TaskFormValues = {
   assigneeKey: string;
   title: string;
   description: string;
-  taggedTeamMemberIds: string[];
+  /** Encoded dependency keys: `team:<id>` and/or `client:<id>`. */
+  dependencyKeys: string[];
   priority: TaskPriority;
   eta: PostDateTimeValue | null;
   status: TaskStatus;
@@ -30,7 +32,7 @@ export const emptyTaskFormValues = (): TaskFormValues => ({
   assigneeKey: "",
   title: "",
   description: "",
-  taggedTeamMemberIds: [],
+  dependencyKeys: [],
   priority: "medium",
   eta: null,
   status: "pending",
@@ -49,7 +51,7 @@ export function taskToFormValues(task: Task): TaskFormValues {
     assigneeKey,
     title: task.title,
     description: task.description ?? "",
-    taggedTeamMemberIds: task.tagged_members.map((member) => member.id),
+    dependencyKeys: dependencyKeysFromTask(task),
     priority: task.priority,
     eta: toPostDateTimeValue(task.eta_date, task.eta_time),
     status: task.status,

@@ -21,6 +21,7 @@ export type TaskRow = {
   id: string;
   project_id: string;
   client_id: string | null;
+  dependency_client_id: string | null;
   title: string;
   description: string | null;
   created_by_team_member_id: string;
@@ -39,6 +40,7 @@ export type TaskRow = {
     clients: Rel<{ id: string; client_name: string }>;
   }>;
   client: Rel<TaskClientRef>;
+  dependency_client: Rel<TaskClientRef>;
   created_by: Rel<TaskMemberRef>;
   assigned_to: Rel<TaskMemberRef>;
   task_tags: TaskTagRow[] | null;
@@ -73,6 +75,21 @@ export function mapTaskRow(row: TaskRow): Task {
         }
       : null);
 
+  const embeddedDependencyClient = pickRelation(row.dependency_client);
+  const dependency_client: TaskClientRef | null =
+    embeddedDependencyClient ??
+    (row.dependency_client_id &&
+    projectClient &&
+    projectClient.id === row.dependency_client_id
+      ? projectClient
+      : null) ??
+    (row.dependency_client_id
+      ? {
+          id: row.dependency_client_id,
+          client_name: projectClient?.client_name ?? "—",
+        }
+      : null);
+
   const tagged_members: TaskMemberRef[] = (row.task_tags ?? [])
     .map((tag) => {
       const member = pickRelation(tag.team_members);
@@ -85,6 +102,7 @@ export function mapTaskRow(row: TaskRow): Task {
     id: row.id,
     project_id: row.project_id,
     client_id: row.client_id,
+    dependency_client_id: row.dependency_client_id,
     title: row.title,
     description: row.description,
     created_by_team_member_id: row.created_by_team_member_id,
@@ -97,6 +115,7 @@ export function mapTaskRow(row: TaskRow): Task {
     updated_at: row.updated_at,
     projects,
     client,
+    dependency_client,
     created_by: pickRelation(row.created_by),
     assigned_to: pickRelation(row.assigned_to),
     tagged_members,

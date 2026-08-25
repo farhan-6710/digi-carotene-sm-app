@@ -62,6 +62,15 @@ export function buildTaskChatParticipants(
   for (const member of task.tagged_members) {
     add(member, "dependency");
   }
+  if (task.dependency_client) {
+    add(
+      {
+        id: task.dependency_client.id,
+        member_name: task.dependency_client.client_name,
+      },
+      "dependency",
+    );
+  }
   add(task.projects?.manager ?? null, "manager");
 
   if (task.client && !task.assigned_to_team_member_id) {

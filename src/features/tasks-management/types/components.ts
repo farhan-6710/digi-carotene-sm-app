@@ -42,6 +42,29 @@ export type TaskChatProps = {
   isRefreshing?: boolean;
 };
 
+export type TaskAssigneePickerProps = {
+  value: string;
+  onChange: (encodedValue: string) => void;
+  /** Project roster. Null when no project is selected. */
+  allowedMemberIds: string[] | null;
+  allowedClientId: string | null;
+  disabled?: boolean;
+  preload?: boolean;
+};
+
+export type TaskDependenciesSelectProps = {
+  /** Encoded keys: `team:<id>` and/or `client:<id>`. */
+  value: string[];
+  onChange: (keys: string[]) => void;
+  /** Project roster. Null when no project is selected. */
+  allowedMemberIds: string[] | null;
+  allowedClientId: string | null;
+  /** Encoded assignee key to hide from the list. */
+  excludeKeys?: string[];
+  disabled?: boolean;
+  preload?: boolean;
+};
+
 export type TaskDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;

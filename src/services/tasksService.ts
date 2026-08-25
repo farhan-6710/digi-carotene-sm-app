@@ -210,6 +210,7 @@ export async function createTask(
     .insert({
       project_id: input.projectId,
       client_id: input.clientId?.trim() || null,
+      dependency_client_id: input.dependencyClientId?.trim() || null,
       title: input.title.trim(),
       description: input.description?.trim() || null,
       created_by_team_member_id: createdByTeamMemberId,
@@ -250,6 +251,9 @@ export async function updateTask(
   if (input.projectId !== undefined) cols.project_id = input.projectId;
   if (input.clientId !== undefined) {
     cols.client_id = input.clientId?.trim() || null;
+  }
+  if (input.dependencyClientId !== undefined) {
+    cols.dependency_client_id = input.dependencyClientId?.trim() || null;
   }
   if (input.title !== undefined) cols.title = input.title.trim();
   if (input.description !== undefined) {

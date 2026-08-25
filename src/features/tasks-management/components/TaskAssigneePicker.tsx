@@ -1,6 +1,7 @@
 import { Building2, ChevronDown, Loader2, UserRound } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import type { TaskAssigneePickerProps } from "@/features/tasks-management/types/components";
 import {
   encodeTaskAssignee,
   parseTaskAssignee,
@@ -14,13 +15,6 @@ import {
   PopoverAnchor,
   PopoverContent,
 } from "@/shared/ui/popover";
-
-type TaskAssigneePickerProps = {
-  value: string;
-  onChange: (encodedValue: string) => void;
-  disabled?: boolean;
-  preload?: boolean;
-};
 
 type AssigneeOption = {
   value: string;
@@ -37,6 +31,8 @@ const inputClassName = cn(
 export function TaskAssigneePicker({
   value,
   onChange,
+  allowedMemberIds,
+  allowedClientId,
   disabled = false,
   preload = false,
 }: TaskAssigneePickerProps) {
@@ -55,22 +51,45 @@ export function TaskAssigneePicker({
   const [query, setQuery] = useState("");
 
   const isLoading = membersLoading || clientsLoading;
+  const hasProject = allowedMemberIds !== null;
 
   const options = useMemo((): AssigneeOption[] => {
-    const teamOptions = members.map((member) => ({
-      value: encodeTaskAssignee("team", member.id),
-      label: member.member_name,
-      kind: "team" as const,
-    }));
+    if (!hasProject) {
+      return [];
+    }
+
+    const memberIdSet = new Set(allowedMemberIds);
+    const selected = parseTaskAssignee(value);
+    if (selected?.kind === "team") {
+      memberIdSet.add(selected.id);
+    }
+
+    const teamOptions = members
+      .filter((member) => memberIdSet.has(member.id))
+      .map((member) => ({
+        value: encodeTaskAssignee("team", member.id),
+        label: member.member_name,
+        kind: "team" as const,
+      }));
+
+    const clientIds = new Set<string>();
+    if (allowedClientId) {
+      clientIds.add(allowedClientId);
+    }
+    if (selected?.kind === "client") {
+      clientIds.add(selected.id);
+    }
+
     const clientOptions = clients
-      .filter((client) => client.is_active)
+      .filter((client) => client.is_active && clientIds.has(client.id))
       .map((client) => ({
         value: encodeTaskAssignee("client", client.id),
         label: client.client_name,
         kind: "client" as const,
       }));
+
     return [...teamOptions, ...clientOptions];
-  }, [clients, members]);
+  }, [allowedClientId, allowedMemberIds, clients, hasProject, members, value]);
 
   const selected = useMemo(
     () => options.find((option) => option.value === value) ?? null,
@@ -103,6 +122,9 @@ export function TaskAssigneePicker({
 
   const inputValue = open ? query : (selected?.label ?? query);
   const parsed = parseTaskAssignee(value);
+  const emptyMessage = !hasProject
+    ? "Select a project first."
+    : "No matching project teammates or client.";
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange} modal>
@@ -116,14 +138,18 @@ export function TaskAssigneePicker({
               handleOpenChange(true);
             }}
             onFocus={() => handleOpenChange(true)}
-            placeholder="Assign to teammate or client"
-            disabled={disabled}
+            placeholder={
+              hasProject
+                ? "Assign to project teammate or client"
+                : "Select a project first"
+            }
+            disabled={disabled || !hasProject}
             className={inputClassName}
           />
           <button
             type="button"
             tabIndex={-1}
-            disabled={disabled}
+            disabled={disabled || !hasProject}
             onClick={() => handleOpenChange(!open)}
             className="absolute top-0 right-0 flex h-full w-10 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none"
           >
@@ -166,7 +192,7 @@ export function TaskAssigneePicker({
             </div>
           ) : filtered.length === 0 ? (
             <div className="py-4 text-center text-xs text-muted-foreground">
-              No matching teammates or clients.
+              {emptyMessage}
             </div>
           ) : (
             <div className="flex flex-col gap-2">
@@ -190,7 +216,7 @@ export function TaskAssigneePicker({
               {clientFiltered.length > 0 ? (
                 <div>
                   <p className="px-2 py-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
-                    Clients
+                    Client
                   </p>
                   <div className="flex flex-col gap-0.5">
                     {clientFiltered.map((option) => (

@@ -1,6 +1,12 @@
 import { UserRound } from "lucide-react";
 import { useMemo } from "react";
 
+import type { TaskDependenciesSelectProps } from "@/features/tasks-management/types/components";
+import {
+  encodeTaskAssignee,
+  parseTaskAssignee,
+} from "@/features/tasks-management/utils/taskAssigneeUtils";
+import { fetchClients } from "@/services/clientsService";
 import { fetchTeamMembers } from "@/services/teamMembersService";
 import { useLazyEntityList } from "@/shared/hooks/useLazyEntityList";
 import { ComboBox } from "@/shared/ui/ComboBox";
@@ -51,46 +57,114 @@ export function TaskAssigneeSelect({
   );
 }
 
-type TaskDependenciesSelectProps = {
-  value: string[];
-  onChange: (memberIds: string[]) => void;
-  excludeMemberIds?: string[];
-  disabled?: boolean;
-  preload?: boolean;
-};
-
 export function TaskDependenciesSelect({
   value,
   onChange,
-  excludeMemberIds = [],
+  allowedMemberIds,
+  allowedClientId,
+  excludeKeys = [],
   disabled = false,
   preload = false,
 }: TaskDependenciesSelectProps) {
-  const { items: members, isLoading, handleOpenChange } = useLazyEntityList(
-    fetchTeamMembers,
-    { preload },
-  );
+  const {
+    items: members,
+    isLoading: membersLoading,
+    handleOpenChange: onMembersOpen,
+  } = useLazyEntityList(fetchTeamMembers, { preload });
+  const {
+    items: clients,
+    isLoading: clientsLoading,
+    handleOpenChange: onClientsOpen,
+  } = useLazyEntityList(fetchClients, { preload });
 
-  const options = useMemo(
-    () =>
-      members.map((member) => ({
-        value: member.id,
+  const hasProject = allowedMemberIds !== null;
+  const isLoading = membersLoading || clientsLoading;
+
+  const options = useMemo(() => {
+    if (!hasProject) {
+      return [];
+    }
+
+    const memberIdSet = new Set(allowedMemberIds);
+    const clientIdSet = new Set<string>();
+    if (allowedClientId) {
+      clientIdSet.add(allowedClientId);
+    }
+
+    for (const key of value) {
+      const parsed = parseTaskAssignee(key);
+      if (!parsed) continue;
+      if (parsed.kind === "team") {
+        memberIdSet.add(parsed.id);
+      } else {
+        clientIdSet.add(parsed.id);
+      }
+    }
+
+    const teamOptions = members
+      .filter((member) => memberIdSet.has(member.id))
+      .map((member) => ({
+        value: encodeTaskAssignee("team", member.id),
         label: member.member_name,
-      })),
-    [members],
-  );
+      }));
+
+    const clientOptions = clients
+      .filter((client) => client.is_active && clientIdSet.has(client.id))
+      .map((client) => ({
+        value: encodeTaskAssignee("client", client.id),
+        label: `${client.client_name} (client)`,
+      }));
+
+    return [...teamOptions, ...clientOptions];
+  }, [
+    allowedClientId,
+    allowedMemberIds,
+    clients,
+    hasProject,
+    members,
+    value,
+  ]);
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    onMembersOpen(nextOpen);
+    onClientsOpen(nextOpen);
+  };
+
+  const handleChange = (keys: string[]) => {
+    // V1: at most one client dependency (single DB column).
+    let clientKey: string | null = null;
+    const teamKeys: string[] = [];
+    for (const key of keys) {
+      const parsed = parseTaskAssignee(key);
+      if (!parsed) continue;
+      if (parsed.kind === "team") {
+        teamKeys.push(key);
+      } else {
+        clientKey = key;
+      }
+    }
+    onChange(clientKey ? [...teamKeys, clientKey] : teamKeys);
+  };
 
   return (
     <MultiSelect
       value={value}
-      onChange={onChange}
+      onChange={handleChange}
       options={options}
       isLoading={isLoading}
-      disabled={disabled}
+      disabled={disabled || !hasProject}
       label="Dependencies"
-      placeholder="Add dependencies"
-      emptyMessage="No team members available."
-      excludeValues={excludeMemberIds}
+      placeholder={
+        hasProject
+          ? "Add project teammates or client"
+          : "Select a project first"
+      }
+      emptyMessage={
+        hasProject
+          ? "No project teammates or client available."
+          : "Select a project first."
+      }
+      excludeValues={excludeKeys}
       onOpenChange={handleOpenChange}
     />
   );

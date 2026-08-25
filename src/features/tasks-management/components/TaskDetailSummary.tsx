@@ -14,10 +14,14 @@ export function TaskDetailSummary({ task }: TaskDetailSummaryProps) {
       ? `${task.client.client_name} (client)`
       : "—");
 
+  const dependencyParts = [
+    ...task.tagged_members.map((m) => m.member_name),
+    ...(task.dependency_client
+      ? [`${task.dependency_client.client_name} (client)`]
+      : []),
+  ];
   const dependenciesLabel =
-    task.tagged_members.length > 0
-      ? task.tagged_members.map((m) => m.member_name).join(", ")
-      : "—";
+    dependencyParts.length > 0 ? dependencyParts.join(", ") : "—";
 
   const details: Array<{
     label: string;

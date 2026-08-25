@@ -4,6 +4,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { toRepositoryDateTime } from "@/features/posts-management/utils/postScheduleUtils";
 import type { Task } from "@/features/tasks-management/types/types";
 import { parseTaskAssignee } from "@/features/tasks-management/utils/taskAssigneeUtils";
+import { parseDependencyKeys } from "@/features/tasks-management/utils/taskDependencyUtils";
 import {
   emptyTaskFormValues,
   taskToFormValues,
@@ -36,7 +37,25 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
 
   const onFieldChange = useCallback(
     <K extends keyof TaskFormValues>(field: K, value: TaskFormValues[K]) => {
-      setValues((current) => ({ ...current, [field]: value }));
+      setValues((current) => {
+        const next: TaskFormValues = { ...current, [field]: value };
+
+        if (field === "projectId" && value !== current.projectId) {
+          next.assigneeKey = "";
+          next.dependencyKeys = [];
+        }
+
+        if (field === "assigneeKey") {
+          const key = String(value);
+          if (key) {
+            next.dependencyKeys = current.dependencyKeys.filter(
+              (dependencyKey) => dependencyKey !== key,
+            );
+          }
+        }
+
+        return next;
+      });
     },
     [],
   );
@@ -89,6 +108,9 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
       const assignedToTeamMemberId =
         assignee.kind === "team" ? assignee.id : null;
       const clientId = assignee.kind === "client" ? assignee.id : null;
+      const { taggedTeamMemberIds, dependencyClientId } = parseDependencyKeys(
+        values.dependencyKeys.filter((key) => key !== values.assigneeKey),
+      );
 
       if (editingTaskId) {
         await updateTask(editingTaskId, {
@@ -101,7 +123,8 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
           etaDate: eta.date,
           etaTime: eta.time,
           status: values.status,
-          taggedTeamMemberIds: values.taggedTeamMemberIds,
+          taggedTeamMemberIds,
+          dependencyClientId,
         });
         showToast("success", `"${title}" updated successfully.`);
       } else {
@@ -115,7 +138,8 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
             priority: values.priority,
             etaDate: eta.date,
             etaTime: eta.time,
-            taggedTeamMemberIds: values.taggedTeamMemberIds,
+            taggedTeamMemberIds,
+            dependencyClientId,
           },
           teamMemberId,
         );

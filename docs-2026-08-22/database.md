@@ -52,8 +52,8 @@ Rules: a **client** is a company. A **project** is one engagement (social profil
 | `posts` | Calendar row (`to_be_posted_*`, `status`, `socials[]`, `post_links`) |
 | `post_approval_requests` | Executive backdated posts waiting on manager/admin |
 | `notifications` | Team inbox (`approval`, `post_digest`, `task`) |
-| `tasks` | Project task: raiser, assignee is teammate **or** client (`assigned_to_team_member_id` XOR `client_id`), priority, ETA, status |
-| `task_tags` | Task dependencies (extra teammates only — not clients) |
+| `tasks` | Project task: raiser, assignee is teammate **or** client (`assigned_to_team_member_id` XOR `client_id`), optional `dependency_client_id`, priority, ETA, status |
+| `task_tags` | Task dependencies for extra teammates (`team_member_id`) |
 | `task_messages` | Task chat; author is teammate **or** client (`author_team_member_id` / `author_client_id`) |
 | `leads` | CRM leads: name, company, email, phone, industry, lead score (1–5), status, lead source |
 | `production_plans` | Shoot plan per client + `share_token` |

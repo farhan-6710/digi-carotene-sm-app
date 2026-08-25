@@ -131,6 +131,7 @@ const TASK_SELECT = `
   id,
   project_id,
   client_id,
+  dependency_client_id,
   title,
   description,
   created_by_team_member_id,
@@ -149,6 +150,10 @@ const TASK_SELECT = `
     clients ( id, client_name )
   ),
   client:clients!client_id (
+    id,
+    client_name
+  ),
+  dependency_client:clients!dependency_client_id (
     id,
     client_name
   ),
@@ -260,7 +265,8 @@ export const DB = {
   },
   GROWTH_ORGANIC_PROFILES: {
     TABLE: "growth_organic_profiles",
-    SELECT: "id, instagram_id, username, followers_count, organic_account_id, created_at",
+    SELECT:
+      "id, instagram_id, username, followers_count, organic_account_id, created_at",
   },
   GROWTH_ORGANIC_POSTS_METRICS: {
     TABLE: "growth_organic_posts_metrics",

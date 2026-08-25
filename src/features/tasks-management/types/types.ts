@@ -24,6 +24,7 @@ export type Task = {
   id: string;
   project_id: string;
   client_id: string | null;
+  dependency_client_id: string | null;
   title: string;
   description: string | null;
   created_by_team_member_id: string;
@@ -36,6 +37,7 @@ export type Task = {
   updated_at: string;
   projects: TaskProjectRef | null;
   client: TaskClientRef | null;
+  dependency_client: TaskClientRef | null;
   created_by: TaskMemberRef | null;
   assigned_to: TaskMemberRef | null;
   tagged_members: TaskMemberRef[];
@@ -62,6 +64,7 @@ export type CreateTaskInput = {
   etaDate: string;
   etaTime: string;
   taggedTeamMemberIds?: string[];
+  dependencyClientId?: string | null;
 };
 
 export type UpdateTaskInput = {
@@ -75,4 +78,5 @@ export type UpdateTaskInput = {
   etaTime?: string;
   status?: TaskStatus;
   taggedTeamMemberIds?: string[];
+  dependencyClientId?: string | null;
 };
