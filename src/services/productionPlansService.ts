@@ -7,6 +7,7 @@ import type {
 } from "@/features/production-planner/types/types";
 import { DB } from "@/services/db";
 import { supabase } from "@/services/supabaseClient";
+import { fetchAdminTeamMembers } from "@/services/teamMembersService";
 import { seesAllProductionPlans } from "@/shared/utils/rbac";
 
 type AssigneeRel =
@@ -92,6 +93,61 @@ function toProductionPlanUpdateColumns(input: UpdateProductionPlanInput) {
   return cols;
 }
 
+/** Keep every admin on the plan team (except plan manager / shoot incharge). */
+async function ensureAdminsOnProductionPlan(
+  planId: string,
+  managerId: string | null | undefined,
+  shootInchargeId: string | null | undefined,
+): Promise<void> {
+  const admins = await fetchAdminTeamMembers();
+  if (admins.length === 0) return;
+
+  const roleIds = new Set(
+    [managerId, shootInchargeId].filter((id): id is string => Boolean(id)),
+  );
+  const adminIds = admins.map((admin) => admin.id);
+
+  const { data: existingRows, error } = await supabase
+    .from(DB.PRODUCTION_PLAN_TEAM_MEMBERS.TABLE)
+    .select("id, member_id, ended_at")
+    .eq("production_plan_id", planId)
+    .in("member_id", adminIds);
+
+  if (error) throw error;
+
+  const rows = existingRows ?? [];
+
+  for (const admin of admins) {
+    const memberRows = rows.filter((row) => row.member_id === admin.id);
+    const active = memberRows.find((row) => row.ended_at === null);
+    const ended = memberRows.find((row) => row.ended_at !== null);
+
+    if (roleIds.has(admin.id)) {
+      if (active) {
+        await supabase
+          .from(DB.PRODUCTION_PLAN_TEAM_MEMBERS.TABLE)
+          .update({ ended_at: new Date().toISOString() })
+          .eq("id", active.id);
+      }
+      continue;
+    }
+
+    if (active) continue;
+
+    if (ended) {
+      await supabase
+        .from(DB.PRODUCTION_PLAN_TEAM_MEMBERS.TABLE)
+        .update({ ended_at: null, started_at: new Date().toISOString() })
+        .eq("id", ended.id);
+    } else {
+      await supabase.from(DB.PRODUCTION_PLAN_TEAM_MEMBERS.TABLE).insert({
+        production_plan_id: planId,
+        member_id: admin.id,
+      });
+    }
+  }
+}
+
 export async function fetchProductionPlans(): Promise<ProductionPlan[]> {
   const { data, error } = await supabase
     .from(DB.PRODUCTION_PLANS.TABLE)
@@ -152,7 +208,14 @@ export async function createProductionPlan(
   if (error) {
     throw error;
   }
-  return mapProductionPlanRow(data as unknown as ProductionPlanRow);
+
+  const plan = mapProductionPlanRow(data as unknown as ProductionPlanRow);
+  await ensureAdminsOnProductionPlan(
+    plan.id,
+    plan.manager_id,
+    plan.shoot_incharge_id,
+  );
+  return plan;
 }
 
 export async function updateProductionPlan(
@@ -169,7 +232,14 @@ export async function updateProductionPlan(
   if (error) {
     throw error;
   }
-  return mapProductionPlanRow(data as unknown as ProductionPlanRow);
+
+  const plan = mapProductionPlanRow(data as unknown as ProductionPlanRow);
+  await ensureAdminsOnProductionPlan(
+    plan.id,
+    plan.manager_id,
+    plan.shoot_incharge_id,
+  );
+  return plan;
 }
 
 export async function deleteProductionPlan(id: string): Promise<void> {

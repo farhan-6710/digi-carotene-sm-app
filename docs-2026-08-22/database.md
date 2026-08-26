@@ -67,7 +67,7 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 | `leads` | CRM leads: name, company, email, phone, industry, lead score (1–5), status, lead source |
 | `production_plans` | Shoot plan per client + `share_token` |
 | `production_plan_items` | Content in a plan: `script`, `reference_link`, three approvals |
-| `production_plan_team_members` | Extra people on a plan |
+| `production_plan_team_members` | Extra people on a plan. All `admin` team members are auto-assigned on create/update (unless they are already manager or shoot incharge). |
 | `growth_organic_*` | Connected IG/Page + post metrics + daily followers |
 | `growth_ads_*` | Connected ad accounts + campaign / ad set / ad daily metrics |
 
