@@ -46,11 +46,31 @@ export function DevProjectsTableRow({
         </span>
       </div>
 
-      <div className="min-w-0 text-sm text-muted-foreground">
+      <div
+        className="min-w-0 text-sm text-muted-foreground"
+        onClick={stopDirectoryRowNav}
+        onKeyDown={(event) => event.stopPropagation()}
+      >
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          TECH STACK
+          PRODUCTION
         </span>
-        <span className="truncate">{project.tech_stack || "—"}</span>
+        {project.production_url?.trim() ? (
+          <a
+            href={
+              project.production_url.startsWith("http")
+                ? project.production_url
+                : `https://${project.production_url}`
+            }
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block truncate text-primary hover:underline"
+            title={project.production_url}
+          >
+            {project.production_url.replace(/^https?:\/\//, "")}
+          </a>
+        ) : (
+          "—"
+        )}
       </div>
 
       <div className="text-sm text-muted-foreground">

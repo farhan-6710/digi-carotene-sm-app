@@ -1,5 +1,4 @@
 import { format } from "date-fns";
-import { Link } from "react-router";
 import { Pencil } from "lucide-react";
 
 import { ProductionPlanClientFilter } from "@/features/production-planner/components/ProductionPlanClientFilter";
@@ -12,6 +11,8 @@ import type { ProductionPlansTableProps } from "@/features/production-planner/ty
 import type { ProductionPlan } from "@/features/production-planner/types/types";
 import { formatPlanDeliverables } from "@/features/production-planner/utils/productionPlanFormUtils";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
+import { stopDirectoryRowNav } from "@/shared/utils/directoryTableRow";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 
@@ -29,9 +30,10 @@ function ProductionPlanRow({ plan, canEdit, onEdit }: ProductionPlanRowProps) {
   const deliverables = formatPlanDeliverables(plan);
 
   return (
-    <div
+    <DirectoryTableRow
+      to={buildProductionPlanDetailPath(plan.id)}
       className={cn(
-        "grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:gap-4",
+        "grid items-center gap-2 px-6 py-4 sm:gap-4",
         PRODUCTION_PLANNER_ROW_GRID_CLASS,
       )}
     >
@@ -39,12 +41,7 @@ function ProductionPlanRow({ plan, canEdit, onEdit }: ProductionPlanRowProps) {
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           PLAN
         </span>
-        <Link
-          to={buildProductionPlanDetailPath(plan.id)}
-          className="hover:text-primary hover:underline"
-        >
-          {plan.plan_name}
-        </Link>
+        <span className="truncate">{plan.plan_name}</span>
       </div>
 
       <div className="text-sm text-muted-foreground">
@@ -76,14 +73,17 @@ function ProductionPlanRow({ plan, canEdit, onEdit }: ProductionPlanRowProps) {
             variant="ghost"
             size="icon"
             className="size-8 rounded-lg text-muted-foreground hover:text-foreground"
-            onClick={() => onEdit(plan)}
+            onClick={(event) => {
+              stopDirectoryRowNav(event);
+              onEdit(plan);
+            }}
           >
             <Pencil className="size-3.5" />
             <span className="sr-only">Edit plan</span>
           </Button>
         ) : null}
       </div>
-    </div>
+    </DirectoryTableRow>
   );
 }
 

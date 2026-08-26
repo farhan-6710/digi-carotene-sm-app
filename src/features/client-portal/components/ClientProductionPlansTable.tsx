@@ -1,5 +1,4 @@
 import { format } from "date-fns";
-import { Link } from "react-router";
 
 import { buildClientProductionPlanDetailPath } from "@/features/client-portal/constants/routes";
 import {
@@ -9,6 +8,7 @@ import {
 import type { ClientProductionPlansTableProps } from "@/features/client-portal/types/components";
 import { formatPlanDeliverables } from "@/features/production-planner/utils/productionPlanFormUtils";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 import { cn } from "@/shared/lib/utils";
 
@@ -41,19 +41,17 @@ export function ClientProductionPlansTable({
       }
     >
       {plans.map((plan) => (
-        <div
+        <DirectoryTableRow
           key={plan.id}
+          to={buildClientProductionPlanDetailPath(plan.id)}
           className={cn(
             "grid items-center gap-2 px-6 py-4 sm:gap-4",
             CLIENT_PLANS_ROW_GRID_CLASS,
           )}
         >
-          <Link
-            to={buildClientProductionPlanDetailPath(plan.id)}
-            className="text-sm font-medium hover:text-primary hover:underline"
-          >
+          <p className="text-sm font-medium text-foreground">
             {plan.plan_name}
-          </Link>
+          </p>
           <p className="text-sm text-muted-foreground">
             {plan.shoot_date
               ? format(new Date(plan.shoot_date), "MMM d, yyyy")
@@ -62,7 +60,7 @@ export function ClientProductionPlansTable({
           <p className="text-sm text-muted-foreground">
             {formatPlanDeliverables(plan) || "—"}
           </p>
-        </div>
+        </DirectoryTableRow>
       ))}
     </DirectoryTable>
   );

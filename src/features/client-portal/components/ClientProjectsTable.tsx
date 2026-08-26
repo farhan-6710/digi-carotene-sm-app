@@ -1,5 +1,3 @@
-import { Link } from "react-router";
-
 import {
   CLIENT_PROJECTS_ROW_GRID_CLASS,
   clientProjectsDirectoryConfig,
@@ -8,8 +6,10 @@ import type { ClientProjectsTableProps } from "@/features/client-portal/types/co
 import { projectKindLabel } from "@/features/projects-management/utils/projectKindUtils";
 import { ActiveStatusLabel } from "@/shared/components/ActiveStatusSwitchField";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 import { SocialPlatformButtons } from "@/shared/components/SocialPlatformButtons";
+import { stopDirectoryRowNav } from "@/shared/utils/directoryTableRow";
 import { cn } from "@/shared/lib/utils";
 
 export function ClientProjectsTable({
@@ -41,19 +41,17 @@ export function ClientProjectsTable({
       }
     >
       {projects.map((project) => (
-        <div
+        <DirectoryTableRow
           key={`${project.project_kind}-${project.id}`}
+          to={project.detailPath}
           className={cn(
             "grid items-center gap-2 px-6 py-4 sm:gap-4",
             CLIENT_PROJECTS_ROW_GRID_CLASS,
           )}
         >
-          <Link
-            to={project.detailPath}
-            className="text-sm font-medium hover:text-primary hover:underline"
-          >
+          <p className="text-sm font-medium text-foreground">
             {project.project_name}
-          </Link>
+          </p>
           <p className="text-sm text-muted-foreground">
             {projectKindLabel(project.project_kind)}
           </p>
@@ -61,12 +59,17 @@ export function ClientProjectsTable({
             {project.manager_name ?? "—"}
           </p>
           {project.project_kind === "sm" ? (
-            <SocialPlatformButtons socials={project.socials} />
+            <div
+              onClick={stopDirectoryRowNav}
+              onKeyDown={(event) => event.stopPropagation()}
+            >
+              <SocialPlatformButtons socials={project.socials} />
+            </div>
           ) : (
             <p className="text-sm text-muted-foreground">—</p>
           )}
           <ActiveStatusLabel isActive={project.is_active} />
-        </div>
+        </DirectoryTableRow>
       ))}
     </DirectoryTable>
   );

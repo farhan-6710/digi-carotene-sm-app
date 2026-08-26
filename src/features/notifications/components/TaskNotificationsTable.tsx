@@ -1,6 +1,5 @@
 import { format } from "date-fns";
 import { Loader2, X } from "lucide-react";
-import { Link } from "react-router";
 
 import { taskNotificationsDirectoryConfig } from "@/features/notifications/constants/notificationTypes";
 import type { TaskNotificationsTableProps } from "@/features/notifications/types/components";
@@ -9,6 +8,8 @@ import {
   TASKS_MANAGEMENT_PATH,
 } from "@/features/tasks-management/constants/routes";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
+import { stopDirectoryRowNav } from "@/shared/utils/directoryTableRow";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 
@@ -29,23 +30,21 @@ export function TaskNotificationsTable({
       isEmpty={notifications.length === 0}
     >
       {notifications.map((notification) => (
-        <div
+        <DirectoryTableRow
           key={notification.id}
+          to={
+            notification.related_id
+              ? buildTaskDetailPath(notification.related_id)
+              : TASKS_MANAGEMENT_PATH
+          }
           className={cn(
             "grid items-center gap-4 px-6 py-4",
             taskNotificationsDirectoryConfig.gridClass,
           )}
         >
-          <Link
-            to={
-              notification.related_id
-                ? buildTaskDetailPath(notification.related_id)
-                : TASKS_MANAGEMENT_PATH
-            }
-            className="min-w-0 truncate text-sm font-medium text-foreground hover:text-primary hover:underline"
-          >
+          <p className="min-w-0 truncate text-sm font-medium text-foreground">
             {notification.title}
-          </Link>
+          </p>
           <p className="min-w-0 truncate text-sm text-muted-foreground">
             {notification.message}
           </p>
@@ -59,7 +58,10 @@ export function TaskNotificationsTable({
               variant="ghost"
               disabled={dismissingId === notification.id}
               aria-label="Dismiss notification"
-              onClick={() => onDismiss(notification.id)}
+              onClick={(event) => {
+                stopDirectoryRowNav(event);
+                onDismiss(notification.id);
+              }}
             >
               {dismissingId === notification.id ? (
                 <Loader2 className="size-4 animate-spin" />
@@ -68,7 +70,7 @@ export function TaskNotificationsTable({
               )}
             </Button>
           </div>
-        </div>
+        </DirectoryTableRow>
       ))}
     </DirectoryTable>
   );
