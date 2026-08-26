@@ -60,10 +60,10 @@ export function ProjectSelect({
       options={options}
       isLoading={isLoading}
       disabled={disabled}
-      placeholder="Select a project"
-      listTitle="Select project"
-      emptyMessage="No projects found. Create a project first."
-      noMatchMessage="No matching projects found."
+      listTitle="Select social media project"
+      emptyMessage="No social media projects found. Create a project first."
+      noMatchMessage="No matching social media projects found."
+      placeholder="Select a social media project"
       mode="value"
       onOpenChange={handleOpenChange}
     />

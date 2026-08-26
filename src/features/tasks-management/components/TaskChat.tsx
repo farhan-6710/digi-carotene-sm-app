@@ -88,9 +88,12 @@ export function TaskChat({
         if (currentTeamMemberId && member.id === currentTeamMemberId) {
           return false;
         }
+        if (currentClientId && member.id === currentClientId) {
+          return false;
+        }
         return true;
       }),
-    [chatParticipants, currentTeamMemberId],
+    [chatParticipants, currentClientId, currentTeamMemberId],
   );
 
   const personOptions = useMemo(() => {

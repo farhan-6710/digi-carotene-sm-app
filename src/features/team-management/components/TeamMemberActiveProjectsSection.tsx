@@ -4,9 +4,12 @@ import { useState } from "react";
 import type { TeamMemberActiveProjectsSectionProps } from "@/features/team-management/types/components";
 import {
   formatAssignmentDate,
+  getAssignmentKindMeta,
   getAssignmentProjectName,
+  getManagedProjectKindMeta,
   getManagedProjectLabel,
 } from "@/features/team-management/utils/teamMemberAssignmentUtils";
+import { encodeProjectKey } from "@/features/projects-management/utils/projectKindUtils";
 import {
   ActiveAssignmentTag,
   ActiveAssignmentTags,
@@ -28,7 +31,9 @@ export function TeamMemberActiveProjectsSection({
   );
 
   const endingAssignment = assignments.find(
-    (assignment) => assignment.id === endingAssignmentId,
+    (assignment) =>
+      encodeProjectKey(assignment.project_kind, assignment.id) ===
+      endingAssignmentId,
   );
 
   return (
@@ -61,24 +66,30 @@ export function TeamMemberActiveProjectsSection({
         >
           {managedProjects.map((project) => (
             <ActiveAssignmentTag
-              key={`manager-${project.id}`}
+              key={`manager-${project.project_kind}-${project.id}`}
               label={getManagedProjectLabel(project)}
-              meta="Project manager"
+              meta={getManagedProjectKindMeta(project)}
               disabled
               onSelect={() => undefined}
             />
           ))}
-          {assignments.map((assignment) => (
-            <ActiveAssignmentTag
-              key={assignment.id}
-              label={getAssignmentProjectName(assignment)}
-              meta={`Since ${formatAssignmentDate(assignment.started_at)}`}
-              disabled={isSaving || !canManage}
-              onSelect={() =>
-                canManage ? setEndingAssignmentId(assignment.id) : undefined
-              }
-            />
-          ))}
+          {assignments.map((assignment) => {
+            const assignmentKey = encodeProjectKey(
+              assignment.project_kind,
+              assignment.id,
+            );
+            return (
+              <ActiveAssignmentTag
+                key={assignmentKey}
+                label={getAssignmentProjectName(assignment)}
+                meta={`${getAssignmentKindMeta(assignment)} · Since ${formatAssignmentDate(assignment.started_at)}`}
+                disabled={isSaving || !canManage}
+                onSelect={() =>
+                  canManage ? setEndingAssignmentId(assignmentKey) : undefined
+                }
+              />
+            );
+          })}
         </ActiveAssignmentTags>
       </div>
 

@@ -34,7 +34,7 @@ export function PostDialogFormFields({
         </label>
         <div className="space-y-2">
           <span className="block text-xs font-semibold text-muted-foreground">
-            Project
+            Social media project
           </span>
           <ProjectSelect
             value={values.projectId}

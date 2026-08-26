@@ -18,10 +18,15 @@ import {
 
 export function ClientAccountPage() {
   const { user } = useAuth();
-  const { client, projects, posts, productionPlans, loading, error } =
+  const { client, projects, devProjects, posts, productionPlans, loading, error } =
     useClientPortal();
 
-  const stats = buildClientStatCards(posts, projects, productionPlans).map((stat) => ({
+  const stats = buildClientStatCards(
+    posts,
+    projects,
+    productionPlans,
+    devProjects,
+  ).map((stat) => ({
     label: stat.label,
     value: loading ? "—" : stat.value,
   }));

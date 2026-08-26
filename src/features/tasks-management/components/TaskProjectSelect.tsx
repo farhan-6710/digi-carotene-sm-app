@@ -49,10 +49,10 @@ export function TaskProjectSelect({
       options={options}
       isLoading={isLoading}
       disabled={disabled}
-      placeholder="Select project"
-      listTitle="Select project"
-      emptyMessage="No active projects found."
-      noMatchMessage="No matching projects."
+      placeholder="Select social media project"
+      listTitle="Select social media project"
+      emptyMessage="No active social media projects found."
+      noMatchMessage="No matching social media projects."
       mode="value"
       onOpenChange={handleOpenChange}
     />

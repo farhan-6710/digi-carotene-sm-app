@@ -2,6 +2,8 @@ import type { ShellNavIconKey } from "@/shared/constants/shellNavIcons";
 import { crmNav } from "@/features/crm/constants/navigation";
 import { LEADS_MANAGEMENT_PATH } from "@/features/crm/constants/routes";
 import { growthNav } from "@/features/growth-and-analytics/constants/navigation";
+import { projectsNav } from "@/features/projects-management/constants/navigation";
+import { PROJECTS_MANAGEMENT_PATH } from "@/features/projects-management/constants/routes";
 
 export type NavIconKey = ShellNavIconKey;
 
@@ -19,9 +21,10 @@ export const primaryNav: NavItem[] = [
   { label: "Team", to: `${teamBasePath}/team-management`, icon: "team" },
   { label: "Clients", to: `${teamBasePath}/clients-management`, icon: "clients" },
   {
-    label: "SM Projects Management",
-    to: `${teamBasePath}/projects-management`,
+    label: "Projects Management",
+    to: PROJECTS_MANAGEMENT_PATH,
     icon: "projects",
+    children: projectsNav,
   },
   { label: "Postings Calendar", to: `${teamBasePath}/posts-management`, icon: "posts" },
   {

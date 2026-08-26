@@ -3,6 +3,7 @@ import { CLIENT_TASKS_ROW_GRID_CLASS } from "@/features/client-portal/constants/
 import { TASK_PRIORITY_LABELS } from "@/features/tasks-management/constants/taskPriorities";
 import { TASK_STATUS_LABELS } from "@/features/tasks-management/constants/taskStatuses";
 import type { Task } from "@/features/tasks-management/types/types";
+import { formatAssigneeLabels } from "@/features/tasks-management/utils/taskAssigneeListUtils";
 import { formatTaskEta } from "@/features/tasks-management/utils/taskDisplayUtils";
 import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
 import { cn } from "@/shared/lib/utils";
@@ -12,6 +13,20 @@ type ClientTasksTableRowProps = {
 };
 
 export function ClientTasksTableRow({ task }: ClientTasksTableRowProps) {
+  const assigneeMembers = task.assignees
+    .filter((row) => row.team_member)
+    .map((row) => row.team_member!);
+  const assigneeClients = task.assignees
+    .filter((row) => row.client)
+    .map((row) => row.client!);
+  const assigneeLabel =
+    assigneeMembers.length > 0 || assigneeClients.length > 0
+      ? formatAssigneeLabels({
+          members: assigneeMembers,
+          clients: assigneeClients,
+        })
+      : (task.assigned_to?.member_name ?? task.client?.client_name ?? "—");
+
   return (
     <DirectoryTableRow
       to={buildClientTaskDetailPath(task.id)}
@@ -45,9 +60,7 @@ export function ClientTasksTableRow({ task }: ClientTasksTableRowProps) {
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           ASSIGNED TO
         </span>
-        <p className="truncate text-sm text-muted-foreground">
-          {task.assigned_to?.member_name ?? "—"}
-        </p>
+        <p className="truncate text-sm text-muted-foreground">{assigneeLabel}</p>
       </div>
 
       <div>

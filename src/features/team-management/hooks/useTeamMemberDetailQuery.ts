@@ -12,6 +12,10 @@ import {
   splitMemberPlanAssignments,
 } from "@/features/team-management/utils/teamMemberAssignmentUtils";
 import {
+  fetchManagedDevProjects,
+  fetchMemberDevProjectAssignments,
+} from "@/services/devProjectTeamMembersService";
+import {
   fetchManagedProjects,
   fetchMemberProjectAssignments,
 } from "@/services/projectTeamMembersService";
@@ -38,6 +42,20 @@ const EMPTY: MemberDetail = {
   roleAssignedPlans: [],
 };
 
+function withKind(
+  assignment: Omit<MemberProjectAssignment, "project_kind">,
+  project_kind: MemberProjectAssignment["project_kind"],
+): MemberProjectAssignment {
+  return { ...assignment, project_kind };
+}
+
+function withManagedKind(
+  project: Omit<ManagedProjectSummary, "project_kind">,
+  project_kind: ManagedProjectSummary["project_kind"],
+): ManagedProjectSummary {
+  return { ...project, project_kind };
+}
+
 export function useTeamMemberDetailQuery(memberId: string) {
   const load = useCallback(async (): Promise<MemberDetail> => {
     if (!memberId) {
@@ -46,17 +64,34 @@ export function useTeamMemberDetailQuery(memberId: string) {
 
     const [
       member,
-      assignments,
-      managedProjects,
+      smAssignments,
+      smManaged,
+      devAssignments,
+      devManaged,
       planAssignments,
       roleAssignedPlans,
     ] = await Promise.all([
       fetchTeamMemberById(memberId),
       fetchMemberProjectAssignments(memberId),
       fetchManagedProjects(memberId),
+      fetchMemberDevProjectAssignments(memberId),
+      fetchManagedDevProjects(memberId),
       fetchMemberPlanAssignments(memberId),
       fetchMemberPlanRoleAssignments(memberId),
     ]);
+
+    const assignments = [
+      ...smAssignments.map((row) => withKind(row, "sm")),
+      ...devAssignments.map((row) => withKind(row, "dev")),
+    ].sort(
+      (a, b) =>
+        new Date(b.started_at).getTime() - new Date(a.started_at).getTime(),
+    );
+
+    const managedProjects = [
+      ...smManaged.map((row) => withManagedKind(row, "sm")),
+      ...devManaged.map((row) => withManagedKind(row, "dev")),
+    ].sort((a, b) => a.project_name.localeCompare(b.project_name));
 
     return {
       member,

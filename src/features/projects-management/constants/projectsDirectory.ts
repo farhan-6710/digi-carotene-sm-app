@@ -15,11 +15,11 @@ export const projectsDirectoryColumns: DirectoryTableColumn[] = [
 ];
 
 export const projectsDirectoryConfig = {
-  title: "SM Projects Directory",
+  title: "Social Media Projects",
   description:
-    "Each project belongs to a client and has its own social accounts and team.",
+    "Each SM project belongs to a client and has its own social accounts and team.",
   gridClass: PROJECTS_DIRECTORY_GRID_CLASS,
   columns: projectsDirectoryColumns,
   emptyMessage:
-    "No projects found. Add a client first, then create your first project.",
+    "No social media projects found. Add a client first, then create your first project.",
 } as const;

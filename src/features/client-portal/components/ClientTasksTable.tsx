@@ -2,6 +2,7 @@ import { ClientTasksTableRow } from "@/features/client-portal/components/ClientT
 import { clientTasksDirectoryConfig } from "@/features/client-portal/constants/tasksDirectory";
 import type { Task } from "@/features/tasks-management/types/types";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { ListingDateFilter } from "@/shared/components/ListingDateFilter";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 
 type ClientTasksTableProps = {
@@ -9,6 +10,8 @@ type ClientTasksTableProps = {
   isLoading: boolean;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
+  etaDate: string;
+  onEtaDateChange: (value: string) => void;
 };
 
 export function ClientTasksTable({
@@ -16,7 +19,11 @@ export function ClientTasksTable({
   isLoading,
   searchQuery,
   onSearchQueryChange,
+  etaDate,
+  onEtaDateChange,
 }: ClientTasksTableProps) {
+  const hasFilters = Boolean(searchQuery.trim() || etaDate);
+
   return (
     <DirectoryTable
       title={clientTasksDirectoryConfig.title}
@@ -24,19 +31,27 @@ export function ClientTasksTable({
       gridClass={clientTasksDirectoryConfig.gridClass}
       columns={clientTasksDirectoryConfig.columns}
       emptyMessage={
-        searchQuery.trim()
-          ? "No tasks match that search."
+        hasFilters
+          ? "No tasks match those filters."
           : clientTasksDirectoryConfig.emptyMessage
       }
       isLoading={isLoading}
       isEmpty={tasks.length === 0}
       headerAside={
-        <ListingSearchInput
-          value={searchQuery}
-          onChange={onSearchQueryChange}
-          placeholder="Search tasks"
-          disabled={isLoading}
-        />
+        <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
+          <ListingDateFilter
+            value={etaDate}
+            onChange={onEtaDateChange}
+            placeholder="Filter by ETA"
+            disabled={isLoading}
+          />
+          <ListingSearchInput
+            value={searchQuery}
+            onChange={onSearchQueryChange}
+            placeholder="Search tasks"
+            disabled={isLoading}
+          />
+        </div>
       }
     >
       {tasks.map((task) => (

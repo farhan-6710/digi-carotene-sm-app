@@ -34,7 +34,7 @@ function ClientTaskBackButton() {
 export function ClientTaskDetailPage() {
   const { taskId = "" } = useParams();
   const { clientId } = useAuth();
-  const { task, messages, isLoading, error, setError, reload } =
+  const { task, messages, adminMembers, isLoading, error, setError, reload } =
     useClientTaskDetailQuery(taskId);
   const { subtasks } = useSubtasksQuery(taskId);
   const {
@@ -57,8 +57,8 @@ export function ClientTaskDetailPage() {
   });
 
   const chatParticipants = useMemo(
-    () => (task ? buildTaskChatParticipants(task) : []),
-    [task],
+    () => (task ? buildTaskChatParticipants(task, { admins: adminMembers }) : []),
+    [adminMembers, task],
   );
   const chatSubtasks = useMemo(
     () => subtasks.map((subtask) => ({ id: subtask.id, title: subtask.title })),

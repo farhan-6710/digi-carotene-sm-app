@@ -214,6 +214,7 @@ export function useSubtaskDialog({
       isSaving,
       values,
       currentTeamMemberId: teamMemberId,
+      currentClientId: clientId,
       onFieldChange,
       onSave: () => void saveSubtask(),
       onDelete:

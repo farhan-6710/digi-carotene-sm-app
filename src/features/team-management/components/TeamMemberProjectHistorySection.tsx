@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { TeamMemberProjectHistorySectionProps } from "@/features/team-management/types/components";
 import {
   formatAssignmentPeriod,
+  getAssignmentKindMeta,
   getAssignmentProjectName,
 } from "@/features/team-management/utils/teamMemberAssignmentUtils";
 import { MonthSelector } from "@/shared/ui/MonthSelector";
@@ -60,12 +61,17 @@ export function TeamMemberProjectHistorySection({
         <div className="divide-y divide-border">
           {filteredAssignments.map((assignment) => (
             <div
-              key={assignment.id}
+              key={`${assignment.project_kind}-${assignment.id}`}
               className="flex flex-wrap items-center justify-between gap-3 px-6 py-4"
             >
-              <span className="text-sm font-medium text-foreground">
-                {getAssignmentProjectName(assignment)}
-              </span>
+              <div>
+                <span className="text-sm font-medium text-foreground">
+                  {getAssignmentProjectName(assignment)}
+                </span>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {getAssignmentKindMeta(assignment)}
+                </p>
+              </div>
               <div className="text-xs text-muted-foreground">
                 {formatAssignmentPeriod(
                   assignment.started_at,

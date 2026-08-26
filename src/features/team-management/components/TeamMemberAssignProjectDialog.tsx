@@ -35,7 +35,8 @@ export function TeamMemberAssignProjectDialog({
         <DialogHeader>
           <DialogTitle>Assign projects</DialogTitle>
           <DialogDescription>
-            Choose one or more projects to add to their active workload.
+            Choose social media and/or development projects. Groups appear in the
+            dropdown. Managers are set on the project itself.
           </DialogDescription>
         </DialogHeader>
 

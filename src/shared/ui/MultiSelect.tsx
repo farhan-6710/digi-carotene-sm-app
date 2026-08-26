@@ -1,5 +1,5 @@
 import { Check, ChevronDown } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 
 import { cn } from "@/shared/lib/utils";
 import type { MultiSelectProps } from "@/shared/types/components";
@@ -32,6 +32,25 @@ export function MultiSelect({
     [excludeValues, options],
   );
 
+  const groupedRows = useMemo(() => {
+    const rows: Array<
+      | { type: "group"; label: string }
+      | { type: "option"; option: (typeof availableOptions)[number] }
+    > = [];
+    let lastGroup: string | undefined;
+
+    for (const option of availableOptions) {
+      const group = option.group?.trim();
+      if (group && group !== lastGroup) {
+        rows.push({ type: "group", label: group });
+        lastGroup = group;
+      }
+      rows.push({ type: "option", option });
+    }
+
+    return rows;
+  }, [availableOptions]);
+
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
     onOpenChange?.(nextOpen);
@@ -45,6 +64,67 @@ export function MultiSelect({
 
     onChange([...value, optionValue]);
   };
+
+  const listBody: ReactNode = isLoading ? (
+    <p className="px-3 py-2 text-sm text-muted-foreground">Loading...</p>
+  ) : availableOptions.length === 0 ? (
+    <p className="px-3 py-2 text-sm text-muted-foreground">{emptyMessage}</p>
+  ) : (
+    <div
+      className="min-h-0 max-h-72 flex-1 overflow-y-auto overscroll-contain p-2"
+      onWheel={(event) => event.stopPropagation()}
+    >
+      <div className="flex flex-col gap-1">
+        {groupedRows.map((row) => {
+          if (row.type === "group") {
+            return (
+              <p
+                key={`group-${row.label}`}
+                className="px-3 pt-2 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase"
+              >
+                {row.label}
+              </p>
+            );
+          }
+
+          const { option } = row;
+          const isSelected = value.includes(option.value);
+
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => toggleValue(option.value)}
+              className={cn(
+                "flex w-full min-w-0 items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-muted/60",
+                isSelected
+                  ? "bg-primary/10 text-primary"
+                  : "text-foreground hover:bg-muted",
+              )}
+            >
+              <span className="flex min-w-0 items-center gap-3">
+                <span
+                  className={cn(
+                    "flex size-4 shrink-0 items-center justify-center rounded border transition-colors",
+                    isSelected
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-muted-foreground/40 bg-background",
+                  )}
+                >
+                  {isSelected ? (
+                    <Check className="size-2.5 stroke-[3.5]" />
+                  ) : null}
+                </span>
+                <span className="truncate font-normal text-foreground">
+                  {option.label}
+                </span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
 
   const trigger = (
     <Popover open={open} onOpenChange={handleOpenChange} modal>
@@ -91,54 +171,7 @@ export function MultiSelect({
         onOpenAutoFocus={(event) => event.preventDefault()}
         onWheel={(event) => event.stopPropagation()}
       >
-        {isLoading ? (
-          <p className="px-3 py-2 text-sm text-muted-foreground">Loading...</p>
-        ) : availableOptions.length === 0 ? (
-          <p className="px-3 py-2 text-sm text-muted-foreground">{emptyMessage}</p>
-        ) : (
-          <div
-            className="min-h-0 max-h-72 flex-1 overflow-y-auto overscroll-contain p-2"
-            onWheel={(event) => event.stopPropagation()}
-          >
-            <div className="flex flex-col gap-1">
-              {availableOptions.map((option) => {
-                const isSelected = value.includes(option.value);
-
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => toggleValue(option.value)}
-                    className={cn(
-                      "flex w-full min-w-0 items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-muted/60",
-                      isSelected
-                        ? "bg-primary/10 text-primary"
-                        : "text-foreground hover:bg-muted",
-                    )}
-                  >
-                    <span className="flex min-w-0 items-center gap-3">
-                      <span
-                        className={cn(
-                          "flex size-4 shrink-0 items-center justify-center rounded border transition-colors",
-                          isSelected
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-muted-foreground/40 bg-background",
-                        )}
-                      >
-                        {isSelected ? (
-                          <Check className="size-2.5 stroke-[3.5]" />
-                        ) : null}
-                      </span>
-                      <span className="truncate font-normal text-foreground">
-                        {option.label}
-                      </span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        {listBody}
       </PopoverContent>
     </Popover>
   );
@@ -149,7 +182,9 @@ export function MultiSelect({
 
   return (
     <div className="space-y-2">
-      <span className="block text-xs font-semibold text-muted-foreground">{label}</span>
+      <span className="block text-xs font-semibold text-muted-foreground">
+        {label}
+      </span>
       {trigger}
     </div>
   );

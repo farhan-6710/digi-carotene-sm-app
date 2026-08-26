@@ -1,4 +1,5 @@
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
+import type { ProjectKind } from "@/features/projects-management/utils/projectKindUtils";
 
 export type TeamMember = {
   id: string;
@@ -18,6 +19,7 @@ export type MemberProjectAssignment = {
   ended_at: string | null;
   created_at: string;
   updated_at: string;
+  project_kind: ProjectKind;
   projects: {
     id: string;
     project_name: string;
@@ -31,6 +33,7 @@ export type ManagedProjectSummary = {
   project_name: string;
   client_id: string;
   manager_id: string;
+  project_kind: ProjectKind;
   clients: { id: string; client_name: string } | null;
 };
 

@@ -1,3 +1,4 @@
+import type { DevProjectListItem } from "@/features/development-projects/types/types";
 import type { Post } from "@/features/posts-management/types/types";
 import type { TeamMember } from "@/features/team-management/types/types";
 import type {
@@ -80,6 +81,7 @@ export type ProjectTeamMembersSelectProps = {
 
 export type ClientProjectsSectionProps = {
   projects: ProjectListItem[];
+  devProjects: DevProjectListItem[];
   isLoading: boolean;
 };
 

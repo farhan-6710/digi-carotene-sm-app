@@ -16,9 +16,14 @@ import { PageHeader } from "@/shared/components/PageHeader";
 import { StatsCards } from "@/shared/components/StatsCards";
 
 export function ClientDashboardPage() {
-  const { client, projects, posts, productionPlans, loading, error } =
+  const { client, projects, devProjects, posts, productionPlans, loading, error } =
     useClientPortal();
-  const statCards = buildClientStatCards(posts, projects, productionPlans);
+  const statCards = buildClientStatCards(
+    posts,
+    projects,
+    productionPlans,
+    devProjects,
+  );
   const upcoming = getUpcomingPosts(posts);
 
   return (

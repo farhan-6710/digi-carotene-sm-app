@@ -1,6 +1,13 @@
 import { useCallback, useState } from "react";
 
 import {
+  parseProjectKey,
+} from "@/features/projects-management/utils/projectKindUtils";
+import {
+  assignMemberToDevProject,
+  endDevProjectTeamAssignment,
+} from "@/services/devProjectTeamMembersService";
+import {
   assignMemberToProject,
   endProjectTeamAssignment,
 } from "@/services/projectTeamMembersService";
@@ -20,8 +27,8 @@ export function useTeamMemberProjectActions({
   const [isSaving, setIsSaving] = useState(false);
 
   const assignProject = useCallback(
-    async (projectIds: string[]) => {
-      if (!memberId || isSaving || projectIds.length === 0) {
+    async (projectKeys: string[]) => {
+      if (!memberId || isSaving || projectKeys.length === 0) {
         return;
       }
 
@@ -29,14 +36,22 @@ export function useTeamMemberProjectActions({
       setError(null);
 
       try {
-        for (const projectId of projectIds) {
-          await assignMemberToProject(memberId, projectId);
+        for (const key of projectKeys) {
+          const parsed = parseProjectKey(key);
+          if (!parsed) {
+            throw new Error("Invalid project selection.");
+          }
+          if (parsed.kind === "sm") {
+            await assignMemberToProject(memberId, parsed.id);
+          } else {
+            await assignMemberToDevProject(memberId, parsed.id);
+          }
         }
         await reload();
         showToast(
           "success",
-          projectIds.length > 1
-            ? `${projectIds.length} projects assigned successfully.`
+          projectKeys.length > 1
+            ? `${projectKeys.length} projects assigned successfully.`
             : "Project assigned successfully.",
         );
       } catch (err) {
@@ -53,8 +68,14 @@ export function useTeamMemberProjectActions({
   );
 
   const endAssignment = useCallback(
-    async (assignmentId: string) => {
+    async (assignmentKey: string) => {
       if (isSaving) {
+        return;
+      }
+
+      const parsed = parseProjectKey(assignmentKey);
+      if (!parsed) {
+        setError("Invalid assignment.");
         return;
       }
 
@@ -62,7 +83,11 @@ export function useTeamMemberProjectActions({
       setError(null);
 
       try {
-        await endProjectTeamAssignment(assignmentId);
+        if (parsed.kind === "sm") {
+          await endProjectTeamAssignment(parsed.id);
+        } else {
+          await endDevProjectTeamAssignment(parsed.id);
+        }
         await reload();
         showToast("success", "Project assignment ended successfully.");
       } catch (err) {

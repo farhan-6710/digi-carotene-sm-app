@@ -60,6 +60,7 @@ export type SubtaskDialogProps = {
   allowedMemberIds: string[];
   allowedClientIds: string[];
   currentTeamMemberId?: string | null;
+  currentClientId?: string | null;
   onFieldChange: <K extends keyof SubtaskFormValues>(
     field: K,
     value: SubtaskFormValues[K],

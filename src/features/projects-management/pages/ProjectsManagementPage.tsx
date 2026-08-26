@@ -34,8 +34,8 @@ export function ProjectsManagementPage() {
 
   return (
     <PageShell
-      heading="SM Projects Management"
-      description="Manage client projects, social profile URLs, and team assignments. Posts are scheduled per project."
+      heading="Social Media Projects"
+      description="Manage client SM projects, social profile URLs, and team assignments. Posts are scheduled per project."
       error={error}
       actions={
         can("projects.create") ? (

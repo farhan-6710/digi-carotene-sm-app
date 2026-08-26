@@ -20,13 +20,16 @@ profiles.client_id ──► clients          (client portal)
 profiles.team_member_id ──► team_members (team portal)
 
 clients
-  ├── projects
+  ├── sm_projects
   │     ├── manager_id ──► team_members
   │     ├── project_team_members ──► team_members   (active when ended_at IS NULL)
   │     ├── posts
   │     └── tasks ──► task_tags ──► team_members
   │            ├── task_messages ──► team_members
   │            └── subtasks ──► team_members / clients
+  ├── dev_projects
+  │     ├── manager_id ──► team_members
+  │     └── dev_project_team_members ──► team_members   (active when ended_at IS NULL)
   ├── production_plans
   │     ├── manager_id / shoot_incharge_id ──► team_members
   │     ├── production_plan_team_members ──► team_members
@@ -37,7 +40,7 @@ clients
 leads   (flat CRM table — not tied to a client in V1)
 ```
 
-Rules: a **client** is a company. A **project** is one engagement (social profile URLs + manager). A **post** belongs to a project. Same brand, different social accounts → another project. No project, no post.
+Rules: a **client** is a company. An **SM project** (`sm_projects`) is one social engagement (profile URLs + manager). A **dev project** (`dev_projects`) is a separate development engagement. A **post** belongs to an SM project. Same brand, different social accounts → another SM project. No SM project, no post.
 
 ---
 
@@ -48,8 +51,10 @@ Rules: a **client** is a company. A **project** is one engagement (social profil
 | `profiles` | Auth user → portal (`role`: `team` / `client` / `user`) + `client_id` / `team_member_id` |
 | `clients` | Brand registry (`is_active`, primary/secondary contact name + mobile) |
 | `team_members` | Internal roster (`team_role`: `admin` / `manager` / `executive`) |
-| `projects` | Client work + `socials` jsonb + `manager_id` + `is_active` + `share_token` |
-| `project_team_members` | Extra people on a project; `ended_at` null = active |
+| `sm_projects` | Social media work + `socials` jsonb + `manager_id` + `is_active` + `share_token` |
+| `dev_projects` | Development work: description, tech stack, repo/staging/prod URLs, dates, `is_active` |
+| `project_team_members` | Extra people on an SM project; `ended_at` null = active |
+| `dev_project_team_members` | Extra people on a development project; `ended_at` null = active |
 | `posts` | Calendar row (`to_be_posted_*`, `status`, `socials[]`, `post_links`) |
 | `post_approval_requests` | Executive backdated posts waiting on manager/admin |
 | `notifications` | Team inbox (`approval`, `post_digest`, `task`) |
@@ -76,7 +81,7 @@ Authenticated **team** users: full CRUD on operational tables. **Client** portal
 
 Public share links:
 
-1. Team user copies a link → app writes a UUID into `projects.share_token` or `production_plans.share_token` (once).
+1. Team user copies a link → app writes a UUID into `sm_projects.share_token` or `production_plans.share_token` (once).
 2. Guest opens `/share/project/:token` or `/share/plan/:token` with **no login**.
 3. The page calls `fetch_shared_project` / `fetch_shared_production_plan` (those two functions exist so guests can read **one** shared record without opening the whole table). View-only. Refresh to see new data.
 

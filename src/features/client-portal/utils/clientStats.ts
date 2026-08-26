@@ -7,6 +7,7 @@ import {
   XCircle,
 } from "lucide-react";
 
+import type { DevProjectListItem } from "@/features/development-projects/types/types";
 import type { ProductionPlan } from "@/features/production-planner/types/types";
 import type { Post } from "@/features/posts-management/types/types";
 import type { ProjectListItem } from "@/features/projects-management/types/types";
@@ -16,7 +17,9 @@ export function buildClientStatCards(
   posts: Post[],
   projects: ProjectListItem[] = [],
   plans: ProductionPlan[] = [],
+  devProjects: DevProjectListItem[] = [],
 ): StatCardItem[] {
+  const projectCount = projects.length + devProjects.length;
   return [
     {
       id: "client-total-posts",
@@ -53,8 +56,8 @@ export function buildClientStatCards(
     {
       id: "client-projects",
       label: "Projects",
-      value: String(projects.length),
-      description: "Social accounts for your brand",
+      value: String(projectCount),
+      description: "Social and development work",
       icon: FolderKanban,
       href: "/client-portal/projects",
     },

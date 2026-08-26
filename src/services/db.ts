@@ -15,7 +15,7 @@ const POST_SELECT = `
   posted_time,
   status,
   created_at,
-  projects (
+  projects:sm_projects (
     project_name,
     clients ( client_name )
   )
@@ -34,6 +34,25 @@ const PROJECT_SELECT = `
   team_members:manager_id ( id, member_name, team_role )
 `;
 
+const DEV_PROJECT_SELECT = `
+  id,
+  project_name,
+  client_id,
+  manager_id,
+  description,
+  tech_stack,
+  repo_url,
+  staging_url,
+  production_url,
+  start_date,
+  target_date,
+  is_active,
+  created_at,
+  updated_at,
+  clients ( id, client_name ),
+  team_members:manager_id ( id, member_name, team_role )
+`;
+
 const ASSIGNMENT_SELECT = `
   id,
   project_id,
@@ -42,7 +61,23 @@ const ASSIGNMENT_SELECT = `
   ended_at,
   created_at,
   updated_at,
-  projects (
+  projects:sm_projects (
+    id,
+    project_name,
+    client_id,
+    clients ( id, client_name )
+  )
+`;
+
+const DEV_ASSIGNMENT_SELECT = `
+  id,
+  project_id,
+  member_id,
+  started_at,
+  ended_at,
+  created_at,
+  updated_at,
+  projects:dev_projects (
     id,
     project_name,
     client_id,
@@ -61,7 +96,7 @@ const APPROVAL_SELECT = `
   approved_post_id,
   post_payload,
   created_at,
-  projects (
+  projects:sm_projects (
     project_name,
     manager_id,
     clients ( client_name )
@@ -142,7 +177,7 @@ const TASK_SELECT = `
   status,
   created_at,
   updated_at,
-  projects (
+  projects:sm_projects (
     id,
     project_name,
     manager_id,
@@ -254,12 +289,20 @@ export const DB = {
     SELECT: "*",
   },
   PROJECTS: {
-    TABLE: "projects",
+    TABLE: "sm_projects",
     SELECT: PROJECT_SELECT,
+  },
+  DEV_PROJECTS: {
+    TABLE: "dev_projects",
+    SELECT: DEV_PROJECT_SELECT,
   },
   PROJECT_TEAM_MEMBERS: {
     TABLE: "project_team_members",
     SELECT: ASSIGNMENT_SELECT,
+  },
+  DEV_PROJECT_TEAM_MEMBERS: {
+    TABLE: "dev_project_team_members",
+    SELECT: DEV_ASSIGNMENT_SELECT,
   },
   POSTS: {
     TABLE: "posts",

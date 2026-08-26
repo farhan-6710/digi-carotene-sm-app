@@ -261,7 +261,7 @@ function fetchManagedProjectIds(array $config, string $memberId): array
     $rows = supabaseRequest(
         $config,
         'GET',
-        'projects?select=id&manager_id=eq.' . rawurlencode($memberId),
+        'sm_projects?select=id&manager_id=eq.' . rawurlencode($memberId),
     );
 
     return projectIdsFromRows(is_array($rows) ? $rows : []);
@@ -310,7 +310,7 @@ function fetchPostsForDigest(
     }
 
     $query = 'posts?select=id,post_title,post_type,status,to_be_posted_date,to_be_posted_time,'
-        . 'socials,projects(project_name,clients(client_name))'
+        . 'socials,projects:sm_projects(project_name,clients(client_name))'
         . '&to_be_posted_date=eq.' . rawurlencode($date)
         . '&order=to_be_posted_date.asc,to_be_posted_time.asc';
 

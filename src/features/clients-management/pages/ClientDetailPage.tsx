@@ -29,8 +29,16 @@ function ClientDetailBackButton() {
 export function ClientDetailPage() {
   const { clientId = "" } = useParams();
   const { can } = usePermissions();
-  const { client, projects, productionPlans, isLoading, error, setError, reload } =
-    useClientDetailQuery(clientId);
+  const {
+    client,
+    projects,
+    devProjects,
+    productionPlans,
+    isLoading,
+    error,
+    setError,
+    reload,
+  } = useClientDetailQuery(clientId);
   const { openEditDialog, dialog } = useClientDialog({
     reload,
     setError,
@@ -71,7 +79,11 @@ export function ClientDetailPage() {
 
       <ClientProfileCard client={client} />
 
-      <ClientProjectsSection projects={projects} isLoading={isLoading} />
+      <ClientProjectsSection
+        projects={projects}
+        devProjects={devProjects}
+        isLoading={isLoading}
+      />
 
       <ClientProductionPlansSection
         plans={productionPlans}

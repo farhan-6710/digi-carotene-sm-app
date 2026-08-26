@@ -30,6 +30,7 @@ export function SubtaskDialog({
   allowedMemberIds,
   allowedClientIds,
   currentTeamMemberId = null,
+  currentClientId = null,
   onFieldChange,
   onSave,
   onDelete,
@@ -45,9 +46,14 @@ export function SubtaskDialog({
 
   const myselfKey = currentTeamMemberId
     ? encodeTaskAssignee("team", currentTeamMemberId)
-    : null;
-  const canAssignMyself =
-    Boolean(myselfKey) && allowedMemberIds.includes(currentTeamMemberId ?? "");
+    : currentClientId
+      ? encodeTaskAssignee("client", currentClientId)
+      : null;
+  const canAssignMyself = currentTeamMemberId
+    ? allowedMemberIds.includes(currentTeamMemberId)
+    : currentClientId
+      ? allowedClientIds.includes(currentClientId)
+      : false;
 
   const canSave = statusOnly
     ? true

@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 
+import { projectKindLabel } from "@/features/projects-management/utils/projectKindUtils";
 import type {
   ManagedProjectSummary,
   MemberPlanAssignment,
@@ -50,6 +51,18 @@ export function getManagedProjectLabel(project: ManagedProjectSummary): string {
   return clientName
     ? `${project.project_name} (${clientName})`
     : project.project_name;
+}
+
+export function getAssignmentKindMeta(
+  assignment: MemberProjectAssignment,
+): string {
+  return projectKindLabel(assignment.project_kind);
+}
+
+export function getManagedProjectKindMeta(
+  project: ManagedProjectSummary,
+): string {
+  return `${projectKindLabel(project.project_kind)} · Project manager`;
 }
 
 export function splitMemberPlanAssignments(assignments: MemberPlanAssignment[]) {

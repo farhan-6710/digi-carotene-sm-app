@@ -109,6 +109,17 @@ const ProjectDetailPage = lazyRoutePage(
   () => import("@/features/projects-management/pages/ProjectDetailPage"),
   "ProjectDetailPage",
 );
+const DevProjectsManagementPage = lazyRoutePage(
+  () =>
+    import(
+      "@/features/development-projects/pages/DevProjectsManagementPage"
+    ),
+  "DevProjectsManagementPage",
+);
+const DevProjectDetailPage = lazyRoutePage(
+  () => import("@/features/development-projects/pages/DevProjectDetailPage"),
+  "DevProjectDetailPage",
+);
 const ClientsManagementPage = lazyRoutePage(
   () => import("@/features/clients-management/pages/ClientsManagementPage"),
   "ClientsManagementPage",
@@ -205,6 +216,10 @@ const ClientProjectsPage = lazyRoutePage(
 const ClientProjectDetailPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientProjectDetailPage"),
   "ClientProjectDetailPage",
+);
+const ClientDevProjectDetailPage = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientDevProjectDetailPage"),
+  "ClientDevProjectDetailPage",
 );
 const ClientProductionPlannerPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientProductionPlannerPage"),
@@ -352,6 +367,14 @@ export const router = createBrowserRouter([
             path: "projects-management/:projectId",
             element: <ProjectDetailPage />,
           },
+          {
+            path: "dev-projects-management",
+            element: <DevProjectsManagementPage />,
+          },
+          {
+            path: "dev-projects-management/:projectId",
+            element: <DevProjectDetailPage />,
+          },
           { path: "clients-management", element: <ClientsManagementPage /> },
           {
             path: "clients-management/:clientId",
@@ -388,6 +411,10 @@ export const router = createBrowserRouter([
           {
             path: "projects/:projectId",
             element: <ClientProjectDetailPage />,
+          },
+          {
+            path: "dev-projects/:projectId",
+            element: <ClientDevProjectDetailPage />,
           },
           { path: "posts", element: <ClientPostsPage /> },
           { path: "tasks-management", element: <ClientTasksPage /> },

@@ -8,6 +8,7 @@ import {
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import type { Client } from "@/features/clients-management/types/types";
+import type { DevProjectListItem } from "@/features/development-projects/types/types";
 import { fetchClientById } from "@/services/clientsService";
 import {
   ClientPortalContext,
@@ -18,12 +19,14 @@ import type { ProductionPlan } from "@/features/production-planner/types/types";
 import { fetchPostsForClientId } from "@/services/postsService";
 import { fetchProductionPlansByClientId } from "@/services/productionPlansService";
 import type { ProjectListItem } from "@/features/projects-management/types/types";
+import { fetchDevProjectsByClientId } from "@/services/devProjectsService";
 import { fetchProjectsByClientId } from "@/services/projectsService";
 
 export function ClientPortalProvider({ children }: { children: ReactNode }) {
   const { clientId } = useAuth();
   const [client, setClient] = useState<Client | null>(null);
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
+  const [devProjects, setDevProjects] = useState<DevProjectListItem[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [productionPlans, setProductionPlans] = useState<ProductionPlan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +36,7 @@ export function ClientPortalProvider({ children }: { children: ReactNode }) {
     if (!clientId) {
       setClient(null);
       setProjects([]);
+      setDevProjects([]);
       setPosts([]);
       setProductionPlans([]);
       setLoading(false);
@@ -48,25 +52,30 @@ export function ClientPortalProvider({ children }: { children: ReactNode }) {
       if (!clientRow) {
         setClient(null);
         setProjects([]);
+        setDevProjects([]);
         setPosts([]);
         setProductionPlans([]);
         setError("Your client record could not be found.");
         return;
       }
 
-      const [projectRows, clientPosts, planRows] = await Promise.all([
-        fetchProjectsByClientId(clientId),
-        fetchPostsForClientId(clientId),
-        fetchProductionPlansByClientId(clientId),
-      ]);
+      const [projectRows, devProjectRows, clientPosts, planRows] =
+        await Promise.all([
+          fetchProjectsByClientId(clientId),
+          fetchDevProjectsByClientId(clientId),
+          fetchPostsForClientId(clientId),
+          fetchProductionPlansByClientId(clientId),
+        ]);
 
       setClient(clientRow);
       setProjects(projectRows);
+      setDevProjects(devProjectRows);
       setPosts(clientPosts);
       setProductionPlans(planRows);
     } catch (err) {
       setClient(null);
       setProjects([]);
+      setDevProjects([]);
       setPosts([]);
       setProductionPlans([]);
       setError(
@@ -83,8 +92,17 @@ export function ClientPortalProvider({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const value = useMemo<ClientPortalContextValue>(
-    () => ({ client, projects, posts, productionPlans, loading, error, refresh }),
-    [client, projects, posts, productionPlans, loading, error, refresh],
+    () => ({
+      client,
+      projects,
+      devProjects,
+      posts,
+      productionPlans,
+      loading,
+      error,
+      refresh,
+    }),
+    [client, projects, devProjects, posts, productionPlans, loading, error, refresh],
   );
 
   return (

@@ -160,6 +160,8 @@ export type DetailPageLoadingProps = {
 export type MultiSelectOption = {
   value: string;
   label: string;
+  /** Optional subset heading shown above this option in the list. */
+  group?: string;
 };
 
 export type MultiSelectProps = {

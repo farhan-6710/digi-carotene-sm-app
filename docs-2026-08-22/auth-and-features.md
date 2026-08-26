@@ -37,7 +37,7 @@ Deleting a team member resets linked profiles to `role = user`.
 | `manager` | clients, projects, posts, tasks, leads | Assigned projects / plans only |
 | `executive` | posts, tasks, leads | Assigned projects / plans only |
 
-**Assigned project** = `projects.manager_id` **or** active `project_team_members`.  
+**Assigned project** = SM: `sm_projects.manager_id` **or** active `project_team_members`; Dev: `dev_projects.manager_id` **or** active `dev_project_team_members`.  
 **Assigned plan** = plan manager, shoot incharge, **or** active `production_plan_team_members`. Assigned people can add/edit **content** on that plan; creating/editing the plan record stays **admin**.
 
 Content approvals on a plan item:
@@ -57,7 +57,7 @@ Content approvals on a plan item:
 | Dashboard | `/team-portal/dashboard` | Active-client stats, publishing chart, today’s posts, missed posts |
 | Team | `/team-portal/team-management` | Roster; member detail = active projects + **active production plans** (assign / end) |
 | Clients | `/team-portal/clients-management` | Brands, `is_active`; detail lists projects and plans |
-| SM Projects Management | `/team-portal/projects-management` | Social URLs, manager, extra team; `is_active` |
+| Projects Management | `/team-portal/projects-management` (SM) · `/team-portal/dev-projects-management` (dev) | Sidebar dropdown: Social Media Projects + Development Projects |
 | Postings calendar | `/team-portal/posts-management` | Month grid; client/project filters in the URL; day page reuses them |
 | Task Management | `/team-portal/tasks-management` | Project-scoped tasks; assign + dependencies; tabs All · Raised by me · Raised for me; detail + chat |
 | Production planner | `/team-portal/production-planner` | Plans per client (`?client=` filter); detail = script, reference link, approvals |
@@ -90,7 +90,7 @@ Project-scoped only. Status: `pending` → `in_progress` → `completed`. Priori
 Visibility (team):
 
 - **Admin** — all tasks
-- **Project manager** (`projects.manager_id`) — all tasks on projects they manage
+- **Project manager** (`sm_projects.manager_id`) — all tasks on SM projects they manage
 - **Everyone else** — raised by them, assigned to them, or listed as a dependency
 
 Visibility (client): tasks where `client_id` matches (i.e. assigned to that client).
@@ -112,7 +112,7 @@ The brand sees only their own data (`profiles.client_id`). No team CRUD, no Mana
 | Area | Path | What |
 |------|------|------|
 | Dashboard | `/client-portal/dashboard` | Post stats, projects/plans counts, upcoming posts, socials |
-| Projects | `/client-portal/projects` | Read-only projects; detail is view-only (no add/edit) |
+| Projects | `/client-portal/projects` | SM + Dev list; SM detail under `/projects/:id`, Dev under `/dev-projects/:id` (view-only) |
 | Task Management | `/client-portal/tasks-management` | Tasks that include this client; detail + chat |
 | Posts | `/client-portal/posts` | Read-only post list with search |
 | Production planner | `/client-portal/production-planner` | Their plans; detail: **Client approval** dropdown only |

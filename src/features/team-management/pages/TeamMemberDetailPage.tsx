@@ -14,6 +14,7 @@ import { useTeamMemberDialog } from "@/features/team-management/hooks/useTeamMem
 import { useTeamMemberPlanActions } from "@/features/team-management/hooks/useTeamMemberPlanActions";
 import { useTeamMemberProjectActions } from "@/features/team-management/hooks/useTeamMemberProjectActions";
 import { useTeamMemberDetailQuery } from "@/features/team-management/hooks/useTeamMemberDetailQuery";
+import { encodeProjectKey } from "@/features/projects-management/utils/projectKindUtils";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { PageContent } from "@/shared/components/PageContent";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
@@ -71,8 +72,12 @@ export function TeamMemberDetailPage() {
   const { openEditDialog, dialog } = useTeamMemberDialog({ reload, setError });
 
   const activeProjectIds = [
-    ...activeAssignments.map((assignment) => assignment.project_id),
-    ...managedProjects.map((project) => project.id),
+    ...activeAssignments.map((assignment) =>
+      encodeProjectKey(assignment.project_kind, assignment.project_id),
+    ),
+    ...managedProjects.map((project) =>
+      encodeProjectKey(project.project_kind, project.id),
+    ),
   ];
 
   const activePlanIds = [
