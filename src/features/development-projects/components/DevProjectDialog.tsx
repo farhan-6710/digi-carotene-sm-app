@@ -6,6 +6,7 @@ import { ProjectTeamMembersSelect } from "@/features/projects-management/compone
 import type { DevProjectDialogProps } from "@/features/development-projects/types/components";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { ActiveStatusSwitchField } from "@/shared/components/ActiveStatusSwitchField";
+import { DatePicker } from "@/shared/components/DatePicker";
 import { formFieldClassName } from "@/shared/constants/formStyles";
 import { Button } from "@/shared/ui/button";
 import {
@@ -164,26 +165,24 @@ export function DevProjectDialog({
             </label>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="block text-xs font-semibold text-muted-foreground">
-                Start date
-                <input
-                  type="date"
-                  value={values.startDate}
-                  onChange={(e) => onFieldChange("startDate", e.target.value)}
-                  className={cn(formFieldClassName, "mt-2")}
-                  disabled={isSaving}
-                />
-              </label>
-              <label className="block text-xs font-semibold text-muted-foreground">
-                ETA date
-                <input
-                  type="date"
-                  value={values.etaDate}
-                  onChange={(e) => onFieldChange("etaDate", e.target.value)}
-                  className={cn(formFieldClassName, "mt-2")}
-                  disabled={isSaving}
-                />
-              </label>
+              <DatePicker
+                label="Start date"
+                value={values.startDate}
+                onChange={(dateStr) => onFieldChange("startDate", dateStr)}
+                clearable
+                onClear={() => onFieldChange("startDate", "")}
+                disabled={isSaving}
+                placeholder="Select start date"
+              />
+              <DatePicker
+                label="ETA date"
+                value={values.etaDate}
+                onChange={(dateStr) => onFieldChange("etaDate", dateStr)}
+                clearable
+                onClear={() => onFieldChange("etaDate", "")}
+                disabled={isSaving}
+                placeholder="Select ETA date"
+              />
             </div>
 
             {isEditing ? (
