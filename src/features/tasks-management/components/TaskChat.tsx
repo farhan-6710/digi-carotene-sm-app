@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import { Loader2, RefreshCw, Send } from "lucide-react";
 import {
   useEffect,
@@ -8,8 +7,9 @@ import {
   type KeyboardEvent,
 } from "react";
 
-import type { TaskChatProps } from "@/features/tasks-management/types/components";
+import { TaskChatMessage } from "@/features/tasks-management/components/TaskChatMessage";
 import { taskChatMentionRoleLabel } from "@/features/tasks-management/constants/taskChatMentionRoles";
+import type { TaskChatProps } from "@/features/tasks-management/types/components";
 import type {
   TaskChatParticipant,
   TaskChatSubtaskOption,
@@ -19,50 +19,12 @@ import {
   filterSubtaskMentionOptions,
   getActiveMention,
   insertMention,
-  splitMessageWithMentions,
   type ActiveMention,
 } from "@/features/tasks-management/utils/taskChatMentionUtils";
+import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { formFieldClassName } from "@/shared/constants/formStyles";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
-
-function MessageBody({
-  body,
-  participantNames,
-  subtaskTitles,
-  isMine,
-}: {
-  body: string;
-  participantNames: string[];
-  subtaskTitles: string[];
-  isMine: boolean;
-}) {
-  const parts = splitMessageWithMentions(
-    body,
-    participantNames,
-    subtaskTitles,
-  );
-
-  return (
-    <p className="whitespace-pre-wrap break-words">
-      {parts.map((part, index) =>
-        part.isMention ? (
-          <span
-            key={`${index}-${part.text}`}
-            className={cn(
-              "font-semibold",
-              isMine ? "text-primary-foreground underline" : "text-primary",
-            )}
-          >
-            {part.text}
-          </span>
-        ) : (
-          <span key={`${index}-${part.text.slice(0, 12)}`}>{part.text}</span>
-        ),
-      )}
-    </p>
-  );
-}
 
 export function TaskChat({
   messages,
@@ -76,6 +38,14 @@ export function TaskChat({
   onRefresh,
   isSending,
   isRefreshing = false,
+  editingMessageId = null,
+  onEditMessage,
+  onCancelEdit,
+  onDeleteMessage,
+  deleteConfirmOpen = false,
+  onDeleteConfirmOpenChange,
+  onConfirmDelete,
+  isDeleting = false,
 }: TaskChatProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -85,12 +55,21 @@ export function TaskChat({
   );
   const [highlightIndex, setHighlightIndex] = useState(0);
   const mentionKeyRef = useRef("");
+  const isEditing = Boolean(editingMessageId);
 
   useEffect(() => {
     const el = messagesContainerRef.current;
     if (!el) return;
     el.scrollTop = el.scrollHeight;
   }, [messages]);
+
+  useEffect(() => {
+    if (!isEditing) return;
+    const el = textareaRef.current;
+    if (!el) return;
+    el.focus();
+    el.setSelectionRange(el.value.length, el.value.length);
+  }, [isEditing, editingMessageId]);
 
   const isClientPortal = Boolean(currentClientId);
 
@@ -228,6 +207,12 @@ export function TaskChat({
       }
     }
 
+    if (event.key === "Escape" && isEditing && onCancelEdit) {
+      event.preventDefault();
+      onCancelEdit();
+      return;
+    }
+
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       onSend();
@@ -250,7 +235,7 @@ export function TaskChat({
           size="sm"
           className="shrink-0"
           onClick={onRefresh}
-          disabled={isRefreshing || isSending}
+          disabled={isRefreshing || isSending || isDeleting}
         >
           {isRefreshing ? (
             <Loader2 className="size-3.5 animate-spin" />
@@ -277,42 +262,18 @@ export function TaskChat({
               (Boolean(currentClientId) &&
                 message.author_client_id === currentClientId);
 
-            const authorLabel = isMine
-              ? "You"
-              : message.author?.member_name ??
-                message.author_client?.client_name ??
-                "Someone";
-
             return (
-              <div
+              <TaskChatMessage
                 key={message.id}
-                className={cn(
-                  "max-w-[90%] rounded-2xl px-3.5 py-2.5 text-sm sm:max-w-[85%]",
-                  isMine
-                    ? "ml-auto bg-primary text-primary-foreground"
-                    : "bg-muted text-foreground",
-                )}
-              >
-                <div
-                  className={cn(
-                    "mb-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5 text-[11px]",
-                    isMine
-                      ? "text-primary-foreground/80"
-                      : "text-muted-foreground",
-                  )}
-                >
-                  <span className="font-semibold">{authorLabel}</span>
-                  <span>
-                    {format(new Date(message.created_at), "MMM d, h:mm a")}
-                  </span>
-                </div>
-                <MessageBody
-                  body={message.body}
-                  participantNames={participantNames}
-                  subtaskTitles={subtaskTitles}
-                  isMine={isMine}
-                />
-              </div>
+                message={message}
+                isMine={isMine}
+                isEditing={editingMessageId === message.id}
+                participantNames={participantNames}
+                subtaskTitles={subtaskTitles}
+                disabled={isSending || isDeleting}
+                onEdit={() => onEditMessage?.(message)}
+                onDelete={() => onDeleteMessage?.(message.id)}
+              />
             );
           })
         )}
@@ -400,6 +361,11 @@ export function TaskChat({
           </div>
         ) : null}
 
+        {isEditing ? (
+          <p className="mb-2 text-xs font-medium text-muted-foreground">
+            Editing message — Esc to cancel
+          </p>
+        ) : null}
         <textarea
           ref={textareaRef}
           value={draft}
@@ -419,13 +385,23 @@ export function TaskChat({
           }}
           onKeyDown={handleKeyDown}
           placeholder="Write a message… @ people, / subtasks"
-          disabled={isSending}
+          disabled={isSending || isDeleting}
           className={cn(formFieldClassName, "max-h-32 min-h-20 resize-none")}
         />
-        <div className="mt-2 flex justify-end">
+        <div className="mt-2 flex justify-end gap-2">
+          {isEditing && onCancelEdit ? (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isSending || isDeleting}
+              onClick={onCancelEdit}
+            >
+              Cancel
+            </Button>
+          ) : null}
           <Button
             type="button"
-            disabled={isSending || !draft.trim()}
+            disabled={isSending || isDeleting || !draft.trim()}
             onClick={onSend}
           >
             {isSending ? (
@@ -433,10 +409,23 @@ export function TaskChat({
             ) : (
               <Send className="size-4" />
             )}
-            Send
+            {isEditing ? "Save" : "Send"}
           </Button>
         </div>
       </div>
+
+      {onDeleteConfirmOpenChange && onConfirmDelete ? (
+        <ConfirmationModal
+          open={deleteConfirmOpen}
+          onOpenChange={onDeleteConfirmOpenChange}
+          title="Delete message?"
+          description="This removes the message from the task chat. This cannot be undone."
+          confirmLabel="Delete"
+          confirmVariant="destructive"
+          loading={isDeleting}
+          onConfirm={onConfirmDelete}
+        />
+      ) : null}
     </div>
   );
 }

@@ -1,5 +1,4 @@
 import { Pencil } from "lucide-react";
-import { Link } from "react-router";
 
 import { TASK_PRIORITY_LABELS } from "@/features/tasks-management/constants/taskPriorities";
 import { TASK_STATUS_LABELS } from "@/features/tasks-management/constants/taskStatuses";
@@ -7,6 +6,8 @@ import { SUBTASKS_ROW_GRID_CLASS } from "@/features/tasks-management/constants/s
 import type { SubtasksTableRowProps } from "@/features/tasks-management/types/components";
 import { formatAssigneeLabels } from "@/features/tasks-management/utils/taskAssigneeListUtils";
 import { formatTaskEta } from "@/features/tasks-management/utils/taskDisplayUtils";
+import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
+import { stopDirectoryRowNav } from "@/shared/utils/directoryTableRow";
 import { cn } from "@/shared/lib/utils";
 
 export function SubtasksTableRow({
@@ -35,27 +36,13 @@ export function SubtasksTableRow({
         subtask.assigned_to_client?.client_name ??
         "—");
 
-  return (
-    <div
-      className={cn(
-        "grid grid-cols-1 items-start gap-3 px-6 py-4 transition-colors hover:bg-muted/10 sm:items-center sm:gap-4",
-        SUBTASKS_ROW_GRID_CLASS,
-      )}
-    >
+  const cells = (
+    <>
       <div className="min-w-0">
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           TITLE
         </span>
-        {detailPath ? (
-          <Link
-            to={detailPath}
-            className="text-sm font-medium text-foreground hover:text-primary hover:underline"
-          >
-            {subtask.title}
-          </Link>
-        ) : (
-          <p className="text-sm font-medium text-foreground">{subtask.title}</p>
-        )}
+        <p className="text-sm font-medium text-foreground">{subtask.title}</p>
       </div>
 
       <div className="min-w-0">
@@ -112,7 +99,10 @@ export function SubtasksTableRow({
         {canEdit ? (
           <button
             type="button"
-            onClick={() => onEdit(subtask)}
+            onClick={(event) => {
+              stopDirectoryRowNav(event);
+              onEdit(subtask);
+            }}
             className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
           >
             <Pencil className="size-3.5" />
@@ -120,6 +110,21 @@ export function SubtasksTableRow({
           </button>
         ) : null}
       </div>
-    </div>
+    </>
   );
+
+  const rowClassName = cn(
+    "grid grid-cols-1 items-start gap-3 px-6 py-4 sm:items-center sm:gap-4",
+    SUBTASKS_ROW_GRID_CLASS,
+  );
+
+  if (detailPath) {
+    return (
+      <DirectoryTableRow to={detailPath} className={rowClassName}>
+        {cells}
+      </DirectoryTableRow>
+    );
+  }
+
+  return <div className={cn(rowClassName, "hover:bg-muted/10")}>{cells}</div>;
 }

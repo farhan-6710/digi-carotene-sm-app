@@ -75,3 +75,26 @@ export type LeadScoreSelectProps = {
   onChange: (score: LeadScore) => void;
   disabled?: boolean;
 };
+
+export type LeadProfileCardProps = {
+  lead: Lead;
+};
+
+export type LeadAddressCardProps = {
+  address: string | null;
+  canEdit: boolean;
+  isSaving?: boolean;
+  onSave: (address: string) => Promise<void>;
+};
+
+export type LeadNotesSectionProps = {
+  notes: import("@/features/crm/types/types").LeadNote[];
+  canEdit: boolean;
+  isSaving?: boolean;
+  onAdd: (body: string) => Promise<void>;
+  onSave: (
+    note: import("@/features/crm/types/types").LeadNote,
+    body: string,
+  ) => Promise<void>;
+  onDelete: (noteId: string) => Promise<void>;
+};

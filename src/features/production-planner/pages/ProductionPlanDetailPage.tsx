@@ -1,8 +1,9 @@
-import { Link, useParams } from "react-router";
-import { ArrowLeft, Plus } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router";
+import { ArrowLeft, Pencil, Plus } from "lucide-react";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { ProductionPlanContentsList } from "@/features/production-planner/components/ProductionPlanContentsList";
+import { ProductionPlanDialog } from "@/features/production-planner/components/ProductionPlanDialog";
 import { ProductionPlanSummaryCard } from "@/features/production-planner/components/ProductionPlanSummaryCard";
 import { PRODUCTION_PLANNER_PATH } from "@/features/production-planner/constants/routes";
 import { ShareLinkButton } from "@/features/share/components/ShareLinkButton";
@@ -10,6 +11,7 @@ import { canGenerateShareLink } from "@/features/share/utils/shareAccess";
 import { copyProductionPlanShareLink } from "@/services/shareService";
 import { useDraftPlanContent } from "@/features/production-planner/hooks/useDraftPlanContent";
 import { useProductionPlanDetailQuery } from "@/features/production-planner/hooks/useProductionPlanDetailQuery";
+import { useProductionPlanDialog } from "@/features/production-planner/hooks/useProductionPlanDialog";
 import type { ProductionPlanContentSavePayload } from "@/features/production-planner/types/components";
 import type { ProductionPlanContent } from "@/features/production-planner/types/types";
 import { canEditManagerOrClientApproval } from "@/features/production-planner/utils/contentApprovalUtils";
@@ -22,6 +24,7 @@ import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
+import { usePermissions } from "@/shared/hooks/usePermissions";
 import { Button } from "@/shared/ui/button";
 import { showToast } from "@/shared/utils/showToast";
 
@@ -38,11 +41,18 @@ function PlanDetailBackButton() {
 
 export function ProductionPlanDetailPage() {
   const { planId = "" } = useParams();
+  const navigate = useNavigate();
+  const { can } = usePermissions();
   const { teamRole, teamMemberId } = useAuth();
   const { plan, contents, canEditContent, isLoading, error, setError, reload } =
     useProductionPlanDetailQuery(planId);
   const { draftContent, draftFocusKey, startDraft, discardDraft, isDraftId } =
     useDraftPlanContent(planId);
+  const { openEditDialog, dialog } = useProductionPlanDialog({
+    reload,
+    setError,
+  });
+  const canEditPlan = can("productionPlans.update");
 
   const canEditManagerApproval = canEditManagerOrClientApproval(teamRole);
   const canEditClientApproval = canEditManagerApproval;
@@ -138,6 +148,17 @@ export function ProductionPlanDetailPage() {
         backButton={<PlanDetailBackButton />}
         actions={
           <div className="flex flex-wrap items-center gap-2">
+            {canEditPlan ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-full"
+                onClick={() => openEditDialog(plan)}
+              >
+                <Pencil className="mr-2 size-4" />
+                Edit Plan
+              </Button>
+            ) : null}
             <ShareLinkButton
               canShare={canGenerateShareLink(
                 teamRole,
@@ -177,6 +198,20 @@ export function ProductionPlanDetailPage() {
         onDelete={handleDeleteContent}
         onDiscardDraft={discardDraft}
       />
+
+      {canEditPlan ? (
+        <ProductionPlanDialog
+          {...dialog}
+          onDelete={
+            dialog.onDelete
+              ? async () => {
+                  await dialog.onDelete?.();
+                  void navigate(PRODUCTION_PLANNER_PATH);
+                }
+              : undefined
+          }
+        />
+      ) : null}
     </PageContent>
   );
 }

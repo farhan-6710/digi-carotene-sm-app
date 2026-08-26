@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { Link } from "react-router";
 import { Pencil } from "lucide-react";
 
 import { buildTeamMemberDetailPath } from "@/features/team-management/constants/routes";
@@ -9,6 +8,8 @@ import {
   TEAM_MEMBER_ROLE_LABELS,
 } from "@/features/team-management/constants/teamMemberRoles";
 import type { TeamMembersTableRowProps } from "@/features/team-management/types/components";
+import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
+import { stopDirectoryRowNav } from "@/shared/utils/directoryTableRow";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 
@@ -26,20 +27,16 @@ export function TeamMembersTableRow({
   onEditMember,
 }: TeamMembersTableRowProps) {
   return (
-    <div
+    <DirectoryTableRow
+      to={buildTeamMemberDetailPath(member.id)}
       className={cn(
-        "grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:gap-4",
+        "grid items-center gap-2 px-6 py-4 sm:gap-4",
         TEAM_DIRECTORY_ROW_GRID_CLASS,
       )}
     >
       <div className="text-sm font-medium text-foreground">
         <MobileLabel>NAME</MobileLabel>
-        <Link
-          to={buildTeamMemberDetailPath(member.id)}
-          className="text-primary hover:underline"
-        >
-          {member.member_name}
-        </Link>
+        {member.member_name}
       </div>
 
       <div className="text-sm text-muted-foreground">
@@ -47,6 +44,7 @@ export function TeamMembersTableRow({
         <a
           href={`mailto:${member.email}`}
           className="text-primary hover:underline"
+          onClick={stopDirectoryRowNav}
         >
           {member.email}
         </a>
@@ -77,13 +75,16 @@ export function TeamMembersTableRow({
             variant="ghost"
             size="icon"
             className="size-8 rounded-lg text-muted-foreground hover:text-foreground"
-            onClick={() => onEditMember(member)}
+            onClick={(event) => {
+              stopDirectoryRowNav(event);
+              onEditMember(member);
+            }}
           >
             <Pencil className="size-3.5" />
             <span className="sr-only">Edit</span>
           </Button>
         ) : null}
       </div>
-    </div>
+    </DirectoryTableRow>
   );
 }

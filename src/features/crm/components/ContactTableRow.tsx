@@ -1,13 +1,16 @@
 import { LEAD_SOURCE_LABELS } from "@/features/crm/constants/leadSources";
 import { CONTACT_ROW_GRID_CLASS } from "@/features/crm/constants/contactDirectory";
+import { buildLeadDetailPath } from "@/features/crm/constants/routes";
 import type { ContactTableRowProps } from "@/features/crm/types/components";
+import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
 import { cn } from "@/shared/lib/utils";
 
 export function ContactTableRow({ contact }: ContactTableRowProps) {
   return (
-    <div
+    <DirectoryTableRow
+      to={buildLeadDetailPath(contact.id)}
       className={cn(
-        "grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:gap-4",
+        "grid items-center gap-2 px-6 py-4 sm:gap-4",
         CONTACT_ROW_GRID_CLASS,
       )}
     >
@@ -60,6 +63,6 @@ export function ContactTableRow({ contact }: ContactTableRowProps) {
         </span>
         {LEAD_SOURCE_LABELS[contact.lead_source]}
       </div>
-    </div>
+    </DirectoryTableRow>
   );
 }

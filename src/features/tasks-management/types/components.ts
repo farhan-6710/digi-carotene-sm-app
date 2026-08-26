@@ -17,6 +17,9 @@ export type TasksTableProps = {
   onEditTask: (task: Task) => void;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
+  /** `yyyy-MM-dd` or empty — filters rows by task ETA date. */
+  etaDate: string;
+  onEtaDateChange: (value: string) => void;
   tab: TaskTabId;
   onTabChange: (tab: TaskTabId) => void;
 };
@@ -80,6 +83,25 @@ export type TaskChatProps = {
   onRefresh: () => void;
   isSending: boolean;
   isRefreshing?: boolean;
+  editingMessageId?: string | null;
+  onEditMessage?: (message: TaskMessage) => void;
+  onCancelEdit?: () => void;
+  onDeleteMessage?: (messageId: string) => void;
+  deleteConfirmOpen?: boolean;
+  onDeleteConfirmOpenChange?: (open: boolean) => void;
+  onConfirmDelete?: () => void | Promise<void>;
+  isDeleting?: boolean;
+};
+
+export type TaskChatMessageProps = {
+  message: TaskMessage;
+  isMine: boolean;
+  isEditing: boolean;
+  participantNames: string[];
+  subtaskTitles: string[];
+  disabled?: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
 };
 
 export type TaskAssigneePickerProps = {

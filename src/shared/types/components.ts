@@ -244,6 +244,21 @@ export type DatePickerProps = {
   className?: string;
 };
 
+/** Compact date filter for directory listing headers (`yyyy-MM-dd` or ""). */
+export type ListingDateFilterProps = {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  className?: string;
+};
+
+export type DirectoryTableRowProps = {
+  to: string;
+  className?: string;
+  children: import("react").ReactNode;
+};
+
 export type ShellNavSearchProps = {
   nav: ShellNavItem[];
   placeholder?: string;

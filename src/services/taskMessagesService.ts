@@ -50,3 +50,30 @@ export async function createTaskMessage(input: {
   if (error) throw error;
   return mapTaskMessageRow(data as unknown as TaskMessageRow);
 }
+
+export async function updateTaskMessage(
+  messageId: string,
+  body: string,
+): Promise<TaskMessage> {
+  const nextBody = body.trim();
+  if (!nextBody) throw new Error("Message cannot be empty.");
+
+  const { data, error } = await supabase
+    .from(DB.TASK_MESSAGES.TABLE)
+    .update({ body: nextBody })
+    .eq("id", messageId)
+    .select(DB.TASK_MESSAGES.SELECT)
+    .single();
+
+  if (error) throw error;
+  return mapTaskMessageRow(data as unknown as TaskMessageRow);
+}
+
+export async function deleteTaskMessage(messageId: string): Promise<void> {
+  const { error } = await supabase
+    .from(DB.TASK_MESSAGES.TABLE)
+    .delete()
+    .eq("id", messageId);
+
+  if (error) throw error;
+}

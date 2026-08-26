@@ -26,7 +26,7 @@ export function ContactManagementPage() {
   return (
     <PageShell
       heading="Contact"
-      description="Leads that converted successfully (score 5). Use Leads Management to update a lead’s score."
+      description="Won leads with score 5. Use Leads Management to update a lead’s score."
       error={error}
     >
       <ContactTable

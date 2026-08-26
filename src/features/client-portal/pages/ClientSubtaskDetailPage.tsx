@@ -22,13 +22,14 @@ import { Button } from "@/shared/ui/button";
 export function ClientSubtaskDetailPage() {
   const { taskId = "", subtaskId = "" } = useParams();
   const navigate = useNavigate();
-  const { teamMemberId, clientId } = useAuth();
+  const { teamRole, teamMemberId, clientId } = useAuth();
   const { parentTask, subtask, isLoading, error, setError, reload } =
     useClientSubtaskDetailQuery(taskId, subtaskId);
 
   const parentPath = buildClientTaskDetailPath(taskId);
 
   const { openEditDialog, dialog } = useSubtaskDialog({
+    parentTask,
     parentTaskId: taskId,
     reload,
     setError,
@@ -43,9 +44,16 @@ export function ClientSubtaskDetailPage() {
     [parentTask],
   );
 
-  const canEdit = subtask
-    ? canEditSubtaskAccess({ subtask, teamMemberId, clientId })
-    : false;
+  const canEdit =
+    subtask && parentTask
+      ? canEditSubtaskAccess({
+          subtask,
+          parentTask,
+          teamRole,
+          teamMemberId,
+          clientId,
+        })
+      : false;
 
   const backButton = (
     <Button asChild variant="outline" className="rounded-full">

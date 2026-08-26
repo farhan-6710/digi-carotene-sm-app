@@ -3,6 +3,7 @@ import { TaskTabFilter } from "@/features/tasks-management/components/TaskTabFil
 import { tasksDirectoryConfig } from "@/features/tasks-management/constants/tasksDirectory";
 import type { TasksTableProps } from "@/features/tasks-management/types/components";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { ListingDateFilter } from "@/shared/components/ListingDateFilter";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 
 export function TasksTable({
@@ -12,9 +13,13 @@ export function TasksTable({
   onEditTask,
   searchQuery,
   onSearchQueryChange,
+  etaDate,
+  onEtaDateChange,
   tab,
   onTabChange,
 }: TasksTableProps) {
+  const hasFilters = Boolean(searchQuery.trim() || etaDate);
+
   return (
     <DirectoryTable
       title={tasksDirectoryConfig.title}
@@ -22,17 +27,23 @@ export function TasksTable({
       gridClass={tasksDirectoryConfig.gridClass}
       columns={tasksDirectoryConfig.columns}
       emptyMessage={
-        searchQuery.trim()
-          ? "No tasks match that search."
+        hasFilters
+          ? "No tasks match those filters."
           : tasksDirectoryConfig.emptyMessage
       }
       isLoading={isLoading}
       isEmpty={tasks.length === 0}
       headerAside={
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:max-w-md sm:items-end">
+        <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
           <TaskTabFilter
             value={tab}
             onChange={onTabChange}
+            disabled={isLoading}
+          />
+          <ListingDateFilter
+            value={etaDate}
+            onChange={onEtaDateChange}
+            placeholder="Filter by ETA"
             disabled={isLoading}
           />
           <ListingSearchInput

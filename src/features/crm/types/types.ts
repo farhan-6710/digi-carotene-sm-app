@@ -38,6 +38,15 @@ export type Lead = {
   lead_score: LeadScore;
   status: LeadStatus;
   lead_source: LeadSource;
+  address: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type LeadNote = {
+  id: string;
+  lead_id: string;
+  body: string;
   created_at: string;
   updated_at: string;
 };

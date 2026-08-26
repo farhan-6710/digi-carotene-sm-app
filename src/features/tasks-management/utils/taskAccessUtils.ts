@@ -27,12 +27,25 @@ export function filterTasksByTab(
   );
 }
 
-/** Edit pencil: only the teammate who raised the task. */
-export function canEditTaskAccess(input: {
+/** Admin (all) or this project's manager. */
+function hasTaskOversightEdit(input: {
   task: Task;
+  teamRole: string | null;
   teamMemberId: string | null;
 }): boolean {
-  const { task, teamMemberId } = input;
+  const { task, teamRole, teamMemberId } = input;
+  if (teamRole === "admin") return true;
+  return Boolean(teamMemberId && task.projects?.manager_id === teamMemberId);
+}
+
+/** Full edit: admin, project manager, or teammate who raised the task. */
+export function canEditTaskAccess(input: {
+  task: Task;
+  teamRole: string | null;
+  teamMemberId: string | null;
+}): boolean {
+  const { task, teamRole, teamMemberId } = input;
+  if (hasTaskOversightEdit({ task, teamRole, teamMemberId })) return true;
   return Boolean(
     teamMemberId && task.created_by_team_member_id === teamMemberId,
   );
@@ -119,18 +132,31 @@ function isSubtaskAssignee(
   return false;
 }
 
-/** Full edit/delete: only the person who raised the subtask. */
+/** Full edit/delete: admin, parent-task PM, or subtask raiser. */
 export function canFullyEditSubtaskAccess(input: {
   subtask: Subtask;
+  parentTask: Task;
+  teamRole: string | null;
   teamMemberId: string | null;
   clientId: string | null;
 }): boolean {
+  if (
+    hasTaskOversightEdit({
+      task: input.parentTask,
+      teamRole: input.teamRole,
+      teamMemberId: input.teamMemberId,
+    })
+  ) {
+    return true;
+  }
   return isSubtaskRaiser(input.subtask, input.teamMemberId, input.clientId);
 }
 
-/** Pencil: raiser (full edit) or assignee (status only). */
+/** Pencil: full edit (admin/PM/raiser) or assignee (status only). */
 export function canEditSubtaskAccess(input: {
   subtask: Subtask;
+  parentTask: Task;
+  teamRole: string | null;
   teamMemberId: string | null;
   clientId: string | null;
 }): boolean {

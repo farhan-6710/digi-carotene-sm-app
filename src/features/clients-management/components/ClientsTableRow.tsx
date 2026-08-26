@@ -1,10 +1,11 @@
-import { Link } from "react-router";
 import { Pencil } from "lucide-react";
 
 import { buildClientDetailPath } from "@/features/clients-management/constants/routes";
 import { CLIENTS_DIRECTORY_ROW_GRID_CLASS } from "@/features/clients-management/constants/clientsDirectory";
 import type { ClientsTableRowProps } from "@/features/clients-management/types/components";
 import { ActiveStatusLabel } from "@/shared/components/ActiveStatusSwitchField";
+import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
+import { stopDirectoryRowNav } from "@/shared/utils/directoryTableRow";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 
@@ -16,9 +17,10 @@ export function ClientsTableRow({
   const website = client.website_name?.trim();
 
   return (
-    <div
+    <DirectoryTableRow
+      to={buildClientDetailPath(client.id)}
       className={cn(
-        "grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:gap-4",
+        "grid items-center gap-2 px-6 py-4 sm:gap-4",
         CLIENTS_DIRECTORY_ROW_GRID_CLASS,
       )}
     >
@@ -26,12 +28,7 @@ export function ClientsTableRow({
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           CLIENT NAME
         </span>
-        <Link
-          to={buildClientDetailPath(client.id)}
-          className="text-primary hover:underline"
-        >
-          {client.client_name}
-        </Link>
+        {client.client_name}
       </div>
 
       <div className="text-sm text-muted-foreground">
@@ -60,6 +57,7 @@ export function ClientsTableRow({
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary hover:underline"
+            onClick={stopDirectoryRowNav}
           >
             {website}
           </a>
@@ -81,13 +79,16 @@ export function ClientsTableRow({
             variant="ghost"
             size="icon"
             className="size-8 rounded-lg text-muted-foreground hover:text-foreground"
-            onClick={() => onEditClient(client)}
+            onClick={(event) => {
+              stopDirectoryRowNav(event);
+              onEditClient(client);
+            }}
           >
             <Pencil className="size-3.5" />
             <span className="sr-only">Edit Client</span>
           </Button>
         ) : null}
       </div>
-    </div>
+    </DirectoryTableRow>
   );
 }

@@ -1,18 +1,21 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import { useMemo } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { SubtasksSection } from "@/features/tasks-management/components/SubtasksSection";
 import { TaskChat } from "@/features/tasks-management/components/TaskChat";
 import { TaskDetailSummary } from "@/features/tasks-management/components/TaskDetailSummary";
+import { TaskDialog } from "@/features/tasks-management/components/TaskDialog";
 import {
   buildSubtaskDetailPath,
   TASKS_MANAGEMENT_PATH,
 } from "@/features/tasks-management/constants/routes";
 import { useTaskChat } from "@/features/tasks-management/hooks/useTaskChat";
 import { useTaskDetailQuery } from "@/features/tasks-management/hooks/useTaskDetailQuery";
+import { useTaskDialog } from "@/features/tasks-management/hooks/useTaskDialog";
 import { useSubtasksQuery } from "@/features/tasks-management/hooks/useSubtasksQuery";
+import { canEditTaskAccess } from "@/features/tasks-management/utils/taskAccessUtils";
 import { buildTaskChatParticipants } from "@/features/tasks-management/utils/taskChatMentionUtils";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
@@ -33,11 +36,29 @@ function TaskDetailBackButton() {
 
 export function TaskDetailPage() {
   const { taskId = "" } = useParams();
-  const { teamMemberId } = useAuth();
+  const navigate = useNavigate();
+  const { teamMemberId, teamRole } = useAuth();
   const { task, messages, adminMembers, isLoading, error, setError, reload } =
     useTaskDetailQuery(taskId);
   const { subtasks } = useSubtasksQuery(taskId);
-  const { draft, setDraft, isSending, sendMessage } = useTaskChat({
+  const { openEditDialog, dialog } = useTaskDialog({
+    reload,
+    setError,
+  });
+  const {
+    draft,
+    setDraft,
+    isSending,
+    sendMessage,
+    editingMessageId,
+    startEdit,
+    cancelEdit,
+    requestDelete,
+    deleteConfirmOpen,
+    onDeleteConfirmOpenChange,
+    confirmDelete,
+    isDeleting,
+  } = useTaskChat({
     taskId,
     reload,
     setError,
@@ -52,6 +73,10 @@ export function TaskDetailPage() {
     () => subtasks.map((subtask) => ({ id: subtask.id, title: subtask.title })),
     [subtasks],
   );
+
+  const canEdit = task
+    ? canEditTaskAccess({ task, teamRole, teamMemberId })
+    : false;
 
   if (isLoading && !task) {
     return <DetailPageLoading backButton={<TaskDetailBackButton />} />;
@@ -76,6 +101,19 @@ export function TaskDetailPage() {
         heading={task.title}
         description="Review this task and chat with everyone involved."
         backButton={<TaskDetailBackButton />}
+        actions={
+          canEdit ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-full"
+              onClick={() => openEditDialog(task)}
+            >
+              <Pencil className="mr-2 size-4" />
+              Edit
+            </Button>
+          ) : null
+        }
       />
       {error ? <ErrorBanner message={error} /> : null}
       <div className="grid items-start gap-4 lg:grid-cols-2 lg:items-stretch">
@@ -91,6 +129,14 @@ export function TaskDetailPage() {
           onRefresh={() => void reload()}
           isSending={isSending}
           isRefreshing={isLoading}
+          editingMessageId={editingMessageId}
+          onEditMessage={startEdit}
+          onCancelEdit={cancelEdit}
+          onDeleteMessage={requestDelete}
+          deleteConfirmOpen={deleteConfirmOpen}
+          onDeleteConfirmOpenChange={onDeleteConfirmOpenChange}
+          onConfirmDelete={() => void confirmDelete()}
+          isDeleting={isDeleting}
         />
       </div>
       <SubtasksSection
@@ -99,6 +145,19 @@ export function TaskDetailPage() {
           buildSubtaskDetailPath(task.id, subtaskId)
         }
       />
+      {canEdit ? (
+        <TaskDialog
+          {...dialog}
+          onDelete={
+            dialog.onDelete
+              ? async () => {
+                  await dialog.onDelete?.();
+                  void navigate(TASKS_MANAGEMENT_PATH);
+                }
+              : undefined
+          }
+        />
+      ) : null}
     </PageContent>
   );
 }

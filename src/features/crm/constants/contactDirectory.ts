@@ -17,9 +17,9 @@ export const contactDirectoryColumns: DirectoryTableColumn[] = [
 export const contactDirectoryConfig = {
   title: "Contact Directory",
   description:
-    "Leads with score 5 — conversion successful. These are won pipeline outcomes.",
+    "Won leads with score 5. These contacts are ready for follow-up from the pipeline.",
   gridClass: CONTACT_GRID_CLASS,
   columns: contactDirectoryColumns,
   emptyMessage:
-    "No contacts yet. Set a lead’s score to 5 to mark conversion success.",
+    "No contacts yet. Set a lead’s score to 5 to move them here.",
 } as const;

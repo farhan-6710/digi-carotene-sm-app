@@ -61,7 +61,7 @@ Content approvals on a plan item:
 | Postings calendar | `/team-portal/posts-management` | Month grid; client/project filters in the URL; day page reuses them |
 | Task Management | `/team-portal/tasks-management` | Project-scoped tasks; assign + dependencies; tabs All · Raised by me · Raised for me; detail + chat |
 | Production planner | `/team-portal/production-planner` | Plans per client (`?client=` filter); detail = script, reference link, approvals |
-| CRM | `/team-portal/crm` | Leads management; Conversions (leads with score 5) |
+| CRM | `/team-portal/crm` | Leads management; Contact (leads with score 5) |
 | Notifications | `/team-portal/notifications` | Inbox + executive **approval queue** |
 | Analytics | `/team-portal/analytics` | Agency activity |
 | Growth | `/team-portal/growth-and-analytics` | Meta organic + ads; Manage Accounts (token) |

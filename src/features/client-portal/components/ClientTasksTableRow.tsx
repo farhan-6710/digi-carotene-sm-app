@@ -1,11 +1,10 @@
-import { Link } from "react-router";
-
 import { buildClientTaskDetailPath } from "@/features/client-portal/constants/taskRoutes";
 import { CLIENT_TASKS_ROW_GRID_CLASS } from "@/features/client-portal/constants/tasksDirectory";
 import { TASK_PRIORITY_LABELS } from "@/features/tasks-management/constants/taskPriorities";
 import { TASK_STATUS_LABELS } from "@/features/tasks-management/constants/taskStatuses";
 import type { Task } from "@/features/tasks-management/types/types";
 import { formatTaskEta } from "@/features/tasks-management/utils/taskDisplayUtils";
+import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
 import { cn } from "@/shared/lib/utils";
 
 type ClientTasksTableRowProps = {
@@ -14,9 +13,10 @@ type ClientTasksTableRowProps = {
 
 export function ClientTasksTableRow({ task }: ClientTasksTableRowProps) {
   return (
-    <div
+    <DirectoryTableRow
+      to={buildClientTaskDetailPath(task.id)}
       className={cn(
-        "grid grid-cols-1 items-start gap-3 px-6 py-4 transition-colors hover:bg-muted/10 sm:items-center sm:gap-4",
+        "grid grid-cols-1 items-start gap-3 px-6 py-4 sm:items-center sm:gap-4",
         CLIENT_TASKS_ROW_GRID_CLASS,
       )}
     >
@@ -24,12 +24,7 @@ export function ClientTasksTableRow({ task }: ClientTasksTableRowProps) {
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           TITLE
         </span>
-        <Link
-          to={buildClientTaskDetailPath(task.id)}
-          className="text-sm font-medium text-foreground hover:text-primary hover:underline"
-        >
-          {task.title}
-        </Link>
+        <p className="text-sm font-medium text-foreground">{task.title}</p>
         {task.description ? (
           <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground sm:truncate sm:line-clamp-none">
             {task.description}
@@ -90,6 +85,6 @@ export function ClientTasksTableRow({ task }: ClientTasksTableRowProps) {
           {TASK_STATUS_LABELS[task.status]}
         </span>
       </div>
-    </div>
+    </DirectoryTableRow>
   );
 }

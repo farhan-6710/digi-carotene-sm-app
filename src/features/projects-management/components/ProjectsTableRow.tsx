@@ -1,10 +1,11 @@
-import { Link } from "react-router";
 import { Pencil } from "lucide-react";
 
 import { buildProjectDetailPath } from "@/features/projects-management/constants/routes";
 import { PROJECTS_DIRECTORY_ROW_GRID_CLASS } from "@/features/projects-management/constants/projectsDirectory";
 import type { ProjectsTableRowProps } from "@/features/projects-management/types/components";
 import { ActiveStatusLabel } from "@/shared/components/ActiveStatusSwitchField";
+import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
+import { stopDirectoryRowNav } from "@/shared/utils/directoryTableRow";
 import { SocialPlatformButtons } from "@/shared/components/SocialPlatformButtons";
 import { cn } from "@/shared/lib/utils";
 
@@ -14,9 +15,10 @@ export function ProjectsTableRow({
   onEditProject,
 }: ProjectsTableRowProps) {
   return (
-    <div
+    <DirectoryTableRow
+      to={buildProjectDetailPath(project.id)}
       className={cn(
-        "grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:gap-4",
+        "grid items-center gap-2 px-6 py-4 sm:gap-4",
         PROJECTS_DIRECTORY_ROW_GRID_CLASS,
       )}
     >
@@ -24,12 +26,7 @@ export function ProjectsTableRow({
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           PROJECT
         </span>
-        <Link
-          to={buildProjectDetailPath(project.id)}
-          className="hover:text-primary hover:underline"
-        >
-          {project.project_name}
-        </Link>
+        {project.project_name}
       </div>
 
       <div className="text-sm text-muted-foreground">
@@ -46,7 +43,11 @@ export function ProjectsTableRow({
         {project.team_members?.member_name ?? "—"}
       </div>
 
-      <div className="text-sm text-muted-foreground">
+      <div
+        className="text-sm text-muted-foreground"
+        onClick={stopDirectoryRowNav}
+        onKeyDown={(event) => event.stopPropagation()}
+      >
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           SOCIALS
         </span>
@@ -64,7 +65,10 @@ export function ProjectsTableRow({
         {canEdit ? (
           <button
             type="button"
-            onClick={() => onEditProject(project)}
+            onClick={(event) => {
+              stopDirectoryRowNav(event);
+              onEditProject(project);
+            }}
             className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
           >
             <Pencil className="size-3.5" />
@@ -72,6 +76,6 @@ export function ProjectsTableRow({
           </button>
         ) : null}
       </div>
-    </div>
+    </DirectoryTableRow>
   );
 }

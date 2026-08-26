@@ -120,7 +120,7 @@
   --secondary: oklch(0.18 0 0);   /* Secondary dark gray containers */
   --secondary-foreground: oklch(0.90 0 0);
 
-  --muted: oklch(0.16 0 0);       /* Muted neutral elements */
+  --muted: oklch(20.019% 0.00002 271.152);       /* Muted neutral elements */
   --muted-foreground: oklch(0.65 0 0);
 
   --destructive: #953333;

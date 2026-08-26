@@ -25,6 +25,7 @@ export function SubtasksSection({
     parentTask.id,
   );
   const { openAddDialog, openEditDialog, dialog } = useSubtaskDialog({
+    parentTask,
     parentTaskId: parentTask.id,
     reload,
     setError,
@@ -55,7 +56,13 @@ export function SubtasksSection({
         canAdd={canAdd}
         onAddSubtask={openAddDialog}
         canEditSubtask={(subtask) =>
-          canEditSubtaskAccess({ subtask, teamMemberId, clientId })
+          canEditSubtaskAccess({
+            subtask,
+            parentTask,
+            teamRole,
+            teamMemberId,
+            clientId,
+          })
         }
         onEditSubtask={openEditDialog}
         buildDetailPath={buildDetailPath}

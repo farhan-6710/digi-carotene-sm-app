@@ -313,7 +313,11 @@ export const DB = {
   LEADS: {
     TABLE: "leads",
     SELECT:
-      "id, name, company, email, phone, industry, lead_score, status, lead_source, created_at, updated_at",
+      "id, name, company, email, phone, industry, lead_score, status, lead_source, address, created_at, updated_at",
+  },
+  LEAD_NOTES: {
+    TABLE: "lead_notes",
+    SELECT: "id, lead_id, body, created_at, updated_at",
   },
   GROWTH_ORGANIC_ACCOUNTS: {
     TABLE: "growth_organic_accounts",

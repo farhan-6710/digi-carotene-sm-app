@@ -1,5 +1,4 @@
 import { Pencil } from "lucide-react";
-import { Link } from "react-router";
 
 import { TASK_PRIORITY_LABELS } from "@/features/tasks-management/constants/taskPriorities";
 import { TASK_STATUS_LABELS } from "@/features/tasks-management/constants/taskStatuses";
@@ -8,6 +7,8 @@ import { buildTaskDetailPath } from "@/features/tasks-management/constants/route
 import type { TasksTableRowProps } from "@/features/tasks-management/types/components";
 import { formatAssigneeLabels } from "@/features/tasks-management/utils/taskAssigneeListUtils";
 import { formatTaskEta } from "@/features/tasks-management/utils/taskDisplayUtils";
+import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
+import { stopDirectoryRowNav } from "@/shared/utils/directoryTableRow";
 import { cn } from "@/shared/lib/utils";
 
 export function TasksTableRow({
@@ -35,9 +36,10 @@ export function TasksTableRow({
   const href = detailPath ?? buildTaskDetailPath(task.id);
 
   return (
-    <div
+    <DirectoryTableRow
+      to={href}
       className={cn(
-        "grid grid-cols-1 items-start gap-3 px-6 py-4 transition-colors hover:bg-muted/10 sm:items-center sm:gap-4",
+        "grid grid-cols-1 items-start gap-3 px-6 py-4 sm:items-center sm:gap-4",
         TASKS_ROW_GRID_CLASS,
       )}
     >
@@ -45,12 +47,7 @@ export function TasksTableRow({
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           TITLE
         </span>
-        <Link
-          to={href}
-          className="text-sm font-medium text-foreground hover:text-primary hover:underline"
-        >
-          {task.title}
-        </Link>
+        <p className="text-sm font-medium text-foreground">{task.title}</p>
         {task.description ? (
           <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground sm:truncate sm:line-clamp-none">
             {task.description}
@@ -121,7 +118,10 @@ export function TasksTableRow({
         {canEdit ? (
           <button
             type="button"
-            onClick={() => onEdit(task)}
+            onClick={(event) => {
+              stopDirectoryRowNav(event);
+              onEdit(task);
+            }}
             className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
           >
             <Pencil className="size-3.5" />
@@ -129,6 +129,6 @@ export function TasksTableRow({
           </button>
         ) : null}
       </div>
-    </div>
+    </DirectoryTableRow>
   );
 }

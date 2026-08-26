@@ -169,6 +169,10 @@ const LeadsManagementPage = lazyRoutePage(
   () => import("@/features/crm/pages/LeadsManagementPage"),
   "LeadsManagementPage",
 );
+const LeadDetailPage = lazyRoutePage(
+  () => import("@/features/crm/pages/LeadDetailPage"),
+  "LeadDetailPage",
+);
 const ContactManagementPage = lazyRoutePage(
   () => import("@/features/crm/pages/ContactManagementPage"),
   "ContactManagementPage",
@@ -334,11 +338,8 @@ export const router = createBrowserRouter([
             children: [
               { index: true, element: <Navigate to="leads" replace /> },
               { path: "leads", element: <LeadsManagementPage /> },
+              { path: "leads/:leadId", element: <LeadDetailPage /> },
               { path: "contact", element: <ContactManagementPage /> },
-              {
-                path: "conversions",
-                element: <Navigate to="../contact" replace />,
-              },
             ],
           },
           { path: "production-planner", element: <ProductionPlannerPage /> },

@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { toRepositoryDateTime } from "@/features/posts-management/utils/postScheduleUtils";
-import type { Subtask } from "@/features/tasks-management/types/types";
+import type { Subtask, Task } from "@/features/tasks-management/types/types";
 import { parseAssigneeKeys } from "@/features/tasks-management/utils/taskAssigneeListUtils";
 import { canFullyEditSubtaskAccess } from "@/features/tasks-management/utils/taskAccessUtils";
 import {
@@ -19,17 +19,19 @@ import {
 import { showToast } from "@/shared/utils/showToast";
 
 type UseSubtaskDialogOptions = {
+  parentTask: Task | null;
   parentTaskId: string;
   reload: () => Promise<void>;
   setError: (message: string | null) => void;
 };
 
 export function useSubtaskDialog({
+  parentTask,
   parentTaskId,
   reload,
   setError,
 }: UseSubtaskDialogOptions) {
-  const { teamMemberId, clientId } = useAuth();
+  const { teamRole, teamMemberId, clientId } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSubtaskId, setEditingSubtaskId] = useState<string | null>(null);
   const [statusOnly, setStatusOnly] = useState(false);
@@ -69,17 +71,21 @@ export function useSubtaskDialog({
 
   const openEditDialog = useCallback(
     (subtask: Subtask) => {
-      const fullEdit = canFullyEditSubtaskAccess({
-        subtask,
-        teamMemberId,
-        clientId,
-      });
+      const fullEdit = parentTask
+        ? canFullyEditSubtaskAccess({
+            subtask,
+            parentTask,
+            teamRole,
+            teamMemberId,
+            clientId,
+          })
+        : false;
       setEditingSubtaskId(subtask.id);
       setValues(subtaskToFormValues(subtask));
       setStatusOnly(!fullEdit);
       setIsDialogOpen(true);
     },
-    [clientId, teamMemberId],
+    [clientId, parentTask, teamMemberId, teamRole],
   );
 
   const saveSubtask = useCallback(async () => {

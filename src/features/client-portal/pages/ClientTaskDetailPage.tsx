@@ -37,7 +37,20 @@ export function ClientTaskDetailPage() {
   const { task, messages, isLoading, error, setError, reload } =
     useClientTaskDetailQuery(taskId);
   const { subtasks } = useSubtasksQuery(taskId);
-  const { draft, setDraft, isSending, sendMessage } = useTaskChat({
+  const {
+    draft,
+    setDraft,
+    isSending,
+    sendMessage,
+    editingMessageId,
+    startEdit,
+    cancelEdit,
+    requestDelete,
+    deleteConfirmOpen,
+    onDeleteConfirmOpenChange,
+    confirmDelete,
+    isDeleting,
+  } = useTaskChat({
     taskId,
     reload,
     setError,
@@ -91,6 +104,14 @@ export function ClientTaskDetailPage() {
           onRefresh={() => void reload()}
           isSending={isSending}
           isRefreshing={isLoading}
+          editingMessageId={editingMessageId}
+          onEditMessage={startEdit}
+          onCancelEdit={cancelEdit}
+          onDeleteMessage={requestDelete}
+          deleteConfirmOpen={deleteConfirmOpen}
+          onDeleteConfirmOpenChange={onDeleteConfirmOpenChange}
+          onConfirmDelete={() => void confirmDelete()}
+          isDeleting={isDeleting}
         />
       </div>
       <SubtasksSection
