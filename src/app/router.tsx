@@ -109,6 +109,10 @@ const ProjectDetailPage = lazyRoutePage(
   () => import("@/features/projects-management/pages/ProjectDetailPage"),
   "ProjectDetailPage",
 );
+const OtherProjectsPage = lazyRoutePage(
+  () => import("@/features/projects-management/pages/OtherProjectsPage"),
+  "OtherProjectsPage",
+);
 const DevProjectsManagementPage = lazyRoutePage(
   () =>
     import(
@@ -366,6 +370,10 @@ export const router = createBrowserRouter([
           {
             path: "projects-management/:projectId",
             element: <ProjectDetailPage />,
+          },
+          {
+            path: "other-projects-management",
+            element: <OtherProjectsPage />,
           },
           {
             path: "dev-projects-management",
