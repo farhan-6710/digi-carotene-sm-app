@@ -111,7 +111,7 @@
   --background: oklch(0.10 0 0); /* Pure obsidian black-gray */
   --foreground: oklch(0.95 0 0);  /* Pure light gray-white */
 
-  --card: oklch(0.15 0 0);        /* Deep neutral gray card background */
+  --card: rgb(14, 14, 14);        /* Deep neutral gray card background */
   --card-foreground: oklch(0.95 0 0);
 
   --popover: oklch(0.15 0 0);
@@ -120,7 +120,7 @@
   --secondary: oklch(0.18 0 0);   /* Secondary dark gray containers */
   --secondary-foreground: oklch(0.90 0 0);
 
-  --muted: oklch(20.019% 0.00002 271.152);       /* Muted neutral elements */
+  --muted: oklch(20.904% 0.00002 271.152);       /* Muted neutral elements */
   --muted-foreground: oklch(0.65 0 0);
 
   --destructive: #953333;
@@ -141,7 +141,7 @@
   --contrib-4: oklch(0.58 0.09 199.63);
 
   /* Dark Sidebar (Clean neutral slate depth) */
-  --sidebar: oklch(0.15 0 0);     /* Visually distinct depth from main background */
+  --sidebar: rgb(14, 14, 14);     /* Visually distinct depth from main background */
   --sidebar-foreground: oklch(0.92 0 0);
   --sidebar-primary: oklch(0.568 0.08 199.63);
   --sidebar-primary-foreground: oklch(1 0 0);
