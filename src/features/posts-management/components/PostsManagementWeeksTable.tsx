@@ -36,10 +36,10 @@ export function PostsManagementWeeksTable({
       >
         <div style={{ minWidth: minTableWidth }}>
           <div
-            className="grid border-b border-border bg-muted text-xs font-semibold tracking-wider text-muted-foreground"
+            className="grid border-b border-border bg-card text-xs font-semibold tracking-wider text-muted-foreground"
             style={{ gridTemplateColumns }}
           >
-            <div className="sticky left-0 z-10 border-r border-border bg-muted px-4 py-3">
+            <div className="sticky left-0 z-10 border-r border-border bg-card px-4 py-3">
               Day
             </div>
             {weeks.map((week) => (
@@ -59,7 +59,7 @@ export function PostsManagementWeeksTable({
                 className="grid"
                 style={{ gridTemplateColumns }}
               >
-                <div className="sticky left-0 z-10 flex items-center border-r border-border bg-muted/40 px-4 py-6 text-sm font-semibold">
+                <div className="sticky left-0 z-10 flex items-center border-r border-border bg-card px-4 py-6 text-sm font-semibold">
                   {dayLabel}
                 </div>
                 {weeks.map((week) => {
@@ -69,7 +69,7 @@ export function PostsManagementWeeksTable({
                     return (
                       <div
                         key={`${dayLabel}-${week.label}-empty`}
-                        className="min-h-[140px] border-r border-border/70 bg-muted/20"
+                        className="min-h-[140px] border-r border-border/70 bg-card"
                       />
                     );
                   }

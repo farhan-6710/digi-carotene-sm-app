@@ -33,7 +33,7 @@ export function PostsWeekDayCell({
       role="button"
       tabIndex={0}
       className={cn(
-        "group flex min-h-[140px] cursor-pointer flex-col border-r p-4 text-left transition hover:bg-muted/40",
+        "group flex min-h-[140px] cursor-pointer flex-col border-r bg-card p-4 text-left transition-colors hover:bg-muted/30",
         isSelected ? "border-2 border-primary" : "border-border/70",
       )}
       aria-label={`View posts for ${dayName} ${formatMonthDayLabel(year, month, dateNumber)}`}
