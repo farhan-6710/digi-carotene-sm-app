@@ -54,6 +54,13 @@ export function ProjectsTableRow({
         <SocialPlatformButtons socials={project.socials} />
       </div>
 
+      <div className="text-sm text-muted-foreground">
+        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
+          ETA
+        </span>
+        {project.eta_date || "—"}
+      </div>
+
       <div>
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           STATUS

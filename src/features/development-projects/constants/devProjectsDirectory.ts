@@ -10,7 +10,7 @@ export const devProjectsDirectoryColumns: DirectoryTableColumn[] = [
   { label: "CLIENT" },
   { label: "MANAGER" },
   { label: "TECH STACK" },
-  { label: "TARGET" },
+  { label: "ETA" },
   { label: "STATUS" },
   { label: "ACTIONS", align: "right" },
 ];

@@ -105,6 +105,14 @@ export async function fetchAdminTeamMembers(): Promise<
   }));
 }
 
+/** Ensures every admin is included in project extra-team assignments. */
+export async function withAdminTeamMemberIds(
+  teamMemberIds: string[],
+): Promise<string[]> {
+  const admins = await fetchAdminTeamMembers();
+  return [...new Set([...teamMemberIds, ...admins.map((admin) => admin.id)])];
+}
+
 export async function createTeamMember(
   input: CreateTeamMemberInput,
 ): Promise<TeamMember> {

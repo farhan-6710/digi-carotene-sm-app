@@ -51,10 +51,10 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 | `profiles` | Auth user → portal (`role`: `team` / `client` / `user`) + `client_id` / `team_member_id` |
 | `clients` | Brand registry (`is_active`, primary/secondary contact name + mobile) |
 | `team_members` | Internal roster (`team_role`: `admin` / `manager` / `executive`) |
-| `sm_projects` | Social media work + `socials` jsonb + `manager_id` + `is_active` + `share_token` |
-| `dev_projects` | Development work: description, tech stack, repo/staging/prod URLs, dates, `is_active` |
-| `project_team_members` | Extra people on an SM project; `ended_at` null = active |
-| `dev_project_team_members` | Extra people on a development project; `ended_at` null = active |
+| `sm_projects` | Social media work + `socials` jsonb + `manager_id` + `start_date` / `eta_date` + `is_active` + `share_token` |
+| `dev_projects` | Development work: description, tech stack, repo/staging/prod URLs, `start_date` / `eta_date`, `is_active` |
+| `project_team_members` | Extra people on an SM project; `ended_at` null = active. All `admin` team members are auto-assigned on create/update. |
+| `dev_project_team_members` | Extra people on a development project; `ended_at` null = active. All `admin` team members are auto-assigned on create/update. |
 | `posts` | Calendar row (`to_be_posted_*`, `status`, `socials[]`, `post_links`) |
 | `post_approval_requests` | Executive backdated posts waiting on manager/admin |
 | `notifications` | Team inbox (`approval`, `post_digest`, `task`) |

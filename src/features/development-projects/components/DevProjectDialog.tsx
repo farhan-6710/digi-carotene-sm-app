@@ -175,11 +175,11 @@ export function DevProjectDialog({
                 />
               </label>
               <label className="block text-xs font-semibold text-muted-foreground">
-                Target date
+                ETA date
                 <input
                   type="date"
-                  value={values.targetDate}
-                  onChange={(e) => onFieldChange("targetDate", e.target.value)}
+                  value={values.etaDate}
+                  onChange={(e) => onFieldChange("etaDate", e.target.value)}
                   className={cn(formFieldClassName, "mt-2")}
                   disabled={isSaving}
                 />

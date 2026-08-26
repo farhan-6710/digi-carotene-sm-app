@@ -64,9 +64,9 @@ export function DevProjectProfileCard({
         : "—",
     },
     {
-      label: "Target date",
-      value: project.target_date
-        ? format(new Date(project.target_date), "MMM d, yyyy")
+      label: "ETA",
+      value: project.eta_date
+        ? format(new Date(project.eta_date), "MMM d, yyyy")
         : "—",
     },
     {

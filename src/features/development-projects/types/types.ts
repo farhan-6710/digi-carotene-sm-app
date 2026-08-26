@@ -20,7 +20,7 @@ export type DevProject = {
   staging_url: string | null;
   production_url: string | null;
   start_date: string | null;
-  target_date: string | null;
+  eta_date: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -45,7 +45,7 @@ export type CreateDevProjectInput = {
   stagingUrl?: string | null;
   productionUrl?: string | null;
   startDate?: string | null;
-  targetDate?: string | null;
+  etaDate?: string | null;
 };
 
 export type UpdateDevProjectInput = CreateDevProjectInput & {

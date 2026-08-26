@@ -8,6 +8,7 @@ import { ProjectTeamMembersSelect } from "@/features/projects-management/compone
 import type { ProjectDialogProps } from "@/features/projects-management/types/components";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { ActiveStatusSwitchField } from "@/shared/components/ActiveStatusSwitchField";
+import { formFieldClassName } from "@/shared/constants/formStyles";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -18,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/ui/dialog";
+import { cn } from "@/shared/lib/utils";
 
 export function ProjectDialog({
   open,
@@ -108,6 +110,33 @@ export function ProjectDialog({
               preload={open}
               seedMembers={formSeeds?.teamMembers ?? []}
             />
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block text-xs font-semibold text-muted-foreground">
+                Start date
+                <input
+                  type="date"
+                  value={values.startDate}
+                  onChange={(event) =>
+                    onFieldChange("startDate", event.target.value)
+                  }
+                  className={cn(formFieldClassName, "mt-2")}
+                  disabled={isSaving}
+                />
+              </label>
+              <label className="block text-xs font-semibold text-muted-foreground">
+                ETA date
+                <input
+                  type="date"
+                  value={values.etaDate}
+                  onChange={(event) =>
+                    onFieldChange("etaDate", event.target.value)
+                  }
+                  className={cn(formFieldClassName, "mt-2")}
+                  disabled={isSaving}
+                />
+              </label>
+            </div>
 
             {isEditing ? (
               <ActiveStatusSwitchField

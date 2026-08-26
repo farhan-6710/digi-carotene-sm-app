@@ -44,6 +44,18 @@ export function ProjectProfileCard({
       value: <SocialPlatformButtons socials={project.socials} />,
     },
     {
+      label: "Start date",
+      value: project.start_date
+        ? format(new Date(project.start_date), "MMM d, yyyy")
+        : "—",
+    },
+    {
+      label: "ETA",
+      value: project.eta_date
+        ? format(new Date(project.eta_date), "MMM d, yyyy")
+        : "—",
+    },
+    {
       label: "Created",
       value: format(new Date(project.created_at), "MMM d, yyyy"),
     },

@@ -7,6 +7,7 @@ import type {
 } from "@/features/development-projects/types/types";
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 import { seesAllProjects } from "@/shared/utils/rbac";
+import { withAdminTeamMemberIds } from "@/services/teamMembersService";
 
 type DevProjectRow = {
   id: string;
@@ -19,7 +20,7 @@ type DevProjectRow = {
   staging_url: string | null;
   production_url: string | null;
   start_date: string | null;
-  target_date: string | null;
+  eta_date: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -51,7 +52,7 @@ function normalizeDevProjectRow(
     staging_url: row.staging_url,
     production_url: row.production_url,
     start_date: row.start_date,
-    target_date: row.target_date,
+    eta_date: row.eta_date,
     is_active: row.is_active ?? true,
     created_at: row.created_at,
     updated_at: row.updated_at,
@@ -94,7 +95,7 @@ function toColumns(input: CreateDevProjectInput) {
     staging_url: input.stagingUrl ?? null,
     production_url: input.productionUrl ?? null,
     start_date: input.startDate || null,
-    target_date: input.targetDate || null,
+    eta_date: input.etaDate || null,
   };
 }
 
@@ -265,7 +266,7 @@ export async function createDevProject(
   await syncDevProjectTeamMembers(
     data.id,
     input.managerId,
-    input.teamMemberIds ?? [],
+    await withAdminTeamMemberIds(input.teamMemberIds ?? []),
   );
   return (await fetchDevProjectById(data.id))!;
 }
@@ -288,7 +289,7 @@ export async function updateDevProject(
   await syncDevProjectTeamMembers(
     projectId,
     input.managerId,
-    input.teamMemberIds ?? [],
+    await withAdminTeamMemberIds(input.teamMemberIds ?? []),
   );
   return (await fetchDevProjectById(projectId))!;
 }

@@ -123,6 +123,8 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
         managerId: values.managerId,
         socials: formValuesToSocials(values),
         teamMemberIds: values.teamMemberIds,
+        startDate: values.startDate || null,
+        etaDate: values.etaDate || null,
       };
 
       const projectName = values.projectName.trim();

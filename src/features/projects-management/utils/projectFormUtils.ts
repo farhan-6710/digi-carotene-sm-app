@@ -14,12 +14,21 @@ export type ProjectFormValues = {
   linkedin: string;
   youtube: string;
   google: string;
+  startDate: string;
+  etaDate: string;
   isActive: boolean;
 };
 
 export type ProjectFormField = keyof Pick<
   ProjectFormValues,
-  "projectName" | "facebook" | "instagram" | "linkedin" | "youtube" | "google"
+  | "projectName"
+  | "facebook"
+  | "instagram"
+  | "linkedin"
+  | "youtube"
+  | "google"
+  | "startDate"
+  | "etaDate"
 >;
 
 export const emptyProjectFormValues = (): ProjectFormValues => ({
@@ -32,6 +41,8 @@ export const emptyProjectFormValues = (): ProjectFormValues => ({
   linkedin: "",
   youtube: "",
   google: "",
+  startDate: "",
+  etaDate: "",
   isActive: true,
 });
 
@@ -46,6 +57,8 @@ export function projectToFormValues(project: ProjectListItem): ProjectFormValues
     linkedin: project.socials?.linkedin ?? "",
     youtube: project.socials?.youtube ?? "",
     google: project.socials?.google ?? "",
+    startDate: project.start_date ?? "",
+    etaDate: project.eta_date ?? "",
     isActive: project.is_active ?? true,
   };
 }

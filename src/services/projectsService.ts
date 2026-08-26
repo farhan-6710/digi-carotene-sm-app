@@ -6,6 +6,7 @@ import type {
 } from "@/features/projects-management/types/types";
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 import { seesAllProjects } from "@/shared/utils/rbac";
+import { withAdminTeamMemberIds } from "@/services/teamMembersService";
 
 export type CreateProjectInput = {
   projectName: string;
@@ -13,6 +14,8 @@ export type CreateProjectInput = {
   managerId: string;
   socials?: ProjectSocials | null;
   teamMemberIds?: string[];
+  startDate?: string | null;
+  etaDate?: string | null;
 };
 
 export type UpdateProjectInput = CreateProjectInput & {
@@ -25,6 +28,8 @@ type ProjectRow = {
   client_id: string;
   socials: ProjectSocials | null;
   manager_id: string;
+  start_date: string | null;
+  eta_date: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -47,6 +52,8 @@ function normalizeProjectRow(
     client_id: row.client_id,
     socials: row.socials,
     manager_id: row.manager_id,
+    start_date: row.start_date,
+    eta_date: row.eta_date,
     is_active: row.is_active ?? true,
     created_at: row.created_at,
     updated_at: row.updated_at,
@@ -292,6 +299,8 @@ export async function createProject(
       client_id: input.clientId,
       manager_id: input.managerId,
       socials: input.socials || {},
+      start_date: input.startDate || null,
+      eta_date: input.etaDate || null,
     })
     .select("id")
     .single();
@@ -300,7 +309,11 @@ export async function createProject(
     throw error;
   }
 
-  await syncProjectTeamMembers(data.id, input.managerId, input.teamMemberIds ?? []);
+  await syncProjectTeamMembers(
+    data.id,
+    input.managerId,
+    await withAdminTeamMemberIds(input.teamMemberIds ?? []),
+  );
 
   return (await fetchProjectById(data.id))!;
 }
@@ -316,6 +329,8 @@ export async function updateProject(
       client_id: input.clientId,
       manager_id: input.managerId,
       socials: input.socials || {},
+      start_date: input.startDate || null,
+      eta_date: input.etaDate || null,
       ...(input.isActive !== undefined ? { is_active: input.isActive } : {}),
     })
     .eq("id", projectId);
@@ -324,7 +339,11 @@ export async function updateProject(
     throw error;
   }
 
-  await syncProjectTeamMembers(projectId, input.managerId, input.teamMemberIds ?? []);
+  await syncProjectTeamMembers(
+    projectId,
+    input.managerId,
+    await withAdminTeamMemberIds(input.teamMemberIds ?? []),
+  );
 
   return (await fetchProjectById(projectId))!;
 }

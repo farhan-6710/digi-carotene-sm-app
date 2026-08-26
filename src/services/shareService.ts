@@ -86,6 +86,10 @@ export async function fetchSharedProject(
     client_id: String(projectRow.client_id ?? ""),
     socials: (projectRow.socials as ProjectListItem["socials"]) ?? null,
     manager_id: String(projectRow.manager_id ?? ""),
+    start_date: projectRow.start_date
+      ? String(projectRow.start_date)
+      : null,
+    eta_date: projectRow.eta_date ? String(projectRow.eta_date) : null,
     is_active: Boolean(projectRow.is_active ?? true),
     created_at: String(projectRow.created_at ?? ""),
     updated_at: String(projectRow.updated_at ?? ""),

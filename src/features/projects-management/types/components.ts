@@ -29,7 +29,17 @@ export type ProjectDialogProps = {
   values: ProjectFormValues;
   formSeeds?: ProjectFormSeeds | null;
   onFieldChange: (
-    field: keyof Pick<ProjectFormValues, "projectName" | "facebook" | "instagram" | "linkedin" | "youtube" | "google">,
+    field: keyof Pick<
+      ProjectFormValues,
+      | "projectName"
+      | "facebook"
+      | "instagram"
+      | "linkedin"
+      | "youtube"
+      | "google"
+      | "startDate"
+      | "etaDate"
+    >,
     value: string,
   ) => void;
   onClientChange: (clientId: string) => void;

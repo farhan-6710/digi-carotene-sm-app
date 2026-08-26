@@ -55,9 +55,9 @@ export function DevProjectsTableRow({
 
       <div className="text-sm text-muted-foreground">
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          TARGET
+          ETA
         </span>
-        {project.target_date || "—"}
+        {project.eta_date || "—"}
       </div>
 
       <div>

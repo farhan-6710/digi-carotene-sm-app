@@ -129,7 +129,7 @@ export function useDevProjectDialog({
         stagingUrl: trimOrNull(values.stagingUrl),
         productionUrl: trimOrNull(values.productionUrl),
         startDate: values.startDate || null,
-        targetDate: values.targetDate || null,
+        etaDate: values.etaDate || null,
       };
       const projectName = values.projectName.trim();
 

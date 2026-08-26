@@ -13,7 +13,7 @@ export type DevProjectFormValues = {
   stagingUrl: string;
   productionUrl: string;
   startDate: string;
-  targetDate: string;
+  etaDate: string;
   isActive: boolean;
 };
 
@@ -28,7 +28,7 @@ export const emptyDevProjectFormValues = (): DevProjectFormValues => ({
   stagingUrl: "",
   productionUrl: "",
   startDate: "",
-  targetDate: "",
+  etaDate: "",
   isActive: true,
 });
 
@@ -46,7 +46,7 @@ export function devProjectToFormValues(
     stagingUrl: project.staging_url ?? "",
     productionUrl: project.production_url ?? "",
     startDate: project.start_date ?? "",
-    targetDate: project.target_date ?? "",
+    etaDate: project.eta_date ?? "",
     isActive: project.is_active ?? true,
   };
 }
