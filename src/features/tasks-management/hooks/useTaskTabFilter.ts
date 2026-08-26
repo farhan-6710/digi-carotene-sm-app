@@ -2,19 +2,30 @@ import { useCallback, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 
 import {
+  DEFAULT_TASK_SORT,
+  TASK_SORT_PARAM,
+  TASK_SORTS,
+  type TaskSortId,
+} from "@/features/tasks-management/constants/taskSort";
+import {
   DEFAULT_TASK_TAB,
-  TASK_ETA_PARAM,
   TASK_TAB_PARAM,
   TASK_TABS,
   type TaskTabId,
 } from "@/features/tasks-management/constants/taskTabs";
-import { readUrlDateString } from "@/shared/utils/urlDateParams";
 
 function parseTaskTab(value: string | null): TaskTabId {
   if (value && (TASK_TABS as readonly string[]).includes(value)) {
     return value as TaskTabId;
   }
   return DEFAULT_TASK_TAB;
+}
+
+function parseTaskSort(value: string | null): TaskSortId {
+  if (value && (TASK_SORTS as readonly string[]).includes(value)) {
+    return value as TaskSortId;
+  }
+  return DEFAULT_TASK_SORT;
 }
 
 export function useTaskTabFilter() {
@@ -45,23 +56,23 @@ export function useTaskTabFilter() {
   return { tab, setTab };
 }
 
-/** ETA day filter from `?eta=yyyy-MM-dd` (empty = no filter). */
-export function useTaskEtaFilter() {
+/** Task list sort from `?sort=` (default ETA ascending). */
+export function useTaskSort() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const etaDate = useMemo(
-    () => readUrlDateString(searchParams, TASK_ETA_PARAM) ?? "",
+  const sort = useMemo(
+    () => parseTaskSort(searchParams.get(TASK_SORT_PARAM)),
     [searchParams],
   );
 
-  const setEtaDate = useCallback(
-    (next: string) => {
+  const setSort = useCallback(
+    (next: TaskSortId) => {
       setSearchParams(
         (prev) => {
           const params = new URLSearchParams(prev);
-          if (!next) {
-            params.delete(TASK_ETA_PARAM);
+          if (next === DEFAULT_TASK_SORT) {
+            params.delete(TASK_SORT_PARAM);
           } else {
-            params.set(TASK_ETA_PARAM, next);
+            params.set(TASK_SORT_PARAM, next);
           }
           return params;
         },
@@ -71,7 +82,7 @@ export function useTaskEtaFilter() {
     [setSearchParams],
   );
 
-  return { etaDate, setEtaDate };
+  return { sort, setSort };
 }
 
 export function useTaskSearchQuery() {

@@ -1,9 +1,9 @@
 import { TasksTableRow } from "@/features/tasks-management/components/TasksTableRow";
+import { TaskSortSelect } from "@/features/tasks-management/components/TaskSortSelect";
 import { TaskTabFilter } from "@/features/tasks-management/components/TaskTabFilter";
 import { tasksDirectoryConfig } from "@/features/tasks-management/constants/tasksDirectory";
 import type { TasksTableProps } from "@/features/tasks-management/types/components";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
-import { ListingDateFilter } from "@/shared/components/ListingDateFilter";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 
 export function TasksTable({
@@ -13,12 +13,12 @@ export function TasksTable({
   onEditTask,
   searchQuery,
   onSearchQueryChange,
-  etaDate,
-  onEtaDateChange,
+  sort,
+  onSortChange,
   tab,
   onTabChange,
 }: TasksTableProps) {
-  const hasFilters = Boolean(searchQuery.trim() || etaDate);
+  const hasFilters = Boolean(searchQuery.trim());
 
   return (
     <DirectoryTable
@@ -40,10 +40,9 @@ export function TasksTable({
             onChange={onTabChange}
             disabled={isLoading}
           />
-          <ListingDateFilter
-            value={etaDate}
-            onChange={onEtaDateChange}
-            placeholder="Filter by ETA"
+          <TaskSortSelect
+            value={sort}
+            onChange={onSortChange}
             disabled={isLoading}
           />
           <ListingSearchInput

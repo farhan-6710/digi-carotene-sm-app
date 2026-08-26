@@ -6,8 +6,8 @@ import { TaskDialog } from "@/features/tasks-management/components/TaskDialog";
 import { TasksTable } from "@/features/tasks-management/components/TasksTable";
 import { useTaskDialog } from "@/features/tasks-management/hooks/useTaskDialog";
 import {
-  useTaskEtaFilter,
   useTaskSearchQuery,
+  useTaskSort,
   useTaskTabFilter,
 } from "@/features/tasks-management/hooks/useTaskTabFilter";
 import { useTasksQuery } from "@/features/tasks-management/hooks/useTasksQuery";
@@ -15,6 +15,7 @@ import {
   canEditTaskAccess,
   filterTasksByTab,
 } from "@/features/tasks-management/utils/taskAccessUtils";
+import { sortTasks } from "@/features/tasks-management/utils/taskSortUtils";
 import { PageShell } from "@/shared/components/PageShell";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { Button } from "@/shared/ui/button";
@@ -29,13 +30,12 @@ export function TasksManagementPage() {
     setError,
   });
   const { tab, setTab } = useTaskTabFilter();
-  const { etaDate, setEtaDate } = useTaskEtaFilter();
+  const { sort, setSort } = useTaskSort();
   const { searchQuery, setSearchQuery } = useTaskSearchQuery();
 
   const filteredTasks = useMemo(() => {
-    return filterTasksByTab(tasks, tab, teamMemberId)
-      .filter((task) => !etaDate || task.eta_date === etaDate)
-      .filter((task) =>
+    const filtered = filterTasksByTab(tasks, tab, teamMemberId).filter(
+      (task) =>
         matchesListingSearch(searchQuery, [
           task.title,
           task.description,
@@ -49,8 +49,9 @@ export function TasksManagementPage() {
           task.eta_date,
           task.eta_time,
         ]),
-      );
-  }, [tasks, tab, teamMemberId, etaDate, searchQuery]);
+    );
+    return sortTasks(filtered, sort);
+  }, [tasks, tab, teamMemberId, sort, searchQuery]);
 
   return (
     <PageShell
@@ -78,8 +79,8 @@ export function TasksManagementPage() {
         onEditTask={openEditDialog}
         searchQuery={searchQuery}
         onSearchQueryChange={setSearchQuery}
-        etaDate={etaDate}
-        onEtaDateChange={setEtaDate}
+        sort={sort}
+        onSortChange={setSort}
         tab={tab}
         onTabChange={setTab}
       />

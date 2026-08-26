@@ -29,7 +29,7 @@ export function DirectoryTableRow({
       role="link"
       tabIndex={0}
       className={cn(
-        "cursor-pointer transition-colors hover:bg-muted/50",
+        "cursor-pointer transition-colors hover:bg-muted",
         className,
       )}
       onClick={go}

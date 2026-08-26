@@ -136,7 +136,7 @@ export function TaskDialog({
             </label>
 
             <label className="block text-xs font-semibold text-muted-foreground">
-              Project
+              Select a project
               <div className="mt-2">
                 <TaskProjectSelect
                   value={values.projectId}

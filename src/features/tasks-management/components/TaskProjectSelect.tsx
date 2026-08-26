@@ -93,8 +93,8 @@ export function TaskProjectSelect({
       options={options}
       isLoading={smLoading || devLoading}
       disabled={disabled}
-      placeholder="Select project"
-      listTitle="Select project"
+      placeholder="Select a project"
+      listTitle="Select a project"
       emptyMessage="No active projects found."
       noMatchMessage="No matching projects."
       mode="value"

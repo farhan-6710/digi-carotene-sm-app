@@ -1,3 +1,4 @@
+import type { TaskSortId } from "@/features/tasks-management/constants/taskSort";
 import type { TaskTabId } from "@/features/tasks-management/constants/taskTabs";
 import type {
   Subtask,
@@ -17,9 +18,8 @@ export type TasksTableProps = {
   onEditTask: (task: Task) => void;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
-  /** `yyyy-MM-dd` or empty — filters rows by task ETA date. */
-  etaDate: string;
-  onEtaDateChange: (value: string) => void;
+  sort: TaskSortId;
+  onSortChange: (sort: TaskSortId) => void;
   tab: TaskTabId;
   onTabChange: (tab: TaskTabId) => void;
 };
@@ -160,6 +160,12 @@ export type TaskDialogProps = {
 export type TaskTabFilterProps = {
   value: TaskTabId;
   onChange: (tab: TaskTabId) => void;
+  disabled?: boolean;
+};
+
+export type TaskSortSelectProps = {
+  value: TaskSortId;
+  onChange: (sort: TaskSortId) => void;
   disabled?: boolean;
 };
 
