@@ -13,7 +13,10 @@ import { encodeTaskAssignee } from "@/features/tasks-management/utils/taskAssign
 import {
   getProjectAssociatedMemberIds,
   getProjectClientId,
+  toTaskProjectPeopleSource,
 } from "@/features/tasks-management/utils/taskProjectPeopleUtils";
+import { parseProjectKey } from "@/features/projects-management/utils/projectKindUtils";
+import { fetchDevProjects } from "@/services/devProjectsService";
 import { fetchProjects } from "@/services/projectsService";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { formFieldClassName } from "@/shared/constants/formStyles";
@@ -42,7 +45,10 @@ export function TaskDialog({
   onDelete,
 }: TaskDialogProps) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const { items: projects } = useLazyEntityList(fetchProjects, {
+  const { items: smProjects } = useLazyEntityList(fetchProjects, {
+    preload: open,
+  });
+  const { items: devProjects } = useLazyEntityList(fetchDevProjects, {
     preload: open,
   });
 
@@ -53,10 +59,16 @@ export function TaskDialog({
     }
   }, [open]);
 
-  const selectedProject = useMemo(
-    () => projects.find((project) => project.id === values.projectId) ?? null,
-    [projects, values.projectId],
-  );
+  const selectedProject = useMemo(() => {
+    const parsed = parseProjectKey(values.projectId);
+    if (!parsed) return null;
+    if (parsed.kind === "sm") {
+      const project = smProjects.find((row) => row.id === parsed.id);
+      return project ? toTaskProjectPeopleSource(project) : null;
+    }
+    const project = devProjects.find((row) => row.id === parsed.id);
+    return project ? toTaskProjectPeopleSource(project) : null;
+  }, [devProjects, smProjects, values.projectId]);
 
   const projectMemberIds = useMemo(
     () =>
@@ -124,12 +136,12 @@ export function TaskDialog({
             </label>
 
             <label className="block text-xs font-semibold text-muted-foreground">
-              Social media project
+              Project
               <div className="mt-2">
                 <TaskProjectSelect
                   value={values.projectId}
-                  onChange={({ projectId }) =>
-                    onFieldChange("projectId", projectId)
+                  onChange={({ projectKey }) =>
+                    onFieldChange("projectId", projectKey)
                   }
                   disabled={isSaving}
                   preload={open}

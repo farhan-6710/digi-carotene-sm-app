@@ -25,9 +25,18 @@ type TaskAssigneeRow = {
   clients: Rel<TaskClientRef>;
 };
 
+type NestedProject = {
+  id: string;
+  project_name: string;
+  manager_id: string;
+  manager: Rel<TaskMemberRef>;
+  clients: Rel<{ id: string; client_name: string }>;
+};
+
 export type TaskRow = {
   id: string;
-  project_id: string;
+  project_id: string | null;
+  dev_project_id: string | null;
   client_id: string | null;
   dependency_client_id: string | null;
   title: string;
@@ -40,13 +49,8 @@ export type TaskRow = {
   status: Task["status"];
   created_at: string;
   updated_at: string;
-  projects: Rel<{
-    id: string;
-    project_name: string;
-    manager_id: string;
-    manager: Rel<TaskMemberRef>;
-    clients: Rel<{ id: string; client_name: string }>;
-  }>;
+  projects: Rel<NestedProject>;
+  dev_projects: Rel<NestedProject>;
   client: Rel<TaskClientRef>;
   dependency_client: Rel<TaskClientRef>;
   created_by: Rel<TaskMemberRef>;
@@ -78,21 +82,28 @@ function mapAssigneeRows(rows: TaskAssigneeRow[] | null): TaskAssigneeRef[] {
     .filter((row) => Boolean(row.team_member_id || row.client_id));
 }
 
+function mapNestedProject(project: NestedProject | null): TaskProjectRef | null {
+  if (!project) return null;
+  const projectClient = pickRelation(project.clients);
+  const manager = pickRelation(project.manager);
+  return {
+    id: project.id,
+    project_name: project.project_name,
+    manager_id: project.manager_id,
+    manager:
+      manager ??
+      (project.manager_id
+        ? { id: project.manager_id, member_name: "—" }
+        : null),
+    clients: projectClient,
+  };
+}
+
 export function mapTaskRow(row: TaskRow): Task {
-  const project = pickRelation(row.projects);
-  const projectClient = project ? pickRelation(project.clients) : null;
-  const manager = project ? pickRelation(project.manager) : null;
-  const projects: TaskProjectRef | null = project
-    ? {
-        id: project.id,
-        project_name: project.project_name,
-        manager_id: project.manager_id,
-        manager: manager ?? (project.manager_id
-          ? { id: project.manager_id, member_name: "—" }
-          : null),
-        clients: projectClient,
-      }
-    : null;
+  const smProject = mapNestedProject(pickRelation(row.projects));
+  const devProject = mapNestedProject(pickRelation(row.dev_projects));
+  const projects = smProject ?? devProject;
+  const projectClient = projects?.clients ?? null;
 
   const embeddedClient = pickRelation(row.client);
   const client: TaskClientRef | null =
@@ -160,6 +171,7 @@ export function mapTaskRow(row: TaskRow): Task {
   return {
     id: row.id,
     project_id: row.project_id,
+    dev_project_id: row.dev_project_id,
     client_id: row.client_id,
     dependency_client_id: row.dependency_client_id,
     title: row.title,

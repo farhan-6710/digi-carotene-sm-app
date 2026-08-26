@@ -24,12 +24,11 @@ clients
   │     ├── manager_id ──► team_members
   │     ├── project_team_members ──► team_members   (active when ended_at IS NULL)
   │     ├── posts
-  │     └── tasks ──► task_tags ──► team_members
-  │            ├── task_messages ──► team_members
-  │            └── subtasks ──► team_members / clients
+  │     └── tasks (project_id) ──► …               XOR with dev_projects
   ├── dev_projects
   │     ├── manager_id ──► team_members
-  │     └── dev_project_team_members ──► team_members   (active when ended_at IS NULL)
+  │     ├── dev_project_team_members ──► team_members
+  │     └── tasks (dev_project_id) ──► …           XOR with sm_projects
   ├── production_plans
   │     ├── manager_id / shoot_incharge_id ──► team_members
   │     ├── production_plan_team_members ──► team_members
@@ -40,7 +39,7 @@ clients
 leads   (flat CRM table — not tied to a client in V1)
 ```
 
-Rules: a **client** is a company. An **SM project** (`sm_projects`) is one social engagement (profile URLs + manager). A **dev project** (`dev_projects`) is a separate development engagement. A **post** belongs to an SM project. Same brand, different social accounts → another SM project. No SM project, no post.
+Rules: a **client** is a company. An **SM project** (`sm_projects`) is one social engagement (profile URLs + manager). A **dev project** (`dev_projects`) is a separate development engagement. A **post** belongs to an SM project. A **task** belongs to either an SM project or a Dev project (not both). Same brand, different social accounts → another SM project. No SM project, no post.
 
 ---
 
@@ -58,7 +57,7 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 | `posts` | Calendar row (`to_be_posted_*`, `status`, `socials[]`, `post_links`) |
 | `post_approval_requests` | Executive backdated posts waiting on manager/admin |
 | `notifications` | Team inbox (`approval`, `post_digest`, `task`) |
-| `tasks` | Project task: raiser, multi-assignees via `task_assignees`, optional `dependency_client_id`, priority, ETA, status |
+| `tasks` | Task on **one** of SM (`project_id`) or Dev (`dev_project_id`); raiser, multi-assignees, priority, ETA, status |
 | `task_tags` | Task dependencies for extra teammates (`team_member_id`) |
 | `task_assignees` | Task assignees: teammate **or** client per row |
 | `task_messages` | Task chat; author is teammate **or** client (`author_team_member_id` / `author_client_id`) |

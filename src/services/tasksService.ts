@@ -34,6 +34,16 @@ async function fetchManagedProjectIds(managerId: string): Promise<string[]> {
   return (data ?? []).map((row) => row.id);
 }
 
+async function fetchManagedDevProjectIds(managerId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from(DB.DEV_PROJECTS.TABLE)
+    .select("id")
+    .eq("manager_id", managerId);
+
+  if (error) throw error;
+  return (data ?? []).map((row) => row.id);
+}
+
 async function fetchTaggedTaskIds(teamMemberId: string): Promise<string[]> {
   const { data, error } = await supabase
     .from(DB.TASK_TAGS.TABLE)
@@ -229,13 +239,24 @@ export async function fetchTasksForMember(
   }
 
   if (teamRole === "manager") {
-    const managedIds = await fetchManagedProjectIds(teamMemberId);
-    if (managedIds.length === 0) return [];
+    const [managedSmIds, managedDevIds] = await Promise.all([
+      fetchManagedProjectIds(teamMemberId),
+      fetchManagedDevProjectIds(teamMemberId),
+    ]);
+    if (managedSmIds.length === 0 && managedDevIds.length === 0) return [];
+
+    const filters: string[] = [];
+    if (managedSmIds.length > 0) {
+      filters.push(`project_id.in.(${managedSmIds.join(",")})`);
+    }
+    if (managedDevIds.length > 0) {
+      filters.push(`dev_project_id.in.(${managedDevIds.join(",")})`);
+    }
 
     const { data, error } = await supabase
       .from(DB.TASKS.TABLE)
       .select(DB.TASKS.SELECT)
-      .in("project_id", managedIds)
+      .or(filters.join(","))
       .order("updated_at", { ascending: false });
 
     if (error) throw error;
@@ -275,10 +296,20 @@ export async function createTask(
 
   const sync = syncAssigneeColumns(teamMemberIds, clientIds);
 
+  const smProjectId = input.projectId?.trim() || null;
+  const devProjectId = input.devProjectId?.trim() || null;
+  if (!smProjectId && !devProjectId) {
+    throw new Error("Select a project.");
+  }
+  if (smProjectId && devProjectId) {
+    throw new Error("A task can belong to only one project.");
+  }
+
   const { data, error } = await supabase
     .from(DB.TASKS.TABLE)
     .insert({
-      project_id: input.projectId,
+      project_id: smProjectId,
+      dev_project_id: devProjectId,
       client_id: sync.client_id,
       dependency_client_id: input.dependencyClientId?.trim() || null,
       title: input.title.trim(),
@@ -321,7 +352,32 @@ export async function updateTask(
   input: UpdateTaskInput,
 ): Promise<Task> {
   const cols: Record<string, unknown> = {};
-  if (input.projectId !== undefined) cols.project_id = input.projectId;
+  if (input.projectId !== undefined || input.devProjectId !== undefined) {
+    const smProjectId =
+      input.projectId !== undefined
+        ? input.projectId?.trim() || null
+        : undefined;
+    const devProjectId =
+      input.devProjectId !== undefined
+        ? input.devProjectId?.trim() || null
+        : undefined;
+
+    if (smProjectId !== undefined && smProjectId) {
+      cols.project_id = smProjectId;
+      cols.dev_project_id = null;
+    } else if (devProjectId !== undefined && devProjectId) {
+      cols.project_id = null;
+      cols.dev_project_id = devProjectId;
+    } else if (smProjectId === null && devProjectId === null) {
+      throw new Error("Select a project.");
+    } else if (smProjectId !== undefined) {
+      cols.project_id = smProjectId;
+      if (smProjectId) cols.dev_project_id = null;
+    } else if (devProjectId !== undefined) {
+      cols.dev_project_id = devProjectId;
+      if (devProjectId) cols.project_id = null;
+    }
+  }
   if (input.dependencyClientId !== undefined) {
     cols.dependency_client_id = input.dependencyClientId?.trim() || null;
   }

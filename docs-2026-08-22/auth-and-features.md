@@ -80,7 +80,7 @@ Unread inbox. Types: `approval` (linked to a request id), `post_digest` (inserte
 
 ### Tasks
 
-Project-scoped only. Status: `pending` → `in_progress` → `completed`. Priority: `low` | `medium` | `high`. Required **ETA** (`eta_date` + `eta_time`) is the estimated deadline. Use the description to note blockers (no separate blocker flag).
+Project-scoped only (SM **or** Dev project). Status: `pending` → `in_progress` → `completed`. Priority: `low` | `medium` | `high`. Required **ETA** (`eta_date` + `eta_time`) is the estimated deadline. Use the description to note blockers (no separate blocker flag).
 
 **People on a task (keep roles separate):**
 
@@ -90,7 +90,7 @@ Project-scoped only. Status: `pending` → `in_progress` → `completed`. Priori
 Visibility (team):
 
 - **Admin** — all tasks
-- **Project manager** (`sm_projects.manager_id`) — all tasks on SM projects they manage
+- **Project manager** (`sm_projects.manager_id` or `dev_projects.manager_id`) — all tasks on projects they manage
 - **Everyone else** — raised by them, assigned to them, or listed as a dependency
 
 Visibility (client): tasks where `client_id` matches (i.e. assigned to that client).

@@ -1,4 +1,5 @@
 import type { PostDateTimeValue } from "@/features/posts-management/types/types";
+import { encodeProjectKey } from "@/features/projects-management/utils/projectKindUtils";
 import {
   toPostDateTimeValue,
   toRepositoryDateTime,
@@ -12,6 +13,7 @@ import { assigneeKeysFromTask } from "@/features/tasks-management/utils/taskAssi
 import { dependencyKeysFromTask } from "@/features/tasks-management/utils/taskDependencyUtils";
 
 export type TaskFormValues = {
+  /** Encoded `sm:<id>` or `dev:<id>` key. */
   projectId: string;
   /** Encoded `team:<id>` / `client:<id>` keys. */
   assigneeKeys: string[];
@@ -36,8 +38,14 @@ export const emptyTaskFormValues = (): TaskFormValues => ({
 });
 
 export function taskToFormValues(task: Task): TaskFormValues {
+  const projectKey = task.dev_project_id
+    ? encodeProjectKey("dev", task.dev_project_id)
+    : task.project_id
+      ? encodeProjectKey("sm", task.project_id)
+      : "";
+
   return {
-    projectId: task.project_id,
+    projectId: projectKey,
     assigneeKeys: assigneeKeysFromTask(task),
     title: task.title,
     description: task.description ?? "",

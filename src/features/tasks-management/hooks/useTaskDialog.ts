@@ -11,6 +11,7 @@ import {
   validateTaskForm,
   type TaskFormValues,
 } from "@/features/tasks-management/utils/taskFormUtils";
+import { parseProjectKey } from "@/features/projects-management/utils/projectKindUtils";
 import {
   createTask,
   deleteTask,
@@ -108,9 +109,20 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
         values.dependencyKeys.filter((key) => !assigneeKeySet.has(key)),
       );
 
+      const parsedProject = parseProjectKey(values.projectId);
+      if (!parsedProject) {
+        setError("Select a project.");
+        return;
+      }
+
+      const projectPayload =
+        parsedProject.kind === "sm"
+          ? { projectId: parsedProject.id, devProjectId: null }
+          : { projectId: null, devProjectId: parsedProject.id };
+
       if (editingTaskId) {
         await updateTask(editingTaskId, {
-          projectId: values.projectId,
+          ...projectPayload,
           title,
           description: values.description,
           assigneeTeamMemberIds: teamMemberIds,
@@ -126,7 +138,7 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
       } else {
         await createTask(
           {
-            projectId: values.projectId,
+            ...projectPayload,
             title,
             description: values.description,
             assigneeTeamMemberIds: teamMemberIds,

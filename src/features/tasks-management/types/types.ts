@@ -29,7 +29,10 @@ export type TaskAssigneeRef = {
 
 export type Task = {
   id: string;
-  project_id: string;
+  /** SM project id when set; mutually exclusive with `dev_project_id`. */
+  project_id: string | null;
+  /** Dev project id when set; mutually exclusive with `project_id`. */
+  dev_project_id: string | null;
   client_id: string | null;
   dependency_client_id: string | null;
   title: string;
@@ -42,6 +45,7 @@ export type Task = {
   status: TaskStatus;
   created_at: string;
   updated_at: string;
+  /** Resolved SM or Dev project for display. */
   projects: TaskProjectRef | null;
   client: TaskClientRef | null;
   dependency_client: TaskClientRef | null;
@@ -63,7 +67,10 @@ export type TaskMessage = {
 };
 
 export type CreateTaskInput = {
-  projectId: string;
+  /** SM project id (XOR with `devProjectId`). */
+  projectId?: string | null;
+  /** Dev project id (XOR with `projectId`). */
+  devProjectId?: string | null;
   title: string;
   description?: string | null;
   assigneeTeamMemberIds?: string[];
@@ -76,7 +83,8 @@ export type CreateTaskInput = {
 };
 
 export type UpdateTaskInput = {
-  projectId?: string;
+  projectId?: string | null;
+  devProjectId?: string | null;
   title?: string;
   description?: string | null;
   assigneeTeamMemberIds?: string[];

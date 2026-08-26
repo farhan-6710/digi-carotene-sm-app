@@ -12,6 +12,8 @@ export type ComboBoxOption = {
   value: string;
   label: string;
   icon?: React.ReactNode;
+  /** Optional subset heading shown above this option in the list. */
+  group?: string;
 };
 
 export type ComboBoxProps = {
@@ -91,6 +93,25 @@ export function ComboBox({
       option.label.toLowerCase().includes(search),
     );
   }, [filterText, mode, options]);
+
+  const groupedRows = useMemo(() => {
+    const rows: Array<
+      | { type: "group"; label: string }
+      | { type: "option"; option: ComboBoxOption }
+    > = [];
+    let lastGroup: string | undefined;
+
+    for (const option of filteredOptions) {
+      const group = option.group?.trim();
+      if (group && group !== lastGroup) {
+        rows.push({ type: "group", label: group });
+        lastGroup = group;
+      }
+      rows.push({ type: "option", option });
+    }
+
+    return rows;
+  }, [filteredOptions]);
 
   const inputValue =
     mode === "text"
@@ -174,7 +195,19 @@ export function ComboBox({
             </div>
           ) : (
             <div className="flex flex-col gap-0.5">
-              {filteredOptions.map((option) => {
+              {groupedRows.map((row) => {
+                if (row.type === "group") {
+                  return (
+                    <p
+                      key={`group-${row.label}`}
+                      className="px-3 pt-2 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase"
+                    >
+                      {row.label}
+                    </p>
+                  );
+                }
+
+                const { option } = row;
                 const isSelected =
                   mode === "text"
                     ? option.label.toLowerCase() === value.trim().toLowerCase()
