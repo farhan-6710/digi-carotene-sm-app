@@ -1,6 +1,6 @@
 # PHP crons
 
-Deploy this folder to `public_html/php/`. Full setup (Meta token, Hostinger schedule, `config.php`): **[docs-2026-08-22/ops.md](../../docs-2026-08-22/ops.md)**.
+Deploy this folder to `public_html/php/`. Full setup (Meta token, Hostinger schedule, `config.php`): **[docs-2026-08-26/ops.md](../../docs-2026-08-26/ops.md)**.
 
 | Script | Job |
 |--------|-----|

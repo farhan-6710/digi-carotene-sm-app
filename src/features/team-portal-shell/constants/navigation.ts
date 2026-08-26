@@ -33,11 +33,6 @@ export const primaryNav: NavItem[] = [
     icon: "tasks",
   },
   {
-    label: "Production Planner",
-    to: `${teamBasePath}/production-planner`,
-    icon: "productionPlanner",
-  },
-  {
     label: "CRM",
     to: LEADS_MANAGEMENT_PATH,
     icon: "crm",
