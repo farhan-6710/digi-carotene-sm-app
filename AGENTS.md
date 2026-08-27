@@ -60,7 +60,7 @@ src/
 ## Supabase & migrations
 
 - New project → `scripts/migrations/001_initial_schema.sql`. Existing → only unapplied numbered files. **Never edit old migrations** — add a new one.
-- Schema/RLS live in `docs-2026-08-26/` (start at [docs-2026-08-26/README.md](docs-2026-08-26/README.md)). Keep backend V1 simple.
+- Schema/RLS live in `docs-2026-08-27/` (start at [docs-2026-08-27/README.md](docs-2026-08-27/README.md)). Keep backend V1 simple.
 
 ### Must follow — V1 SQL
 

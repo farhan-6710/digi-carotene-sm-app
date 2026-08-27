@@ -37,6 +37,11 @@ clients
   └── growth_ads_accounts
 
 leads   (flat CRM table — not tied to a client in V1)
+  ├── lead_notes
+  ├── lead_attachments   (URL links)
+  ├── lead_tasks
+  ├── lead_meetings
+  └── lead_calls
 ```
 
 Rules: a **client** is a company. An **SM project** (`sm_projects`) is one social engagement (profile URLs + manager). A **dev project** (`dev_projects`) is a separate development engagement. A **post** belongs to an SM project. A **task** belongs to either an SM project or a Dev project (not both). Same brand, different social accounts → another SM project. No SM project, no post.
@@ -63,7 +68,12 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 | `task_messages` | Task chat; author is teammate **or** client (`author_team_member_id` / `author_client_id`) |
 | `subtasks` | Nested under a task; title + description; creator XOR; multi-assignees via `subtask_assignees` |
 | `subtask_assignees` | Subtask assignees: teammate **or** client per row |
-| `leads` | CRM leads: name, company, email, phone, industry, lead score (1–5), status, lead source |
+| `leads` | CRM leads: name, company, email, phone, industry, lead score (1–5), status, lead source, address |
+| `lead_notes` | Free-text notes on a lead |
+| `lead_attachments` | URL links stored on a lead (optional label) |
+| `lead_tasks` | Lead follow-up task: title, description, priority, status |
+| `lead_meetings` | Lead meeting: from/to date+time, venue (`client_location` / `in_office` / `online`), status |
+| `lead_calls` | Lead call: start date+time, duration minutes, status |
 | `production_plans` | Shoot plan per client + `share_token` |
 | `production_plan_items` | Content in a plan: `script`, `reference_link`, three approvals |
 | `production_plan_team_members` | Extra people on a plan. All `admin` team members are auto-assigned on create/update (unless they are already manager or shoot incharge). |

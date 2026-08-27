@@ -372,6 +372,25 @@ export const DB = {
     TABLE: "lead_notes",
     SELECT: "id, lead_id, body, created_at, updated_at",
   },
+  LEAD_ATTACHMENTS: {
+    TABLE: "lead_attachments",
+    SELECT: "id, lead_id, url, label, created_at, updated_at",
+  },
+  LEAD_TASKS: {
+    TABLE: "lead_tasks",
+    SELECT:
+      "id, lead_id, title, description, priority, status, created_at, updated_at",
+  },
+  LEAD_MEETINGS: {
+    TABLE: "lead_meetings",
+    SELECT:
+      "id, lead_id, title, description, status, from_date, from_time, to_date, to_time, venue, created_at, updated_at",
+  },
+  LEAD_CALLS: {
+    TABLE: "lead_calls",
+    SELECT:
+      "id, lead_id, title, description, status, start_date, start_time, duration_minutes, created_at, updated_at",
+  },
   GROWTH_ORGANIC_ACCOUNTS: {
     TABLE: "growth_organic_accounts",
     SELECT:

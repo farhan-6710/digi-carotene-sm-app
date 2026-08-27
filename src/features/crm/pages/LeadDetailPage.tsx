@@ -1,16 +1,19 @@
+import { useMemo } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { ArrowLeft, Pencil } from "lucide-react";
 
 import { LeadAddressCard } from "@/features/crm/components/LeadAddressCard";
+import { LeadAttachmentsSection } from "@/features/crm/components/LeadAttachmentsSection";
+import { LeadClosedActivitiesSection } from "@/features/crm/components/LeadClosedActivitiesSection";
 import { LeadDialog } from "@/features/crm/components/LeadDialog";
 import { LeadNotesSection } from "@/features/crm/components/LeadNotesSection";
+import { LeadOpenActivitiesSection } from "@/features/crm/components/LeadOpenActivitiesSection";
 import { LeadProfileCard } from "@/features/crm/components/LeadProfileCard";
-import {
-  LEADS_MANAGEMENT_PATH,
-} from "@/features/crm/constants/routes";
+import { LEADS_MANAGEMENT_PATH } from "@/features/crm/constants/routes";
 import { useLeadDetailActions } from "@/features/crm/hooks/useLeadDetailActions";
 import { useLeadDetailQuery } from "@/features/crm/hooks/useLeadDetailQuery";
 import { useLeadDialog } from "@/features/crm/hooks/useLeadDialog";
+import { isLeadActivityOpen } from "@/features/crm/utils/leadActivityFormUtils";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -34,24 +37,80 @@ export function LeadDetailPage() {
   const navigate = useNavigate();
   const { can } = usePermissions();
   const canUpdate = can("leads.update");
-  const { lead, notes, isLoading, error, setError, reload } =
-    useLeadDetailQuery(leadId);
+  const {
+    lead,
+    notes,
+    attachments,
+    tasks,
+    meetings,
+    calls,
+    isLoading,
+    error,
+    setError,
+    reload,
+  } = useLeadDetailQuery(leadId);
   const { openEditDialog, dialog } = useLeadDialog({
     reload,
     setError,
   });
-  const {
-    isSavingAddress,
-    isSavingNote,
-    saveAddress,
-    addNote,
-    saveNote,
-    removeNote,
-  } = useLeadDetailActions({
+  const actions = useLeadDetailActions({
     leadId,
     reload,
     setError,
   });
+
+  const openTasks = useMemo(
+    () => tasks.filter((task) => isLeadActivityOpen(task.status)),
+    [tasks],
+  );
+  const closedTasks = useMemo(
+    () => tasks.filter((task) => !isLeadActivityOpen(task.status)),
+    [tasks],
+  );
+  const openMeetings = useMemo(
+    () => meetings.filter((meeting) => isLeadActivityOpen(meeting.status)),
+    [meetings],
+  );
+  const closedMeetings = useMemo(
+    () => meetings.filter((meeting) => !isLeadActivityOpen(meeting.status)),
+    [meetings],
+  );
+  const openCalls = useMemo(
+    () => calls.filter((call) => isLeadActivityOpen(call.status)),
+    [calls],
+  );
+  const closedCalls = useMemo(
+    () => calls.filter((call) => !isLeadActivityOpen(call.status)),
+    [calls],
+  );
+
+  const activityHandlers = {
+    isSaving: actions.isSavingActivity,
+    onSaveTask: async (
+      taskId: string | null,
+      input: Parameters<typeof actions.addTask>[0],
+    ) => {
+      if (taskId) await actions.saveTask(taskId, input);
+      else await actions.addTask(input);
+    },
+    onDeleteTask: actions.removeTask,
+    onSaveMeeting: async (
+      meetingId: string | null,
+      input: Parameters<typeof actions.addMeeting>[0],
+    ) => {
+      if (meetingId) await actions.saveMeeting(meetingId, input);
+      else await actions.addMeeting(input);
+    },
+    onDeleteMeeting: actions.removeMeeting,
+    onSaveCall: async (
+      callId: string | null,
+      input: Parameters<typeof actions.addCall>[0],
+    ) => {
+      if (callId) await actions.saveCall(callId, input);
+      else await actions.addCall(input);
+    },
+    onDeleteCall: actions.removeCall,
+  };
 
   if (isLoading && !lead) {
     return <DetailPageLoading backButton={<LeadDetailBackButton />} />;
@@ -74,7 +133,7 @@ export function LeadDetailPage() {
     <PageContent>
       <PageHeader
         heading={lead.name}
-        description="Review lead details, address, and notes."
+        description="Review lead details, notes, attachments, and activities."
         backButton={<LeadDetailBackButton />}
         actions={
           canUpdate ? (
@@ -98,18 +157,42 @@ export function LeadDetailPage() {
         <LeadAddressCard
           address={lead.address}
           canEdit={canUpdate}
-          isSaving={isSavingAddress}
-          onSave={saveAddress}
+          isSaving={actions.isSavingAddress}
+          onSave={actions.saveAddress}
         />
       </div>
 
       <LeadNotesSection
         notes={notes}
         canEdit={canUpdate}
-        isSaving={isSavingNote}
-        onAdd={addNote}
-        onSave={saveNote}
-        onDelete={removeNote}
+        isSaving={actions.isSavingNote}
+        onAdd={actions.addNote}
+        onSave={actions.saveNote}
+        onDelete={actions.removeNote}
+      />
+
+      <LeadAttachmentsSection
+        attachments={attachments}
+        canEdit={canUpdate}
+        isSaving={actions.isSavingAttachment}
+        onAdd={actions.addAttachment}
+        onDelete={actions.removeAttachment}
+      />
+
+      <LeadOpenActivitiesSection
+        tasks={openTasks}
+        meetings={openMeetings}
+        calls={openCalls}
+        canEdit={canUpdate}
+        {...activityHandlers}
+      />
+
+      <LeadClosedActivitiesSection
+        tasks={closedTasks}
+        meetings={closedMeetings}
+        calls={closedCalls}
+        canEdit={canUpdate}
+        {...activityHandlers}
       />
 
       {canUpdate ? (

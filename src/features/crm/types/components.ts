@@ -98,3 +98,37 @@ export type LeadNotesSectionProps = {
   ) => Promise<void>;
   onDelete: (noteId: string) => Promise<void>;
 };
+
+export type LeadAttachmentsSectionProps = {
+  attachments: import("@/features/crm/types/types").LeadAttachment[];
+  canEdit: boolean;
+  isSaving?: boolean;
+  onAdd: (
+    input: import("@/features/crm/types/types").CreateLeadAttachmentInput,
+  ) => Promise<void>;
+  onDelete: (attachmentId: string) => Promise<void>;
+};
+
+export type LeadActivitiesSectionProps = {
+  tasks: import("@/features/crm/types/types").LeadTask[];
+  meetings: import("@/features/crm/types/types").LeadMeeting[];
+  calls: import("@/features/crm/types/types").LeadCall[];
+  canEdit: boolean;
+  isSaving?: boolean;
+  showAddNew?: boolean;
+  onSaveTask: (
+    taskId: string | null,
+    input: import("@/features/crm/types/types").CreateLeadTaskInput,
+  ) => Promise<void>;
+  onDeleteTask: (taskId: string) => Promise<void>;
+  onSaveMeeting: (
+    meetingId: string | null,
+    input: import("@/features/crm/types/types").CreateLeadMeetingInput,
+  ) => Promise<void>;
+  onDeleteMeeting: (meetingId: string) => Promise<void>;
+  onSaveCall: (
+    callId: string | null,
+    input: import("@/features/crm/types/types").CreateLeadCallInput,
+  ) => Promise<void>;
+  onDeleteCall: (callId: string) => Promise<void>;
+};

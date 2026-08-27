@@ -1,6 +1,6 @@
 # Digi Carotene — docs
 
-*Snapshot: 2026-08-26*
+*Snapshot: 2026-08-27*
 
 Service-management app for **Digi Carotene**, a digital marketing agency.
 
