@@ -379,7 +379,7 @@ export const DB = {
   LEAD_TASKS: {
     TABLE: "lead_tasks",
     SELECT:
-      "id, lead_id, title, description, priority, status, created_at, updated_at",
+      "id, lead_id, title, description, priority, status, eta_date, eta_time, created_at, updated_at",
   },
   LEAD_MEETINGS: {
     TABLE: "lead_meetings",

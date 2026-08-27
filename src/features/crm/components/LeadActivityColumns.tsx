@@ -2,7 +2,11 @@ import type { ReactNode } from "react";
 import { CalendarDays, CheckSquare, Phone } from "lucide-react";
 
 import { LeadActivityList } from "@/features/crm/components/LeadActivityList";
-import type { LeadCall, LeadMeeting, LeadTask } from "@/features/crm/types/types";
+import type {
+  LeadCall,
+  LeadMeeting,
+  LeadTask,
+} from "@/features/crm/types/types";
 
 type LeadActivityColumnsProps = {
   tasks: LeadTask[];

@@ -12,7 +12,7 @@ import { cn } from "@/shared/lib/utils";
 export function PageContent({ className, children }: PageContentProps) {
   return (
     <motion.div
-      className={cn("w-full min-w-0 space-y-8", className)}
+      className={cn("w-full min-w-0 space-y-6", className)}
       variants={SECTION_STAGGER_CONTAINER}
       initial="hidden"
       animate="show"

@@ -46,7 +46,9 @@ export async function createLeadAttachment(
   return data as LeadAttachment;
 }
 
-export async function deleteLeadAttachment(attachmentId: string): Promise<void> {
+export async function deleteLeadAttachment(
+  attachmentId: string,
+): Promise<void> {
   const { error } = await supabase
     .from(DB.LEAD_ATTACHMENTS.TABLE)
     .delete()
@@ -81,6 +83,8 @@ export async function createLeadTask(
       description: input.description?.trim() || null,
       priority: input.priority,
       status: input.status,
+      eta_date: input.etaDate,
+      eta_time: input.etaTime,
     })
     .select(DB.LEAD_TASKS.SELECT)
     .single();
@@ -104,6 +108,8 @@ export async function updateLeadTask(
   }
   if (input.priority !== undefined) cols.priority = input.priority;
   if (input.status !== undefined) cols.status = input.status;
+  if (input.etaDate !== undefined) cols.eta_date = input.etaDate;
+  if (input.etaTime !== undefined) cols.eta_time = input.etaTime;
 
   const { data, error } = await supabase
     .from(DB.LEAD_TASKS.TABLE)
@@ -125,7 +131,9 @@ export async function deleteLeadTask(taskId: string): Promise<void> {
   if (error) throw new Error(error.message ?? "Failed to delete task.");
 }
 
-export async function fetchLeadMeetings(leadId: string): Promise<LeadMeeting[]> {
+export async function fetchLeadMeetings(
+  leadId: string,
+): Promise<LeadMeeting[]> {
   const { data, error } = await supabase
     .from(DB.LEAD_MEETINGS.TABLE)
     .select(DB.LEAD_MEETINGS.SELECT)

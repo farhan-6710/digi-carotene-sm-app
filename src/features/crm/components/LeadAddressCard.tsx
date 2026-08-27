@@ -94,16 +94,16 @@ export function LeadAddressCard({
                 disabled={isSaving}
                 onClick={() => void handleSave()}
               >
-                {isSaving ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : null}
+                {isSaving ? <Loader2 className="size-4 animate-spin" /> : null}
                 Save
               </Button>
             </div>
           </div>
         ) : (
           <p className="whitespace-pre-wrap text-sm text-foreground">
-            {hasAddress ? address : (
+            {hasAddress ? (
+              address
+            ) : (
               <span className="text-muted-foreground">No address yet.</span>
             )}
           </p>

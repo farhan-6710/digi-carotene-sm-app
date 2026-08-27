@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { LeadActivityPrioritySelect } from "@/features/crm/components/LeadActivityPrioritySelect";
 import { LeadActivityStatusSelect } from "@/features/crm/components/LeadActivityStatusSelect";
 import type { LeadTaskFormValues } from "@/features/crm/utils/leadActivityFormUtils";
+import { PostDateTimePicker } from "@/features/posts-management/components/PostDateTimePicker";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { formFieldClassName } from "@/shared/constants/formStyles";
 import { Button } from "@/shared/ui/button";
@@ -50,12 +51,14 @@ export function LeadTaskDialog({
     }
   }, [open]);
 
-  const canSave = values.title.trim().length > 0;
+  const canSave =
+    values.title.trim().length > 0 &&
+    Boolean(values.eta?.time.trim() && values.eta.day);
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{isEditing ? "Edit task" : "Add task"}</DialogTitle>
             <DialogDescription>
@@ -85,6 +88,13 @@ export function LeadTaskDialog({
                 className={cn(formFieldClassName, "mt-2 min-h-20 resize-none")}
               />
             </label>
+            <PostDateTimePicker
+              label="ETA"
+              value={values.eta}
+              onChange={(eta) => onFieldChange("eta", eta)}
+              required
+              disabled={isSaving}
+            />
             <label className="block text-xs font-semibold text-muted-foreground">
               Priority
               <div className="mt-2">

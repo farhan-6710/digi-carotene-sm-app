@@ -102,7 +102,10 @@ export function LeadNotesSection({
                 >
                   <div className="mb-2 flex items-center justify-between gap-2">
                     <span className="text-[11px] text-muted-foreground">
-                      {format(new Date(note.updated_at), "MMM d, yyyy · h:mm a")}
+                      {format(
+                        new Date(note.updated_at),
+                        "MMM d, yyyy · h:mm a",
+                      )}
                     </span>
                     {canEdit && !isEditing ? (
                       <div className="flex items-center gap-1">
@@ -135,7 +138,10 @@ export function LeadNotesSection({
                         value={editDraft}
                         onChange={(event) => setEditDraft(event.target.value)}
                         disabled={isSaving}
-                        className={cn(formFieldClassName, "min-h-20 resize-none")}
+                        className={cn(
+                          formFieldClassName,
+                          "min-h-20 resize-none",
+                        )}
                       />
                       <div className="flex justify-end gap-2">
                         <Button

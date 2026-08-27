@@ -29,7 +29,9 @@ export function LeadProfileCard({ lead }: LeadProfileCardProps) {
         <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
           Lead profile
         </p>
-        <h2 className="mt-2 text-xl font-semibold tracking-tight">{lead.name}</h2>
+        <h2 className="mt-2 text-xl font-semibold tracking-tight">
+          {lead.name}
+        </h2>
       </div>
 
       <div className="divide-y divide-border">

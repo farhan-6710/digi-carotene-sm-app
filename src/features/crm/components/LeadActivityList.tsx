@@ -10,7 +10,7 @@ import { formatLeadDateTime } from "@/features/crm/utils/leadActivityDisplayUtil
 import { Button } from "@/shared/ui/button";
 
 function taskMeta(task: LeadTask): string {
-  return `${LEAD_ACTIVITY_PRIORITY_LABELS[task.priority]} · ${LEAD_ACTIVITY_STATUS_LABELS[task.status]}`;
+  return `${formatLeadDateTime(task.eta_date, task.eta_time)} · ${LEAD_ACTIVITY_PRIORITY_LABELS[task.priority]} · ${LEAD_ACTIVITY_STATUS_LABELS[task.status]}`;
 }
 
 function meetingMeta(meeting: LeadMeeting): string {

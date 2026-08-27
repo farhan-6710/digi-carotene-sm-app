@@ -71,7 +71,7 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 | `leads` | CRM leads: name, company, email, phone, industry, lead score (1–5), status, lead source, address |
 | `lead_notes` | Free-text notes on a lead |
 | `lead_attachments` | URL links stored on a lead (optional label) |
-| `lead_tasks` | Lead follow-up task: title, description, priority, status |
+| `lead_tasks` | Lead follow-up task: title, description, priority, status, ETA date + time |
 | `lead_meetings` | Lead meeting: from/to date+time, venue (`client_location` / `in_office` / `online`), status |
 | `lead_calls` | Lead call: start date+time, duration minutes, status |
 | `production_plans` | Shoot plan per client + `share_token` |

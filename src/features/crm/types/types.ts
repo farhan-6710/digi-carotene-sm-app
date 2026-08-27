@@ -71,6 +71,8 @@ export type LeadTask = {
   description: string | null;
   priority: LeadActivityPriority;
   status: LeadActivityStatus;
+  eta_date: string;
+  eta_time: string;
   created_at: string;
   updated_at: string;
 };
@@ -113,6 +115,8 @@ export type CreateLeadTaskInput = {
   description?: string | null;
   priority: LeadActivityPriority;
   status: LeadActivityStatus;
+  etaDate: string;
+  etaTime: string;
 };
 
 export type UpdateLeadTaskInput = Partial<CreateLeadTaskInput>;

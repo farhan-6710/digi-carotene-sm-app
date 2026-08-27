@@ -14,6 +14,7 @@ export type LeadTaskFormValues = {
   description: string;
   priority: LeadActivityPriority;
   status: LeadActivityStatus;
+  eta: PostDateTimeValue | null;
 };
 
 export type LeadMeetingFormValues = {
@@ -43,6 +44,7 @@ export const EMPTY_LEAD_TASK_FORM: LeadTaskFormValues = {
   description: "",
   priority: "medium",
   status: "pending",
+  eta: null,
 };
 
 export const EMPTY_LEAD_MEETING_FORM: LeadMeetingFormValues = {
@@ -73,6 +75,7 @@ export function leadTaskToFormValues(task: LeadTask): LeadTaskFormValues {
     description: task.description ?? "",
     priority: task.priority,
     status: task.status,
+    eta: toPostDateTimeValue(task.eta_date, task.eta_time),
   };
 }
 

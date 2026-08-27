@@ -6,7 +6,11 @@ import { LeadCallDialog } from "@/features/crm/components/LeadCallDialog";
 import { LeadMeetingDialog } from "@/features/crm/components/LeadMeetingDialog";
 import { LeadTaskDialog } from "@/features/crm/components/LeadTaskDialog";
 import type { LeadActivitiesSectionProps } from "@/features/crm/types/components";
-import type { LeadCall, LeadMeeting, LeadTask } from "@/features/crm/types/types";
+import type {
+  LeadCall,
+  LeadMeeting,
+  LeadTask,
+} from "@/features/crm/types/types";
 import {
   EMPTY_LEAD_CALL_FORM,
   EMPTY_LEAD_MEETING_FORM,
@@ -152,12 +156,16 @@ export function LeadActivitiesPanel({
         }
         onSave={() => {
           void (async () => {
+            const eta = toRepositoryDateTime(taskValues.eta);
+            if (!eta) return;
             try {
               await onSaveTask(editingTask?.id ?? null, {
                 title: taskValues.title,
                 description: taskValues.description || null,
                 priority: taskValues.priority,
                 status: taskValues.status,
+                etaDate: eta.date,
+                etaTime: eta.time,
               });
               closeDialog();
             } catch {
