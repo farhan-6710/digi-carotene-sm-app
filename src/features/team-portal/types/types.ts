@@ -30,3 +30,27 @@ export type PublishingComparisonChart = {
   previousTotal: number;
   growthPercent: number | null;
 };
+
+export type TeamTodoStatus = "pending" | "in_progress" | "completed";
+
+export type TeamTodo = {
+  id: string;
+  team_member_id: string;
+  title: string;
+  description: string | null;
+  eta_date: string;
+  eta_time: string;
+  status: TeamTodoStatus;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CreateTeamTodoInput = {
+  title: string;
+  description?: string | null;
+  etaDate: string;
+  etaTime: string;
+  status: TeamTodoStatus;
+};
+
+export type UpdateTeamTodoInput = Partial<CreateTeamTodoInput>;

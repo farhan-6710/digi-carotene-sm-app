@@ -1,6 +1,7 @@
 import { PostsTopClientsTable } from "@/features/analytics/components/PostsTopClientsTable";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { useDateFiltersTwo } from "@/shared/hooks/useDateFiltersTwo";
+import { TeamMyTodosCard } from "@/features/team-portal/components/TeamMyTodosCard";
 import { TeamNeedsAttention } from "@/features/team-portal/components/TeamNeedsAttention";
 import { TeamTodaysPosts } from "@/features/team-portal/components/TeamTodaysPosts";
 import { TeamPostingChart } from "@/features/team-portal/components/TeamPostingChart";
@@ -92,6 +93,7 @@ export function TeamDashboardPage() {
               );
             }}
           />
+          <TeamMyTodosCard />
         </PageContent>
       </div>
     </PageContent>

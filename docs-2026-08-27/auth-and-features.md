@@ -54,7 +54,7 @@ Content approvals on a plan item:
 
 | Area | Path | What |
 |------|------|------|
-| Dashboard | `/team-portal/dashboard` | Active-client stats, publishing chart, today’s posts, missed posts |
+| Dashboard | `/team-portal/dashboard` | Active-client stats, publishing chart, top clients, personal My To-dos, today’s posts, missed posts |
 | Team | `/team-portal/team-management` | Roster; member detail = active projects + **active production plans** (assign / end) |
 | Clients | `/team-portal/clients-management` | Brands, `is_active`; detail lists projects and plans |
 | Projects Management | `/team-portal/projects-management` (SM) · `/team-portal/dev-projects-management` (dev) | Sidebar dropdown: Social Media Projects + Development Projects. Both use optional `start_date` + `eta_date`. |

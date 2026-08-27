@@ -74,6 +74,7 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 | `lead_tasks` | Lead follow-up task: title, description, priority, status, ETA date + time |
 | `lead_meetings` | Lead meeting: from/to date+time, venue (`client_location` / `in_office` / `online`), status |
 | `lead_calls` | Lead call: start date+time, duration minutes, status |
+| `team_todos` | Personal dashboard to-dos per team member: title, description, ETA date+time, status |
 | `production_plans` | Shoot plan per client + `share_token` |
 | `production_plan_items` | Content in a plan: `script`, `reference_link`, three approvals |
 | `production_plan_team_members` | Extra people on a plan. All `admin` team members are auto-assigned on create/update (unless they are already manager or shoot incharge). |

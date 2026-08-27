@@ -391,6 +391,11 @@ export const DB = {
     SELECT:
       "id, lead_id, title, description, status, start_date, start_time, duration_minutes, created_at, updated_at",
   },
+  TEAM_TODOS: {
+    TABLE: "team_todos",
+    SELECT:
+      "id, team_member_id, title, description, eta_date, eta_time, status, created_at, updated_at",
+  },
   GROWTH_ORGANIC_ACCOUNTS: {
     TABLE: "growth_organic_accounts",
     SELECT:
