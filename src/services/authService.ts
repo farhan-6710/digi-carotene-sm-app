@@ -7,7 +7,12 @@ import type {
 } from "@supabase/supabase-js";
 
 import { AUTH_FORM_TYPES, type AuthFormType } from "@/features/auth/constants/auth";
+import { OAUTH_CALLBACK_PATH } from "@/features/auth/constants/oauthRoutes";
 import { buildAuthUrl } from "@/features/auth/utils/authUrlParams";
+import {
+  openOAuthPopup,
+  type OAuthPopupResult,
+} from "@/features/auth/utils/oauthPopup";
 import { supabase } from "@/services/supabaseClient";
 
 export type AuthOAuthProvider = Extract<Provider, "google" | "facebook">;
@@ -70,16 +75,40 @@ export async function signUpWithEmail(
   return signInError;
 }
 
+export type SignInWithOAuthResult = OAuthPopupResult;
+
 export async function signInWithOAuthProvider(
   provider: AuthOAuthProvider,
   isSignup: boolean,
-): Promise<AuthError | null> {
+): Promise<SignInWithOAuthResult> {
   const formType = isSignup ? AUTH_FORM_TYPES.signup : AUTH_FORM_TYPES.login;
-  const { error } = await supabase.auth.signInWithOAuth({
+  const callbackUrl = new URL(`${window.location.origin}${OAUTH_CALLBACK_PATH}`);
+  callbackUrl.searchParams.set("next", buildAuthUrl(formType));
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
-    options: { redirectTo: redirectUrl(formType) },
+    options: {
+      redirectTo: callbackUrl.toString(),
+      skipBrowserRedirect: true,
+    },
   });
-  return error;
+
+  if (error) {
+    return { ok: false, error };
+  }
+
+  if (!data.url) {
+    return {
+      ok: false,
+      error: {
+        message: "Could not start Google sign-in.",
+        name: "OAuthError",
+        status: 400,
+      } as AuthError,
+    };
+  }
+
+  return openOAuthPopup(data.url);
 }
 
 export async function signOut(): Promise<void> {

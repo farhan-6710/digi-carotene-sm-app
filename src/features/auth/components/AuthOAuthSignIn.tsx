@@ -42,11 +42,26 @@ export function AuthOAuthSignIn({
     onBeforeSignIn?.();
     setLoadingProvider(provider);
 
-    const authError = await signInWithOAuthProvider(provider, { isSignup });
-    if (authError) {
-      onError(authError.message);
-      setLoadingProvider(null);
+    const result = await signInWithOAuthProvider(provider, { isSignup });
+    setLoadingProvider(null);
+
+    if (result.ok) {
+      return;
     }
+
+    if (result.popupBlocked) {
+      showToast(
+        "error",
+        "Popup blocked. Allow popups for this site and try again.",
+      );
+      return;
+    }
+
+    if (result.cancelled) {
+      return;
+    }
+
+    onError(result.error?.message ?? "Google sign-in failed.");
   }
 
   return (
@@ -86,7 +101,7 @@ export function AuthOAuthSignIn({
               disabled={disabled || loadingProvider != null}
             >
               {isLoading ? <LoadingSpinner size="sm" /> : option.icon}
-              {option.label}
+              {isLoading ? "Signing in..." : option.label}
             </Button>
           );
         })}

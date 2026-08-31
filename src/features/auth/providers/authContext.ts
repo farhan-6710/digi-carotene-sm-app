@@ -4,7 +4,10 @@ import type { AuthError, User } from "@supabase/supabase-js";
 import type { Profile, UserRole } from "@/features/auth/types/profile";
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 
-import type { AuthOAuthProvider } from "@/services/authService";
+import type {
+  AuthOAuthProvider,
+  SignInWithOAuthResult,
+} from "@/services/authService";
 
 export type AuthContextValue = {
   user: User | null;
@@ -31,7 +34,7 @@ export type AuthContextValue = {
   signInWithOAuthProvider: (
     provider: AuthOAuthProvider,
     options?: { isSignup?: boolean },
-  ) => Promise<AuthError | null>;
+  ) => Promise<SignInWithOAuthResult>;
   signOut: () => Promise<void>;
 };
 

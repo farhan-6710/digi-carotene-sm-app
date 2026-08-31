@@ -81,6 +81,10 @@ const AuthPage = lazyRoutePage(
   () => import("@/features/auth/pages/AuthPage"),
   "AuthPage",
 );
+const OAuthCallbackPage = lazyRoutePage(
+  () => import("@/features/auth/pages/OAuthCallbackPage"),
+  "OAuthCallbackPage",
+);
 const UserPortalPage = lazyRoutePage(
   () => import("@/features/user-portal/pages/UserPortalPage"),
   "UserPortalPage",
@@ -269,6 +273,7 @@ export const router = createBrowserRouter([
     ],
   },
   { path: "/auth", element: <AuthPage /> },
+  { path: "/auth/oauth-callback", element: <OAuthCallbackPage /> },
   {
     path: "/share",
     element: <ShareLayout />,
