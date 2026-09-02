@@ -180,6 +180,15 @@ export type MultiSelectProps = {
   onOpenChange?: (open: boolean) => void;
 };
 
+export type TagInputProps = {
+  id?: string;
+  value: string[];
+  onChange: (value: string[]) => void;
+  disabled?: boolean;
+  label?: string;
+  placeholder?: string;
+};
+
 export type DateRangePickerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;

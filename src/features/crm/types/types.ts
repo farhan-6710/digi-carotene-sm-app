@@ -38,6 +38,7 @@ export type Lead = {
   lead_score: LeadScore;
   status: LeadStatus;
   lead_source: LeadSource;
+  tags: string[];
   address: string | null;
   created_at: string;
   updated_at: string;

@@ -68,7 +68,7 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 | `task_messages` | Task chat; author is teammate **or** client (`author_team_member_id` / `author_client_id`) |
 | `subtasks` | Nested under a task; title + description; creator XOR; multi-assignees via `subtask_assignees` |
 | `subtask_assignees` | Subtask assignees: teammate **or** client per row |
-| `leads` | CRM leads: name, company, email, phone, industry, lead score (1–5), status, lead source, address |
+| `leads` | CRM leads: name, company, email, phone, industry, lead score (1–5), status, lead source, tags (`text[]`), address |
 | `lead_notes` | Free-text notes on a lead |
 | `lead_attachments` | URL links stored on a lead (optional label) |
 | `lead_tasks` | Lead follow-up task: title, description, priority, status, ETA date + time |

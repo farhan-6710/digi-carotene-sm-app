@@ -5,6 +5,7 @@ import { LeadDialog } from "@/features/crm/components/LeadDialog";
 import { LeadsTable } from "@/features/crm/components/LeadsTable";
 import { LEAD_SOURCE_LABELS } from "@/features/crm/constants/leadSources";
 import { LEAD_STATUS_LABELS } from "@/features/crm/constants/leadStatuses";
+import { formatLeadTags } from "@/features/crm/utils/leadTagUtils";
 import { useLeadDialog } from "@/features/crm/hooks/useLeadDialog";
 import { useLeadsQuery } from "@/features/crm/hooks/useLeadsQuery";
 import { PageShell } from "@/shared/components/PageShell";
@@ -32,6 +33,7 @@ export function LeadsManagementPage() {
         String(lead.lead_score),
         LEAD_STATUS_LABELS[lead.status],
         LEAD_SOURCE_LABELS[lead.lead_source],
+        formatLeadTags(lead.tags ?? []),
       ]),
     );
   }, [leads, searchQuery]);

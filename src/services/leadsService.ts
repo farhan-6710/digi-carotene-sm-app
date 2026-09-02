@@ -17,6 +17,7 @@ export type CreateLeadInput = {
   leadScore: LeadScore;
   status: LeadStatus;
   leadSource: LeadSource;
+  tags?: string[];
 };
 
 export type UpdateLeadInput = CreateLeadInput;
@@ -35,6 +36,7 @@ function toLeadColumns(input: CreateLeadInput) {
     lead_score: input.leadScore,
     status: input.status,
     lead_source: input.leadSource,
+    tags: input.tags ?? [],
   };
 }
 

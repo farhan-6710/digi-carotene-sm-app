@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { LEAD_SOURCE_LABELS } from "@/features/crm/constants/leadSources";
 import { LEAD_STATUS_LABELS } from "@/features/crm/constants/leadStatuses";
 import type { LeadProfileCardProps } from "@/features/crm/types/components";
+import { formatLeadTags } from "@/features/crm/utils/leadTagUtils";
 
 export function LeadProfileCard({ lead }: LeadProfileCardProps) {
   const details = [
@@ -13,6 +14,7 @@ export function LeadProfileCard({ lead }: LeadProfileCardProps) {
     { label: "Score", value: String(lead.lead_score) },
     { label: "Status", value: LEAD_STATUS_LABELS[lead.status] },
     { label: "Source", value: LEAD_SOURCE_LABELS[lead.lead_source] },
+    { label: "Tags", value: formatLeadTags(lead.tags ?? []) },
     {
       label: "Created",
       value: format(new Date(lead.created_at), "MMM d, yyyy"),

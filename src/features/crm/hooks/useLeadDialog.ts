@@ -85,6 +85,7 @@ export function useLeadDialog({ reload, setError }: UseLeadDialogOptions) {
         leadScore: values.leadScore,
         status: values.status,
         leadSource: values.leadSource,
+        tags: values.tags,
       };
 
       const leadName = values.name.trim();

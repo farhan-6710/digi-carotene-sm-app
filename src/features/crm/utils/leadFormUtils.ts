@@ -17,6 +17,7 @@ export type LeadFormValues = {
   leadScore: LeadScore;
   status: LeadStatus;
   leadSource: LeadSource;
+  tags: string[];
 };
 
 export type LeadFormField = keyof LeadFormValues;
@@ -30,6 +31,7 @@ export const emptyLeadFormValues = (): LeadFormValues => ({
   leadScore: DEFAULT_LEAD_SCORE,
   status: DEFAULT_LEAD_STATUS,
   leadSource: DEFAULT_LEAD_SOURCE,
+  tags: [],
 });
 
 export function leadToFormValues(lead: Lead): LeadFormValues {
@@ -42,6 +44,7 @@ export function leadToFormValues(lead: Lead): LeadFormValues {
     leadScore: lead.lead_score,
     status: lead.status,
     leadSource: lead.lead_source,
+    tags: lead.tags ?? [],
   };
 }
 

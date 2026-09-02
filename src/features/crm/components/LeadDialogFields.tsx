@@ -3,6 +3,7 @@ import { LeadSourceSelect } from "@/features/crm/components/LeadSourceSelect";
 import { LeadStatusSelect } from "@/features/crm/components/LeadStatusSelect";
 import type { LeadDialogFieldsProps } from "@/features/crm/types/components";
 import { formFieldClassName } from "@/shared/constants/formStyles";
+import { TagInput } from "@/shared/ui/TagInput";
 
 export function LeadDialogFields({
   values,
@@ -100,6 +101,17 @@ export function LeadDialogFields({
           />
         </div>
       </label>
+
+      <div className="sm:col-span-2">
+        <TagInput
+          id="lead-tags"
+          label="Tags"
+          value={values.tags}
+          onChange={(tags) => onFieldChange("tags", tags)}
+          disabled={disabled}
+          placeholder="Type a tag and press Enter"
+        />
+      </div>
     </div>
   );
 }
