@@ -58,7 +58,7 @@ export function useNotificationsInbox({
     try {
       // Pending approvals come from the workflow table (includes pre-notification rows).
       // Unread approval notifications only drive the dismiss (X) mapping.
-      const [pendingRequests, approvalNotifs, digests, tasks] =
+      const [pendingRequests, approvalNotifs, digests, tasks, taskDigests] =
         await Promise.all([
           teamRole
             ? fetchPendingApprovalsForReviewer(teamMemberId, teamRole)
@@ -66,11 +66,14 @@ export function useNotificationsInbox({
           fetchUnreadNotifications(teamMemberId, "approval"),
           fetchUnreadNotifications(teamMemberId, "post_digest"),
           fetchUnreadNotifications(teamMemberId, "task"),
+          fetchUnreadNotifications(teamMemberId, "task_digest"),
         ]);
 
       setApprovalRequests(pendingRequests);
       setDigestNotifications(digests);
-      setTaskNotifications(tasks);
+      setTaskNotifications([...tasks, ...taskDigests].sort((a, b) =>
+        b.created_at.localeCompare(a.created_at),
+      ));
 
       const idMap: Record<string, string> = {};
       for (const notification of approvalNotifs) {

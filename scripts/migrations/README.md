@@ -62,6 +62,10 @@ Run only migrations you have **not** applied yet, in order:
 | `048_leads.sql` | CRM `leads` table (name, company, email, phone, industry, lead score, status, lead source) |
 | `049_leads_industry_score_enums.sql` | If you already ran the first 048: add industry + lead_score; expand status/source enums |
 | `050_task_dependency_client.sql` | Optional `tasks.dependency_client_id` so a project client can be a task dependency |
+| `060_lead_tasks_eta.sql` | ETA fields on lead tasks |
+| `061_team_todos.sql` | Team dashboard personal todos |
+| `062_leads_tags.sql` | Free-form `tags text[]` on leads |
+| `063_notifications_task_digest_type.sql` | Adds `task_digest` to `notifications.notification_type` |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

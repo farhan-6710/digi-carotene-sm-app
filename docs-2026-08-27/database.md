@@ -61,7 +61,7 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 | `dev_project_team_members` | Extra people on a development project; `ended_at` null = active. All `admin` team members are auto-assigned on create/update. |
 | `posts` | Calendar row (`to_be_posted_*`, `status`, `socials[]`, `post_links`) |
 | `post_approval_requests` | Executive backdated posts waiting on manager/admin |
-| `notifications` | Team inbox (`approval`, `post_digest`, `task`) |
+| `notifications` | Team inbox (`approval`, `post_digest`, `task`, `task_digest`) |
 | `tasks` | Task on **one** of SM (`project_id`) or Dev (`dev_project_id`); raiser, multi-assignees, priority, ETA, status |
 | `task_tags` | Task dependencies for extra teammates (`team_member_id`) |
 | `task_assignees` | Task assignees: teammate **or** client per row |

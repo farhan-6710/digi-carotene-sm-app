@@ -29,10 +29,18 @@ export type TeamTodaysPostsProps = {
   onStatusChange: (postId: string, status: StatusKey) => void;
 };
 
+export type TeamNeedsAttentionListProps = {
+  items: TeamNeedsAttentionItem[];
+  isLoading: boolean;
+  error: string | null;
+};
+
+export type TeamNeedsAttentionRowProps = {
+  row: TeamNeedsAttentionItem;
+};
+
 export type TeamNeedsAttentionProps = {
   items: TeamNeedsAttentionItem[];
   isLoading: boolean;
   error: string | null;
-  updatingPostId: string | null;
-  onStatusChange: (postId: string, status: StatusKey) => void;
 };

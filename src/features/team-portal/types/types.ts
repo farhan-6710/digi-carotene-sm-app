@@ -7,8 +7,17 @@ export type TeamDashboardPostItem = {
   scheduleLabel: string;
 };
 
-export type TeamNeedsAttentionItem = TeamDashboardPostItem & {
-  isOverdue: boolean;
+import type { TaskPriority } from "@/features/tasks-management/types/types";
+
+export type TeamNeedsAttentionItem = {
+  id: string;
+  kind: "task" | "subtask";
+  label: string;
+  priority: TaskPriority;
+  priorityLabel: string;
+  statusLabel: string;
+  scheduleLabel: string;
+  href: string;
 };
 
 export type TeamTodaysPostItem = TeamDashboardPostItem & {

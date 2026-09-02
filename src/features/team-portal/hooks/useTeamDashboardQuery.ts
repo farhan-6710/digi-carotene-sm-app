@@ -6,6 +6,7 @@ import type { Client } from "@/features/clients-management/types/types";
 import type { Post, StatusKey } from "@/features/posts-management/types/types";
 import { parseDateTime } from "@/features/posts-management/utils/postScheduleUtils";
 import type { TeamMember } from "@/features/team-management/types/types";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import {
   TEAM_NEEDS_ATTENTION_LIMIT,
   TEAM_TODAYS_POSTS_LIMIT,
@@ -15,10 +16,10 @@ import type {
   TeamTodaysPostItem,
 } from "@/features/team-portal/types/types";
 import { buildTodaysPostScheduleLabel } from "@/features/team-portal/utils/teamDashboardPostUtils";
-import { fetchTeamDashboardPostsBundle } from "@/services/dashboardService";
-import { mapNotPostedPostsToNeedsAttention } from "@/features/team-portal/utils/teamNeedsAttentionUtils";
 import { mapPostsToTodaysPosts } from "@/features/team-portal/utils/teamTodaysPostsUtils";
 import { buildTeamStatCards } from "@/features/team-portal/utils/teamStatsUtils";
+import { fetchTeamDashboardPostsBundle } from "@/services/dashboardService";
+import { fetchTeamNeedsAttentionItems } from "@/services/teamNeedsAttentionService";
 import type { DateFiltersTwoFilterState } from "@/shared/types/components";
 import {
   formatDateFiltersTwoLabel,
@@ -26,8 +27,9 @@ import {
 } from "@/shared/utils/dateFiltersTwoUtils";
 
 export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
+  const { teamMemberId } = useAuth();
   const [todaysPosts, setTodaysPosts] = useState<TeamTodaysPostItem[]>([]);
-  const [needsAttentionPosts, setNeedsAttentionPosts] = useState<
+  const [needsAttentionItems, setNeedsAttentionItems] = useState<
     TeamNeedsAttentionItem[]
   >([]);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -42,6 +44,9 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
 
     try {
       const bundle = await fetchTeamDashboardPostsBundle();
+      const attentionItems = teamMemberId
+        ? await fetchTeamNeedsAttentionItems(teamMemberId)
+        : [];
 
       setClients(bundle.clients);
       setTeamMembers(bundle.teamMembers);
@@ -51,11 +56,8 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
           TEAM_TODAYS_POSTS_LIMIT,
         ),
       );
-      setNeedsAttentionPosts(
-        mapNotPostedPostsToNeedsAttention(bundle.notPostedPosts).slice(
-          0,
-          TEAM_NEEDS_ATTENTION_LIMIT,
-        ),
+      setNeedsAttentionItems(
+        attentionItems.slice(0, TEAM_NEEDS_ATTENTION_LIMIT),
       );
       setPosts(bundle.posts);
     } catch (err) {
@@ -65,7 +67,7 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [teamMemberId]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -100,21 +102,9 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
           };
         }),
       );
-
-      if (status !== "Not posted") {
-        setNeedsAttentionPosts((current) =>
-          current.filter((item) => item.id !== postId),
-        );
-      }
     },
     [],
   );
-
-  const removeNeedsAttentionPost = useCallback((postId: string) => {
-    setNeedsAttentionPosts((current) =>
-      current.filter((item) => item.id !== postId),
-    );
-  }, []);
 
   const range = useMemo(
     () => resolveDateFiltersTwoRange(filter),
@@ -135,7 +125,6 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
   );
 
   const statCards = useMemo(() => {
-    // Roster metrics are a current snapshot — date filters only apply to posts.
     const clientsCount = clients.filter((client) => client.is_active).length;
     const teamMembersCount = teamMembers.length;
 
@@ -154,13 +143,12 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
     statCards,
     topClients,
     todaysPosts,
-    needsAttentionPosts,
+    needsAttentionItems,
     isStatsLoading: isLoading,
     isPostsLoading: isLoading,
     isSidebarPostsLoading: isLoading,
     error,
     reload,
     updateTodayPostStatus,
-    removeNeedsAttentionPost,
   };
 }

@@ -1,4 +1,9 @@
-export const NOTIFICATION_TYPES = ["approval", "post_digest", "task"] as const;
+export const NOTIFICATION_TYPES = [
+  "approval",
+  "post_digest",
+  "task",
+  "task_digest",
+] as const;
 
 export const NOTIFICATION_STATUSES = ["unread", "read"] as const;
 
@@ -6,6 +11,7 @@ export const NOTIFICATION_TYPE_LABELS = {
   approval: "Approvals",
   post_digest: "Post digest",
   task: "Tasks",
+  task_digest: "Task digest",
 } as const;
 
 export const NOTIFICATIONS_UPDATED_EVENT = "notifications-updated";
@@ -25,7 +31,8 @@ export const postDigestDirectoryConfig = {
 
 export const taskNotificationsDirectoryConfig = {
   title: "Tasks",
-  description: "Alerts when you are assigned, listed as a dependency, or need project oversight.",
+  description:
+    "Assignment alerts, dependency mentions, project oversight, and midnight high-priority digests.",
   gridClass: "grid-cols-[minmax(0,1.4fr)_minmax(0,2fr)_minmax(0,0.8fr)_5rem]",
   columns: [
     { label: "TITLE" },

@@ -35,6 +35,7 @@ Folder: [`scripts/php/`](../scripts/php/). Deploy as `public_html/php/` so exist
 | `sync_yesterday_organic_acc.php` | Yesterday’s Instagram post metrics + follower gain for every connected organic account |
 | `sync_yesterday_ads_acc.php` | Yesterday’s Meta ads daily metrics (campaign / ad set / ad) |
 | `send_midnight_post_digest.php` | Role-based digest **email** (Resend) + in-app `post_digest` notifications for missed / due posts |
+| `send_midnight_task_digest.php` | High-priority open task/subtask digest **email** + in-app `task_digest` notifications (assigned + dependency teammates) |
 | `test.php` | Smoke test (config + auth only) |
 
 Digest section rules: `src/shared/constants/postDigestEmail.ts` (keep `lib/digest.php` in sync). PHP must use `team_members.team_role` (not `role`).
@@ -56,6 +57,7 @@ Digest section rules: `src/shared/constants/postDigestEmail.ts` (keep `lib/diges
 5 0 * * *  /usr/local/bin/php -q /home/USER/public_html/php/sync_yesterday_organic_acc.php >> /home/USER/logs/ig-sync.log 2>&1
 10 0 * * * /usr/local/bin/php -q /home/USER/public_html/php/sync_yesterday_ads_acc.php >> /home/USER/logs/ads-sync.log 2>&1
 15 0 * * * /usr/local/bin/php -q /home/USER/public_html/php/send_midnight_post_digest.php >> /home/USER/logs/post-digest.log 2>&1
+20 0 * * * /usr/local/bin/php -q /home/USER/public_html/php/send_midnight_task_digest.php >> /home/USER/logs/task-digest.log 2>&1
 ```
 
 HTTP (optional): `https://YOUR-DOMAIN.com/php/<script>.php?secret=YOUR_CRON_SECRET`

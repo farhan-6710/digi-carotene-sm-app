@@ -76,7 +76,9 @@ If an **executive** creates a post whose to-be-posted time is already past, it g
 
 ### Notifications
 
-Unread inbox. Types: `approval` (linked to a request id), `post_digest` (inserted by the midnight cron when email is sent), and `task` (assigned, dependency, or project oversight). Dismiss / review marks `read`.
+Unread inbox. Types: `approval` (linked to a request id), `post_digest` (midnight post cron), `task` (assigned, dependency, or project oversight on create), and `task_digest` (midnight high-priority task/subtask cron). Dismiss / review marks `read`.
+
+Team dashboard **Needs Attention** lists open tasks/subtasks assigned to you or where you are a dependency (`task_tags`), sorted by priority.
 
 ### Tasks
 

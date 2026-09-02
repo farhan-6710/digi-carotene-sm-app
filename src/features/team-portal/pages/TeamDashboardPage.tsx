@@ -18,13 +18,12 @@ export function TeamDashboardPage() {
     statCards,
     topClients,
     todaysPosts,
-    needsAttentionPosts,
+    needsAttentionItems,
     isStatsLoading,
     isSidebarPostsLoading,
     isPostsLoading,
     error,
     updateTodayPostStatus,
-    removeNeedsAttentionPost,
   } = useTeamDashboardQuery(filter);
   const { changeStatus, updatingPostId } = useTeamDashboardPostStatusChange();
 
@@ -71,27 +70,9 @@ export function TeamDashboardPage() {
             }}
           />
           <TeamNeedsAttention
-            items={needsAttentionPosts}
+            items={needsAttentionItems}
             isLoading={isSidebarPostsLoading}
             error={error}
-            updatingPostId={updatingPostId}
-            onStatusChange={(postId, status) => {
-              const item = needsAttentionPosts.find((row) => row.id === postId);
-              if (!item) {
-                return;
-              }
-
-              void changeStatus(
-                postId,
-                status,
-                item.postStatus,
-                (id, newStatus) => {
-                  if (newStatus !== "Not posted") {
-                    removeNeedsAttentionPost(id);
-                  }
-                },
-              );
-            }}
           />
           <TeamMyTodosCard />
         </PageContent>

@@ -28,14 +28,18 @@ export function useUnreadNotificationsCount({
     }
 
     try {
-      const [pendingApprovals, unreadDigests, unreadTasks] = await Promise.all([
-        teamRole
-          ? countPendingApprovalsForReviewer(teamMemberId, teamRole)
-          : Promise.resolve(0),
-        countUnreadNotifications(teamMemberId, "post_digest"),
-        countUnreadNotifications(teamMemberId, "task"),
-      ]);
-      setUnreadCount(pendingApprovals + unreadDigests + unreadTasks);
+      const [pendingApprovals, unreadDigests, unreadTasks, unreadTaskDigests] =
+        await Promise.all([
+          teamRole
+            ? countPendingApprovalsForReviewer(teamMemberId, teamRole)
+            : Promise.resolve(0),
+          countUnreadNotifications(teamMemberId, "post_digest"),
+          countUnreadNotifications(teamMemberId, "task"),
+          countUnreadNotifications(teamMemberId, "task_digest"),
+        ]);
+      setUnreadCount(
+        pendingApprovals + unreadDigests + unreadTasks + unreadTaskDigests,
+      );
     } catch {
       setUnreadCount(0);
     }

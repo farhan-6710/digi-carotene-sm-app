@@ -31,4 +31,7 @@ return [
 
     // Optional — link in digest email footer.
     'portal_posts_url' => 'https://digicarotene.in/team-portal/posts-management',
+
+    // Optional — link in task digest email footer.
+    'portal_tasks_url' => 'https://digicarotene.in/team-portal/tasks-management',
 ];
