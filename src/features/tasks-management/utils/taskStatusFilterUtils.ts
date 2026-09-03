@@ -6,8 +6,8 @@ export function filterTasksByStatus(
   statusFilter: TaskStatusFilterId,
 ): Task[] {
   if (statusFilter === "all") return tasks;
-  if (statusFilter === "completed") {
-    return tasks.filter((task) => task.status === "completed");
+  if (statusFilter === "incomplete") {
+    return tasks.filter((task) => task.status !== "completed");
   }
-  return tasks.filter((task) => task.status !== "completed");
+  return tasks.filter((task) => task.status === statusFilter);
 }
