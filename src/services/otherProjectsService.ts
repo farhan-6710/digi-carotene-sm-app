@@ -1,38 +1,35 @@
 import { DB } from "@/services/db";
 import { supabase } from "@/services/supabaseClient";
 import type {
-  CreateDevProjectInput,
-  DevProjectListItem,
-  UpdateDevProjectInput,
-} from "@/features/development-projects/types/types";
+  CreateOtherProjectInput,
+  OtherProjectListItem,
+  UpdateOtherProjectInput,
+} from "@/features/other-projects/types/types";
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
 import { seesAllProjects } from "@/shared/utils/rbac";
 import { withAdminTeamMemberIds } from "@/services/teamMembersService";
 
-type DevProjectRow = {
+type OtherProjectRow = {
   id: string;
   project_name: string;
   client_id: string;
   manager_id: string;
   description: string | null;
-  repo_url: string | null;
-  staging_url: string | null;
-  production_url: string | null;
   start_date: string | null;
   eta_date: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
-  clients: DevProjectListItem["clients"] | DevProjectListItem["clients"][];
+  clients: OtherProjectListItem["clients"] | OtherProjectListItem["clients"][];
   team_members:
-    | DevProjectListItem["team_members"]
-    | DevProjectListItem["team_members"][];
+    | OtherProjectListItem["team_members"]
+    | OtherProjectListItem["team_members"][];
 };
 
-function normalizeDevProjectRow(
-  row: DevProjectRow,
+function normalizeOtherProjectRow(
+  row: OtherProjectRow,
   teamMemberIds: string[] = [],
-): DevProjectListItem {
+): OtherProjectListItem {
   const client = Array.isArray(row.clients)
     ? (row.clients[0] ?? null)
     : row.clients;
@@ -46,9 +43,6 @@ function normalizeDevProjectRow(
     client_id: row.client_id,
     manager_id: row.manager_id,
     description: row.description,
-    repo_url: row.repo_url,
-    staging_url: row.staging_url,
-    production_url: row.production_url,
     start_date: row.start_date,
     eta_date: row.eta_date,
     is_active: row.is_active ?? true,
@@ -60,14 +54,14 @@ function normalizeDevProjectRow(
   };
 }
 
-async function fetchActiveMemberIdsByDevProject(
+async function fetchActiveMemberIdsByOtherProject(
   projectIds: string[],
 ): Promise<Map<string, string[]>> {
   const map = new Map<string, string[]>();
   if (projectIds.length === 0) return map;
 
   const { data, error } = await supabase
-    .from(DB.DEV_PROJECT_TEAM_MEMBERS.TABLE)
+    .from(DB.OTHER_PROJECT_TEAM_MEMBERS.TABLE)
     .select("project_id, member_id")
     .in("project_id", projectIds)
     .is("ended_at", null);
@@ -82,21 +76,18 @@ async function fetchActiveMemberIdsByDevProject(
   return map;
 }
 
-function toColumns(input: CreateDevProjectInput) {
+function toColumns(input: CreateOtherProjectInput) {
   return {
     project_name: input.projectName,
     client_id: input.clientId,
     manager_id: input.managerId,
     description: input.description ?? null,
-    repo_url: input.repoUrl ?? null,
-    staging_url: input.stagingUrl ?? null,
-    production_url: input.productionUrl ?? null,
     start_date: input.startDate || null,
     eta_date: input.etaDate || null,
   };
 }
 
-async function syncDevProjectTeamMembers(
+async function syncOtherProjectTeamMembers(
   projectId: string,
   managerId: string,
   teamMemberIds: string[],
@@ -106,7 +97,7 @@ async function syncDevProjectTeamMembers(
   );
 
   const { data: existingRows, error } = await supabase
-    .from(DB.DEV_PROJECT_TEAM_MEMBERS.TABLE)
+    .from(DB.OTHER_PROJECT_TEAM_MEMBERS.TABLE)
     .select("id, member_id, ended_at")
     .eq("project_id", projectId);
 
@@ -120,7 +111,7 @@ async function syncDevProjectTeamMembers(
   for (const row of activeRows) {
     if (!desiredSet.has(row.member_id)) {
       await supabase
-        .from(DB.DEV_PROJECT_TEAM_MEMBERS.TABLE)
+        .from(DB.OTHER_PROJECT_TEAM_MEMBERS.TABLE)
         .update({ ended_at: new Date().toISOString() })
         .eq("id", row.id);
     }
@@ -135,41 +126,43 @@ async function syncDevProjectTeamMembers(
 
     if (endedRow) {
       await supabase
-        .from(DB.DEV_PROJECT_TEAM_MEMBERS.TABLE)
+        .from(DB.OTHER_PROJECT_TEAM_MEMBERS.TABLE)
         .update({ ended_at: null, started_at: new Date().toISOString() })
         .eq("id", endedRow.id);
     } else {
       await supabase
-        .from(DB.DEV_PROJECT_TEAM_MEMBERS.TABLE)
+        .from(DB.OTHER_PROJECT_TEAM_MEMBERS.TABLE)
         .insert({ project_id: projectId, member_id: memberId });
     }
   }
 }
 
-export async function fetchDevProjects(): Promise<DevProjectListItem[]> {
+export async function fetchOtherProjects(): Promise<OtherProjectListItem[]> {
   const { data, error } = await supabase
-    .from(DB.DEV_PROJECTS.TABLE)
-    .select(DB.DEV_PROJECTS.SELECT)
+    .from(DB.OTHER_PROJECTS.TABLE)
+    .select(DB.OTHER_PROJECTS.SELECT)
     .order("updated_at", { ascending: false });
 
   if (error) throw error;
-  const rows = (data ?? []) as unknown as DevProjectRow[];
-  const teamMap = await fetchActiveMemberIdsByDevProject(rows.map((r) => r.id));
+  const rows = (data ?? []) as unknown as OtherProjectRow[];
+  const teamMap = await fetchActiveMemberIdsByOtherProject(
+    rows.map((r) => r.id),
+  );
   return rows.map((row) =>
-    normalizeDevProjectRow(row, teamMap.get(row.id) ?? []),
+    normalizeOtherProjectRow(row, teamMap.get(row.id) ?? []),
   );
 }
 
-export async function fetchAssignedDevProjectIds(
+export async function fetchAssignedOtherProjectIds(
   teamMemberId: string,
 ): Promise<string[]> {
   const [managedResult, assignedResult] = await Promise.all([
     supabase
-      .from(DB.DEV_PROJECTS.TABLE)
+      .from(DB.OTHER_PROJECTS.TABLE)
       .select("id")
       .eq("manager_id", teamMemberId),
     supabase
-      .from(DB.DEV_PROJECT_TEAM_MEMBERS.TABLE)
+      .from(DB.OTHER_PROJECT_TEAM_MEMBERS.TABLE)
       .select("project_id")
       .eq("member_id", teamMemberId)
       .is("ended_at", null),
@@ -184,96 +177,102 @@ export async function fetchAssignedDevProjectIds(
   return [...ids];
 }
 
-async function fetchDevProjectsByIds(
+async function fetchOtherProjectsByIds(
   projectIds: string[],
-): Promise<DevProjectListItem[]> {
+): Promise<OtherProjectListItem[]> {
   if (projectIds.length === 0) return [];
 
   const { data, error } = await supabase
-    .from(DB.DEV_PROJECTS.TABLE)
-    .select(DB.DEV_PROJECTS.SELECT)
+    .from(DB.OTHER_PROJECTS.TABLE)
+    .select(DB.OTHER_PROJECTS.SELECT)
     .in("id", projectIds)
     .order("project_name", { ascending: true });
 
   if (error) throw error;
-  const rows = (data ?? []) as unknown as DevProjectRow[];
-  const teamMap = await fetchActiveMemberIdsByDevProject(rows.map((r) => r.id));
+  const rows = (data ?? []) as unknown as OtherProjectRow[];
+  const teamMap = await fetchActiveMemberIdsByOtherProject(
+    rows.map((r) => r.id),
+  );
   return rows.map((row) =>
-    normalizeDevProjectRow(row, teamMap.get(row.id) ?? []),
+    normalizeOtherProjectRow(row, teamMap.get(row.id) ?? []),
   );
 }
 
-export async function fetchDevProjectsScoped(
+export async function fetchOtherProjectsScoped(
   teamRole: TeamMemberRole | null,
   teamMemberId: string | null,
-): Promise<DevProjectListItem[]> {
+): Promise<OtherProjectListItem[]> {
   if (seesAllProjects(teamRole)) {
-    return fetchDevProjects();
+    return fetchOtherProjects();
   }
 
   if (!teamMemberId) return [];
-  return fetchDevProjectsByIds(await fetchAssignedDevProjectIds(teamMemberId));
+  return fetchOtherProjectsByIds(
+    await fetchAssignedOtherProjectIds(teamMemberId),
+  );
 }
 
-export async function fetchDevProjectsByClientId(
+export async function fetchOtherProjectsByClientId(
   clientId: string,
-): Promise<DevProjectListItem[]> {
+): Promise<OtherProjectListItem[]> {
   const { data, error } = await supabase
-    .from(DB.DEV_PROJECTS.TABLE)
-    .select(DB.DEV_PROJECTS.SELECT)
+    .from(DB.OTHER_PROJECTS.TABLE)
+    .select(DB.OTHER_PROJECTS.SELECT)
     .eq("client_id", clientId)
     .order("project_name", { ascending: true });
 
   if (error) throw error;
-  const rows = (data ?? []) as unknown as DevProjectRow[];
-  const teamMap = await fetchActiveMemberIdsByDevProject(rows.map((r) => r.id));
+  const rows = (data ?? []) as unknown as OtherProjectRow[];
+  const teamMap = await fetchActiveMemberIdsByOtherProject(
+    rows.map((r) => r.id),
+  );
   return rows.map((row) =>
-    normalizeDevProjectRow(row, teamMap.get(row.id) ?? []),
+    normalizeOtherProjectRow(row, teamMap.get(row.id) ?? []),
   );
 }
 
-export async function fetchDevProjectById(
+export async function fetchOtherProjectById(
   projectId: string,
-): Promise<DevProjectListItem | null> {
+): Promise<OtherProjectListItem | null> {
   const { data, error } = await supabase
-    .from(DB.DEV_PROJECTS.TABLE)
-    .select(DB.DEV_PROJECTS.SELECT)
+    .from(DB.OTHER_PROJECTS.TABLE)
+    .select(DB.OTHER_PROJECTS.SELECT)
     .eq("id", projectId)
     .maybeSingle();
 
   if (error) throw error;
   if (!data) return null;
-  const teamMap = await fetchActiveMemberIdsByDevProject([projectId]);
-  return normalizeDevProjectRow(
-    data as unknown as DevProjectRow,
+  const teamMap = await fetchActiveMemberIdsByOtherProject([projectId]);
+  return normalizeOtherProjectRow(
+    data as unknown as OtherProjectRow,
     teamMap.get(projectId) ?? [],
   );
 }
 
-export async function createDevProject(
-  input: CreateDevProjectInput,
-): Promise<DevProjectListItem> {
+export async function createOtherProject(
+  input: CreateOtherProjectInput,
+): Promise<OtherProjectListItem> {
   const { data, error } = await supabase
-    .from(DB.DEV_PROJECTS.TABLE)
+    .from(DB.OTHER_PROJECTS.TABLE)
     .insert(toColumns(input))
     .select("id")
     .single();
 
   if (error) throw error;
-  await syncDevProjectTeamMembers(
+  await syncOtherProjectTeamMembers(
     data.id,
     input.managerId,
     await withAdminTeamMemberIds(input.teamMemberIds ?? []),
   );
-  return (await fetchDevProjectById(data.id))!;
+  return (await fetchOtherProjectById(data.id))!;
 }
 
-export async function updateDevProject(
+export async function updateOtherProject(
   projectId: string,
-  input: UpdateDevProjectInput,
-): Promise<DevProjectListItem> {
+  input: UpdateOtherProjectInput,
+): Promise<OtherProjectListItem> {
   const { error } = await supabase
-    .from(DB.DEV_PROJECTS.TABLE)
+    .from(DB.OTHER_PROJECTS.TABLE)
     .update({
       ...toColumns(input),
       ...(typeof input.isActive === "boolean"
@@ -283,17 +282,17 @@ export async function updateDevProject(
     .eq("id", projectId);
 
   if (error) throw error;
-  await syncDevProjectTeamMembers(
+  await syncOtherProjectTeamMembers(
     projectId,
     input.managerId,
     await withAdminTeamMemberIds(input.teamMemberIds ?? []),
   );
-  return (await fetchDevProjectById(projectId))!;
+  return (await fetchOtherProjectById(projectId))!;
 }
 
-export async function deleteDevProject(projectId: string): Promise<void> {
+export async function deleteOtherProject(projectId: string): Promise<void> {
   const { error } = await supabase
-    .from(DB.DEV_PROJECTS.TABLE)
+    .from(DB.OTHER_PROJECTS.TABLE)
     .delete()
     .eq("id", projectId);
 

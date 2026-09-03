@@ -66,6 +66,8 @@ Run only migrations you have **not** applied yet, in order:
 | `061_team_todos.sql` | Team dashboard personal todos |
 | `062_leads_tags.sql` | Free-form `tags text[]` on leads |
 | `063_notifications_task_digest_type.sql` | Adds `task_digest` to `notifications.notification_type` |
+| `064_other_projects.sql` | `other_projects` + `other_project_team_members` |
+| `065_drop_dev_projects_tech_stack.sql` | Drops `tech_stack` from `dev_projects` |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

@@ -37,7 +37,7 @@ Deleting a team member resets linked profiles to `role = user`.
 | `manager` | clients, projects, posts, tasks, leads | Assigned projects / plans only |
 | `executive` | posts, tasks, leads | Assigned projects / plans only |
 
-**Assigned project** = SM: `sm_projects.manager_id` **or** active `project_team_members`; Dev: `dev_projects.manager_id` **or** active `dev_project_team_members`.  
+**Assigned project** = SM: `sm_projects.manager_id` **or** active `project_team_members`; Dev: `dev_projects.manager_id` **or** active `dev_project_team_members`; Other: `other_projects.manager_id` **or** active `other_project_team_members`.  
 **Assigned plan** = plan manager, shoot incharge, **or** active `production_plan_team_members`. Assigned people can add/edit **content** on that plan; creating/editing the plan record stays **admin**.
 
 Content approvals on a plan item:
@@ -57,7 +57,7 @@ Content approvals on a plan item:
 | Dashboard | `/team-portal/dashboard` | Active-client stats, publishing chart, top clients, personal My To-dos, today’s posts, missed posts |
 | Team | `/team-portal/team-management` | Roster; member detail = active projects + **active production plans** (assign / end) |
 | Clients | `/team-portal/clients-management` | Brands, `is_active`; detail lists projects and plans |
-| Projects Management | `/team-portal/projects-management` (SM) · `/team-portal/dev-projects-management` (dev) | Sidebar dropdown: Social Media Projects + Development Projects. Both use optional `start_date` + `eta_date`. |
+| Projects Management | `/team-portal/projects-management` (SM) · `/team-portal/dev-projects-management` (dev) · `/team-portal/other-projects-management` (other) | Sidebar dropdown: Social Media, Development, Other Projects. All use optional `start_date` + `eta_date`. |
 | Postings calendar | `/team-portal/posts-management` | Month grid; client/project filters in the URL; day page reuses them |
 | Task Management | `/team-portal/tasks-management` | Project-scoped tasks; assign + dependencies; tabs All · Raised by me · Raised for me; detail + chat |
 | Production planner | `/team-portal/production-planner` | Plans per client (`?client=` filter); detail = script, reference link, approvals |

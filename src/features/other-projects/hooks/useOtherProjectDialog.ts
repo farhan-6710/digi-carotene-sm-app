@@ -1,52 +1,52 @@
 import { useCallback, useState } from "react";
 
-import type { DevProjectListItem } from "@/features/development-projects/types/types";
+import type { OtherProjectListItem } from "@/features/other-projects/types/types";
 import {
-  emptyDevProjectFormValues,
-  devProjectToFormValues,
+  emptyOtherProjectFormValues,
+  otherProjectToFormValues,
   trimOrNull,
-  validateDevProjectForm,
-  type DevProjectFormValues,
-} from "@/features/development-projects/utils/devProjectFormUtils";
+  validateOtherProjectForm,
+  type OtherProjectFormValues,
+} from "@/features/other-projects/utils/otherProjectFormUtils";
 import {
-  createDevProject,
-  deleteDevProject,
-  updateDevProject,
-} from "@/services/devProjectsService";
+  createOtherProject,
+  deleteOtherProject,
+  updateOtherProject,
+} from "@/services/otherProjectsService";
 import { fetchTeamMembersByIds } from "@/services/teamMembersService";
 import { showToast } from "@/shared/utils/showToast";
 
-type UseDevProjectDialogOptions = {
+type UseOtherProjectDialogOptions = {
   reload: () => Promise<void>;
   setError: (message: string | null) => void;
 };
 
-export function useDevProjectDialog({
+export function useOtherProjectDialog({
   reload,
   setError,
-}: UseDevProjectDialogOptions) {
+}: UseOtherProjectDialogOptions) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [values, setValues] = useState<DevProjectFormValues>(
-    emptyDevProjectFormValues,
+  const [values, setValues] = useState<OtherProjectFormValues>(
+    emptyOtherProjectFormValues,
   );
   const [formSeeds, setFormSeeds] = useState<{
-    client: DevProjectListItem["clients"];
-    manager: DevProjectListItem["team_members"];
+    client: OtherProjectListItem["clients"];
+    manager: OtherProjectListItem["team_members"];
     teamMembers: { id: string; member_name: string }[];
   } | null>(null);
 
   const resetForm = useCallback(() => {
-    setValues(emptyDevProjectFormValues());
+    setValues(emptyOtherProjectFormValues());
     setEditingProjectId(null);
     setFormSeeds(null);
   }, []);
 
   const onFieldChange = useCallback(
-    <K extends keyof DevProjectFormValues>(
+    <K extends keyof OtherProjectFormValues>(
       field: K,
-      value: DevProjectFormValues[K],
+      value: OtherProjectFormValues[K],
     ) => {
       setValues((current) => {
         if (field === "managerId" && typeof value === "string") {
@@ -75,9 +75,9 @@ export function useDevProjectDialog({
     setIsDialogOpen(true);
   }, [resetForm]);
 
-  const openEditDialog = useCallback((project: DevProjectListItem) => {
+  const openEditDialog = useCallback((project: OtherProjectListItem) => {
     setEditingProjectId(project.id);
-    setValues(devProjectToFormValues(project));
+    setValues(otherProjectToFormValues(project));
     setFormSeeds({
       client: project.clients,
       manager: project.team_members,
@@ -108,7 +108,7 @@ export function useDevProjectDialog({
   const saveProject = useCallback(async () => {
     if (isSaving) return;
 
-    const validationError = validateDevProjectForm(values);
+    const validationError = validateOtherProjectForm(values);
     if (validationError) {
       setError(validationError);
       return;
@@ -124,22 +124,19 @@ export function useDevProjectDialog({
         managerId: values.managerId,
         teamMemberIds: values.teamMemberIds,
         description: trimOrNull(values.description),
-        repoUrl: trimOrNull(values.repoUrl),
-        stagingUrl: trimOrNull(values.stagingUrl),
-        productionUrl: trimOrNull(values.productionUrl),
         startDate: values.startDate || null,
         etaDate: values.etaDate || null,
       };
       const projectName = values.projectName.trim();
 
       if (editingProjectId) {
-        await updateDevProject(editingProjectId, {
+        await updateOtherProject(editingProjectId, {
           ...payload,
           isActive: values.isActive,
         });
         showToast("success", `"${projectName}" updated successfully.`);
       } else {
-        await createDevProject(payload);
+        await createOtherProject(payload);
         showToast("success", `"${projectName}" added successfully.`);
       }
 
@@ -170,7 +167,7 @@ export function useDevProjectDialog({
 
     try {
       const projectName = values.projectName.trim();
-      await deleteDevProject(editingProjectId);
+      await deleteOtherProject(editingProjectId);
       await reload();
       handleDialogOpenChange(false);
       showToast("success", `"${projectName}" removed successfully.`);

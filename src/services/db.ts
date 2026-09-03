@@ -42,10 +42,24 @@ const DEV_PROJECT_SELECT = `
   client_id,
   manager_id,
   description,
-  tech_stack,
   repo_url,
   staging_url,
   production_url,
+  start_date,
+  eta_date,
+  is_active,
+  created_at,
+  updated_at,
+  clients ( id, client_name ),
+  team_members:manager_id ( id, member_name, team_role )
+`;
+
+const OTHER_PROJECT_SELECT = `
+  id,
+  project_name,
+  client_id,
+  manager_id,
+  description,
   start_date,
   eta_date,
   is_active,
@@ -80,6 +94,22 @@ const DEV_ASSIGNMENT_SELECT = `
   created_at,
   updated_at,
   projects:dev_projects (
+    id,
+    project_name,
+    client_id,
+    clients ( id, client_name )
+  )
+`;
+
+const OTHER_ASSIGNMENT_SELECT = `
+  id,
+  project_id,
+  member_id,
+  started_at,
+  ended_at,
+  created_at,
+  updated_at,
+  projects:other_projects (
     id,
     project_name,
     client_id,
@@ -306,6 +336,10 @@ export const DB = {
     TABLE: "dev_projects",
     SELECT: DEV_PROJECT_SELECT,
   },
+  OTHER_PROJECTS: {
+    TABLE: "other_projects",
+    SELECT: OTHER_PROJECT_SELECT,
+  },
   PROJECT_TEAM_MEMBERS: {
     TABLE: "project_team_members",
     SELECT: ASSIGNMENT_SELECT,
@@ -313,6 +347,10 @@ export const DB = {
   DEV_PROJECT_TEAM_MEMBERS: {
     TABLE: "dev_project_team_members",
     SELECT: DEV_ASSIGNMENT_SELECT,
+  },
+  OTHER_PROJECT_TEAM_MEMBERS: {
+    TABLE: "other_project_team_members",
+    SELECT: OTHER_ASSIGNMENT_SELECT,
   },
   POSTS: {
     TABLE: "posts",

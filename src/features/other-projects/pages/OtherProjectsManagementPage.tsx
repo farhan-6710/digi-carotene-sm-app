@@ -1,10 +1,10 @@
 import { Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { DevProjectDialog } from "@/features/development-projects/components/DevProjectDialog";
-import { DevProjectsTable } from "@/features/development-projects/components/DevProjectsTable";
-import { useDevProjectDialog } from "@/features/development-projects/hooks/useDevProjectDialog";
-import { useDevProjectsQuery } from "@/features/development-projects/hooks/useDevProjectsQuery";
+import { OtherProjectDialog } from "@/features/other-projects/components/OtherProjectDialog";
+import { OtherProjectsTable } from "@/features/other-projects/components/OtherProjectsTable";
+import { useOtherProjectDialog } from "@/features/other-projects/hooks/useOtherProjectDialog";
+import { useOtherProjectsQuery } from "@/features/other-projects/hooks/useOtherProjectsQuery";
 import type { ActiveStatusFilterId } from "@/shared/constants/activeStatusFilter";
 import { PageShell } from "@/shared/components/PageShell";
 import { usePermissions } from "@/shared/hooks/usePermissions";
@@ -12,10 +12,11 @@ import { Button } from "@/shared/ui/button";
 import { filterByActiveStatus } from "@/shared/utils/activeStatusFilterUtils";
 import { matchesListingSearch } from "@/shared/utils/listingSearch";
 
-export function DevProjectsManagementPage() {
+export function OtherProjectsManagementPage() {
   const { can } = usePermissions();
-  const { projects, isLoading, error, setError, reload } = useDevProjectsQuery();
-  const { openAddDialog, openEditDialog, dialog } = useDevProjectDialog({
+  const { projects, isLoading, error, setError, reload } =
+    useOtherProjectsQuery();
+  const { openAddDialog, openEditDialog, dialog } = useOtherProjectDialog({
     reload,
     setError,
   });
@@ -35,8 +36,8 @@ export function DevProjectsManagementPage() {
 
   return (
     <PageShell
-      heading="Development Projects"
-      description="Manage client development projects and environment links."
+      heading="Other Projects"
+      description="Manage projects that are not social media or development work."
       error={error}
       actions={
         can("projects.create") ? (
@@ -48,11 +49,11 @@ export function DevProjectsManagementPage() {
       }
       dialog={
         can("projects.create") || can("projects.update") ? (
-          <DevProjectDialog {...dialog} />
+          <OtherProjectDialog {...dialog} />
         ) : null
       }
     >
-      <DevProjectsTable
+      <OtherProjectsTable
         projects={filteredProjects}
         isLoading={isLoading}
         canEdit={can("projects.update")}

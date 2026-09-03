@@ -113,9 +113,16 @@ const ProjectDetailPage = lazyRoutePage(
   () => import("@/features/projects-management/pages/ProjectDetailPage"),
   "ProjectDetailPage",
 );
-const OtherProjectsPage = lazyRoutePage(
-  () => import("@/features/projects-management/pages/OtherProjectsPage"),
-  "OtherProjectsPage",
+const OtherProjectsManagementPage = lazyRoutePage(
+  () =>
+    import(
+      "@/features/other-projects/pages/OtherProjectsManagementPage"
+    ),
+  "OtherProjectsManagementPage",
+);
+const OtherProjectDetailPage = lazyRoutePage(
+  () => import("@/features/other-projects/pages/OtherProjectDetailPage"),
+  "OtherProjectDetailPage",
 );
 const DevProjectsManagementPage = lazyRoutePage(
   () =>
@@ -378,7 +385,11 @@ export const router = createBrowserRouter([
           },
           {
             path: "other-projects-management",
-            element: <OtherProjectsPage />,
+            element: <OtherProjectsManagementPage />,
+          },
+          {
+            path: "other-projects-management/:projectId",
+            element: <OtherProjectDetailPage />,
           },
           {
             path: "dev-projects-management",

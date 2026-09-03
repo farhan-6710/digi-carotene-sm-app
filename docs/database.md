@@ -29,6 +29,9 @@ clients
   │     ├── manager_id ──► team_members
   │     ├── dev_project_team_members ──► team_members
   │     └── tasks (dev_project_id) ──► …           XOR with sm_projects
+  ├── other_projects
+  │     ├── manager_id ──► team_members
+  │     └── other_project_team_members ──► team_members
   ├── production_plans
   │     ├── manager_id / shoot_incharge_id ──► team_members
   │     ├── production_plan_team_members ──► team_members
@@ -44,7 +47,7 @@ leads   (flat CRM table — not tied to a client in V1)
   └── lead_calls
 ```
 
-Rules: a **client** is a company. An **SM project** (`sm_projects`) is one social engagement (profile URLs + manager). A **dev project** (`dev_projects`) is a separate development engagement. A **post** belongs to an SM project. A **task** belongs to either an SM project or a Dev project (not both). Same brand, different social accounts → another SM project. No SM project, no post.
+Rules: a **client** is a company. An **SM project** (`sm_projects`) is one social engagement (profile URLs + manager). A **dev project** (`dev_projects`) is a separate development engagement. An **other project** (`other_projects`) is any other client engagement (start / ETA, no tech URLs). A **post** belongs to an SM project. A **task** belongs to either an SM project or a Dev project (not both). Same brand, different social accounts → another SM project. No SM project, no post.
 
 ---
 
@@ -56,9 +59,11 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 | `clients` | Brand registry (`is_active`, primary/secondary contact name + mobile) |
 | `team_members` | Internal roster (`team_role`: `admin` / `manager` / `executive`) |
 | `sm_projects` | Social media work + `socials` jsonb + `manager_id` + `start_date` / `eta_date` + `is_active` + `share_token` |
-| `dev_projects` | Development work: description, tech stack, repo/staging/prod URLs, `start_date` / `eta_date`, `is_active` |
+| `dev_projects` | Development work: description, repo/staging/prod URLs, `start_date` / `eta_date`, `is_active` |
+| `other_projects` | Other client work: description, `start_date` / `eta_date`, `is_active` (no tech/URL fields) |
 | `project_team_members` | Extra people on an SM project; `ended_at` null = active. All `admin` team members are auto-assigned on create/update. |
 | `dev_project_team_members` | Extra people on a development project; `ended_at` null = active. All `admin` team members are auto-assigned on create/update. |
+| `other_project_team_members` | Extra people on an other project; `ended_at` null = active. All `admin` team members are auto-assigned on create/update. |
 | `posts` | Calendar row (`to_be_posted_*`, `status`, `socials[]`, `post_links`) |
 | `post_approval_requests` | Executive backdated posts waiting on manager/admin |
 | `notifications` | Team inbox (`approval`, `post_digest`, `task`, `task_digest`) |

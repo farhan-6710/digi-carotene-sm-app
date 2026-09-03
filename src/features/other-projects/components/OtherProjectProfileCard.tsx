@@ -3,31 +3,13 @@ import type { ReactNode } from "react";
 import { Link } from "react-router";
 
 import { buildClientDetailPath } from "@/features/clients-management/constants/routes";
-import type { DevProjectProfileCardProps } from "@/features/development-projects/types/components";
+import type { OtherProjectProfileCardProps } from "@/features/other-projects/types/components";
 import { ActiveStatusLabel } from "@/shared/components/ActiveStatusSwitchField";
 
-function ExternalLink({ href, label }: { href: string | null; label: string }) {
-  if (!href?.trim()) {
-    return <span className="text-muted-foreground">—</span>;
-  }
-
-  const url = href.startsWith("http") ? href : `https://${href}`;
-  return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="break-all text-primary hover:underline"
-    >
-      {label}
-    </a>
-  );
-}
-
-export function DevProjectProfileCard({
+export function OtherProjectProfileCard({
   project,
   hideClientLink = false,
-}: DevProjectProfileCardProps) {
+}: OtherProjectProfileCardProps) {
   const clientName = project.clients?.client_name ?? "—";
 
   const details: Array<{ label: string; value: ReactNode }> = [
@@ -64,28 +46,6 @@ export function DevProjectProfileCard({
       value: project.eta_date
         ? format(new Date(project.eta_date), "MMM d, yyyy")
         : "—",
-    },
-    {
-      label: "Repository",
-      value: <ExternalLink href={project.repo_url} label={project.repo_url ?? ""} />,
-    },
-    {
-      label: "Staging",
-      value: (
-        <ExternalLink
-          href={project.staging_url}
-          label={project.staging_url ?? ""}
-        />
-      ),
-    },
-    {
-      label: "Production",
-      value: (
-        <ExternalLink
-          href={project.production_url}
-          label={project.production_url ?? ""}
-        />
-      ),
     },
     {
       label: "Created",

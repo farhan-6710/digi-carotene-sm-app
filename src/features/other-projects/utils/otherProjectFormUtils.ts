@@ -1,55 +1,44 @@
-import type {
-  DevProjectListItem,
-} from "@/features/development-projects/types/types";
+import type { OtherProjectListItem } from "@/features/other-projects/types/types";
 
-export type DevProjectFormValues = {
+export type OtherProjectFormValues = {
   projectName: string;
   clientId: string;
   managerId: string;
   teamMemberIds: string[];
   description: string;
-  repoUrl: string;
-  stagingUrl: string;
-  productionUrl: string;
   startDate: string;
   etaDate: string;
   isActive: boolean;
 };
 
-export const emptyDevProjectFormValues = (): DevProjectFormValues => ({
+export const emptyOtherProjectFormValues = (): OtherProjectFormValues => ({
   projectName: "",
   clientId: "",
   managerId: "",
   teamMemberIds: [],
   description: "",
-  repoUrl: "",
-  stagingUrl: "",
-  productionUrl: "",
   startDate: "",
   etaDate: "",
   isActive: true,
 });
 
-export function devProjectToFormValues(
-  project: DevProjectListItem,
-): DevProjectFormValues {
+export function otherProjectToFormValues(
+  project: OtherProjectListItem,
+): OtherProjectFormValues {
   return {
     projectName: project.project_name,
     clientId: project.client_id,
     managerId: project.manager_id,
     teamMemberIds: project.team_member_ids ?? [],
     description: project.description ?? "",
-    repoUrl: project.repo_url ?? "",
-    stagingUrl: project.staging_url ?? "",
-    productionUrl: project.production_url ?? "",
     startDate: project.start_date ?? "",
     etaDate: project.eta_date ?? "",
     isActive: project.is_active ?? true,
   };
 }
 
-export function validateDevProjectForm(
-  values: DevProjectFormValues,
+export function validateOtherProjectForm(
+  values: OtherProjectFormValues,
 ): string | null {
   if (!values.projectName.trim()) {
     return "Project name is required.";

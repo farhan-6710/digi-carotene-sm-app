@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ClientCombobox } from "@/features/clients-management/components/ClientCombobox";
 import { ProjectManagerSelect } from "@/features/projects-management/components/ProjectManagerSelect";
 import { ProjectTeamMembersSelect } from "@/features/projects-management/components/ProjectTeamMembersSelect";
-import type { DevProjectDialogProps } from "@/features/development-projects/types/components";
+import type { OtherProjectDialogProps } from "@/features/other-projects/types/components";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { ActiveStatusSwitchField } from "@/shared/components/ActiveStatusSwitchField";
 import { DatePicker } from "@/shared/components/DatePicker";
@@ -20,7 +20,7 @@ import {
 } from "@/shared/ui/dialog";
 import { cn } from "@/shared/lib/utils";
 
-export function DevProjectDialog({
+export function OtherProjectDialog({
   open,
   onOpenChange,
   isEditing,
@@ -30,7 +30,7 @@ export function DevProjectDialog({
   onFieldChange,
   onSave,
   onDelete,
-}: DevProjectDialogProps) {
+}: OtherProjectDialogProps) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   useEffect(() => {
@@ -51,11 +51,10 @@ export function DevProjectDialog({
         <DialogContent className="flex max-h-[85vh] max-w-lg! flex-col overflow-hidden">
           <DialogHeader className="shrink-0">
             <DialogTitle>
-              {isEditing ? "Edit Development Project" : "Add Development Project"}
+              {isEditing ? "Edit Other Project" : "Add Other Project"}
             </DialogTitle>
             <DialogDescription>
-              Link a client, assign a manager, and capture environment links for
-              this build.
+              Link a client, assign a manager, and set start / ETA dates.
             </DialogDescription>
           </DialogHeader>
 
@@ -66,7 +65,7 @@ export function DevProjectDialog({
                 value={values.projectName}
                 onChange={(e) => onFieldChange("projectName", e.target.value)}
                 className={cn(formFieldClassName, "mt-2")}
-                placeholder="e.g. Client Portal Rebuild"
+                placeholder="e.g. Brand Photoshoot Pack"
                 disabled={isSaving}
               />
             </label>
@@ -116,39 +115,6 @@ export function DevProjectDialog({
                 onChange={(e) => onFieldChange("description", e.target.value)}
                 className={cn(formFieldClassName, "mt-2 min-h-20 resize-y")}
                 placeholder="What is this project about?"
-                disabled={isSaving}
-              />
-            </label>
-
-            <label className="block text-xs font-semibold text-muted-foreground">
-              Repository URL
-              <input
-                value={values.repoUrl}
-                onChange={(e) => onFieldChange("repoUrl", e.target.value)}
-                className={cn(formFieldClassName, "mt-2")}
-                placeholder="https://github.com/…"
-                disabled={isSaving}
-              />
-            </label>
-
-            <label className="block text-xs font-semibold text-muted-foreground">
-              Staging URL
-              <input
-                value={values.stagingUrl}
-                onChange={(e) => onFieldChange("stagingUrl", e.target.value)}
-                className={cn(formFieldClassName, "mt-2")}
-                placeholder="https://staging.…"
-                disabled={isSaving}
-              />
-            </label>
-
-            <label className="block text-xs font-semibold text-muted-foreground">
-              Production URL
-              <input
-                value={values.productionUrl}
-                onChange={(e) => onFieldChange("productionUrl", e.target.value)}
-                className={cn(formFieldClassName, "mt-2")}
-                placeholder="https://…"
                 disabled={isSaving}
               />
             </label>
@@ -220,7 +186,7 @@ export function DevProjectDialog({
       <ConfirmationModal
         open={isConfirmOpen}
         onOpenChange={setIsConfirmOpen}
-        title="Delete development project?"
+        title="Delete other project?"
         description="This cannot be undone."
         confirmLabel="Delete"
         confirmVariant="destructive"
