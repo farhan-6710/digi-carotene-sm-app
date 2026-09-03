@@ -8,6 +8,12 @@ import {
   type TaskSortId,
 } from "@/features/tasks-management/constants/taskSort";
 import {
+  DEFAULT_TASK_STATUS_FILTER,
+  TASK_STATUS_FILTER_PARAM,
+  TASK_STATUS_FILTERS,
+  type TaskStatusFilterId,
+} from "@/features/tasks-management/constants/taskStatusFilter";
+import {
   DEFAULT_TASK_TAB,
   TASK_TAB_PARAM,
   TASK_TABS,
@@ -26,6 +32,13 @@ function parseTaskSort(value: string | null): TaskSortId {
     return value as TaskSortId;
   }
   return DEFAULT_TASK_SORT;
+}
+
+function parseTaskStatusFilter(value: string | null): TaskStatusFilterId {
+  if (value && (TASK_STATUS_FILTERS as readonly string[]).includes(value)) {
+    return value as TaskStatusFilterId;
+  }
+  return DEFAULT_TASK_STATUS_FILTER;
 }
 
 export function useTaskTabFilter() {
@@ -83,6 +96,35 @@ export function useTaskSort() {
   );
 
   return { sort, setSort };
+}
+
+/** Status scope from `?status=` (default open — hides completed). */
+export function useTaskStatusFilter() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const statusFilter = useMemo(
+    () => parseTaskStatusFilter(searchParams.get(TASK_STATUS_FILTER_PARAM)),
+    [searchParams],
+  );
+
+  const setStatusFilter = useCallback(
+    (next: TaskStatusFilterId) => {
+      setSearchParams(
+        (prev) => {
+          const params = new URLSearchParams(prev);
+          if (next === DEFAULT_TASK_STATUS_FILTER) {
+            params.delete(TASK_STATUS_FILTER_PARAM);
+          } else {
+            params.set(TASK_STATUS_FILTER_PARAM, next);
+          }
+          return params;
+        },
+        { replace: true },
+      );
+    },
+    [setSearchParams],
+  );
+
+  return { statusFilter, setStatusFilter };
 }
 
 export function useTaskSearchQuery() {

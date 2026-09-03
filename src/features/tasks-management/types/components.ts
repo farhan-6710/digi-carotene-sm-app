@@ -1,4 +1,5 @@
 import type { TaskSortId } from "@/features/tasks-management/constants/taskSort";
+import type { TaskStatusFilterId } from "@/features/tasks-management/constants/taskStatusFilter";
 import type { TaskTabId } from "@/features/tasks-management/constants/taskTabs";
 import type {
   Subtask,
@@ -20,6 +21,8 @@ export type TasksTableProps = {
   onSearchQueryChange: (query: string) => void;
   sort: TaskSortId;
   onSortChange: (sort: TaskSortId) => void;
+  statusFilter: TaskStatusFilterId;
+  onStatusFilterChange: (filter: TaskStatusFilterId) => void;
   tab: TaskTabId;
   onTabChange: (tab: TaskTabId) => void;
 };
@@ -160,6 +163,12 @@ export type TaskDialogProps = {
 export type TaskTabFilterProps = {
   value: TaskTabId;
   onChange: (tab: TaskTabId) => void;
+  disabled?: boolean;
+};
+
+export type TaskStatusFilterProps = {
+  value: TaskStatusFilterId;
+  onChange: (filter: TaskStatusFilterId) => void;
   disabled?: boolean;
 };
 

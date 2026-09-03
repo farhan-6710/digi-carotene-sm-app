@@ -8,6 +8,7 @@ import { useTaskDialog } from "@/features/tasks-management/hooks/useTaskDialog";
 import {
   useTaskSearchQuery,
   useTaskSort,
+  useTaskStatusFilter,
   useTaskTabFilter,
 } from "@/features/tasks-management/hooks/useTaskTabFilter";
 import { useTasksQuery } from "@/features/tasks-management/hooks/useTasksQuery";
@@ -16,6 +17,7 @@ import {
   filterTasksByTab,
 } from "@/features/tasks-management/utils/taskAccessUtils";
 import { sortTasks } from "@/features/tasks-management/utils/taskSortUtils";
+import { filterTasksByStatus } from "@/features/tasks-management/utils/taskStatusFilterUtils";
 import { PageShell } from "@/shared/components/PageShell";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { Button } from "@/shared/ui/button";
@@ -31,27 +33,30 @@ export function TasksManagementPage() {
   });
   const { tab, setTab } = useTaskTabFilter();
   const { sort, setSort } = useTaskSort();
+  const { statusFilter, setStatusFilter } = useTaskStatusFilter();
   const { searchQuery, setSearchQuery } = useTaskSearchQuery();
 
   const filteredTasks = useMemo(() => {
-    const filtered = filterTasksByTab(tasks, tab, teamMemberId).filter(
-      (task) =>
-        matchesListingSearch(searchQuery, [
-          task.title,
-          task.description,
-          task.projects?.project_name,
-          task.client?.client_name,
-          task.projects?.clients?.client_name,
-          task.created_by?.member_name,
-          task.assigned_to?.member_name,
-          task.priority,
-          task.status,
-          task.eta_date,
-          task.eta_time,
-        ]),
+    const filtered = filterTasksByStatus(
+      filterTasksByTab(tasks, tab, teamMemberId),
+      statusFilter,
+    ).filter((task) =>
+      matchesListingSearch(searchQuery, [
+        task.title,
+        task.description,
+        task.projects?.project_name,
+        task.client?.client_name,
+        task.projects?.clients?.client_name,
+        task.created_by?.member_name,
+        task.assigned_to?.member_name,
+        task.priority,
+        task.status,
+        task.eta_date,
+        task.eta_time,
+      ]),
     );
     return sortTasks(filtered, sort);
-  }, [tasks, tab, teamMemberId, sort, searchQuery]);
+  }, [tasks, tab, teamMemberId, sort, searchQuery, statusFilter]);
 
   return (
     <PageShell
@@ -81,6 +86,8 @@ export function TasksManagementPage() {
         onSearchQueryChange={setSearchQuery}
         sort={sort}
         onSortChange={setSort}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
         tab={tab}
         onTabChange={setTab}
       />

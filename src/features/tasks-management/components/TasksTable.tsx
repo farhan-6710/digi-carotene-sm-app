@@ -1,6 +1,8 @@
 import { TasksTableRow } from "@/features/tasks-management/components/TasksTableRow";
 import { TaskSortSelect } from "@/features/tasks-management/components/TaskSortSelect";
+import { TaskStatusFilter } from "@/features/tasks-management/components/TaskStatusFilter";
 import { TaskTabFilter } from "@/features/tasks-management/components/TaskTabFilter";
+import { DEFAULT_TASK_STATUS_FILTER } from "@/features/tasks-management/constants/taskStatusFilter";
 import { tasksDirectoryConfig } from "@/features/tasks-management/constants/tasksDirectory";
 import type { TasksTableProps } from "@/features/tasks-management/types/components";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
@@ -15,10 +17,13 @@ export function TasksTable({
   onSearchQueryChange,
   sort,
   onSortChange,
+  statusFilter,
+  onStatusFilterChange,
   tab,
   onTabChange,
 }: TasksTableProps) {
-  const hasFilters = Boolean(searchQuery.trim());
+  const hasFilters =
+    Boolean(searchQuery.trim()) || statusFilter !== DEFAULT_TASK_STATUS_FILTER;
 
   return (
     <DirectoryTable
@@ -38,6 +43,11 @@ export function TasksTable({
           <TaskTabFilter
             value={tab}
             onChange={onTabChange}
+            disabled={isLoading}
+          />
+          <TaskStatusFilter
+            value={statusFilter}
+            onChange={onStatusFilterChange}
             disabled={isLoading}
           />
           <TaskSortSelect
