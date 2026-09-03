@@ -82,7 +82,7 @@ export function SubtaskDialog({
             <DialogDescription>
               {statusOnly
                 ? "Mark this subtask in progress or completed when you’re done."
-                : "Explain what is needed, assign one or more people on this task, set priority, and set an ETA."}
+                : "Explain what is needed, assign one or more project teammates or the client, set priority, and set an ETA."}
             </DialogDescription>
           </DialogHeader>
 

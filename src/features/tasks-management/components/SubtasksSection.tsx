@@ -1,19 +1,14 @@
-import { useMemo } from "react";
-
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { SubtaskDialog } from "@/features/tasks-management/components/SubtaskDialog";
 import { SubtasksTable } from "@/features/tasks-management/components/SubtasksTable";
 import { useSubtaskDialog } from "@/features/tasks-management/hooks/useSubtaskDialog";
 import { useSubtasksQuery } from "@/features/tasks-management/hooks/useSubtasksQuery";
+import { useTaskSubtaskAssigneeScope } from "@/features/tasks-management/hooks/useTaskSubtaskAssigneeScope";
 import type { SubtasksSectionProps } from "@/features/tasks-management/types/components";
 import {
   canCreateSubtaskAccess,
   canEditSubtaskAccess,
 } from "@/features/tasks-management/utils/taskAccessUtils";
-import {
-  getTaskSubtaskAssigneeClientIds,
-  getTaskSubtaskAssigneeMemberIds,
-} from "@/features/tasks-management/utils/subtaskPeopleUtils";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 
 export function SubtasksSection({
@@ -30,15 +25,8 @@ export function SubtasksSection({
     reload,
     setError,
   });
-
-  const allowedMemberIds = useMemo(
-    () => getTaskSubtaskAssigneeMemberIds(parentTask),
-    [parentTask],
-  );
-  const allowedClientIds = useMemo(
-    () => getTaskSubtaskAssigneeClientIds(parentTask),
-    [parentTask],
-  );
+  const { allowedMemberIds, allowedClientIds } =
+    useTaskSubtaskAssigneeScope(parentTask);
 
   const canAdd = canCreateSubtaskAccess({
     task: parentTask,

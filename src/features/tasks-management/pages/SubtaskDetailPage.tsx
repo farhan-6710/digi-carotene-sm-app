@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { ArrowLeft, Pencil } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router";
 
@@ -8,11 +7,8 @@ import { SubtaskDialog } from "@/features/tasks-management/components/SubtaskDia
 import { buildTaskDetailPath } from "@/features/tasks-management/constants/routes";
 import { useSubtaskDetailQuery } from "@/features/tasks-management/hooks/useSubtaskDetailQuery";
 import { useSubtaskDialog } from "@/features/tasks-management/hooks/useSubtaskDialog";
+import { useTaskSubtaskAssigneeScope } from "@/features/tasks-management/hooks/useTaskSubtaskAssigneeScope";
 import { canEditSubtaskAccess } from "@/features/tasks-management/utils/taskAccessUtils";
-import {
-  getTaskSubtaskAssigneeClientIds,
-  getTaskSubtaskAssigneeMemberIds,
-} from "@/features/tasks-management/utils/subtaskPeopleUtils";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -35,14 +31,8 @@ export function SubtaskDetailPage() {
     setError,
   });
 
-  const allowedMemberIds = useMemo(
-    () => (parentTask ? getTaskSubtaskAssigneeMemberIds(parentTask) : []),
-    [parentTask],
-  );
-  const allowedClientIds = useMemo(
-    () => (parentTask ? getTaskSubtaskAssigneeClientIds(parentTask) : []),
-    [parentTask],
-  );
+  const { allowedMemberIds, allowedClientIds } =
+    useTaskSubtaskAssigneeScope(parentTask);
 
   const canEdit =
     subtask && parentTask
