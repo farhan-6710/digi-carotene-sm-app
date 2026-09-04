@@ -1,5 +1,6 @@
 import { GrowthSpendChart } from "../components/charts/GrowthSpendChart";
 import { GrowthAdAccountSelect } from "../components/GrowthAdAccountSelect";
+import { GrowthNoAccountsEmpty } from "../components/GrowthNoAccountsEmpty";
 import { CampaignTable } from "../components/tables/CampaignTable";
 import { useGrowthCampaigns } from "../hooks/useGrowthCampaigns";
 import { DateFilters } from "@/shared/components/DateFilters";
@@ -23,6 +24,7 @@ export function GrowthCampaignAnalyticsPage() {
     isGeneratingReport,
     hasAccounts,
   } = useGrowthCampaigns();
+  const showNoAccounts = !hasAccounts && !isLoading;
 
   return (
     <PageContent>
@@ -30,34 +32,42 @@ export function GrowthCampaignAnalyticsPage() {
         heading="Campaign Analytics"
         description="Track paid performance — spend, impressions, clicks, and conversions from Meta."
         actions={
-          <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
-            <GrowthAdAccountSelect />
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <DateFilters {...dateFilterProps} />
-              <Button
-                onClick={() => void generateReport()}
-                disabled={!hasAccounts || isGeneratingReport}
-                className="rounded-full"
-              >
-                {isGeneratingReport ? "Saving..." : "Generate Report"}
-              </Button>
+          hasAccounts ? (
+            <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
+              <GrowthAdAccountSelect />
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <DateFilters {...dateFilterProps} />
+                <Button
+                  onClick={() => void generateReport()}
+                  disabled={isGeneratingReport}
+                  className="rounded-full"
+                >
+                  {isGeneratingReport ? "Saving..." : "Generate Report"}
+                </Button>
+              </div>
             </div>
-          </div>
+          ) : null
         }
       />
 
       {error ? <ErrorBanner message={error} /> : null}
 
-      <StatsCards cards={statCards} isLoading={isLoading} />
+      {showNoAccounts ? (
+        <GrowthNoAccountsEmpty accountKind="ads" />
+      ) : (
+        <>
+          <StatsCards cards={statCards} isLoading={isLoading} />
 
-      <GrowthSpendChart
-        title={spendTrendTitle}
-        description="Ad spend and conversions across the selected period."
-        data={spendTrend.points}
-        granularity={spendTrend.granularity}
-      />
+          <GrowthSpendChart
+            title={spendTrendTitle}
+            description="Ad spend and conversions across the selected period."
+            data={spendTrend.points}
+            granularity={spendTrend.granularity}
+          />
 
-      <CampaignTable rows={campaignRows} adAccountId={adAccountId} />
+          <CampaignTable rows={campaignRows} adAccountId={adAccountId} />
+        </>
+      )}
     </PageContent>
   );
 }

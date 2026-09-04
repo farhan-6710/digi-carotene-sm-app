@@ -1,5 +1,6 @@
 import { GrowthDonutChart } from "../components/charts/GrowthDonutChart";
 import { GrowthPostsDataChart } from "../components/charts/GrowthPostsDataChart";
+import { GrowthNoAccountsEmpty } from "../components/GrowthNoAccountsEmpty";
 import { GrowthOrganicAccountSelect } from "../components/GrowthOrganicAccountSelect";
 import { GrowthPlatformComingSoon } from "../components/GrowthPlatformComingSoon";
 import { getOrganicDashboardMode } from "../constants/growthPlatformConfig";
@@ -23,6 +24,7 @@ export function GrowthDashboardPage() {
   } = useGrowthDashboard();
   const { activeAccount } = useGrowthSelectedAccount();
   const dashboardMode = getOrganicDashboardMode(activeAccount?.platform);
+  const showNoAccounts = !hasAccounts && !isLoading;
   const showComingSoon = hasAccounts && dashboardMode === "coming_soon";
   const showLiveDashboard = hasAccounts && dashboardMode === "live";
 
@@ -32,18 +34,20 @@ export function GrowthDashboardPage() {
         heading="Dashboard Overview"
         description="Audience growth, reach, and interactions for the selected account."
         actions={
-          <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
-            <GrowthOrganicAccountSelect />
-            {showLiveDashboard || !hasAccounts ? (
-              <DateFilters {...dateFilterProps} />
-            ) : null}
-          </div>
+          hasAccounts ? (
+            <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
+              <GrowthOrganicAccountSelect />
+              {showLiveDashboard ? <DateFilters {...dateFilterProps} /> : null}
+            </div>
+          ) : null
         }
       />
 
       {error ? <ErrorBanner message={error} /> : null}
 
-      {showComingSoon && activeAccount ? (
+      {showNoAccounts ? (
+        <GrowthNoAccountsEmpty accountKind="organic" />
+      ) : showComingSoon && activeAccount ? (
         <GrowthPlatformComingSoon
           platform={activeAccount.platform}
           surface="dashboard"

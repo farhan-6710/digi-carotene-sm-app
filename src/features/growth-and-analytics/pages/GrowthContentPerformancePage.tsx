@@ -1,5 +1,6 @@
 import { GrowthBarChart } from "../components/charts/GrowthBarChart";
 import { GrowthDonutChart } from "../components/charts/GrowthDonutChart";
+import { GrowthNoAccountsEmpty } from "../components/GrowthNoAccountsEmpty";
 import { GrowthOrganicAccountSelect } from "../components/GrowthOrganicAccountSelect";
 import { GrowthPlatformComingSoon } from "../components/GrowthPlatformComingSoon";
 import { ContentPostsTable } from "../components/tables/ContentPostsTable";
@@ -28,6 +29,7 @@ export function GrowthContentPerformancePage() {
   } = useGrowthContentPerformance();
   const { activeAccount } = useGrowthSelectedAccount();
   const dashboardMode = getOrganicDashboardMode(activeAccount?.platform);
+  const showNoAccounts = !hasAccounts && !isLoading;
   const showComingSoon = hasAccounts && dashboardMode === "coming_soon";
   const showLiveContent = hasAccounts && dashboardMode === "live";
 
@@ -37,27 +39,31 @@ export function GrowthContentPerformancePage() {
         heading="Content Performance"
         description="Break down how individual posts perform across formats and engagement."
         actions={
-          <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
-            <GrowthOrganicAccountSelect />
-            {showLiveContent || !hasAccounts ? (
-              <div className="flex flex-wrap items-center justify-end gap-2">
-                <DateFilters {...dateFilterProps} />
-                <Button
-                  onClick={() => void generateReport()}
-                  disabled={!showLiveContent || isGeneratingReport}
-                  className="rounded-full"
-                >
-                  {isGeneratingReport ? "Saving..." : "Generate Report"}
-                </Button>
-              </div>
-            ) : null}
-          </div>
+          hasAccounts ? (
+            <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
+              <GrowthOrganicAccountSelect />
+              {showLiveContent ? (
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  <DateFilters {...dateFilterProps} />
+                  <Button
+                    onClick={() => void generateReport()}
+                    disabled={isGeneratingReport}
+                    className="rounded-full"
+                  >
+                    {isGeneratingReport ? "Saving..." : "Generate Report"}
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+          ) : null
         }
       />
 
       {error ? <ErrorBanner message={error} /> : null}
 
-      {showComingSoon && activeAccount ? (
+      {showNoAccounts ? (
+        <GrowthNoAccountsEmpty accountKind="organic" />
+      ) : showComingSoon && activeAccount ? (
         <GrowthPlatformComingSoon
           platform={activeAccount.platform}
           surface="content"
