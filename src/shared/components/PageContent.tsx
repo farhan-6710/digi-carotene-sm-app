@@ -20,7 +20,7 @@ export function PageContent({ className, children }: PageContentProps) {
       {Children.toArray(children).map((child, index) => (
         <motion.div
           key={index}
-          className="w-full min-w-0"
+          className="w-full min-w-0 space-y-6"
           variants={SECTION_STAGGER_ITEM}
         >
           {child}

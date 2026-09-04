@@ -64,7 +64,7 @@ Content approvals on a plan item:
 | CRM | `/team-portal/crm` | Leads management; Contact (leads with score 5); lead detail notes, link attachments, open/closed activities (tasks, meetings, calls) |
 | Notifications | `/team-portal/notifications` | Inbox + executive **approval queue** |
 | Analytics | `/team-portal/analytics` | Agency activity |
-| Growth | `/team-portal/growth-and-analytics` | Meta organic + ads; Manage Accounts (token) |
+| Growth | `/team-portal/growth-and-analytics` | Meta organic + ads; page-level account dropdown (Instagram live; Facebook coming soon); Manage Accounts (token) |
 | Reports | `/team-portal/reports` | Growth reports |
 | Account / Settings | `/team-portal/account`, `/settings` | Password, theme |
 
@@ -118,7 +118,7 @@ The brand sees only their own data (`profiles.client_id`). No team CRUD, no Mana
 | Task Management | `/client-portal/tasks-management` | Tasks that include this client; detail + chat |
 | Posts | `/client-portal/posts` | Read-only post list with search |
 | Production planner | `/client-portal/production-planner` | Their plans; detail: **Client approval** dropdown only |
-| Growth | `/client-portal/growth-and-analytics` | Same charts as team, scoped to linked accounts |
+| Growth | `/client-portal/growth-and-analytics` | Same charts as team, scoped to linked accounts; page-level account dropdown |
 | Account | `/client-portal/account` | Brand details, password |
 
 ---

@@ -3,38 +3,6 @@ import type { ShellNavItem } from "@/shared/types/components";
 export const teamGrowthBasePath = "/team-portal/growth-and-analytics";
 export const clientGrowthBasePath = "/client-portal/growth-and-analytics";
 
-// Which account picker the shell header shows for a growth route. Reports and
-// Custom Report Builder use "none" — they show an in-page combobox instead.
-export type GrowthHeaderAccounts = "organic" | "ad" | "none";
-
-function growthRelativePath(pathname: string): string {
-  for (const base of [teamGrowthBasePath, clientGrowthBasePath]) {
-    if (pathname === base) {
-      return "/";
-    }
-    if (pathname.startsWith(`${base}/`)) {
-      return pathname.slice(base.length);
-    }
-  }
-  return pathname;
-}
-
-export function growthHeaderAccounts(pathname: string): GrowthHeaderAccounts {
-  const relative = growthRelativePath(pathname);
-
-  if (
-    relative.startsWith("/custom-report") ||
-    relative === "/reports" ||
-    relative.startsWith("/reports/")
-  ) {
-    return "none";
-  }
-  if (relative === "/campaigns" || relative.startsWith("/campaigns/")) {
-    return "ad";
-  }
-  return "organic";
-}
-
 export function isGrowthPortalPath(pathname: string): boolean {
   return (
     pathname === teamGrowthBasePath ||
