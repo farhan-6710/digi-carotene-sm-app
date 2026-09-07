@@ -1,19 +1,28 @@
 import { useEffect, useState } from "react";
+import { format } from "date-fns";
 import { Copy, Pencil, Trash2 } from "lucide-react";
 
 import { ApprovalStatusBadge } from "@/features/production-planner/components/ApprovalStatusBadge";
 import { ApprovalStatusSelect } from "@/features/production-planner/components/ApprovalStatusSelect";
-import { CONTENT_SCRIPT_PREVIEW_LINES } from "@/features/production-planner/constants/productionPlannerDirectory";
+import {
+  CONTENT_CONTEXT_PREVIEW_LINES,
+  CONTENT_PILLAR_MAX_LENGTH,
+  CONTENT_SCRIPT_PREVIEW_LINES,
+} from "@/features/production-planner/constants/productionPlannerDirectory";
 import type { ProductionPlanContentCardProps } from "@/features/production-planner/types/components";
 import type { ProductionPlanApprovalStatus } from "@/features/production-planner/types/types";
 import {
+  areAllContentApprovalsApproved,
   formatContentIndex,
   getOverallApprovalStatus,
 } from "@/features/production-planner/utils/contentApprovalUtils";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
+import { DatePicker } from "@/shared/components/DatePicker";
 import { formFieldClassName } from "@/shared/constants/formStyles";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
+import { Switch } from "@/shared/ui/switch";
+import { parseUrlDateParam } from "@/shared/utils/urlDateParams";
 
 export function ProductionPlanContentCard({
   content,
@@ -22,6 +31,7 @@ export function ProductionPlanContentCard({
   canEditManagerApproval,
   canEditShootInchargeApproval,
   canEditClientApproval,
+  canEditShootCompleted = false,
   lockDetails = false,
   showMutations = true,
   isDraft = false,
@@ -32,6 +42,13 @@ export function ProductionPlanContentCard({
 }: ProductionPlanContentCardProps) {
   const [isEditing, setIsEditing] = useState(isDraft);
   const [itemName, setItemName] = useState(content.item_name);
+  const [shootDate, setShootDate] = useState(content.shoot_date || "");
+  const [contextDescription, setContextDescription] = useState(
+    content.context_description || "",
+  );
+  const [contentPillar, setContentPillar] = useState(
+    content.content_pillar || "",
+  );
   const [script, setScript] = useState(content.script || "");
   const [referenceLink, setReferenceLink] = useState(
     content.reference_link || "",
@@ -42,6 +59,7 @@ export function ProductionPlanContentCard({
     useState<ProductionPlanApprovalStatus>(content.shoot_incharge_approval);
   const [clientApproval, setClientApproval] =
     useState<ProductionPlanApprovalStatus>(content.client_approval);
+  const [shootCompleted, setShootCompleted] = useState(content.shoot_completed);
   const [isSaving, setIsSaving] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
@@ -49,11 +67,15 @@ export function ProductionPlanContentCard({
     if (isEditing) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setItemName(content.item_name);
+    setShootDate(content.shoot_date || "");
+    setContextDescription(content.context_description || "");
+    setContentPillar(content.content_pillar || "");
     setScript(content.script || "");
     setReferenceLink(content.reference_link || "");
     setManagerApproval(content.manager_approval);
     setShootInchargeApproval(content.shoot_incharge_approval);
     setClientApproval(content.client_approval);
+    setShootCompleted(content.shoot_completed);
   }, [content, isEditing]);
 
   const overallStatus = getOverallApprovalStatus(
@@ -62,14 +84,58 @@ export function ProductionPlanContentCard({
     content.client_approval,
   );
 
+  const activeManagerApproval = isEditing
+    ? managerApproval
+    : content.manager_approval;
+  const activeShootInchargeApproval = isEditing
+    ? shootInchargeApproval
+    : content.shoot_incharge_approval;
+  const activeClientApproval = isEditing
+    ? clientApproval
+    : content.client_approval;
+  const allApprovalsDone = areAllContentApprovalsApproved(
+    activeManagerApproval,
+    activeShootInchargeApproval,
+    activeClientApproval,
+  );
+  const canToggleShootCompleted =
+    canEditShootCompleted && allApprovalsDone && !isDraft;
+
   const resetForm = () => {
     setItemName(content.item_name);
+    setShootDate(content.shoot_date || "");
+    setContextDescription(content.context_description || "");
+    setContentPillar(content.content_pillar || "");
     setScript(content.script || "");
     setReferenceLink(content.reference_link || "");
     setManagerApproval(content.manager_approval);
     setShootInchargeApproval(content.shoot_incharge_approval);
     setClientApproval(content.client_approval);
+    setShootCompleted(content.shoot_completed);
   };
+
+  const buildPayload = (nextShootCompleted = shootCompleted) => ({
+    itemName: lockDetails ? content.item_name : itemName.trim(),
+    shootDate: lockDetails
+      ? content.shoot_date
+      : shootDate.trim() || null,
+    contextDescription: lockDetails
+      ? content.context_description
+      : contextDescription.trim() || null,
+    contentPillar: lockDetails
+      ? content.content_pillar
+      : contentPillar.trim() || null,
+    script: lockDetails ? content.script : script.trim() || null,
+    referenceLink: lockDetails
+      ? content.reference_link
+      : referenceLink.trim() || null,
+    managerApproval,
+    shootInchargeApproval,
+    clientApproval,
+    shootCompleted: canEditShootCompleted
+      ? nextShootCompleted
+      : content.shoot_completed,
+  });
 
   const handleCancel = () => {
     if (isDraft) {
@@ -85,16 +151,7 @@ export function ProductionPlanContentCard({
     if (!lockDetails && !itemName.trim()) return;
     setIsSaving(true);
     try {
-      await onSave(content.id, {
-        itemName: lockDetails ? content.item_name : itemName.trim(),
-        script: lockDetails ? content.script : script.trim() || null,
-        referenceLink: lockDetails
-          ? content.reference_link
-          : referenceLink.trim() || null,
-        managerApproval,
-        shootInchargeApproval,
-        clientApproval,
-      });
+      await onSave(content.id, buildPayload());
       setIsEditing(false);
     } catch {
       if (!isDraft) {
@@ -104,6 +161,28 @@ export function ProductionPlanContentCard({
       setIsSaving(false);
     }
   };
+
+  const handleShootCompletedChange = async (checked: boolean) => {
+    if (!canToggleShootCompleted || isSaving) return;
+    if (isEditing) {
+      setShootCompleted(checked);
+      return;
+    }
+    setIsSaving(true);
+    try {
+      await onSave(content.id, buildPayload(checked));
+      setShootCompleted(checked);
+    } catch {
+      setShootCompleted(content.shoot_completed);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const shootDateLabel = (() => {
+    const date = parseUrlDateParam(content.shoot_date);
+    return date ? format(date, "MMMM d, yyyy") : null;
+  })();
 
   return (
     <>
@@ -147,6 +226,82 @@ export function ProductionPlanContentCard({
               />
             </div>
           ) : null}
+
+          <div>
+            <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+              Content pillar
+            </p>
+            {isEditing && !lockDetails ? (
+              <input
+                value={contentPillar}
+                onChange={(e) => setContentPillar(e.target.value)}
+                className={cn(formFieldClassName, "mt-0")}
+                placeholder="2–4 words"
+                maxLength={CONTENT_PILLAR_MAX_LENGTH}
+                disabled={isSaving}
+              />
+            ) : content.content_pillar ? (
+              <p className="text-sm text-foreground">{content.content_pillar}</p>
+            ) : (
+              <p className="text-sm text-muted-foreground/60 italic">
+                No content pillar yet.
+              </p>
+            )}
+          </div>
+
+          <div>
+            <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+              Shoot date
+            </p>
+            {isEditing && !lockDetails ? (
+              <DatePicker
+                value={shootDate}
+                onChange={setShootDate}
+                placeholder="Select shoot date"
+                clearable
+                onClear={() => setShootDate("")}
+                disabled={isSaving}
+              />
+            ) : shootDateLabel ? (
+              <p className="text-sm text-foreground">{shootDateLabel}</p>
+            ) : (
+              <p className="text-sm text-muted-foreground/60 italic">
+                No shoot date yet.
+              </p>
+            )}
+          </div>
+
+          <div>
+            <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+              Context description
+            </p>
+            {isEditing && !lockDetails ? (
+              <textarea
+                value={contextDescription}
+                onChange={(e) => setContextDescription(e.target.value)}
+                rows={CONTENT_CONTEXT_PREVIEW_LINES}
+                className={cn(formFieldClassName, "mt-0 resize-y")}
+                placeholder="Add context for this content..."
+                disabled={isSaving}
+              />
+            ) : content.context_description ? (
+              <p
+                className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap"
+                style={{
+                  display: "-webkit-box",
+                  WebkitLineClamp: CONTENT_CONTEXT_PREVIEW_LINES,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
+                {content.context_description}
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground/60 italic">
+                No context yet.
+              </p>
+            )}
+          </div>
 
           <div>
             <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
@@ -211,30 +366,54 @@ export function ProductionPlanContentCard({
           <div className="grid gap-3 sm:grid-cols-3">
             <ApprovalField
               label="Manager/Admin"
-              status={isEditing ? managerApproval : content.manager_approval}
+              status={activeManagerApproval}
               isEditing={isEditing}
               disabled={isSaving || !canEditManagerApproval}
               onChange={setManagerApproval}
             />
             <ApprovalField
               label="Shoot Incharge"
-              status={
-                isEditing
-                  ? shootInchargeApproval
-                  : content.shoot_incharge_approval
-              }
+              status={activeShootInchargeApproval}
               isEditing={isEditing}
               disabled={isSaving || !canEditShootInchargeApproval}
               onChange={setShootInchargeApproval}
             />
             <ApprovalField
               label="Client"
-              status={isEditing ? clientApproval : content.client_approval}
+              status={activeClientApproval}
               isEditing={isEditing}
               disabled={isSaving || !canEditClientApproval}
               onChange={setClientApproval}
             />
           </div>
+
+          {canEditShootCompleted ? (
+            <div
+              className={cn(
+                "flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5",
+                !canToggleShootCompleted && "opacity-60",
+              )}
+            >
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+                  Shoot completed
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {allApprovalsDone
+                    ? "Mark after the shoot is done."
+                    : "Available once all three approvals are approved."}
+                </p>
+              </div>
+              <Switch
+                checked={isEditing ? shootCompleted : content.shoot_completed}
+                onCheckedChange={(checked) => {
+                  void handleShootCompletedChange(checked);
+                }}
+                disabled={isSaving || !canToggleShootCompleted}
+                aria-label="Shoot completed"
+              />
+            </div>
+          ) : null}
         </div>
 
         {canEdit ? (

@@ -14,7 +14,10 @@ import { useProductionPlanDetailQuery } from "@/features/production-planner/hook
 import { useProductionPlanDialog } from "@/features/production-planner/hooks/useProductionPlanDialog";
 import type { ProductionPlanContentSavePayload } from "@/features/production-planner/types/components";
 import type { ProductionPlanContent } from "@/features/production-planner/types/types";
-import { canEditManagerOrClientApproval } from "@/features/production-planner/utils/contentApprovalUtils";
+import {
+  canEditManagerOrClientApproval,
+  canEditShootCompleted,
+} from "@/features/production-planner/utils/contentApprovalUtils";
 import {
   createProductionPlanItem,
   deleteProductionPlanItem,
@@ -58,6 +61,11 @@ export function ProductionPlanDetailPage() {
   const canEditClientApproval = canEditManagerApproval;
   const canEditShootInchargeApproval =
     Boolean(teamMemberId) && teamMemberId === plan?.shoot_incharge_id;
+  const showShootCompleted = canEditShootCompleted(
+    teamRole,
+    teamMemberId,
+    plan,
+  );
 
   const handleSaveContent = async (
     id: string,
@@ -91,11 +99,15 @@ export function ProductionPlanDetailPage() {
       await createProductionPlanItem({
         productionPlanId: planId,
         itemName: copyName,
+        shootDate: content.shoot_date,
+        contextDescription: content.context_description,
+        contentPillar: content.content_pillar,
         script: content.script,
         referenceLink: content.reference_link,
         managerApproval: "pending",
         shootInchargeApproval: "pending",
         clientApproval: "pending",
+        shootCompleted: false,
       });
       showToast("success", `"${copyName}" created.`);
       await reload();
@@ -191,6 +203,7 @@ export function ProductionPlanDetailPage() {
         canEditManagerApproval={canEditManagerApproval}
         canEditShootInchargeApproval={canEditShootInchargeApproval}
         canEditClientApproval={canEditClientApproval}
+        canEditShootCompleted={showShootCompleted}
         draftContent={draftContent}
         draftFocusKey={draftFocusKey}
         onSave={handleSaveContent}

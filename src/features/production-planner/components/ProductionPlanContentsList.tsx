@@ -18,6 +18,7 @@ export function ProductionPlanContentsList({
   canEditManagerApproval,
   canEditShootInchargeApproval,
   canEditClientApproval,
+  canEditShootCompleted = false,
   lockDetails = false,
   showMutations = true,
   draftContent = null,
@@ -96,6 +97,7 @@ export function ProductionPlanContentsList({
                   canEditManagerApproval={canEditManagerApproval}
                   canEditShootInchargeApproval={canEditShootInchargeApproval}
                   canEditClientApproval={canEditClientApproval}
+                  canEditShootCompleted={canEditShootCompleted}
                   lockDetails={lockDetails}
                   showMutations={showMutations}
                   onSave={onSave}
@@ -114,6 +116,7 @@ export function ProductionPlanContentsList({
                   canEditManagerApproval={canEditManagerApproval}
                   canEditShootInchargeApproval={canEditShootInchargeApproval}
                   canEditClientApproval={canEditClientApproval}
+                  canEditShootCompleted={canEditShootCompleted}
                   lockDetails={lockDetails}
                   showMutations={showMutations}
                   isDraft

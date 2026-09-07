@@ -48,6 +48,8 @@ Content approvals on a plan item:
 | Client | `admin` or `manager` role on the team portal; the **linked client** on the client portal (their own plans only) |
 | Shoot incharge | the plan’s `shoot_incharge_id` only |
 
+**Shoot completed** toggle (per content): visible/editable only for `admin`, the plan’s `manager_id`, or the plan’s `shoot_incharge_id`. Enabled only after all three approvals are `approved`.
+
 ---
 
 ## Team portal
@@ -60,7 +62,7 @@ Content approvals on a plan item:
 | Projects Management | `/team-portal/projects-management` (SM) · `/team-portal/dev-projects-management` (dev) · `/team-portal/other-projects-management` (other) | Sidebar dropdown: Social Media, Development, Other Projects. All use optional `start_date` + `eta_date`. |
 | Postings calendar | `/team-portal/posts-management` | Month grid; client/project filters in the URL; day page reuses them |
 | Task Management | `/team-portal/tasks-management` | Project-scoped tasks; assign + dependencies; tabs All · Raised by me · Raised for me; detail + chat |
-| Production planner | `/team-portal/production-planner` | Plans per client (`?client=` filter); detail = script, reference link, approvals |
+| Production planner | `/team-portal/production-planner` | Plans per client (`?client=` filter); detail = shoot date, context, content pillar, script, reference link, approvals; shoot completed (admin / plan manager / shoot incharge, after all approvals) |
 | CRM | `/team-portal/crm` | Leads management; Contact (leads with score 5); lead detail notes, link attachments, open/closed activities (tasks, meetings, calls) |
 | Notifications | `/team-portal/notifications` | Inbox + executive **approval queue** |
 | Analytics | `/team-portal/analytics` | Agency activity |

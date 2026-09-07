@@ -36,11 +36,15 @@ export type ProductionPlanDialogProps = {
 
 export type ProductionPlanContentSavePayload = {
   itemName: string;
+  shootDate: string | null;
+  contextDescription: string | null;
+  contentPillar: string | null;
   script: string | null;
   referenceLink: string | null;
   managerApproval: ProductionPlanApprovalStatus;
   shootInchargeApproval: ProductionPlanApprovalStatus;
   clientApproval: ProductionPlanApprovalStatus;
+  shootCompleted: boolean;
 };
 
 export type ProductionPlanContentsListProps = {
@@ -50,6 +54,7 @@ export type ProductionPlanContentsListProps = {
   canEditManagerApproval: boolean;
   canEditShootInchargeApproval: boolean;
   canEditClientApproval: boolean;
+  canEditShootCompleted?: boolean;
   lockDetails?: boolean;
   showMutations?: boolean;
   draftContent?: ProductionPlanContent | null;
@@ -68,6 +73,7 @@ export type ProductionPlanContentCardProps = {
   canEditManagerApproval: boolean;
   canEditShootInchargeApproval: boolean;
   canEditClientApproval: boolean;
+  canEditShootCompleted?: boolean;
   lockDetails?: boolean;
   showMutations?: boolean;
   isDraft?: boolean;

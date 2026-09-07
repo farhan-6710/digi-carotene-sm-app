@@ -10,17 +10,25 @@ function toItemColumns(input: CreateProductionPlanContentInput) {
   return {
     production_plan_id: input.productionPlanId,
     item_name: input.itemName,
+    shoot_date: input.shootDate || null,
+    context_description: input.contextDescription || null,
+    content_pillar: input.contentPillar || null,
     script: input.script || null,
     reference_link: input.referenceLink || null,
     manager_approval: input.managerApproval || "pending",
     shoot_incharge_approval: input.shootInchargeApproval || "pending",
     client_approval: input.clientApproval || "pending",
+    shoot_completed: input.shootCompleted ?? false,
   };
 }
 
 function toItemUpdateColumns(input: UpdateProductionPlanContentInput) {
   const cols: Record<string, unknown> = {};
   if (input.itemName !== undefined) cols.item_name = input.itemName;
+  if (input.shootDate !== undefined) cols.shoot_date = input.shootDate;
+  if (input.contextDescription !== undefined)
+    cols.context_description = input.contextDescription;
+  if (input.contentPillar !== undefined) cols.content_pillar = input.contentPillar;
   if (input.script !== undefined) cols.script = input.script;
   if (input.referenceLink !== undefined) cols.reference_link = input.referenceLink;
   if (input.managerApproval !== undefined)
@@ -29,6 +37,8 @@ function toItemUpdateColumns(input: UpdateProductionPlanContentInput) {
     cols.shoot_incharge_approval = input.shootInchargeApproval;
   if (input.clientApproval !== undefined)
     cols.client_approval = input.clientApproval;
+  if (input.shootCompleted !== undefined)
+    cols.shoot_completed = input.shootCompleted;
   return cols;
 }
 

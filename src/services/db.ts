@@ -185,11 +185,15 @@ const PRODUCTION_PLAN_ITEM_SELECT = `
   id,
   production_plan_id,
   item_name,
+  shoot_date,
+  context_description,
+  content_pillar,
   script,
   reference_link,
   manager_approval,
   shoot_incharge_approval,
   client_approval,
+  shoot_completed,
   created_at,
   updated_at
 `;

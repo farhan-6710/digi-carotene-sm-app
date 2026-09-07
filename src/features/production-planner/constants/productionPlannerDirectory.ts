@@ -30,3 +30,6 @@ export const productionPlanContentsListConfig = {
 
 /** Preview lines shown on content cards before truncating. */
 export const CONTENT_SCRIPT_PREVIEW_LINES = 8;
+export const CONTENT_CONTEXT_PREVIEW_LINES = 4;
+/** Short label — roughly 2–4 words. */
+export const CONTENT_PILLAR_MAX_LENGTH = 40;
