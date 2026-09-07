@@ -40,15 +40,23 @@ Deleting a team member resets linked profiles to `role = user`.
 **Assigned project** = SM: `sm_projects.manager_id` **or** active `project_team_members`; Dev: `dev_projects.manager_id` **or** active `dev_project_team_members`; Other: `other_projects.manager_id` **or** active `other_project_team_members`.  
 **Assigned plan** = plan manager, shoot incharge, **or** active `production_plan_team_members`. Assigned people can add/edit **content** on that plan; creating/editing the plan record stays **admin**.
 
+### Admin / manager override (required for new features)
+
+Wherever an **executive** can perform an action — or a person-role executives often hold (e.g. plan **shoot incharge**) controls an action — **`admin` and `manager` must be able to do it too**.
+
+- Use `isAdminOrManagerRole(role)` from `src/shared/utils/rbac.ts` when wiring those gates.
+- Do **not** leave executive-only or shoot-incharge-only controls that lock out admin/manager.
+- Admins/managers may still have **broader** control (e.g. skip backdated-post approval that executives need).
+
 Content approvals on a plan item:
 
 | Dropdown | Who can change it |
 |----------|-------------------|
 | Manager/Admin | `admin` or `manager` role |
 | Client | `admin` or `manager` role on the team portal; the **linked client** on the client portal (their own plans only) |
-| Shoot incharge | the plan’s `shoot_incharge_id` only |
+| Shoot incharge | `admin` or `manager` role, **or** the plan’s `shoot_incharge_id` |
 
-**Shoot completed** toggle (per content): visible/editable only for `admin`, the plan’s `manager_id`, or the plan’s `shoot_incharge_id`. Enabled only after all three approvals are `approved`.
+**Shoot completed** toggle (per content): visible/editable for `admin` or `manager` role, the plan’s `manager_id`, or the plan’s `shoot_incharge_id`. Enabled only after all three approvals are `approved`.
 
 ---
 
@@ -62,7 +70,7 @@ Content approvals on a plan item:
 | Projects Management | `/team-portal/projects-management` (SM) · `/team-portal/dev-projects-management` (dev) · `/team-portal/other-projects-management` (other) | Sidebar dropdown: Social Media, Development, Other Projects. All use optional `start_date` + `eta_date`. |
 | Postings calendar | `/team-portal/posts-management` | Month grid; client/project filters in the URL; day page reuses them |
 | Task Management | `/team-portal/tasks-management` | Project-scoped tasks; assign + dependencies; tabs All · Raised by me · Raised for me; detail + chat |
-| Production planner | `/team-portal/production-planner` | Plans per client (`?client=` filter); detail = shoot date, context, content pillar, script, reference link, approvals; shoot completed (admin / plan manager / shoot incharge, after all approvals) |
+| Production planner | `/team-portal/production-planner` | Plans per client (`?client=` filter); detail = shoot date, context, content pillar, script, reference link, approvals; shoot completed (admin / manager / plan manager / shoot incharge, after all approvals) |
 | CRM | `/team-portal/crm` | Leads management; Contact (leads with score 5); lead detail notes, link attachments, open/closed activities (tasks, meetings, calls) |
 | Notifications | `/team-portal/notifications` | Inbox + executive **approval queue** |
 | Analytics | `/team-portal/analytics` | Agency activity |

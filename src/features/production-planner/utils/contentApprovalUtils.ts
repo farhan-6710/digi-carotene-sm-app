@@ -3,6 +3,7 @@ import type {
   ProductionPlanApprovalStatus,
 } from "@/features/production-planner/types/types";
 import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
+import { isAdminOrManagerRole } from "@/shared/utils/rbac";
 
 /** Worst status across approvers — rejected > pending > approved. */
 export function getOverallApprovalStatus(
@@ -46,18 +47,28 @@ export function formatContentIndex(index: number): string {
 export function canEditManagerOrClientApproval(
   role: TeamMemberRole | null,
 ): boolean {
-  return role === "admin" || role === "manager";
+  return isAdminOrManagerRole(role);
 }
 
-/** Admin, this plan's manager, or this plan's shoot incharge. */
+/** Admin/manager, or this plan's shoot incharge. */
+export function canEditShootInchargeApproval(
+  role: TeamMemberRole | null,
+  teamMemberId: string | null,
+  plan: Pick<ProductionPlan, "shoot_incharge_id"> | null,
+): boolean {
+  if (isAdminOrManagerRole(role)) return true;
+  if (!plan || !teamMemberId) return false;
+  return teamMemberId === plan.shoot_incharge_id;
+}
+
+/** Admin/manager, this plan's manager, or this plan's shoot incharge. */
 export function canEditShootCompleted(
   role: TeamMemberRole | null,
   teamMemberId: string | null,
   plan: Pick<ProductionPlan, "manager_id" | "shoot_incharge_id"> | null,
 ): boolean {
-  if (!plan) return false;
-  if (role === "admin") return true;
-  if (!teamMemberId) return false;
+  if (isAdminOrManagerRole(role)) return true;
+  if (!plan || !teamMemberId) return false;
   return (
     teamMemberId === plan.manager_id ||
     teamMemberId === plan.shoot_incharge_id

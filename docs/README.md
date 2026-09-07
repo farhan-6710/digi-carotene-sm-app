@@ -109,7 +109,7 @@ scripts/
 - Target ~120 lines per file; split when larger. Named exports.
 - Toasts: `showToast("success" \| "error" \| "info", message)` after mutations.
 - Destructive actions go through `ConfirmationModal`.
-- Frontend RBAC: `src/shared/utils/rbac.ts` from `team_members.team_role`. Do not sprinkle `role === "admin"`.
+- Frontend RBAC: `src/shared/utils/rbac.ts` from `team_members.team_role`. Do not sprinkle `role === "admin"`. Wherever executives (or shoot incharge) control an action, admin and manager must too (`isAdminOrManagerRole`) — see [auth-and-features.md](./auth-and-features.md).
 - Schema change → **new** `scripts/migrations/00N_*.sql`. Never edit old migrations.
 - **Must follow:** SQL queries as simple as possible; no massive DB operations; beginner-friendly V1. Prefer flat tables + simple filters over RPCs/triggers/audit chains unless unavoidable.
 

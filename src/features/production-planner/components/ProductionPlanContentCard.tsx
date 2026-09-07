@@ -79,24 +79,15 @@ export function ProductionPlanContentCard({
   }, [content, isEditing]);
 
   const overallStatus = getOverallApprovalStatus(
-    content.manager_approval,
-    content.shoot_incharge_approval,
-    content.client_approval,
+    managerApproval,
+    shootInchargeApproval,
+    clientApproval,
   );
 
-  const activeManagerApproval = isEditing
-    ? managerApproval
-    : content.manager_approval;
-  const activeShootInchargeApproval = isEditing
-    ? shootInchargeApproval
-    : content.shoot_incharge_approval;
-  const activeClientApproval = isEditing
-    ? clientApproval
-    : content.client_approval;
   const allApprovalsDone = areAllContentApprovalsApproved(
-    activeManagerApproval,
-    activeShootInchargeApproval,
-    activeClientApproval,
+    managerApproval,
+    shootInchargeApproval,
+    clientApproval,
   );
   const canToggleShootCompleted =
     canEditShootCompleted && allApprovalsDone && !isDraft;
@@ -114,26 +105,36 @@ export function ProductionPlanContentCard({
     setShootCompleted(content.shoot_completed);
   };
 
-  const buildPayload = (nextShootCompleted = shootCompleted) => ({
-    itemName: lockDetails ? content.item_name : itemName.trim(),
-    shootDate: lockDetails
-      ? content.shoot_date
-      : shootDate.trim() || null,
-    contextDescription: lockDetails
-      ? content.context_description
-      : contextDescription.trim() || null,
-    contentPillar: lockDetails
-      ? content.content_pillar
-      : contentPillar.trim() || null,
-    script: lockDetails ? content.script : script.trim() || null,
-    referenceLink: lockDetails
-      ? content.reference_link
-      : referenceLink.trim() || null,
-    managerApproval,
-    shootInchargeApproval,
-    clientApproval,
+  const buildPayload = (overrides?: {
+    managerApproval?: ProductionPlanApprovalStatus;
+    shootInchargeApproval?: ProductionPlanApprovalStatus;
+    clientApproval?: ProductionPlanApprovalStatus;
+    shootCompleted?: boolean;
+  }) => ({
+    itemName: lockDetails || !isEditing ? content.item_name : itemName.trim(),
+    shootDate:
+      lockDetails || !isEditing
+        ? content.shoot_date
+        : shootDate.trim() || null,
+    contextDescription:
+      lockDetails || !isEditing
+        ? content.context_description
+        : contextDescription.trim() || null,
+    contentPillar:
+      lockDetails || !isEditing
+        ? content.content_pillar
+        : contentPillar.trim() || null,
+    script: lockDetails || !isEditing ? content.script : script.trim() || null,
+    referenceLink:
+      lockDetails || !isEditing
+        ? content.reference_link
+        : referenceLink.trim() || null,
+    managerApproval: overrides?.managerApproval ?? managerApproval,
+    shootInchargeApproval:
+      overrides?.shootInchargeApproval ?? shootInchargeApproval,
+    clientApproval: overrides?.clientApproval ?? clientApproval,
     shootCompleted: canEditShootCompleted
-      ? nextShootCompleted
+      ? (overrides?.shootCompleted ?? shootCompleted)
       : content.shoot_completed,
   });
 
@@ -162,6 +163,40 @@ export function ProductionPlanContentCard({
     }
   };
 
+  const handleApprovalChange = async (
+    field: "manager" | "shootIncharge" | "client",
+    status: ProductionPlanApprovalStatus,
+  ) => {
+    const nextManager =
+      field === "manager" ? status : managerApproval;
+    const nextShootIncharge =
+      field === "shootIncharge" ? status : shootInchargeApproval;
+    const nextClient = field === "client" ? status : clientApproval;
+
+    if (field === "manager") setManagerApproval(status);
+    else if (field === "shootIncharge") setShootInchargeApproval(status);
+    else setClientApproval(status);
+
+    if (isEditing || isDraft) return;
+    if (isSaving) return;
+
+    setIsSaving(true);
+    try {
+      await onSave(
+        content.id,
+        buildPayload({
+          managerApproval: nextManager,
+          shootInchargeApproval: nextShootIncharge,
+          clientApproval: nextClient,
+        }),
+      );
+    } catch {
+      resetForm();
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleShootCompletedChange = async (checked: boolean) => {
     if (!canToggleShootCompleted || isSaving) return;
     if (isEditing) {
@@ -170,7 +205,7 @@ export function ProductionPlanContentCard({
     }
     setIsSaving(true);
     try {
-      await onSave(content.id, buildPayload(checked));
+      await onSave(content.id, buildPayload({ shootCompleted: checked }));
       setShootCompleted(checked);
     } catch {
       setShootCompleted(content.shoot_completed);
@@ -366,24 +401,30 @@ export function ProductionPlanContentCard({
           <div className="grid gap-3 sm:grid-cols-3">
             <ApprovalField
               label="Manager/Admin"
-              status={activeManagerApproval}
-              isEditing={isEditing}
-              disabled={isSaving || !canEditManagerApproval}
-              onChange={setManagerApproval}
+              status={managerApproval}
+              canChange={canEditManagerApproval}
+              disabled={isSaving}
+              onChange={(status) => {
+                void handleApprovalChange("manager", status);
+              }}
             />
             <ApprovalField
               label="Shoot Incharge"
-              status={activeShootInchargeApproval}
-              isEditing={isEditing}
-              disabled={isSaving || !canEditShootInchargeApproval}
-              onChange={setShootInchargeApproval}
+              status={shootInchargeApproval}
+              canChange={canEditShootInchargeApproval}
+              disabled={isSaving}
+              onChange={(status) => {
+                void handleApprovalChange("shootIncharge", status);
+              }}
             />
             <ApprovalField
               label="Client"
-              status={activeClientApproval}
-              isEditing={isEditing}
-              disabled={isSaving || !canEditClientApproval}
-              onChange={setClientApproval}
+              status={clientApproval}
+              canChange={canEditClientApproval}
+              disabled={isSaving}
+              onChange={(status) => {
+                void handleApprovalChange("client", status);
+              }}
             />
           </div>
 
@@ -506,7 +547,7 @@ export function ProductionPlanContentCard({
 type ApprovalFieldProps = {
   label: string;
   status: ProductionPlanApprovalStatus;
-  isEditing: boolean;
+  canChange: boolean;
   disabled: boolean;
   onChange: (status: ProductionPlanApprovalStatus) => void;
 };
@@ -514,7 +555,7 @@ type ApprovalFieldProps = {
 function ApprovalField({
   label,
   status,
-  isEditing,
+  canChange,
   disabled,
   onChange,
 }: ApprovalFieldProps) {
@@ -522,13 +563,13 @@ function ApprovalField({
     <div
       className={cn(
         "rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5",
-        isEditing && disabled && "opacity-60",
+        canChange && disabled && "opacity-60",
       )}
     >
       <p className="mb-2 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
         {label}
       </p>
-      {isEditing ? (
+      {canChange ? (
         <ApprovalStatusSelect
           value={status}
           onChange={onChange}

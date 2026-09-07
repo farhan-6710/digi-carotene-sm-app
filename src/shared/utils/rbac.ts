@@ -4,6 +4,10 @@ import type { TeamMemberRole } from "@/features/team-management/constants/teamMe
 // logged-in user's `team_members.team_role`. Add a new role or resource here and
 // the whole app stays in sync — never sprinkle `role === "admin"` checks
 // around components.
+//
+// Override rule: wherever an executive (or an executive-typical assignee such as
+// shoot incharge) can perform an action, `admin` and `manager` must be able to
+// as well. Use `isAdminOrManagerRole` for that inheritance.
 
 export type RbacResource =
   | "team"
@@ -33,6 +37,11 @@ const ROLE_RESOURCES: Record<TeamMemberRole, RbacResource[]> = {
   manager: ["clients", "projects", "posts", "tasks"],
   executive: ["posts", "tasks"],
 };
+
+/** Admin/manager inherit control of executive-controlled actions. */
+export function isAdminOrManagerRole(role: TeamMemberRole | null): boolean {
+  return role === "admin" || role === "manager";
+}
 
 export function can(role: TeamMemberRole | null, permission: Permission): boolean {
   if (!role) {

@@ -17,6 +17,7 @@ import type { ProductionPlanContent } from "@/features/production-planner/types/
 import {
   canEditManagerOrClientApproval,
   canEditShootCompleted,
+  canEditShootInchargeApproval,
 } from "@/features/production-planner/utils/contentApprovalUtils";
 import {
   createProductionPlanItem,
@@ -59,8 +60,11 @@ export function ProductionPlanDetailPage() {
 
   const canEditManagerApproval = canEditManagerOrClientApproval(teamRole);
   const canEditClientApproval = canEditManagerApproval;
-  const canEditShootInchargeApproval =
-    Boolean(teamMemberId) && teamMemberId === plan?.shoot_incharge_id;
+  const showShootInchargeApproval = canEditShootInchargeApproval(
+    teamRole,
+    teamMemberId,
+    plan,
+  );
   const showShootCompleted = canEditShootCompleted(
     teamRole,
     teamMemberId,
@@ -201,7 +205,7 @@ export function ProductionPlanDetailPage() {
         isLoading={false}
         canEdit={canEditContent}
         canEditManagerApproval={canEditManagerApproval}
-        canEditShootInchargeApproval={canEditShootInchargeApproval}
+        canEditShootInchargeApproval={showShootInchargeApproval}
         canEditClientApproval={canEditClientApproval}
         canEditShootCompleted={showShootCompleted}
         draftContent={draftContent}
