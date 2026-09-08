@@ -240,6 +240,10 @@ const ClientDevProjectDetailPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientDevProjectDetailPage"),
   "ClientDevProjectDetailPage",
 );
+const ClientOtherProjectDetailPage = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientOtherProjectDetailPage"),
+  "ClientOtherProjectDetailPage",
+);
 const ClientProductionPlannerPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientProductionPlannerPage"),
   "ClientProductionPlannerPage",
@@ -448,6 +452,10 @@ export const router = createBrowserRouter([
             path: "dev-projects/:projectId",
             element: <ClientDevProjectDetailPage />,
           },
+          {
+            path: "other-projects/:projectId",
+            element: <ClientOtherProjectDetailPage />,
+          },
           { path: "posts", element: <ClientPostsPage /> },
           { path: "tasks-management", element: <ClientTasksPage /> },
           {
@@ -491,10 +499,6 @@ export const router = createBrowserRouter([
               {
                 path: "campaigns/:campaignId/adsets/:adsetId/ads/:adId",
                 element: <GrowthAdDetailPage />,
-              },
-              {
-                path: "custom-report",
-                element: <GrowthCustomReportBuilderPage />,
               },
               { path: "reports", element: <GrowthReportsPage /> },
             ],

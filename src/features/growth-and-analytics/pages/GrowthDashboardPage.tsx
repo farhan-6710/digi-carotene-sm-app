@@ -31,7 +31,7 @@ export function GrowthDashboardPage() {
   return (
     <PageContent>
       <PageHeader
-        heading="Dashboard Overview"
+        heading="Dashboard"
         description="Audience growth, reach, and interactions for the selected account."
         actions={
           hasAccounts ? (

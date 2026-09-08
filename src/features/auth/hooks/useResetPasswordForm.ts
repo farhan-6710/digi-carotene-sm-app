@@ -12,6 +12,7 @@ export function useResetPasswordForm() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = useCallback(
@@ -40,8 +41,11 @@ export function useResetPasswordForm() {
       }
 
       clearPasswordRecovery();
-      showToast("success", "Password updated. You can sign in with your new password.");
-      navigate(homePath, { replace: true });
+      setSuccess(true);
+      showToast("success", "Password changed successfully.");
+      window.setTimeout(() => {
+        navigate(homePath, { replace: true });
+      }, 1200);
     },
     [password, confirm, clearPasswordRecovery, homePath, navigate],
   );
@@ -52,6 +56,7 @@ export function useResetPasswordForm() {
     confirm,
     setConfirm,
     error,
+    success,
     isSubmitting,
     handleSubmit,
   };

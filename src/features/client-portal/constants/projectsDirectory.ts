@@ -17,36 +17,32 @@ export const clientProjectsColumns: DirectoryTableColumn[] = [
 
 export const clientProjectsDirectoryConfig = {
   title: "Projects",
-  description: "Social media and development projects for your brand.",
+  description:
+    "Social media, development, and other projects for your brand.",
   gridClass: CLIENT_PROJECTS_GRID_CLASS,
   columns: clientProjectsColumns,
   emptyMessage: "No projects for your brand yet.",
 } as const;
 
+type PortalProjectSource = {
+  id: string;
+  project_name: string;
+  is_active: boolean;
+  team_members: { member_name: string } | null;
+};
+
 export function buildClientPortalProjectRows(
-  smProjects: Array<{
-    id: string;
-    project_name: string;
-    is_active: boolean;
-    socials: ClientPortalProjectRow["socials"];
-    team_members: { member_name: string } | null;
-  }>,
+  smProjects: Array<
+    PortalProjectSource & { socials: ClientPortalProjectRow["socials"] }
+  >,
   smDetailPath: (id: string) => string,
-  devProjects: Array<{
-    id: string;
-    project_name: string;
-    is_active: boolean;
-    team_members: { member_name: string } | null;
-  }>,
+  devProjects: PortalProjectSource[],
   devDetailPath: (id: string) => string,
+  otherProjects: PortalProjectSource[],
+  otherDetailPath: (id: string) => string,
 ): ClientPortalProjectRow[] {
   const toRow = (
-    project: {
-      id: string;
-      project_name: string;
-      is_active: boolean;
-      team_members: { member_name: string } | null;
-    },
+    project: PortalProjectSource,
     kind: ProjectKind,
     detailPath: string,
     socials: ClientPortalProjectRow["socials"],
@@ -66,6 +62,9 @@ export function buildClientPortalProjectRows(
     ),
     ...devProjects.map((project) =>
       toRow(project, "dev", devDetailPath(project.id), null),
+    ),
+    ...otherProjects.map((project) =>
+      toRow(project, "other", otherDetailPath(project.id), null),
     ),
   ];
 }

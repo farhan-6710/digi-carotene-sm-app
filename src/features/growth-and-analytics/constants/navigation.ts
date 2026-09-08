@@ -18,6 +18,8 @@ export type BuildGrowthNavOptions = {
   includeContentPerformance?: boolean;
   /** Paid ads campaign analytics. Default true. */
   includeCampaignAnalytics?: boolean;
+  /** Custom report builder. Default true (team only in practice). */
+  includeCustomReportBuilder?: boolean;
 };
 
 export function buildGrowthNav(
@@ -28,6 +30,7 @@ export function buildGrowthNav(
     includeManageAccounts = true,
     includeContentPerformance = true,
     includeCampaignAnalytics = true,
+    includeCustomReportBuilder = true,
   } = options;
 
   const items: ShellNavItem[] = [
@@ -50,18 +53,19 @@ export function buildGrowthNav(
     });
   }
 
-  items.push(
-    {
+  if (includeCustomReportBuilder) {
+    items.push({
       label: "Custom Report Builder",
       to: `${basePath}/custom-report`,
       icon: "customReport",
-    },
-    {
-      label: "Reports",
-      to: `${basePath}/reports`,
-      icon: "reportLibrary",
-    },
-  );
+    });
+  }
+
+  items.push({
+    label: "Reports",
+    to: `${basePath}/reports`,
+    icon: "reportLibrary",
+  });
 
   if (includeManageAccounts) {
     items.push({
@@ -88,6 +92,7 @@ export function buildClientGrowthNav(options: {
 
   return buildGrowthNav(clientGrowthBasePath, {
     includeManageAccounts: false,
+    includeCustomReportBuilder: false,
     includeContentPerformance: !filterByType || hasOrganic,
     includeCampaignAnalytics: !filterByType || hasAds,
   });

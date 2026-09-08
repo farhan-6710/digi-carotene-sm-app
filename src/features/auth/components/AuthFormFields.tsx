@@ -6,6 +6,7 @@ import type {
 } from "@/features/auth/types/components";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
+import { PasswordInput } from "@/shared/ui/PasswordInput";
 
 export function AuthEmailField({
   id,
@@ -48,9 +49,8 @@ export function AuthPasswordField({
       <Label htmlFor={id} className={authFormStyles.label}>
         {label}
       </Label>
-      <Input
+      <PasswordInput
         id={id}
-        type="password"
         autoComplete={autoComplete}
         placeholder={placeholder}
         value={value}

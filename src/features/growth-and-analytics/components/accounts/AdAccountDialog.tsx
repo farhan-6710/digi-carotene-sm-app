@@ -14,6 +14,7 @@ import {
 } from "@/shared/ui/dialog";
 
 import { ClientCombobox } from "@/features/clients-management/components/ClientCombobox";
+import { PasswordInput } from "@/shared/ui/PasswordInput";
 
 import { GrowthStaticComboBox } from "../GrowthStaticComboBox";
 import { currencyOptions } from "../../constants/accountsData";
@@ -103,16 +104,18 @@ export function AdAccountDialog({
 
             <label className="block text-xs font-semibold text-muted-foreground">
               Access token
-              <input
-                type="password"
+              <PasswordInput
                 value={values.accessToken}
-                onChange={(event) => onFieldChange("accessToken", event.target.value)}
+                onChange={(event) =>
+                  onFieldChange("accessToken", event.target.value)
+                }
                 placeholder={
                   isEditing
                     ? "Paste a new token to refresh from Meta"
                     : "Paste the system user access token"
                 }
                 className={formFieldClassName}
+                containerClassName="mt-1"
               />
             </label>
           </div>

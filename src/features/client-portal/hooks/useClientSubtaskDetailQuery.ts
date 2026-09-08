@@ -2,7 +2,7 @@ import { useCallback } from "react";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import type { Subtask, Task } from "@/features/tasks-management/types/types";
-import { canClientAccessTask } from "@/features/tasks-management/utils/taskAccessUtils";
+import { canClientAccessTask, canClientSeeSubtask } from "@/features/tasks-management/utils/taskAccessUtils";
 import { getSubtaskById } from "@/services/subtasksService";
 import { fetchTaskById } from "@/services/tasksService";
 import { useFetch } from "@/shared/hooks/useFetch";
@@ -30,6 +30,7 @@ export function useClientSubtaskDetailQuery(
 
     const subtask = await getSubtaskById(subtaskId);
     if (subtask.parent_task_id !== parentTask.id) return EMPTY;
+    if (!canClientSeeSubtask(subtask, clientId)) return EMPTY;
 
     return { parentTask, subtask };
   }, [clientId, subtaskId, taskId]);

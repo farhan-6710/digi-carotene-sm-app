@@ -4,6 +4,7 @@ import { ClientProjectsTable } from "@/features/client-portal/components/ClientP
 import { buildClientPortalProjectRows } from "@/features/client-portal/constants/projectsDirectory";
 import {
   buildClientDevProjectDetailPath,
+  buildClientOtherProjectDetailPath,
   buildClientProjectDetailPath,
 } from "@/features/client-portal/constants/routes";
 import { useClientPortal } from "@/features/client-portal/hooks/useClientPortal";
@@ -12,7 +13,8 @@ import { matchesListingSearch } from "@/shared/utils/listingSearch";
 import { projectKindLabel } from "@/features/projects-management/utils/projectKindUtils";
 
 export function ClientProjectsPage() {
-  const { projects, devProjects, loading, error } = useClientPortal();
+  const { projects, devProjects, otherProjects, loading, error } =
+    useClientPortal();
   const [searchQuery, setSearchQuery] = useState("");
 
   const rows = useMemo(
@@ -22,8 +24,10 @@ export function ClientProjectsPage() {
         buildClientProjectDetailPath,
         devProjects,
         buildClientDevProjectDetailPath,
+        otherProjects,
+        buildClientOtherProjectDetailPath,
       ),
-    [devProjects, projects],
+    [devProjects, otherProjects, projects],
   );
 
   const filteredProjects = useMemo(
@@ -41,7 +45,7 @@ export function ClientProjectsPage() {
   return (
     <PageShell
       heading="Projects"
-      description="View-only list of your brand’s social media and development projects."
+      description="View-only list of your brand’s social media, development, and other projects."
       error={error && !loading ? error : null}
     >
       <ClientProjectsTable

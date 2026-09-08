@@ -1,6 +1,13 @@
 import { Link } from "react-router";
 
-import { buildDevProjectDetailPath, DEV_PROJECTS_MANAGEMENT_PATH } from "@/features/development-projects/constants/routes";
+import {
+  buildDevProjectDetailPath,
+  DEV_PROJECTS_MANAGEMENT_PATH,
+} from "@/features/development-projects/constants/routes";
+import {
+  buildOtherProjectDetailPath,
+  OTHER_PROJECTS_MANAGEMENT_PATH,
+} from "@/features/other-projects/constants/routes";
 import {
   buildProjectDetailPath,
   PROJECTS_MANAGEMENT_PATH,
@@ -11,16 +18,18 @@ import { projectKindLabel } from "@/features/projects-management/utils/projectKi
 export function ClientProjectsSection({
   projects,
   devProjects,
+  otherProjects,
   isLoading,
 }: ClientProjectsSectionProps) {
-  const hasAny = projects.length > 0 || devProjects.length > 0;
+  const hasAny =
+    projects.length > 0 || devProjects.length > 0 || otherProjects.length > 0;
 
   return (
     <div className="rounded-2xl border border-border bg-card shadow-sm">
       <div className="border-b border-border px-6 py-5">
         <div className="text-sm font-semibold">Projects</div>
         <p className="mt-1 text-xs text-muted-foreground">
-          Social media and development projects linked to this client.
+          Social media, development, and other projects linked to this client.
         </p>
       </div>
 
@@ -36,13 +45,20 @@ export function ClientProjectsSection({
             className="text-primary hover:underline"
           >
             Create a social media project
-          </Link>{" "}
-          or{" "}
+          </Link>
+          ,{" "}
           <Link
             to={DEV_PROJECTS_MANAGEMENT_PATH}
             className="text-primary hover:underline"
           >
             a development project
+          </Link>
+          , or{" "}
+          <Link
+            to={OTHER_PROJECTS_MANAGEMENT_PATH}
+            className="text-primary hover:underline"
+          >
+            another project
           </Link>
           .
         </div>
@@ -98,6 +114,35 @@ export function ClientProjectsSection({
                     </div>
                     <div className="mt-1 text-xs text-muted-foreground">
                       {projectKindLabel("dev")} · Manager:{" "}
+                      {project.team_members?.member_name ?? "—"}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : null}
+
+          {otherProjects.length > 0 ? (
+            <>
+              <div className="bg-muted/30 px-6 py-2 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
+                Other projects
+              </div>
+              {otherProjects.map((project) => (
+                <div
+                  key={`other-${project.id}`}
+                  className="flex flex-wrap items-center justify-between gap-3 px-6 py-4"
+                >
+                  <div>
+                    <div className="text-sm font-medium text-foreground">
+                      <Link
+                        to={buildOtherProjectDetailPath(project.id)}
+                        className="hover:text-primary hover:underline"
+                      >
+                        {project.project_name}
+                      </Link>
+                    </div>
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      {projectKindLabel("other")} · Manager:{" "}
                       {project.team_members?.member_name ?? "—"}
                     </div>
                   </div>

@@ -73,14 +73,26 @@ export function canAccessTask(input: {
   return task.tagged_members.some((member) => member.id === teamMemberId);
 }
 
-/** Client portal: tasks that include this client as an assignee. */
+/** Client portal: assignee, dependency, or legacy client_id match. */
 export function canClientAccessTask(
   task: Task,
   clientId: string | null,
 ): boolean {
   if (!clientId) return false;
   if (task.client_id === clientId) return true;
+  if (task.dependency_client_id === clientId) return true;
   return task.assignees.some((assignee) => assignee.client_id === clientId);
+}
+
+/** Client portal: subtasks the client raised or is assigned to. */
+export function canClientSeeSubtask(
+  subtask: Subtask,
+  clientId: string | null,
+): boolean {
+  if (!clientId) return false;
+  if (subtask.created_by_client_id === clientId) return true;
+  if (subtask.assigned_to_client_id === clientId) return true;
+  return subtask.assignees.some((assignee) => assignee.client_id === clientId);
 }
 
 /** Anyone who can open the task detail can add a subtask. */

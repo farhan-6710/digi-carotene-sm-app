@@ -105,7 +105,7 @@ Visibility (team):
 - **Project manager** (`sm_projects.manager_id` or `dev_projects.manager_id`) — all tasks on projects they manage
 - **Everyone else** — raised by them, assigned to them, or listed as a dependency
 
-Visibility (client): tasks where `client_id` matches (i.e. assigned to that client).
+Visibility (client): tasks where this client is assignee (`client_id` / `task_assignees`), or listed as `dependency_client_id`.
 
 On create, notify the team assignee (if teammate), dependency members, project manager, and admins (excluding the raiser). Clients see the task in their portal list (no separate client inbox in V1).
 
@@ -113,23 +113,25 @@ Task detail includes DB-backed chat. Authors are a teammate **or** the task clie
 
 **Edit** — only the person who raised the task (team list pencil). Admins / PMs / assignees who did not raise it can still view and chat.
 
-**Subtasks** — full-width block below chat on task detail (team + client). Anyone who can open the task can add a subtask (title + description + assign to someone already on that task). Click a subtask title to open its detail page (full description + meta). Subtask **full edit/delete** is only for that subtask’s raiser; the **assignee** can update status (`pending` → `in_progress` → `completed`).
+**Subtasks** — full-width block below chat on task detail (team + client). Anyone who can open the task can add a subtask (title + description + assign to someone already on that task). Click a subtask title to open its detail page (full description + meta). Subtask **full edit/delete** is only for that subtask’s raiser; the **assignee** can update status (`pending` → `in_progress` → `completed`). On the client portal, only subtasks the client raised or is assigned to are listed.
 
 ---
 
 ## Client portal
 
-The brand sees only their own data (`profiles.client_id`). No team CRUD, no Manage Accounts.
+The brand sees only their own data (`profiles.client_id`). No team CRUD, no Manage Accounts. RLS scopes projects, tasks, messages, and subtasks the same way.
 
 | Area | Path | What |
 |------|------|------|
 | Dashboard | `/client-portal/dashboard` | Post stats, projects/plans counts, upcoming posts, socials |
-| Projects | `/client-portal/projects` | SM + Dev list; SM detail under `/projects/:id`, Dev under `/dev-projects/:id` (view-only) |
-| Task Management | `/client-portal/tasks-management` | Tasks that include this client; detail + chat |
+| Projects | `/client-portal/projects` | SM + Dev + Other list; detail under `/projects/:id`, `/dev-projects/:id`, `/other-projects/:id` (view-only) |
+| Task Management | `/client-portal/tasks-management` | Assignee or dependency tasks; detail + chat; filtered subtasks |
 | Posts | `/client-portal/posts` | Read-only post list with search |
 | Production planner | `/client-portal/production-planner` | Their plans; detail: **Client approval** dropdown only |
 | Growth | `/client-portal/growth-and-analytics` | Same charts as team, scoped to linked accounts; page-level account dropdown |
 | Account | `/client-portal/account` | Brand details, password |
+
+Forgot / reset password uses the shared `/auth` flow (email magic link → new + confirm password) for team and client.
 
 ---
 

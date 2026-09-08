@@ -33,6 +33,7 @@ export function ClientDetailPage() {
     client,
     projects,
     devProjects,
+    otherProjects,
     productionPlans,
     isLoading,
     error,
@@ -82,6 +83,7 @@ export function ClientDetailPage() {
       <ClientProjectsSection
         projects={projects}
         devProjects={devProjects}
+        otherProjects={otherProjects}
         isLoading={isLoading}
       />
 
