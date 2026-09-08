@@ -15,7 +15,7 @@ export const POST_APPROVALS_UPDATED_EVENT = "post-approvals-updated";
 export const postApprovalsDirectoryConfig = {
   title: "Approvals",
   description:
-    "Backdated posts from executives waiting for approve or reject.",
+    "Backdated posts from SM executives waiting for approve or reject.",
   gridClass:
     "grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.8fr)_5rem]",
   columns: [

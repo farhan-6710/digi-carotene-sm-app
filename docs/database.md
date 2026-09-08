@@ -57,7 +57,7 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 |-------|---------|
 | `profiles` | Auth user → portal (`role`: `team` / `client` / `user`) + `client_id` / `team_member_id` |
 | `clients` | Brand registry (`is_active`, primary/secondary contact name + mobile) |
-| `team_members` | Internal roster (`team_role`: `admin` / `manager` / `executive`) |
+| `team_members` | Internal roster (`team_role`: `admin` / `manager` / `sm_executive` / `editor`) |
 | `sm_projects` | Social media work + `socials` jsonb + `manager_id` + `start_date` / `eta_date` + `is_active` + `share_token` |
 | `dev_projects` | Development work: description, repo/staging/prod URLs, `start_date` / `eta_date`, `is_active` |
 | `other_projects` | Other client work: description, `start_date` / `eta_date`, `is_active` (no tech/URL fields) |

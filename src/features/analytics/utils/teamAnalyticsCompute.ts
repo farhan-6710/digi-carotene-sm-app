@@ -16,7 +16,8 @@ import type { TeamMember } from "@/features/team-management/types/types";
 import type { StatCardItem } from "@/shared/types/statsCards";
 
 const ROLE_COLORS: Record<TeamMemberRole, string> = {
-  executive: "var(--chart-1)",
+  sm_executive: "var(--chart-1)",
+  editor: "var(--chart-2)",
   manager: "var(--chart-3)",
   admin: "var(--chart-4)",
 };

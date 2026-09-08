@@ -8,6 +8,7 @@ import { PostStatusFilter } from "@/shared/ui/PostStatusFilter";
 export function ProjectPostsTable({
   posts,
   isLoading,
+  onOpenPost,
   onEditPost,
 }: ProjectPostsTableProps) {
   const {
@@ -40,6 +41,7 @@ export function ProjectPostsTable({
         <ProjectPostsTableRow
           key={post.id}
           post={post}
+          onOpenPost={onOpenPost}
           onEditPost={onEditPost}
         />
       ))}

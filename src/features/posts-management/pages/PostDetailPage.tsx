@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import { ArrowLeft, Pencil } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router";
 
+import { PostContentDetails } from "@/features/posts-management/components/PostContentDetails";
 import { PostDetailSummary } from "@/features/posts-management/components/PostDetailSummary";
 import { PostDialog } from "@/features/posts-management/components/PostDialog";
 import {
@@ -40,7 +41,7 @@ export function PostDetailPage() {
   const { postId = "" } = useParams();
   const navigate = useNavigate();
   const { can } = usePermissions();
-  const { post, isLoading, error, setError, reload } =
+  const { post, contentView, isLoading, error, setError, reload } =
     usePostDetailQuery(postId);
 
   const scheduleDate = post
@@ -126,8 +127,9 @@ export function PostDetailPage() {
 
       {error ? <ErrorBanner message={error} /> : null}
 
-      <div className="mx-auto w-full max-w-3xl">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
         <PostDetailSummary post={post} />
+        {contentView ? <PostContentDetails content={contentView} /> : null}
       </div>
 
       <PostDialog

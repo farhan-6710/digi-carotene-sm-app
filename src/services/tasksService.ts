@@ -9,8 +9,11 @@ import {
   type TaskRow,
 } from "@/features/tasks-management/utils/taskDb";
 import { createNotifications } from "@/services/notificationsService";
+import { fetchAssignedDevProjectIds } from "@/services/devProjectsService";
 import { DB } from "@/services/db";
+import { fetchAssignedProjectIds } from "@/services/projectsService";
 import { supabase } from "@/services/supabaseClient";
+import { isAdminOrManagerRole } from "@/shared/utils/rbac";
 
 async function fetchAdminTeamMemberIds(): Promise<string[]> {
   const { data, error } = await supabase
@@ -22,26 +25,6 @@ async function fetchAdminTeamMemberIds(): Promise<string[]> {
   return (data ?? [])
     .map((row) => (typeof row.id === "string" ? row.id : ""))
     .filter(Boolean);
-}
-
-async function fetchManagedProjectIds(managerId: string): Promise<string[]> {
-  const { data, error } = await supabase
-    .from(DB.PROJECTS.TABLE)
-    .select("id")
-    .eq("manager_id", managerId);
-
-  if (error) throw error;
-  return (data ?? []).map((row) => row.id);
-}
-
-async function fetchManagedDevProjectIds(managerId: string): Promise<string[]> {
-  const { data, error } = await supabase
-    .from(DB.DEV_PROJECTS.TABLE)
-    .select("id")
-    .eq("manager_id", managerId);
-
-  if (error) throw error;
-  return (data ?? []).map((row) => row.id);
 }
 
 async function fetchTaggedTaskIds(teamMemberId: string): Promise<string[]> {
@@ -262,6 +245,53 @@ async function notifyTaskCreated(
   );
 }
 
+async function fetchTasksOnProjects(
+  smProjectIds: string[],
+  devProjectIds: string[],
+): Promise<Task[]> {
+  if (smProjectIds.length === 0 && devProjectIds.length === 0) return [];
+
+  const filters: string[] = [];
+  if (smProjectIds.length > 0) {
+    filters.push(`project_id.in.(${smProjectIds.join(",")})`);
+  }
+  if (devProjectIds.length > 0) {
+    filters.push(`dev_project_id.in.(${devProjectIds.join(",")})`);
+  }
+
+  const { data, error } = await supabase
+    .from(DB.TASKS.TABLE)
+    .select(DB.TASKS.SELECT)
+    .or(filters.join(","))
+    .order("updated_at", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []).map((row) => mapTaskRow(row as unknown as TaskRow));
+}
+
+async function fetchManagedProjectIds(
+  teamMemberId: string,
+): Promise<{ sm: string[]; dev: string[] }> {
+  const [smResult, devResult] = await Promise.all([
+    supabase
+      .from(DB.PROJECTS.TABLE)
+      .select("id")
+      .eq("manager_id", teamMemberId),
+    supabase
+      .from(DB.DEV_PROJECTS.TABLE)
+      .select("id")
+      .eq("manager_id", teamMemberId),
+  ]);
+
+  if (smResult.error) throw smResult.error;
+  if (devResult.error) throw devResult.error;
+
+  return {
+    sm: (smResult.data ?? []).map((row) => row.id),
+    dev: (devResult.data ?? []).map((row) => row.id),
+  };
+}
+
 export async function fetchTasksForMember(
   teamRole: TeamMemberRole | null,
   teamMemberId: string | null,
@@ -278,32 +308,17 @@ export async function fetchTasksForMember(
     return (data ?? []).map((row) => mapTaskRow(row as unknown as TaskRow));
   }
 
-  if (teamRole === "manager") {
-    const [managedSmIds, managedDevIds] = await Promise.all([
-      fetchManagedProjectIds(teamMemberId),
-      fetchManagedDevProjectIds(teamMemberId),
+  // Team-role managers: all tasks on assigned SM/Dev projects (manager_id or team).
+  if (isAdminOrManagerRole(teamRole)) {
+    const [smProjectIds, devProjectIds] = await Promise.all([
+      fetchAssignedProjectIds(teamMemberId),
+      fetchAssignedDevProjectIds(teamMemberId),
     ]);
-    if (managedSmIds.length === 0 && managedDevIds.length === 0) return [];
-
-    const filters: string[] = [];
-    if (managedSmIds.length > 0) {
-      filters.push(`project_id.in.(${managedSmIds.join(",")})`);
-    }
-    if (managedDevIds.length > 0) {
-      filters.push(`dev_project_id.in.(${managedDevIds.join(",")})`);
-    }
-
-    const { data, error } = await supabase
-      .from(DB.TASKS.TABLE)
-      .select(DB.TASKS.SELECT)
-      .or(filters.join(","))
-      .order("updated_at", { ascending: false });
-
-    if (error) throw error;
-    return (data ?? []).map((row) => mapTaskRow(row as unknown as TaskRow));
+    return fetchTasksOnProjects(smProjectIds, devProjectIds);
   }
 
-  const [raisedResult, assignedIds, taggedIds] = await Promise.all([
+  // Executives (and others): raised / assigned / deps, plus projects they manage.
+  const [raisedResult, assignedIds, taggedIds, managed] = await Promise.all([
     supabase
       .from(DB.TASKS.TABLE)
       .select(DB.TASKS.SELECT)
@@ -311,6 +326,7 @@ export async function fetchTasksForMember(
       .order("updated_at", { ascending: false }),
     fetchAssignedTaskIdsForMember(teamMemberId),
     fetchTaggedTaskIds(teamMemberId),
+    fetchManagedProjectIds(teamMemberId),
   ]);
 
   if (raisedResult.error) throw raisedResult.error;
@@ -318,10 +334,13 @@ export async function fetchTasksForMember(
   const raised = (raisedResult.data ?? []).map((row) =>
     mapTaskRow(row as unknown as TaskRow),
   );
-  const assigned = await fetchTasksByIds(assignedIds);
-  const tagged = await fetchTasksByIds(taggedIds);
+  const [assigned, tagged, managedTasks] = await Promise.all([
+    fetchTasksByIds(assignedIds),
+    fetchTasksByIds(taggedIds),
+    fetchTasksOnProjects(managed.sm, managed.dev),
+  ]);
 
-  return mergeTasksById([raised, assigned, tagged]);
+  return mergeTasksById([raised, assigned, tagged, managedTasks]);
 }
 
 export async function createTask(

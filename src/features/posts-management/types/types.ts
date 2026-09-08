@@ -29,6 +29,14 @@ export type Post = {
   posted_date: string | null;
   posted_time: string | null;
   status: StatusKey;
+  /** Copied from production plan content when moved to the calendar. */
+  content_pillar: string | null;
+  context_description: string | null;
+  script: string | null;
+  reference_link: string | null;
+  shoot_date: string | null;
+  shoot_notes: string | null;
+  source_production_plan_item_id: string | null;
   created_at: string;
 };
 

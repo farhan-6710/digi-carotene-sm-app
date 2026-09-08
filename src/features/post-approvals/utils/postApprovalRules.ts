@@ -5,7 +5,7 @@ export function requiresBackdatedPostApproval(
   teamRole: TeamMemberRole | null,
   postingDateTime: { date: string; time: string },
 ): boolean {
-  if (teamRole !== "executive") {
+  if (teamRole !== "sm_executive") {
     return false;
   }
 

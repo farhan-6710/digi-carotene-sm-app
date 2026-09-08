@@ -68,6 +68,41 @@ export async function fetchProductionPlanItems(
   return (data ?? []) as ProductionPlanContent[];
 }
 
+/** Plan content that was moved to the postings calendar for this post. */
+export async function fetchProductionPlanItemByPostId(
+  postId: string,
+): Promise<ProductionPlanContent | null> {
+  if (!postId) return null;
+
+  const { data, error } = await supabase
+    .from(DB.PRODUCTION_PLAN_ITEMS.TABLE)
+    .select(DB.PRODUCTION_PLAN_ITEMS.SELECT)
+    .eq("moved_to_post_id", postId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+  return (data as ProductionPlanContent | null) ?? null;
+}
+
+export async function fetchProductionPlanItemById(
+  itemId: string,
+): Promise<ProductionPlanContent | null> {
+  if (!itemId) return null;
+
+  const { data, error } = await supabase
+    .from(DB.PRODUCTION_PLAN_ITEMS.TABLE)
+    .select(DB.PRODUCTION_PLAN_ITEMS.SELECT)
+    .eq("id", itemId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+  return (data as ProductionPlanContent | null) ?? null;
+}
+
 export async function createProductionPlanItem(
   input: CreateProductionPlanContentInput,
 ): Promise<ProductionPlanContent> {

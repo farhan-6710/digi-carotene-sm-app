@@ -128,6 +128,13 @@ export function useMoveContentsToPosts({
             },
             posted: null,
             status: "Not posted",
+            contentPillar: content.content_pillar,
+            contextDescription: content.context_description,
+            script: content.script,
+            referenceLink: content.reference_link,
+            shootDate: content.shoot_date,
+            shootNotes: content.shoot_notes,
+            sourceProductionPlanItemId: content.id,
           });
 
           await updateProductionPlanItem(contentId, {

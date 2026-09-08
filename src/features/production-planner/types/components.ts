@@ -84,6 +84,8 @@ export type ProductionPlanContentCardProps = {
   canEditShootCompleted?: boolean;
   lockDetails?: boolean;
   showMutations?: boolean;
+  /** Show full context/script without line clamp (e.g. post detail). */
+  expandDetails?: boolean;
   isDraft?: boolean;
   selectable?: boolean;
   selected?: boolean;

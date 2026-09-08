@@ -18,7 +18,7 @@ export async function fetchProfile(userId: string): Promise<Profile | null> {
   return (data as Profile | null) ?? null;
 }
 
-// Reads the role of a team member (admin, manager, executive, etc.).
+// Reads the role of a team member (admin, manager, sm_executive, editor).
 export async function fetchTeamRole(
   teamMemberId: string,
 ): Promise<TeamMemberRole | null> {

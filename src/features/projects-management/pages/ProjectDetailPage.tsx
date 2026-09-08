@@ -5,7 +5,7 @@ import { ArrowLeft, Pencil, Plus } from "lucide-react";
 import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { PostDialog } from "@/features/posts-management/components/PostDialog";
-import { buildAddPostsPath } from "@/features/posts-management/constants/routes";
+import { buildAddPostsPath, buildPostDetailPath } from "@/features/posts-management/constants/routes";
 import { usePostDialog } from "@/features/posts-management/hooks/usePostDialog";
 import { ProjectDialog } from "@/features/projects-management/components/ProjectDialog";
 import { ProjectPostsTable } from "@/features/projects-management/components/ProjectPostsTable";
@@ -183,6 +183,7 @@ export function ProjectDetailPage() {
       <ProjectPostsTable
         posts={dateFilteredPosts}
         isLoading={isLoading}
+        onOpenPost={(post) => navigate(buildPostDetailPath(post.id))}
         onEditPost={openEditDialogFromPost}
       />
 

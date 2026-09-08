@@ -1,5 +1,7 @@
 import { Check, Loader2, MoreVertical } from "lucide-react";
+import { Link } from "react-router";
 
+import { buildPostDetailPath } from "@/features/posts-management/constants/routes";
 import {
   statusColors,
   statusText,
@@ -24,30 +26,35 @@ function TeamDashboardPostRow({
 }: TeamDashboardPostRowProps) {
   return (
     <div className="flex items-start gap-3 rounded-xl border border-transparent px-2 py-1.5 transition hover:bg-muted/40">
-      <div
-        className={cn(
-          "mt-2 size-2 shrink-0 rounded-full",
-          statusColors[row.postStatus],
-        )}
-      />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-2">
-          <div className="truncate text-sm font-medium text-foreground">
-            {row.label}
+      <Link
+        to={buildPostDetailPath(row.id)}
+        className="flex min-w-0 flex-1 items-start gap-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <div
+          className={cn(
+            "mt-2 size-2 shrink-0 rounded-full",
+            statusColors[row.postStatus],
+          )}
+        />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-2">
+            <div className="truncate text-sm font-medium text-foreground">
+              {row.label}
+            </div>
+            <div
+              className={cn(
+                "shrink-0 text-[10px] font-semibold uppercase tracking-wide",
+                statusText[row.postStatus],
+              )}
+            >
+              {row.postStatus}
+            </div>
           </div>
-          <div
-            className={cn(
-              "shrink-0 text-[10px] font-semibold uppercase tracking-wide",
-              statusText[row.postStatus],
-            )}
-          >
-            {row.postStatus}
+          <div className="mt-1 font-mono text-xs text-muted-foreground">
+            {row.scheduleLabel}
           </div>
         </div>
-        <div className="mt-1 font-mono text-xs text-muted-foreground">
-          {row.scheduleLabel}
-        </div>
-      </div>
+      </Link>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -79,25 +86,14 @@ function TeamDashboardPostRow({
                   statusText[status],
                   isSelected && "bg-muted/50 font-medium",
                 )}
-                onSelect={(event) => {
-                  if (isSelected) {
-                    event.preventDefault();
-                    return;
+                onSelect={() => {
+                  if (!isSelected) {
+                    onStatusChange(row.id, status);
                   }
-
-                  onStatusChange(row.id, status);
                 }}
               >
-                <span
-                  className={cn(
-                    "size-2 shrink-0 rounded-full",
-                    statusColors[status],
-                  )}
-                />
                 <span className="flex-1">{status}</span>
-                {isSelected ? (
-                  <Check className="size-4 shrink-0 text-muted-foreground" />
-                ) : null}
+                {isSelected ? <Check className="size-3.5 opacity-70" /> : null}
               </DropdownMenuItem>
             );
           })}

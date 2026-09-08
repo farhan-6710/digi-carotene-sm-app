@@ -3,6 +3,8 @@ import type {
   Subtask,
   Task,
 } from "@/features/tasks-management/types/types";
+import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
+import { isAdminOrManagerRole } from "@/shared/utils/rbac";
 
 export function filterTasksByTab(
   tasks: Task[],
@@ -27,21 +29,24 @@ export function filterTasksByTab(
   );
 }
 
-/** Admin (all) or this project's manager. */
+/**
+ * Full oversight edit: admin, team-role manager, or this project's manager_id.
+ * Used for tasks and subtasks.
+ */
 function hasTaskOversightEdit(input: {
   task: Task;
-  teamRole: string | null;
+  teamRole: TeamMemberRole | null;
   teamMemberId: string | null;
 }): boolean {
   const { task, teamRole, teamMemberId } = input;
-  if (teamRole === "admin") return true;
+  if (isAdminOrManagerRole(teamRole)) return true;
   return Boolean(teamMemberId && task.projects?.manager_id === teamMemberId);
 }
 
-/** Full edit: admin, project manager, or teammate who raised the task. */
+/** Full edit: admin, team-role manager, project manager, or raiser. */
 export function canEditTaskAccess(input: {
   task: Task;
-  teamRole: string | null;
+  teamRole: TeamMemberRole | null;
   teamMemberId: string | null;
 }): boolean {
   const { task, teamRole, teamMemberId } = input;
@@ -58,15 +63,15 @@ function isTaskTeamAssignee(task: Task, teamMemberId: string): boolean {
   );
 }
 
-/** View + chat + raise subtasks: raiser, assignee, deps, PM, admin. */
+/** View + chat + raise subtasks: oversight roles, raiser, assignee, deps, PM. */
 export function canAccessTask(input: {
   task: Task;
-  teamRole: string | null;
+  teamRole: TeamMemberRole | null;
   teamMemberId: string | null;
 }): boolean {
   const { task, teamRole, teamMemberId } = input;
   if (!teamMemberId) return false;
-  if (teamRole === "admin") return true;
+  if (isAdminOrManagerRole(teamRole)) return true;
   if (task.projects?.manager_id === teamMemberId) return true;
   if (task.created_by_team_member_id === teamMemberId) return true;
   if (isTaskTeamAssignee(task, teamMemberId)) return true;
@@ -89,7 +94,7 @@ export function canClientAccessTask(
 /** Anyone who can open the task detail can add a subtask. */
 export function canCreateSubtaskAccess(input: {
   task: Task;
-  teamRole: string | null;
+  teamRole: TeamMemberRole | null;
   teamMemberId: string | null;
   clientId: string | null;
 }): boolean {
@@ -135,11 +140,11 @@ function isSubtaskAssignee(
   return false;
 }
 
-/** Full edit/delete: admin, parent-task PM, or subtask raiser. */
+/** Full edit/delete: admin, team-role manager, parent-task PM, or subtask raiser. */
 export function canFullyEditSubtaskAccess(input: {
   subtask: Subtask;
   parentTask: Task;
-  teamRole: string | null;
+  teamRole: TeamMemberRole | null;
   teamMemberId: string | null;
   clientId: string | null;
 }): boolean {
@@ -155,11 +160,11 @@ export function canFullyEditSubtaskAccess(input: {
   return isSubtaskRaiser(input.subtask, input.teamMemberId, input.clientId);
 }
 
-/** Pencil: full edit (admin/PM/raiser) or assignee (status only). */
+/** Pencil: full edit (admin/role-manager/PM/raiser) or assignee (status only). */
 export function canEditSubtaskAccess(input: {
   subtask: Subtask;
   parentTask: Task;
-  teamRole: string | null;
+  teamRole: TeamMemberRole | null;
   teamMemberId: string | null;
   clientId: string | null;
 }): boolean {

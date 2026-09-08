@@ -47,6 +47,13 @@ export function mapPostRow(row: PostRow): Post {
     posted_date: row.posted_date,
     posted_time: row.posted_time,
     status: row.status,
+    content_pillar: row.content_pillar ?? null,
+    context_description: row.context_description ?? null,
+    script: row.script ?? null,
+    reference_link: row.reference_link ?? null,
+    shoot_date: row.shoot_date ?? null,
+    shoot_notes: row.shoot_notes ?? null,
+    source_production_plan_item_id: row.source_production_plan_item_id ?? null,
     created_at: row.created_at,
   };
 }
@@ -73,6 +80,14 @@ export type CreatePostInput = {
   toBePostedOn: PostDateTimeInput;
   posted: PostDateTimeInput | null;
   status: StatusKey;
+  /** Optional — set when creating a post from production plan content. */
+  contentPillar?: string | null;
+  contextDescription?: string | null;
+  script?: string | null;
+  referenceLink?: string | null;
+  shootDate?: string | null;
+  shootNotes?: string | null;
+  sourceProductionPlanItemId?: string | null;
 };
 
 export type UpdatePostInput = CreatePostInput;
@@ -263,6 +278,13 @@ export async function createPost(input: CreatePostInput): Promise<Post> {
       posted_date: input.posted?.date ?? null,
       posted_time: input.posted?.time ?? null,
       status: input.status,
+      content_pillar: input.contentPillar ?? null,
+      context_description: input.contextDescription ?? null,
+      script: input.script ?? null,
+      reference_link: input.referenceLink ?? null,
+      shoot_date: input.shootDate ?? null,
+      shoot_notes: input.shootNotes ?? null,
+      source_production_plan_item_id: input.sourceProductionPlanItemId ?? null,
     })
     .select(DB.POSTS.SELECT)
     .single();

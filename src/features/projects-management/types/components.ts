@@ -111,11 +111,13 @@ export type ProjectProfileCardProps = {
 export type ProjectPostsTableProps = {
   posts: Post[];
   isLoading: boolean;
+  onOpenPost?: (post: Post) => void;
   onEditPost?: (post: Post) => void;
 };
 
 export type ProjectPostsTableRowProps = {
   post: Post;
+  onOpenPost?: (post: Post) => void;
   onEditPost?: (post: Post) => void;
 };
 

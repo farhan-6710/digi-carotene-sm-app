@@ -35,18 +35,21 @@ Deleting a team member resets linked profiles to `role = user`.
 |------|----------------|------------|
 | `admin` | team, clients, projects, posts, production plans, tasks, leads | All projects and plans |
 | `manager` | clients, projects, posts, tasks, leads | Assigned projects / plans only |
-| `executive` | posts, tasks, leads | Assigned projects / plans only |
+| `sm_executive` | posts, tasks | Assigned projects / plans only |
+| `editor` | posts, production plans | Assigned projects / plans only |
 
 **Assigned project** = SM: `sm_projects.manager_id` **or** active `project_team_members`; Dev: `dev_projects.manager_id` **or** active `dev_project_team_members`; Other: `other_projects.manager_id` **or** active `other_project_team_members`.  
 **Assigned plan** = plan manager, shoot incharge, **or** active `production_plan_team_members`. Assigned people can add/edit **content** on that plan; creating/editing the plan record stays **admin**.
 
+UI labels: `sm_executive` → **SM Executive**; `editor` → **Editor/Designer**.
+
 ### Admin / manager override (required for new features)
 
-Wherever an **executive** can perform an action — or a person-role executives often hold (e.g. plan **shoot incharge**) controls an action — **`admin` and `manager` must be able to do it too**.
+Wherever an **SM executive** can perform an action — or a person-role executives often hold (e.g. plan **shoot incharge**) controls an action — **`admin` and `manager` must be able to do it too**.
 
 - Use `isAdminOrManagerRole(role)` from `src/shared/utils/rbac.ts` when wiring those gates.
-- Do **not** leave executive-only or shoot-incharge-only controls that lock out admin/manager.
-- Admins/managers may still have **broader** control (e.g. skip backdated-post approval that executives need).
+- Do **not** leave SM-executive-only or shoot-incharge-only controls that lock out admin/manager.
+- Admins/managers may still have **broader** control (e.g. skip backdated-post approval that SM executives need).
 
 Content approvals on a plan item:
 
@@ -72,7 +75,7 @@ Content approvals on a plan item:
 | Task Management | `/team-portal/tasks-management` | Project-scoped tasks; assign + dependencies; tabs All · Raised by me · Raised for me; filters: client, status, sort, search; detail + chat |
 | Production planner | `/team-portal/production-planner` | Plans per client (`?client=` filter); detail = shoot date, context, content pillar, script, reference link, approvals; shoot completed (admin / manager / plan manager / shoot incharge, after all approvals) |
 | CRM | `/team-portal/crm` | Leads management; Contact (leads with score 5); lead detail notes, link attachments, open/closed activities (tasks, meetings, calls) |
-| Notifications | `/team-portal/notifications` | Inbox + executive **approval queue** |
+| Notifications | `/team-portal/notifications` | Inbox + SM executive **approval queue** |
 | Analytics | `/team-portal/analytics` | Agency activity |
 | Growth | `/team-portal/growth-and-analytics` | Meta organic + ads; page-level account dropdown (Instagram live; Facebook coming soon); Manage Accounts (token) |
 | Reports | `/team-portal/reports` | Growth reports |
@@ -82,7 +85,7 @@ Content approvals on a plan item:
 
 Statuses: `Not posted` · `Scheduled` · `Posted`. Platforms on the **post**; profile URLs on the **project**. `post_links` jsonb holds live URLs after publish.
 
-If an **executive** creates a post whose to-be-posted time is already past, it goes to `post_approval_requests` (not `posts`) until the project manager or an admin approves. Managers/admins insert backdated posts directly.
+If an **SM executive** creates a post whose to-be-posted time is already past, it goes to `post_approval_requests` (not `posts`) until the project manager or an admin approves. Managers/admins insert backdated posts directly.
 
 ### Notifications
 
@@ -102,7 +105,8 @@ Project-scoped only (SM **or** Dev project). Status: `pending` → `in_progress`
 Visibility (team):
 
 - **Admin** — all tasks
-- **Project manager** (`sm_projects.manager_id` or `dev_projects.manager_id`) — all tasks on projects they manage
+- **Manager** (team role) — tasks on assigned SM/Dev projects (`manager_id` or active team membership)
+- **Project manager** (`sm_projects.manager_id` / `dev_projects.manager_id`) — all tasks on projects they manage
 - **Everyone else** — raised by them, assigned to them, or listed as a dependency
 
 Visibility (client): all tasks on that client’s SM and Dev projects (not only assignee/dependency).
@@ -111,9 +115,9 @@ On create, notify the team assignee (if teammate), dependency members, project m
 
 Task detail includes DB-backed chat. Authors are a teammate **or** the task client. `@` mentions cover raiser, assignees, dependencies, project manager, task client, and admins. `/` mentions list this task’s subtasks by title. No websockets — refresh after send.
 
-**Edit** — only the person who raised the task (team list pencil). Admins / PMs / assignees who did not raise it can still view and chat.
+**Task / subtask full edit** — admin, team-role manager, that project’s `manager_id`, or the raiser. Subtask assignees can update status only. Admins / role-managers / PMs / assignees who did not raise it can still view and chat.
 
-**Subtasks** — full-width block below chat on task detail (team + client). Anyone who can open the task can add a subtask (title + description + assign to someone already on that task). Click a subtask title to open its detail page (full description + meta). Subtask **full edit/delete** is only for that subtask’s raiser; the **assignee** can update status (`pending` → `in_progress` → `completed`). On the client portal, all subtasks under accessible project tasks are visible.
+**Subtasks** — full-width block below chat on task detail (team + client). Anyone who can open the task can add a subtask (title + description + assign to someone already on that task). Click a subtask title to open its detail page. On the client portal, all subtasks under accessible project tasks are visible.
 
 ---
 

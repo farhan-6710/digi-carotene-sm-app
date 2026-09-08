@@ -14,6 +14,13 @@ const POST_SELECT = `
   posted_date,
   posted_time,
   status,
+  content_pillar,
+  context_description,
+  script,
+  reference_link,
+  shoot_date,
+  shoot_notes,
+  source_production_plan_item_id,
   created_at,
   projects:sm_projects (
     project_name,

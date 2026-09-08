@@ -44,6 +44,7 @@ export function ProductionPlanContentCard({
   canEditShootCompleted = false,
   lockDetails = false,
   showMutations = true,
+  expandDetails = false,
   isDraft = false,
   selectable = false,
   selected = false,
@@ -426,12 +427,16 @@ export function ProductionPlanContentCard({
             ) : content.context_description ? (
               <p
                 className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap"
-                style={{
-                  display: "-webkit-box",
-                  WebkitLineClamp: CONTENT_CONTEXT_PREVIEW_LINES,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                }}
+                style={
+                  expandDetails
+                    ? undefined
+                    : {
+                        display: "-webkit-box",
+                        WebkitLineClamp: CONTENT_CONTEXT_PREVIEW_LINES,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }
+                }
               >
                 {content.context_description}
               </p>
@@ -458,12 +463,16 @@ export function ProductionPlanContentCard({
             ) : content.script ? (
               <p
                 className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap"
-                style={{
-                  display: "-webkit-box",
-                  WebkitLineClamp: CONTENT_SCRIPT_PREVIEW_LINES,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                }}
+                style={
+                  expandDetails
+                    ? undefined
+                    : {
+                        display: "-webkit-box",
+                        WebkitLineClamp: CONTENT_SCRIPT_PREVIEW_LINES,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }
+                }
               >
                 {content.script}
               </p>

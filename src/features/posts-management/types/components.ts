@@ -84,6 +84,10 @@ export type PostDetailSummaryProps = {
   post: import("@/features/posts-management/types/types").Post;
 };
 
+export type PostContentDetailsProps = {
+  content: import("@/features/posts-management/utils/postContentViewUtils").PostContentView;
+};
+
 export type PostDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;

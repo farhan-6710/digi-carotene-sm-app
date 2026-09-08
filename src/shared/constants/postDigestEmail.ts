@@ -50,7 +50,8 @@ export const POST_DIGEST_SECTIONS_BY_ROLE: Record<
   TeamMemberRole,
   readonly PostDigestSection[]
 > = {
-  executive: ["today_to_be_posted_on_team"],
+  sm_executive: ["today_to_be_posted_on_team"],
+  editor: [],
   manager: ["today_to_be_posted_managed", "yesterday_not_posted_managed"],
   admin: ["yesterday_not_posted_all"],
 };

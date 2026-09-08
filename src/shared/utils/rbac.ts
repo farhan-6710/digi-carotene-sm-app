@@ -5,7 +5,7 @@ import type { TeamMemberRole } from "@/features/team-management/constants/teamMe
 // the whole app stays in sync — never sprinkle `role === "admin"` checks
 // around components.
 //
-// Override rule: wherever an executive (or an executive-typical assignee such as
+// Override rule: wherever an SM executive (or an executive-typical assignee such as
 // shoot incharge) can perform an action, `admin` and `manager` must be able to
 // as well. Use `isAdminOrManagerRole` for that inheritance.
 
@@ -35,10 +35,11 @@ const ROLE_RESOURCES: Record<TeamMemberRole, RbacResource[]> = {
     "crm",
   ],
   manager: ["clients", "projects", "posts", "tasks"],
-  executive: ["posts", "tasks"],
+  sm_executive: ["posts", "tasks"],
+  editor: ["posts", "productionPlans"],
 };
 
-/** Admin/manager inherit control of executive-controlled actions. */
+/** Admin/manager inherit control of SM-executive-controlled actions. */
 export function isAdminOrManagerRole(role: TeamMemberRole | null): boolean {
   return role === "admin" || role === "manager";
 }
@@ -63,7 +64,8 @@ export const PROJECT_DATA_SCOPE_BY_ROLE: Record<TeamMemberRole, ProjectDataScope
   {
     admin: "all",
     manager: "assigned",
-    executive: "assigned",
+    sm_executive: "assigned",
+    editor: "assigned",
   };
 
 export function projectDataScopeForRole(
@@ -88,7 +90,8 @@ export const PRODUCTION_PLAN_DATA_SCOPE_BY_ROLE: Record<
 > = {
   admin: "all",
   manager: "assigned",
-  executive: "assigned",
+  sm_executive: "assigned",
+  editor: "assigned",
 };
 
 export function productionPlanDataScopeForRole(
