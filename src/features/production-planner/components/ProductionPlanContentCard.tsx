@@ -16,11 +16,20 @@ import {
   formatContentIndex,
   getOverallApprovalStatus,
 } from "@/features/production-planner/utils/contentApprovalUtils";
+import { PostTypeSelect } from "@/features/posts-management/components/PostTypeSelect";
+import { SocialsSelect } from "@/features/posts-management/components/SocialsSelect";
+import {
+  DEFAULT_POST_TYPE,
+  postTypeLabels,
+  type SocialPlatform,
+} from "@/features/posts-management/constants/postsManagement";
+import type { PostType } from "@/features/posts-management/types/types";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { DatePicker } from "@/shared/components/DatePicker";
 import { formFieldClassName } from "@/shared/constants/formStyles";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
+import { Checkbox } from "@/shared/ui/checkbox";
 import { Switch } from "@/shared/ui/switch";
 import { parseUrlDateParam } from "@/shared/utils/urlDateParams";
 
@@ -35,6 +44,9 @@ export function ProductionPlanContentCard({
   lockDetails = false,
   showMutations = true,
   isDraft = false,
+  selectable = false,
+  selected = false,
+  onToggleSelected,
   onSave,
   onDuplicate,
   onDelete,
@@ -53,6 +65,12 @@ export function ProductionPlanContentCard({
   const [referenceLink, setReferenceLink] = useState(
     content.reference_link || "",
   );
+  const [postType, setPostType] = useState<PostType>(
+    content.post_type || DEFAULT_POST_TYPE,
+  );
+  const [socials, setSocials] = useState<SocialPlatform[]>(
+    (content.socials ?? []) as SocialPlatform[],
+  );
   const [managerApproval, setManagerApproval] =
     useState<ProductionPlanApprovalStatus>(content.manager_approval);
   const [shootInchargeApproval, setShootInchargeApproval] =
@@ -60,8 +78,11 @@ export function ProductionPlanContentCard({
   const [clientApproval, setClientApproval] =
     useState<ProductionPlanApprovalStatus>(content.client_approval);
   const [shootCompleted, setShootCompleted] = useState(content.shoot_completed);
+  const [shootNotes, setShootNotes] = useState(content.shoot_notes || "");
   const [isSaving, setIsSaving] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [shootConfirmOpen, setShootConfirmOpen] = useState(false);
+  const [pendingShootCompleted, setPendingShootCompleted] = useState(false);
 
   useEffect(() => {
     if (isEditing) return;
@@ -72,10 +93,13 @@ export function ProductionPlanContentCard({
     setContentPillar(content.content_pillar || "");
     setScript(content.script || "");
     setReferenceLink(content.reference_link || "");
+    setPostType(content.post_type || DEFAULT_POST_TYPE);
+    setSocials((content.socials ?? []) as SocialPlatform[]);
     setManagerApproval(content.manager_approval);
     setShootInchargeApproval(content.shoot_incharge_approval);
     setClientApproval(content.client_approval);
     setShootCompleted(content.shoot_completed);
+    setShootNotes(content.shoot_notes || "");
   }, [content, isEditing]);
 
   const overallStatus = getOverallApprovalStatus(
@@ -90,7 +114,10 @@ export function ProductionPlanContentCard({
     clientApproval,
   );
   const canToggleShootCompleted =
-    canEditShootCompleted && allApprovalsDone && !isDraft;
+    canEditShootCompleted &&
+    allApprovalsDone &&
+    !isDraft &&
+    !content.moved_to_post_id;
 
   const resetForm = () => {
     setItemName(content.item_name);
@@ -99,10 +126,13 @@ export function ProductionPlanContentCard({
     setContentPillar(content.content_pillar || "");
     setScript(content.script || "");
     setReferenceLink(content.reference_link || "");
+    setPostType(content.post_type || DEFAULT_POST_TYPE);
+    setSocials((content.socials ?? []) as SocialPlatform[]);
     setManagerApproval(content.manager_approval);
     setShootInchargeApproval(content.shoot_incharge_approval);
     setClientApproval(content.client_approval);
     setShootCompleted(content.shoot_completed);
+    setShootNotes(content.shoot_notes || "");
   };
 
   const buildPayload = (overrides?: {
@@ -110,6 +140,7 @@ export function ProductionPlanContentCard({
     shootInchargeApproval?: ProductionPlanApprovalStatus;
     clientApproval?: ProductionPlanApprovalStatus;
     shootCompleted?: boolean;
+    shootNotes?: string | null;
   }) => ({
     itemName: lockDetails || !isEditing ? content.item_name : itemName.trim(),
     shootDate:
@@ -129,6 +160,16 @@ export function ProductionPlanContentCard({
       lockDetails || !isEditing
         ? content.reference_link
         : referenceLink.trim() || null,
+    postType:
+      lockDetails || !isEditing
+        ? content.post_type || DEFAULT_POST_TYPE
+        : postType,
+    socials:
+      lockDetails || !isEditing
+        ? content.socials
+        : socials.length > 0
+          ? socials
+          : null,
     managerApproval: overrides?.managerApproval ?? managerApproval,
     shootInchargeApproval:
       overrides?.shootInchargeApproval ?? shootInchargeApproval,
@@ -136,6 +177,12 @@ export function ProductionPlanContentCard({
     shootCompleted: canEditShootCompleted
       ? (overrides?.shootCompleted ?? shootCompleted)
       : content.shoot_completed,
+    shootNotes:
+      lockDetails || !isEditing
+        ? overrides?.shootNotes !== undefined
+          ? overrides.shootNotes
+          : content.shoot_notes
+        : shootNotes.trim() || null,
   });
 
   const handleCancel = () => {
@@ -197,16 +244,29 @@ export function ProductionPlanContentCard({
     }
   };
 
-  const handleShootCompletedChange = async (checked: boolean) => {
+  const handleShootCompletedChange = (checked: boolean) => {
     if (!canToggleShootCompleted || isSaving) return;
-    if (isEditing) {
-      setShootCompleted(checked);
-      return;
-    }
+    setPendingShootCompleted(checked);
+    setShootConfirmOpen(true);
+  };
+
+  const confirmShootCompletedChange = async () => {
+    if (isSaving) return;
     setIsSaving(true);
     try {
-      await onSave(content.id, buildPayload({ shootCompleted: checked }));
-      setShootCompleted(checked);
+      if (isEditing) {
+        setShootCompleted(pendingShootCompleted);
+        setShootConfirmOpen(false);
+        return;
+      }
+      await onSave(
+        content.id,
+        buildPayload({
+          shootCompleted: pendingShootCompleted,
+        }),
+      );
+      setShootCompleted(pendingShootCompleted);
+      setShootConfirmOpen(false);
     } catch {
       setShootCompleted(content.shoot_completed);
     } finally {
@@ -229,6 +289,14 @@ export function ProductionPlanContentCard({
       >
         <header className="flex items-start justify-between gap-3 border-b border-border/60 px-4 py-3 sm:px-5">
           <div className="flex min-w-0 flex-1 items-center gap-2.5">
+            {selectable ? (
+              <Checkbox
+                checked={selected}
+                onCheckedChange={() => onToggleSelected?.()}
+                aria-label={`Select ${content.item_name || "content"}`}
+                className="mt-0.5"
+              />
+            ) : null}
             <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums text-muted-foreground">
               {formatContentIndex(index)}
             </span>
@@ -237,9 +305,16 @@ export function ProductionPlanContentCard({
                 {isDraft ? "New content" : "Editing content"}
               </p>
             ) : (
-              <h3 className="min-w-0 truncate text-sm font-semibold text-foreground">
-                {content.item_name}
-              </h3>
+              <div className="min-w-0">
+                <h3 className="truncate text-sm font-semibold text-foreground">
+                  {content.item_name}
+                </h3>
+                {content.moved_to_post_id ? (
+                  <p className="mt-0.5 text-[11px] font-medium text-primary">
+                    Moved to postings calendar
+                  </p>
+                ) : null}
+              </div>
             )}
           </div>
           {!isEditing ? <ApprovalStatusBadge status={overallStatus} /> : null}
@@ -398,6 +473,73 @@ export function ProductionPlanContentCard({
             )}
           </div>
 
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+                Post type
+              </p>
+              {isEditing && !lockDetails ? (
+                <PostTypeSelect
+                  value={postType}
+                  onChange={setPostType}
+                  disabled={isSaving}
+                />
+              ) : (
+                <p className="text-sm text-foreground">
+                  {postTypeLabels[content.post_type || DEFAULT_POST_TYPE]}
+                </p>
+              )}
+            </div>
+            <div>
+              {isEditing && !lockDetails ? (
+                <SocialsSelect
+                  value={socials}
+                  onChange={setSocials}
+                  disabled={isSaving}
+                />
+              ) : (
+                <>
+                  <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+                    Social platforms
+                  </p>
+                  {(content.socials ?? []).length > 0 ? (
+                    <p className="text-sm text-foreground">
+                      {(content.socials ?? []).join(", ")}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-muted-foreground/60 italic">
+                      None selected
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+              Shoot notes
+            </p>
+            {isEditing && !lockDetails ? (
+              <textarea
+                value={shootNotes}
+                onChange={(e) => setShootNotes(e.target.value)}
+                rows={3}
+                className={cn(formFieldClassName, "mt-0 resize-y")}
+                placeholder="Notes for this shoot (before or after)..."
+                disabled={isSaving}
+              />
+            ) : content.shoot_notes ? (
+              <p className="text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground">
+                {content.shoot_notes}
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground/60 italic">
+                No shoot notes yet.
+              </p>
+            )}
+          </div>
+
           <div className="grid gap-3 sm:grid-cols-3">
             <ApprovalField
               label="Manager/Admin"
@@ -432,7 +574,7 @@ export function ProductionPlanContentCard({
             <div
               className={cn(
                 "flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5",
-                !canToggleShootCompleted && "opacity-60",
+                !canToggleShootCompleted && !content.shoot_completed && "opacity-60",
               )}
             >
               <div className="min-w-0">
@@ -441,18 +583,23 @@ export function ProductionPlanContentCard({
                 </p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {allApprovalsDone
-                    ? "Mark after the shoot is done."
+                    ? "Confirm after the shoot is done."
                     : "Available once all three approvals are approved."}
                 </p>
               </div>
               <Switch
                 checked={isEditing ? shootCompleted : content.shoot_completed}
-                onCheckedChange={(checked) => {
-                  void handleShootCompletedChange(checked);
-                }}
+                onCheckedChange={handleShootCompletedChange}
                 disabled={isSaving || !canToggleShootCompleted}
                 aria-label="Shoot completed"
               />
+            </div>
+          ) : content.shoot_completed ? (
+            <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5">
+              <p className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+                Shoot completed
+              </p>
+              <p className="mt-1 text-sm text-foreground">Yes</p>
             </div>
           ) : null}
         </div>
@@ -539,6 +686,25 @@ export function ProductionPlanContentCard({
             setIsSaving(false);
           }
         }}
+      />
+
+      <ConfirmationModal
+        open={shootConfirmOpen}
+        onOpenChange={setShootConfirmOpen}
+        title={
+          pendingShootCompleted
+            ? "Mark shoot completed?"
+            : "Clear shoot completed?"
+        }
+        description={
+          pendingShootCompleted
+            ? `Confirm that the shoot for "${content.item_name}" is done.`
+            : `Mark "${content.item_name}" as not completed? Shoot notes are kept.`
+        }
+        confirmLabel={pendingShootCompleted ? "Mark completed" : "Clear"}
+        confirmVariant={pendingShootCompleted ? "default" : "destructive"}
+        loading={isSaving}
+        onConfirm={() => void confirmShootCompletedChange()}
       />
     </>
   );

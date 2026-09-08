@@ -62,22 +62,26 @@ export type PostsWeekDayCellProps = {
   statusColors: Record<StatusKey, string>;
   statusText: Record<StatusKey, string>;
   onOpenDay: () => void;
-  onEdit: (postId: string) => void;
+  onOpenPost: (postId: string) => void;
 };
 
 export type DayPostsTableProps = {
   posts: import("@/features/posts-management/types/types").Post[];
   isLoading: boolean;
-  onEditPost: (
+  onOpenPost: (
     post: import("@/features/posts-management/types/types").Post,
   ) => void;
 };
 
 export type DayPostsTableRowProps = {
   post: import("@/features/posts-management/types/types").Post;
-  onEditPost: (
+  onOpenPost: (
     post: import("@/features/posts-management/types/types").Post,
   ) => void;
+};
+
+export type PostDetailSummaryProps = {
+  post: import("@/features/posts-management/types/types").Post;
 };
 
 export type PostDialogProps = {
@@ -103,7 +107,7 @@ export type PostsManagementWeeksTableProps = {
     date: number,
   ) => import("@/features/posts-management/types/types").Slot | undefined;
   onOpenDay: (year: number, month: number, date: number) => void;
-  onEdit: (year: number, month: number, date: number, postId: string) => void;
+  onOpenPost: (postId: string) => void;
   statusColors: Record<StatusKey, string>;
   statusText: Record<StatusKey, string>;
 };

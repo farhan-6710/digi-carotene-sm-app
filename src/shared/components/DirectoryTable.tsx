@@ -21,19 +21,32 @@ export function DirectoryTable({
   isEmpty,
   emptyMessage,
   headerAside,
+  filters,
   children,
   divided = false,
   gridStyle,
 }: DirectoryTableProps) {
   return (
     <div className="w-full min-w-0 rounded-2xl border border-border bg-card shadow-sm">
-      <div className="flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
+      <div className="flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="min-w-0 flex-1">
           <div className="text-sm font-semibold">{title}</div>
           <p className="mt-1 text-xs text-muted-foreground">{description}</p>
         </div>
-        {headerAside ? <div className="shrink-0">{headerAside}</div> : null}
+        {headerAside ? (
+          <div className="flex w-full min-w-0 shrink-0 flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
+            {headerAside}
+          </div>
+        ) : null}
       </div>
+
+      {filters ? (
+        <div className="border-t border-border px-6 py-3">
+          <div className="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+            {filters}
+          </div>
+        </div>
+      ) : null}
 
       <div
         className={cn(

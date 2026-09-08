@@ -81,7 +81,7 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 | `lead_calls` | Lead call: start date+time, duration minutes, status |
 | `team_todos` | Personal dashboard to-dos per team member: title, description, ETA date+time, status |
 | `production_plans` | Shoot plan per client + `share_token` |
-| `production_plan_items` | Content in a plan: shoot date, context, content pillar, script, reference link, three approvals, shoot completed |
+| `production_plan_items` | Content in a plan: shoot date, context, content pillar, script, reference link, three approvals, shoot completed + optional notes |
 | `production_plan_team_members` | Extra people on a plan. All `admin` team members are auto-assigned on create/update (unless they are already manager or shoot incharge). |
 | `growth_organic_*` | Connected IG/Page + post metrics + daily followers |
 | `growth_ads_*` | Connected ad accounts + campaign / ad set / ad daily metrics |

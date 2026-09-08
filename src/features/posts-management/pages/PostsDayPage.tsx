@@ -1,17 +1,16 @@
 import { format } from "date-fns";
-import { Link, useParams, useSearchParams } from "react-router";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import { ArrowLeft, Plus } from "lucide-react";
 import { useMemo } from "react";
 
 import { ClientProjectFilters } from "@/features/posts-management/components/ClientProjectFilters";
 import { DayPostsTable } from "@/features/posts-management/components/DayPostsTable";
-import { PostDialog } from "@/features/posts-management/components/PostDialog";
 import {
   buildAddPostsPath,
+  buildPostDetailPath,
   buildPostsManagementPath,
   parsePostsDayDateParam,
 } from "@/features/posts-management/constants/routes";
-import { usePostDialog } from "@/features/posts-management/hooks/usePostDialog";
 import { usePostsDayQuery } from "@/features/posts-management/hooks/usePostsDayQuery";
 import { usePostsFilterParams } from "@/features/posts-management/hooks/usePostsFilterParams";
 import { usePermissions } from "@/shared/hooks/usePermissions";
@@ -39,6 +38,7 @@ function PostsDayBackButton({
 }
 
 export function PostsDayPage() {
+  const navigate = useNavigate();
   const { date: dateParam } = useParams();
   const [searchParams] = useSearchParams();
   const day = parsePostsDayDateParam(dateParam);
@@ -50,14 +50,7 @@ export function PostsDayPage() {
     setSelectedProjectIds,
   } = usePostsFilterParams();
 
-  const {
-    posts,
-    projects,
-    isLoading,
-    error,
-    setError,
-    reload,
-  } = usePostsDayQuery(day);
+  const { posts, projects, isLoading, error } = usePostsDayQuery(day);
 
   const projectClientMap = useMemo(
     () => new Map(projects.map((p) => [p.id, p.client_id])),
@@ -86,23 +79,27 @@ export function PostsDayPage() {
     });
   }, [posts, selectedClientIds, selectedProjectIds, projectClientMap]);
 
-  const { openEditDialogFromPost, dialog } = usePostDialog({
-    slots: [],
-    reload,
-    setError,
-  });
-
   if (!day) {
     return (
       <section className="space-y-4">
-        <PageHeader backButton={<PostsDayBackButton date={null} searchParams={searchParams} />} />
+        <PageHeader
+          backButton={
+            <PostsDayBackButton date={null} searchParams={searchParams} />
+          }
+        />
         <ErrorBanner message="That date is invalid. Pick a day from the posts calendar." />
       </section>
     );
   }
 
   if (isLoading) {
-    return <DetailPageLoading backButton={<PostsDayBackButton date={day} searchParams={searchParams} />} />;
+    return (
+      <DetailPageLoading
+        backButton={
+          <PostsDayBackButton date={day} searchParams={searchParams} />
+        }
+      />
+    );
   }
 
   const dayLabel = format(day, "EEEE, MMMM d, yyyy");
@@ -112,7 +109,9 @@ export function PostsDayPage() {
       <PageHeader
         heading={dayLabel}
         description={`Review and manage every post scheduled for ${format(day, "MMMM d")}.`}
-        backButton={<PostsDayBackButton date={day} searchParams={searchParams} />}
+        backButton={
+          <PostsDayBackButton date={day} searchParams={searchParams} />
+        }
         actions={
           can("posts.create") ? (
             <Button asChild className="rounded-full shadow-sm">
@@ -138,10 +137,8 @@ export function PostsDayPage() {
       <DayPostsTable
         posts={filteredPosts}
         isLoading={isLoading}
-        onEditPost={openEditDialogFromPost}
+        onOpenPost={(post) => navigate(buildPostDetailPath(post.id))}
       />
-
-      <PostDialog {...dialog} />
     </PageContent>
   );
 }

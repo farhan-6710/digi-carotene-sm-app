@@ -5,7 +5,7 @@ import type { DayPostsTableProps } from "@/features/posts-management/types/compo
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { PostStatusFilter } from "@/shared/ui/PostStatusFilter";
 
-export function DayPostsTable({ posts, isLoading, onEditPost }: DayPostsTableProps) {
+export function DayPostsTable({ posts, isLoading, onOpenPost }: DayPostsTableProps) {
   const {
     filteredPosts,
     showAll,
@@ -36,7 +36,7 @@ export function DayPostsTable({ posts, isLoading, onEditPost }: DayPostsTablePro
         <DayPostsTableRow
           key={post.id}
           post={post}
-          onEditPost={onEditPost}
+          onOpenPost={onOpenPost}
         />
       ))}
     </DirectoryTable>

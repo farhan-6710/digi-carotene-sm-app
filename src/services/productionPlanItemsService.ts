@@ -5,6 +5,7 @@ import type {
   CreateProductionPlanContentInput,
   UpdateProductionPlanContentInput,
 } from "@/features/production-planner/types/types";
+import { DEFAULT_POST_TYPE } from "@/features/posts-management/constants/postsManagement";
 
 function toItemColumns(input: CreateProductionPlanContentInput) {
   return {
@@ -19,6 +20,10 @@ function toItemColumns(input: CreateProductionPlanContentInput) {
     shoot_incharge_approval: input.shootInchargeApproval || "pending",
     client_approval: input.clientApproval || "pending",
     shoot_completed: input.shootCompleted ?? false,
+    shoot_notes: input.shootNotes || null,
+    post_type: input.postType || DEFAULT_POST_TYPE,
+    socials: input.socials?.length ? input.socials : null,
+    moved_to_post_id: input.movedToPostId || null,
   };
 }
 
@@ -39,6 +44,12 @@ function toItemUpdateColumns(input: UpdateProductionPlanContentInput) {
     cols.client_approval = input.clientApproval;
   if (input.shootCompleted !== undefined)
     cols.shoot_completed = input.shootCompleted;
+  if (input.shootNotes !== undefined) cols.shoot_notes = input.shootNotes;
+  if (input.postType !== undefined) cols.post_type = input.postType;
+  if (input.socials !== undefined)
+    cols.socials = input.socials?.length ? input.socials : null;
+  if (input.movedToPostId !== undefined)
+    cols.moved_to_post_id = input.movedToPostId;
   return cols;
 }
 

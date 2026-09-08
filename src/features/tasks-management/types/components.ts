@@ -23,6 +23,9 @@ export type TasksTableProps = {
   onSortChange: (sort: TaskSortId) => void;
   statusFilter: TaskStatusFilterId;
   onStatusFilterChange: (filter: TaskStatusFilterId) => void;
+  clientFilter: string;
+  onClientFilterChange: (clientId: string) => void;
+  clientOptions: { value: string; label: string }[];
   tab: TaskTabId;
   onTabChange: (tab: TaskTabId) => void;
 };
@@ -169,6 +172,13 @@ export type TaskTabFilterProps = {
 export type TaskStatusFilterProps = {
   value: TaskStatusFilterId;
   onChange: (filter: TaskStatusFilterId) => void;
+  disabled?: boolean;
+};
+
+export type TaskClientFilterProps = {
+  value: string;
+  onChange: (clientId: string) => void;
+  clients: { value: string; label: string }[];
   disabled?: boolean;
 };
 

@@ -48,8 +48,8 @@ export function ClientTasksTable({
       }
       isLoading={isLoading}
       isEmpty={tasks.length === 0}
-      headerAside={
-        <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
+      filters={
+        <>
           <TaskStatusFilter
             value={statusFilter}
             onChange={onStatusFilterChange}
@@ -60,13 +60,15 @@ export function ClientTasksTable({
             onChange={onSortChange}
             disabled={isLoading}
           />
-          <ListingSearchInput
-            value={searchQuery}
-            onChange={onSearchQueryChange}
-            placeholder="Search tasks"
-            disabled={isLoading}
-          />
-        </div>
+          <div className="w-full min-w-0 sm:min-w-[200px] sm:flex-1 sm:max-w-sm">
+            <ListingSearchInput
+              value={searchQuery}
+              onChange={onSearchQueryChange}
+              placeholder="Search tasks"
+              disabled={isLoading}
+            />
+          </div>
+        </>
       }
     >
       {tasks.map((task) => (

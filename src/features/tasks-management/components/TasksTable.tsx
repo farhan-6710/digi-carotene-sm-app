@@ -1,7 +1,9 @@
+import { TaskClientFilter } from "@/features/tasks-management/components/TaskClientFilter";
 import { TasksTableRow } from "@/features/tasks-management/components/TasksTableRow";
 import { TaskSortSelect } from "@/features/tasks-management/components/TaskSortSelect";
 import { TaskStatusFilter } from "@/features/tasks-management/components/TaskStatusFilter";
 import { TaskTabFilter } from "@/features/tasks-management/components/TaskTabFilter";
+import { TASKS_ALL_CLIENTS } from "@/features/tasks-management/constants/taskClientFilter";
 import { DEFAULT_TASK_STATUS_FILTER } from "@/features/tasks-management/constants/taskStatusFilter";
 import { tasksDirectoryConfig } from "@/features/tasks-management/constants/tasksDirectory";
 import type { TasksTableProps } from "@/features/tasks-management/types/components";
@@ -19,11 +21,16 @@ export function TasksTable({
   onSortChange,
   statusFilter,
   onStatusFilterChange,
+  clientFilter,
+  onClientFilterChange,
+  clientOptions,
   tab,
   onTabChange,
 }: TasksTableProps) {
   const hasFilters =
-    Boolean(searchQuery.trim()) || statusFilter !== DEFAULT_TASK_STATUS_FILTER;
+    Boolean(searchQuery.trim()) ||
+    statusFilter !== DEFAULT_TASK_STATUS_FILTER ||
+    clientFilter !== TASKS_ALL_CLIENTS;
 
   return (
     <DirectoryTable
@@ -39,10 +46,14 @@ export function TasksTable({
       isLoading={isLoading}
       isEmpty={tasks.length === 0}
       headerAside={
-        <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
-          <TaskTabFilter
-            value={tab}
-            onChange={onTabChange}
+        <TaskTabFilter value={tab} onChange={onTabChange} disabled={isLoading} />
+      }
+      filters={
+        <>
+          <TaskClientFilter
+            value={clientFilter}
+            onChange={onClientFilterChange}
+            clients={clientOptions}
             disabled={isLoading}
           />
           <TaskStatusFilter
@@ -55,13 +66,15 @@ export function TasksTable({
             onChange={onSortChange}
             disabled={isLoading}
           />
-          <ListingSearchInput
-            value={searchQuery}
-            onChange={onSearchQueryChange}
-            placeholder="Search tasks"
-            disabled={isLoading}
-          />
-        </div>
+          <div className="w-full min-w-0 sm:min-w-[200px] sm:flex-1 sm:max-w-sm">
+            <ListingSearchInput
+              value={searchQuery}
+              onChange={onSearchQueryChange}
+              placeholder="Search tasks"
+              disabled={isLoading}
+            />
+          </div>
+        </>
       }
     >
       {tasks.map((task) => (

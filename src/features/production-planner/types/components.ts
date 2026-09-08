@@ -45,6 +45,9 @@ export type ProductionPlanContentSavePayload = {
   shootInchargeApproval: ProductionPlanApprovalStatus;
   clientApproval: ProductionPlanApprovalStatus;
   shootCompleted: boolean;
+  shootNotes: string | null;
+  postType: import("@/features/posts-management/types/types").PostType;
+  socials: string[] | null;
 };
 
 export type ProductionPlanContentsListProps = {
@@ -57,6 +60,11 @@ export type ProductionPlanContentsListProps = {
   canEditShootCompleted?: boolean;
   lockDetails?: boolean;
   showMutations?: boolean;
+  canMoveToPosts?: boolean;
+  selectedContentIds?: string[];
+  onToggleContentSelected?: (contentId: string) => void;
+  onToggleSelectAllEligible?: () => void;
+  onOpenMoveTo?: () => void;
   draftContent?: ProductionPlanContent | null;
   draftFocusKey?: number;
   onSave: (id: string, payload: ProductionPlanContentSavePayload) => Promise<void>;
@@ -77,10 +85,23 @@ export type ProductionPlanContentCardProps = {
   lockDetails?: boolean;
   showMutations?: boolean;
   isDraft?: boolean;
+  selectable?: boolean;
+  selected?: boolean;
+  onToggleSelected?: () => void;
   onSave: (id: string, payload: ProductionPlanContentSavePayload) => Promise<void>;
   onDuplicate: (content: ProductionPlanContent) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onDiscard?: () => void;
+};
+
+export type MoveContentsToProjectDialogProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  selectedCount: number;
+  projects: { id: string; label: string }[];
+  isLoadingProjects: boolean;
+  isMoving: boolean;
+  onConfirm: (projectId: string) => void;
 };
 
 export type ApprovalStatusSelectProps = {

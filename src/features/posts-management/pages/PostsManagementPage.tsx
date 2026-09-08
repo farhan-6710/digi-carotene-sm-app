@@ -3,11 +3,11 @@ import { Plus } from "lucide-react";
 
 import { ClientProjectFilters } from "@/features/posts-management/components/ClientProjectFilters";
 import { MonthSelector } from "@/shared/ui/MonthSelector";
-import { PostDialog } from "@/features/posts-management/components/PostDialog";
 import { PostsManagementStatusLegend } from "@/features/posts-management/components/PostsManagementStatusLegend";
 import { PostsManagementWeeksTable } from "@/features/posts-management/components/PostsManagementWeeksTable";
 import {
   buildAddPostsPath,
+  buildPostDetailPath,
   buildPostsDayPath,
 } from "@/features/posts-management/constants/routes";
 import {
@@ -37,8 +37,12 @@ export function PostsManagementPage() {
   const { selectedDate, calendarWeeks, year, month, selectDate } =
     usePostsCalendarSelection();
 
-  const { isLoading, error, projects, getSlot, openEditDialog, dialog } =
-    usePostsManagement(year, month, selectedClientIds, selectedProjectIds);
+  const { isLoading, error, projects, getSlot } = usePostsManagement(
+    year,
+    month,
+    selectedClientIds,
+    selectedProjectIds,
+  );
 
   const goToDay = (slotYear: number, slotMonth: number, date: number) => {
     const target = new Date(slotYear, slotMonth - 1, date);
@@ -46,11 +50,15 @@ export function PostsManagementPage() {
     navigate(buildPostsDayPath(target, searchParams));
   };
 
+  const goToPost = (postId: string) => {
+    navigate(buildPostDetailPath(postId));
+  };
+
   return (
     <PageContent>
       <PageHeader
         heading="Postings Calendar"
-        description="Browse the content calendar by month. Open any day to review its posts, or add a new one."
+        description="Browse the content calendar by month. Open any day to review its posts, or open a post for full details."
         actions={
           can("posts.create") ? (
             <Button asChild className="gap-2 rounded-full px-5 shadow-sm">
@@ -97,13 +105,11 @@ export function PostsManagementPage() {
           selectedDate={selectedDate}
           getSlot={getSlot}
           onOpenDay={goToDay}
-          onEdit={openEditDialog}
+          onOpenPost={goToPost}
           statusColors={statusColors}
           statusText={statusText}
         />
       )}
-
-      <PostDialog {...dialog} />
     </PageContent>
   );
 }

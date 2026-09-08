@@ -13,6 +13,8 @@ export type ConfirmationModalProps = {
   cancelLabel?: string;
   confirmVariant?: "default" | "destructive";
   loading?: boolean;
+  /** Optional form fields or extra content between description and actions. */
+  children?: ReactNode;
   onConfirm: () => void | Promise<void>;
 };
 
@@ -64,6 +66,8 @@ export type DirectoryTableProps = {
   isEmpty: boolean;
   emptyMessage: string;
   headerAside?: ReactNode;
+  /** Full-width filter/toolbar row under the title (keeps column headers aligned). */
+  filters?: ReactNode;
   children: ReactNode;
   divided?: boolean;
   gridStyle?: import("react").CSSProperties;

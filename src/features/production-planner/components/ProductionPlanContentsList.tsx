@@ -9,7 +9,10 @@ import {
 import { productionPlanContentsListConfig } from "@/features/production-planner/constants/productionPlannerDirectory";
 import type { ProductionPlanContentsListProps } from "@/features/production-planner/types/components";
 import { filterContentsByApproval } from "@/features/production-planner/utils/contentApprovalFilterUtils";
+import { canMoveContentToPosts } from "@/features/production-planner/utils/moveContentsToPostsUtils";
 import { TableLoadingState } from "@/shared/components/LoadingSpinner";
+import { Button } from "@/shared/ui/button";
+import { Checkbox } from "@/shared/ui/checkbox";
 
 export function ProductionPlanContentsList({
   contents,
@@ -21,6 +24,11 @@ export function ProductionPlanContentsList({
   canEditShootCompleted = false,
   lockDetails = false,
   showMutations = true,
+  canMoveToPosts = false,
+  selectedContentIds = [],
+  onToggleContentSelected,
+  onToggleSelectAllEligible,
+  onOpenMoveTo,
   draftContent = null,
   draftFocusKey = 0,
   onSave,
@@ -38,6 +46,15 @@ export function ProductionPlanContentsList({
     () => filterContentsByApproval(contents, approvalFilter),
     [contents, approvalFilter],
   );
+
+  const eligibleInView = useMemo(
+    () => filteredContents.filter(canMoveContentToPosts),
+    [filteredContents],
+  );
+
+  const allEligibleInViewSelected =
+    eligibleInView.length > 0 &&
+    eligibleInView.every((item) => selectedContentIds.includes(item.id));
 
   useEffect(() => {
     if (!draftContent) return;
@@ -77,6 +94,31 @@ export function ProductionPlanContentsList({
         />
       </div>
 
+      {canMoveToPosts && eligibleInView.length > 0 ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/20 px-6 py-3">
+          <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+            <Checkbox
+              checked={allEligibleInViewSelected}
+              onCheckedChange={() => onToggleSelectAllEligible?.()}
+              aria-label="Select all shoot-completed content"
+            />
+            Select all shoot-completed ({eligibleInView.length})
+          </label>
+          <Button
+            type="button"
+            size="sm"
+            className="rounded-full"
+            disabled={selectedContentIds.length === 0}
+            onClick={onOpenMoveTo}
+          >
+            Move to
+            {selectedContentIds.length > 0
+              ? ` (${selectedContentIds.length})`
+              : ""}
+          </Button>
+        </div>
+      ) : null}
+
       <div className="p-4 sm:p-5">
         {isLoading ? (
           <TableLoadingState />
@@ -88,6 +130,8 @@ export function ProductionPlanContentsList({
           <div className="space-y-3">
             {filteredContents.map((content) => {
               const index = contents.findIndex((item) => item.id === content.id);
+              const selectable =
+                canMoveToPosts && canMoveContentToPosts(content);
               return (
                 <ProductionPlanContentCard
                   key={content.id}
@@ -100,6 +144,9 @@ export function ProductionPlanContentsList({
                   canEditShootCompleted={canEditShootCompleted}
                   lockDetails={lockDetails}
                   showMutations={showMutations}
+                  selectable={selectable}
+                  selected={selectedContentIds.includes(content.id)}
+                  onToggleSelected={() => onToggleContentSelected?.(content.id)}
                   onSave={onSave}
                   onDuplicate={onDuplicate}
                   onDelete={onDelete}

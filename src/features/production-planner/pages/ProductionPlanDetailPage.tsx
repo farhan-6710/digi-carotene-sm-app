@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from "react-router";
 import { ArrowLeft, Pencil, Plus } from "lucide-react";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { MoveContentsToProjectDialog } from "@/features/production-planner/components/MoveContentsToProjectDialog";
 import { ProductionPlanContentsList } from "@/features/production-planner/components/ProductionPlanContentsList";
 import { ProductionPlanDialog } from "@/features/production-planner/components/ProductionPlanDialog";
 import { ProductionPlanSummaryCard } from "@/features/production-planner/components/ProductionPlanSummaryCard";
@@ -10,6 +11,7 @@ import { ShareLinkButton } from "@/features/share/components/ShareLinkButton";
 import { canGenerateShareLink } from "@/features/share/utils/shareAccess";
 import { copyProductionPlanShareLink } from "@/services/shareService";
 import { useDraftPlanContent } from "@/features/production-planner/hooks/useDraftPlanContent";
+import { useMoveContentsToPosts } from "@/features/production-planner/hooks/useMoveContentsToPosts";
 import { useProductionPlanDetailQuery } from "@/features/production-planner/hooks/useProductionPlanDetailQuery";
 import { useProductionPlanDialog } from "@/features/production-planner/hooks/useProductionPlanDialog";
 import type { ProductionPlanContentSavePayload } from "@/features/production-planner/types/components";
@@ -57,6 +59,7 @@ export function ProductionPlanDetailPage() {
     setError,
   });
   const canEditPlan = can("productionPlans.update");
+  const canMoveToPosts = can("posts.create");
 
   const canEditManagerApproval = canEditManagerOrClientApproval(teamRole);
   const canEditClientApproval = canEditManagerApproval;
@@ -70,6 +73,15 @@ export function ProductionPlanDetailPage() {
     teamMemberId,
     plan,
   );
+
+  const move = useMoveContentsToPosts({
+    clientId: plan?.client_id ?? "",
+    planShootDate: plan?.shoot_date ?? "",
+    contents,
+    enabled: canMoveToPosts,
+    reload,
+    setError,
+  });
 
   const handleSaveContent = async (
     id: string,
@@ -108,10 +120,13 @@ export function ProductionPlanDetailPage() {
         contentPillar: content.content_pillar,
         script: content.script,
         referenceLink: content.reference_link,
+        postType: content.post_type,
+        socials: content.socials,
         managerApproval: "pending",
         shootInchargeApproval: "pending",
         clientApproval: "pending",
         shootCompleted: false,
+        shootNotes: null,
       });
       showToast("success", `"${copyName}" created.`);
       await reload();
@@ -208,12 +223,27 @@ export function ProductionPlanDetailPage() {
         canEditShootInchargeApproval={showShootInchargeApproval}
         canEditClientApproval={canEditClientApproval}
         canEditShootCompleted={showShootCompleted}
+        canMoveToPosts={canMoveToPosts}
+        selectedContentIds={move.selectedIds}
+        onToggleContentSelected={move.toggleContentSelected}
+        onToggleSelectAllEligible={move.toggleSelectAllEligible}
+        onOpenMoveTo={() => void move.openMoveTo()}
         draftContent={draftContent}
         draftFocusKey={draftFocusKey}
         onSave={handleSaveContent}
         onDuplicate={handleDuplicateContent}
         onDelete={handleDeleteContent}
         onDiscardDraft={discardDraft}
+      />
+
+      <MoveContentsToProjectDialog
+        open={move.moveOpen}
+        onOpenChange={move.setMoveOpen}
+        selectedCount={move.selectedIds.length}
+        projects={move.projects}
+        isLoadingProjects={move.isLoadingProjects}
+        isMoving={move.isMoving}
+        onConfirm={(projectId) => void move.moveToProject(projectId)}
       />
 
       {canEditPlan ? (

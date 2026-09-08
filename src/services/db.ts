@@ -194,6 +194,10 @@ const PRODUCTION_PLAN_ITEM_SELECT = `
   shoot_incharge_approval,
   client_approval,
   shoot_completed,
+  shoot_notes,
+  post_type,
+  socials,
+  moved_to_post_id,
   created_at,
   updated_at
 `;

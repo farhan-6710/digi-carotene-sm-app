@@ -21,6 +21,7 @@ export function ConfirmationModal({
   cancelLabel = "Cancel",
   confirmVariant = "default",
   loading = false,
+  children,
   onConfirm,
 }: ConfirmationModalProps) {
   async function handleConfirm() {
@@ -41,6 +42,7 @@ export function ConfirmationModal({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
+        {children ? <div className="space-y-3">{children}</div> : null}
         <DialogFooter>
           <DialogClose asChild>
             <Button type="button" variant="outline" disabled={loading}>

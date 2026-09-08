@@ -274,6 +274,24 @@ export async function createPost(input: CreatePostInput): Promise<Post> {
   return mapPostRow(data as unknown as PostRow);
 }
 
+export async function fetchPostById(postId: string): Promise<Post | null> {
+  const { data, error } = await supabase
+    .from(DB.POSTS.TABLE)
+    .select(DB.POSTS.SELECT)
+    .eq("id", postId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  return mapPostRow(data as unknown as PostRow);
+}
+
 export async function updatePost(
   postId: string,
   input: UpdatePostInput,

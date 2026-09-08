@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { TaskDialog } from "@/features/tasks-management/components/TaskDialog";
 import { TasksTable } from "@/features/tasks-management/components/TasksTable";
+import { useTaskClientFilter } from "@/features/tasks-management/hooks/useTaskClientFilter";
 import { useTaskDialog } from "@/features/tasks-management/hooks/useTaskDialog";
 import {
   useTaskSearchQuery,
@@ -16,6 +17,10 @@ import {
   canEditTaskAccess,
   filterTasksByTab,
 } from "@/features/tasks-management/utils/taskAccessUtils";
+import {
+  buildTaskClientFilterOptions,
+  filterTasksByClient,
+} from "@/features/tasks-management/utils/taskClientFilterUtils";
 import { sortTasks } from "@/features/tasks-management/utils/taskSortUtils";
 import { filterTasksByStatus } from "@/features/tasks-management/utils/taskStatusFilterUtils";
 import { PageShell } from "@/shared/components/PageShell";
@@ -34,11 +39,20 @@ export function TasksManagementPage() {
   const { tab, setTab } = useTaskTabFilter();
   const { sort, setSort } = useTaskSort();
   const { statusFilter, setStatusFilter } = useTaskStatusFilter();
+  const { clientFilter, setClientFilter } = useTaskClientFilter();
   const { searchQuery, setSearchQuery } = useTaskSearchQuery();
+
+  const clientOptions = useMemo(
+    () => buildTaskClientFilterOptions(tasks),
+    [tasks],
+  );
 
   const filteredTasks = useMemo(() => {
     const filtered = filterTasksByStatus(
-      filterTasksByTab(tasks, tab, teamMemberId),
+      filterTasksByClient(
+        filterTasksByTab(tasks, tab, teamMemberId),
+        clientFilter,
+      ),
       statusFilter,
     ).filter((task) =>
       matchesListingSearch(searchQuery, [
@@ -56,7 +70,7 @@ export function TasksManagementPage() {
       ]),
     );
     return sortTasks(filtered, sort);
-  }, [tasks, tab, teamMemberId, sort, searchQuery, statusFilter]);
+  }, [tasks, tab, teamMemberId, sort, searchQuery, statusFilter, clientFilter]);
 
   return (
     <PageShell
@@ -88,6 +102,9 @@ export function TasksManagementPage() {
         onSortChange={setSort}
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
+        clientFilter={clientFilter}
+        onClientFilterChange={setClientFilter}
+        clientOptions={clientOptions}
         tab={tab}
         onTabChange={setTab}
       />

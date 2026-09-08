@@ -1,4 +1,5 @@
 import type { Client } from "@/features/clients-management/types/types";
+import type { PostType } from "@/features/posts-management/types/types";
 
 export type ProductionPlanApprovalStatus = "pending" | "approved" | "rejected";
 
@@ -38,6 +39,10 @@ export type ProductionPlanContent = {
   shoot_incharge_approval: ProductionPlanApprovalStatus;
   client_approval: ProductionPlanApprovalStatus;
   shoot_completed: boolean;
+  shoot_notes: string | null;
+  post_type: PostType;
+  socials: string[] | null;
+  moved_to_post_id: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -68,6 +73,10 @@ export type CreateProductionPlanContentInput = {
   shootInchargeApproval?: ProductionPlanApprovalStatus;
   clientApproval?: ProductionPlanApprovalStatus;
   shootCompleted?: boolean;
+  shootNotes?: string | null;
+  postType?: PostType;
+  socials?: string[] | null;
+  movedToPostId?: string | null;
 };
 
 export type UpdateProductionPlanContentInput = Partial<

@@ -23,7 +23,7 @@ export function TaskStatusFilter({
   );
 
   return (
-    <div className="w-full sm:w-[220px]">
+    <div className="w-full min-w-0 sm:w-[160px]">
       <ComboBox
         value={value}
         onChange={(next) => {

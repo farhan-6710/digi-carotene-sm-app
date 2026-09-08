@@ -20,6 +20,10 @@ function buildDraftPlanContent(
     shoot_incharge_approval: "pending",
     client_approval: "pending",
     shoot_completed: false,
+    shoot_notes: null,
+    post_type: "single_post",
+    socials: null,
+    moved_to_post_id: null,
     created_at: "",
     updated_at: "",
   };

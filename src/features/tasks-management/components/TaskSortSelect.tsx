@@ -21,7 +21,7 @@ export function TaskSortSelect({
   disabled = false,
 }: TaskSortSelectProps) {
   return (
-    <div className="w-full sm:w-[180px]">
+    <div className="w-full min-w-0 sm:w-[180px]">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -31,16 +31,14 @@ export function TaskSortSelect({
             className={cn(
               "h-9 w-full justify-between gap-2 rounded-md border-input bg-transparent px-3 text-sm font-normal shadow-xs",
             )}
-            aria-label={`Select sorting: ${TASK_SORT_LABELS[value]}`}
+            aria-label={`Sort by: ${TASK_SORT_LABELS[value]}`}
           >
             <span className="flex min-w-0 items-center gap-2">
               <ArrowUpDown
                 className="size-3.5 shrink-0 opacity-70"
                 aria-hidden="true"
               />
-              <span className="truncate text-muted-foreground">
-                Select sorting
-              </span>
+              <span className="truncate">{TASK_SORT_LABELS[value]}</span>
             </span>
             <ChevronDown
               className="size-3.5 shrink-0 opacity-70"

@@ -1,7 +1,7 @@
 export const TASKS_GRID_CLASS =
   "grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(0,0.55fr)_minmax(0,1fr)_minmax(0,0.6fr)_5rem]";
 export const TASKS_ROW_GRID_CLASS =
-  "sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(0,0.55fr)_minmax(0,1fr)_minmax(0,0.6fr)_5rem]";
+  "grid-cols-1 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(0,0.55fr)_minmax(0,1fr)_minmax(0,0.6fr)_5rem]";
 
 export const tasksColumns: import("@/shared/types/components").DirectoryTableColumn[] =
   [

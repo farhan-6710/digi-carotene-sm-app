@@ -23,7 +23,7 @@ export function PostsWeekDayCell({
   statusColors,
   statusText,
   onOpenDay,
-  onEdit,
+  onOpenPost,
 }: PostsWeekDayCellProps) {
   const hasClients = Boolean(slot?.clients.length);
   const dayName = getDayLabel(year, month, dateNumber);
@@ -76,9 +76,9 @@ export function PostsWeekDayCell({
                       className="flex w-full items-center justify-between gap-2 rounded-xl border border-border bg-background/70 px-3 py-1.5 text-left transition hover:border-ring/50"
                       onClick={(event) => {
                         event.stopPropagation();
-                        onEdit(client.id);
+                        onOpenPost(client.id);
                       }}
-                      aria-label={`Edit ${client.name}`}
+                      aria-label={`View ${client.name}`}
                     >
                       <div className="flex min-w-0 flex-col gap-0.5">
                         <div className="flex items-center gap-2">
