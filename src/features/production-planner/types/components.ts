@@ -88,6 +88,7 @@ export type ProductionPlanContentCardProps = {
   selectable?: boolean;
   selected?: boolean;
   onToggleSelected?: () => void;
+  onOpenLightbox?: () => void;
   onSave: (id: string, payload: ProductionPlanContentSavePayload) => Promise<void>;
   onDuplicate: (content: ProductionPlanContent) => Promise<void>;
   onDelete: (id: string) => Promise<void>;

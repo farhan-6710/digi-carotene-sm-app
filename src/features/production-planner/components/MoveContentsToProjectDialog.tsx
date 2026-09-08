@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import type { MoveContentsToProjectDialogProps } from "@/features/production-planner/types/components";
 import { Button } from "@/shared/ui/button";
@@ -33,14 +33,13 @@ export function MoveContentsToProjectDialog({
     [projects],
   );
 
-  useEffect(() => {
-    if (!open) {
-      setProjectId("");
-    }
-  }, [open]);
+  function handleOpenChange(next: boolean) {
+    if (!next) setProjectId("");
+    onOpenChange(next);
+  }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Move to project</DialogTitle>

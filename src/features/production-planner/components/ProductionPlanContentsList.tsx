@@ -7,6 +7,8 @@ import {
   type ContentApprovalFilterId,
 } from "@/features/production-planner/constants/contentApprovalFilters";
 import { productionPlanContentsListConfig } from "@/features/production-planner/constants/productionPlannerDirectory";
+import { useProductionPlanLightbox } from "@/features/production-planner/hooks/useProductionPlanLightbox";
+import { ProductionPlanLightboxProvider } from "@/features/production-planner/providers/ProductionPlanLightboxProvider";
 import type { ProductionPlanContentsListProps } from "@/features/production-planner/types/components";
 import { filterContentsByApproval } from "@/features/production-planner/utils/contentApprovalFilterUtils";
 import { canMoveContentToPosts } from "@/features/production-planner/utils/moveContentsToPostsUtils";
@@ -14,7 +16,7 @@ import { TableLoadingState } from "@/shared/components/LoadingSpinner";
 import { Button } from "@/shared/ui/button";
 import { Checkbox } from "@/shared/ui/checkbox";
 
-export function ProductionPlanContentsList({
+function ProductionPlanContentsListBody({
   contents,
   isLoading,
   canEdit,
@@ -36,16 +38,12 @@ export function ProductionPlanContentsList({
   onDelete,
   onDiscardDraft,
   emptyMessage: emptyMessageOverride,
-}: ProductionPlanContentsListProps) {
+  filteredContents,
+}: ProductionPlanContentsListProps & {
+  filteredContents: ProductionPlanContentsListProps["contents"];
+}) {
   const draftRef = useRef<HTMLDivElement>(null);
-  const [approvalFilter, setApprovalFilter] = useState<ContentApprovalFilterId>(
-    DEFAULT_CONTENT_APPROVAL_FILTER,
-  );
-
-  const filteredContents = useMemo(
-    () => filterContentsByApproval(contents, approvalFilter),
-    [contents, approvalFilter],
-  );
+  const { openAt } = useProductionPlanLightbox();
 
   const eligibleInView = useMemo(
     () => filteredContents.filter(canMoveContentToPosts),
@@ -77,23 +75,7 @@ export function ProductionPlanContentsList({
   const hasVisibleContent = filteredContents.length > 0 || Boolean(draftContent);
 
   return (
-    <section className="w-full min-w-0 rounded-2xl border border-border bg-card shadow-sm">
-      <div className="flex flex-col gap-4 border-b border-border px-6 py-5 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
-          <div className="text-sm font-semibold">
-            {productionPlanContentsListConfig.title}
-          </div>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {productionPlanContentsListConfig.description}
-          </p>
-        </div>
-        <ProductionPlanContentApprovalFilter
-          value={approvalFilter}
-          onChange={setApprovalFilter}
-          disabled={isLoading || contents.length === 0}
-        />
-      </div>
-
+    <>
       {canMoveToPosts && eligibleInView.length > 0 ? (
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/20 px-6 py-3">
           <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
@@ -147,6 +129,7 @@ export function ProductionPlanContentsList({
                   selectable={selectable}
                   selected={selectedContentIds.includes(content.id)}
                   onToggleSelected={() => onToggleContentSelected?.(content.id)}
+                  onOpenLightbox={() => openAt(content.id)}
                   onSave={onSave}
                   onDuplicate={onDuplicate}
                   onDelete={onDelete}
@@ -177,6 +160,60 @@ export function ProductionPlanContentsList({
           </div>
         )}
       </div>
+    </>
+  );
+}
+
+export function ProductionPlanContentsList(
+  props: ProductionPlanContentsListProps,
+) {
+  const [approvalFilter, setApprovalFilter] = useState<ContentApprovalFilterId>(
+    DEFAULT_CONTENT_APPROVAL_FILTER,
+  );
+
+  const filteredContents = useMemo(
+    () => filterContentsByApproval(props.contents, approvalFilter),
+    [props.contents, approvalFilter],
+  );
+
+  return (
+    <section className="w-full min-w-0 rounded-2xl border border-border bg-card shadow-sm">
+      <div className="flex flex-col gap-4 border-b border-border px-6 py-5 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <div className="text-sm font-semibold">
+            {productionPlanContentsListConfig.title}
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {productionPlanContentsListConfig.description}
+          </p>
+        </div>
+        <ProductionPlanContentApprovalFilter
+          value={approvalFilter}
+          onChange={setApprovalFilter}
+          disabled={props.isLoading || props.contents.length === 0}
+        />
+      </div>
+
+      <ProductionPlanLightboxProvider
+        items={filteredContents}
+        actions={{
+          canEdit: props.canEdit,
+          canEditManagerApproval: props.canEditManagerApproval,
+          canEditShootInchargeApproval: props.canEditShootInchargeApproval,
+          canEditClientApproval: props.canEditClientApproval,
+          canEditShootCompleted: props.canEditShootCompleted ?? false,
+          lockDetails: props.lockDetails ?? false,
+          showMutations: props.showMutations ?? true,
+          onSave: props.onSave,
+          onDuplicate: props.onDuplicate,
+          onDelete: props.onDelete,
+        }}
+      >
+        <ProductionPlanContentsListBody
+          {...props}
+          filteredContents={filteredContents}
+        />
+      </ProductionPlanLightboxProvider>
     </section>
   );
 }

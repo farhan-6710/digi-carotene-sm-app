@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { DEFAULT_POST_TIME } from "@/features/posts-management/constants/postSchedule";
 import { DEFAULT_POST_TYPE } from "@/features/posts-management/constants/postsManagement";
@@ -43,11 +43,10 @@ export function useMoveContentsToPosts({
     [contents],
   );
 
-  useEffect(() => {
-    setSelectedIds((current) =>
-      current.filter((id) => eligibleIds.includes(id)),
-    );
-  }, [eligibleIds]);
+  const activeSelectedIds = useMemo(
+    () => selectedIds.filter((id) => eligibleIds.includes(id)),
+    [eligibleIds, selectedIds],
+  );
 
   const toggleContentSelected = useCallback((contentId: string) => {
     setSelectedIds((current) =>
@@ -58,13 +57,14 @@ export function useMoveContentsToPosts({
   }, []);
 
   const toggleSelectAllEligible = useCallback(() => {
-    setSelectedIds((current) =>
-      current.length === eligibleIds.length ? [] : eligibleIds,
-    );
+    setSelectedIds((current) => {
+      const active = current.filter((id) => eligibleIds.includes(id));
+      return active.length === eligibleIds.length ? [] : eligibleIds;
+    });
   }, [eligibleIds]);
 
   const openMoveTo = useCallback(async () => {
-    if (selectedIds.length === 0) {
+    if (activeSelectedIds.length === 0) {
       showToast("info", "Select at least one shoot-completed content.");
       return;
     }
@@ -90,11 +90,11 @@ export function useMoveContentsToPosts({
     } finally {
       setIsLoadingProjects(false);
     }
-  }, [clientId, selectedIds.length, setError]);
+  }, [activeSelectedIds.length, clientId, setError]);
 
   const moveToProject = useCallback(
     async (projectId: string) => {
-      if (isMoving || selectedIds.length === 0) return;
+      if (isMoving || activeSelectedIds.length === 0) return;
 
       setIsMoving(true);
       setError(null);
@@ -102,7 +102,7 @@ export function useMoveContentsToPosts({
       let movedCount = 0;
 
       try {
-        for (const contentId of selectedIds) {
+        for (const contentId of activeSelectedIds) {
           const content = contents.find((item) => item.id === contentId);
           if (!content || !canMoveContentToPosts(content)) continue;
 
@@ -158,21 +158,22 @@ export function useMoveContentsToPosts({
       }
     },
     [
+      activeSelectedIds,
       contents,
       isMoving,
       planShootDate,
       reload,
-      selectedIds,
       setError,
     ],
   );
 
   return {
     enabled,
-    selectedIds,
+    selectedIds: activeSelectedIds,
     eligibleCount: eligibleIds.length,
     allEligibleSelected:
-      eligibleIds.length > 0 && selectedIds.length === eligibleIds.length,
+      eligibleIds.length > 0 &&
+      activeSelectedIds.length === eligibleIds.length,
     toggleContentSelected,
     toggleSelectAllEligible,
     moveOpen,

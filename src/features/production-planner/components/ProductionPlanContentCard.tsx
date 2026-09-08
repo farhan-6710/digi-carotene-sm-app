@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { Copy, Pencil, Trash2 } from "lucide-react";
+import type { KeyboardEvent, MouseEvent } from "react";
 
 import { ApprovalStatusBadge } from "@/features/production-planner/components/ApprovalStatusBadge";
 import { ApprovalStatusSelect } from "@/features/production-planner/components/ApprovalStatusSelect";
@@ -47,6 +48,7 @@ export function ProductionPlanContentCard({
   selectable = false,
   selected = false,
   onToggleSelected,
+  onOpenLightbox,
   onSave,
   onDuplicate,
   onDelete,
@@ -279,12 +281,39 @@ export function ProductionPlanContentCard({
     return date ? format(date, "MMMM d, yyyy") : null;
   })();
 
+  const handleCardClick = (event: MouseEvent<HTMLElement>) => {
+    if (!onOpenLightbox || isEditing || isDraft) return;
+    const target = event.target as HTMLElement | null;
+    if (
+      target?.closest(
+        "button, a, input, textarea, label, [role='checkbox'], [data-slot='checkbox'], [data-slot='switch']",
+      )
+    ) {
+      return;
+    }
+    onOpenLightbox();
+  };
+
   return (
     <>
       <article
+        role={onOpenLightbox && !isEditing && !isDraft ? "button" : undefined}
+        tabIndex={onOpenLightbox && !isEditing && !isDraft ? 0 : undefined}
+        onClick={handleCardClick}
+        onKeyDown={(event: KeyboardEvent<HTMLElement>) => {
+          if (!onOpenLightbox || isEditing || isDraft) return;
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onOpenLightbox();
+          }
+        }}
         className={cn(
           "rounded-xl border border-border/80 bg-card shadow-sm",
           isEditing && "ring-1 ring-primary/20",
+          onOpenLightbox &&
+            !isEditing &&
+            !isDraft &&
+            "cursor-pointer transition hover:border-ring/40 hover:bg-muted/20",
         )}
       >
         <header className="flex items-start justify-between gap-3 border-b border-border/60 px-4 py-3 sm:px-5">
