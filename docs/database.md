@@ -92,7 +92,7 @@ Types for the UI live in `src/features/<feature>/types/types.ts` — not duplica
 
 ## RLS (V1)
 
-Authenticated **team** users (`profiles.role = 'team'`): full CRUD on operational tables. **Client** portal: SELECT own `clients` row and posts under that client’s SM projects; SELECT own SM/Dev/Other projects; SELECT accessible tasks (assignee or dependency); read/write own task messages; read/write subtasks they raised or are assigned to. Growth tables use authenticated access; the UI scopes by `client_id`. PHP crons use the **service_role** key (bypasses RLS).
+Authenticated **team** users (`profiles.role = 'team'`): full CRUD on operational tables. **Client** portal: SELECT own `clients` row and posts under that client’s SM projects; SELECT own SM/Dev/Other projects; SELECT all tasks on those SM/Dev projects; read/write own task messages; read all subtasks on those tasks (update only if raiser/assignee). Growth tables use authenticated access; the UI scopes by `client_id`. PHP crons use the **service_role** key (bypasses RLS).
 
 Public share links:
 

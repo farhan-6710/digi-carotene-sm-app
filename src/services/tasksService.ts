@@ -66,28 +66,56 @@ async function fetchAssignedTaskIdsForMember(
   return (data ?? []).map((row) => row.task_id);
 }
 
-async function fetchAssignedTaskIdsForClient(
-  clientId: string,
-): Promise<string[]> {
-  const { data, error } = await supabase
-    .from(DB.TASK_ASSIGNEES.TABLE)
-    .select("task_id")
-    .eq("client_id", clientId);
+async function fetchProjectIdsForClient(clientId: string): Promise<{
+  smProjectIds: string[];
+  devProjectIds: string[];
+}> {
+  const [smResult, devResult] = await Promise.all([
+    supabase.from(DB.PROJECTS.TABLE).select("id").eq("client_id", clientId),
+    supabase.from(DB.DEV_PROJECTS.TABLE).select("id").eq("client_id", clientId),
+  ]);
 
-  if (error) throw error;
-  return (data ?? []).map((row) => row.task_id);
+  if (smResult.error) throw smResult.error;
+  if (devResult.error) throw devResult.error;
+
+  return {
+    smProjectIds: (smResult.data ?? []).map((row) => row.id),
+    devProjectIds: (devResult.data ?? []).map((row) => row.id),
+  };
 }
 
-async function fetchTasksByIds(taskIds: string[]): Promise<Task[]> {
-  if (taskIds.length === 0) return [];
-  const { data, error } = await supabase
-    .from(DB.TASKS.TABLE)
-    .select(DB.TASKS.SELECT)
-    .in("id", taskIds)
-    .order("updated_at", { ascending: false });
+export async function fetchTasksForClient(
+  clientId: string | null,
+): Promise<Task[]> {
+  if (!clientId) return [];
 
-  if (error) throw error;
-  return (data ?? []).map((row) => mapTaskRow(row as unknown as TaskRow));
+  const { smProjectIds, devProjectIds } =
+    await fetchProjectIdsForClient(clientId);
+
+  const [smTasks, devTasks] = await Promise.all([
+    smProjectIds.length > 0
+      ? supabase
+          .from(DB.TASKS.TABLE)
+          .select(DB.TASKS.SELECT)
+          .in("project_id", smProjectIds)
+          .order("updated_at", { ascending: false })
+      : Promise.resolve({ data: [], error: null }),
+    devProjectIds.length > 0
+      ? supabase
+          .from(DB.TASKS.TABLE)
+          .select(DB.TASKS.SELECT)
+          .in("dev_project_id", devProjectIds)
+          .order("updated_at", { ascending: false })
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+
+  if (smTasks.error) throw smTasks.error;
+  if (devTasks.error) throw devTasks.error;
+
+  return mergeTasksById([
+    (smTasks.data ?? []).map((row) => mapTaskRow(row as unknown as TaskRow)),
+    (devTasks.data ?? []).map((row) => mapTaskRow(row as unknown as TaskRow)),
+  ]);
 }
 
 function mergeTasksById(lists: Task[][]): Task[] {
@@ -100,6 +128,18 @@ function mergeTasksById(lists: Task[][]): Task[] {
   return [...map.values()].sort((a, b) =>
     b.updated_at.localeCompare(a.updated_at),
   );
+}
+
+async function fetchTasksByIds(taskIds: string[]): Promise<Task[]> {
+  if (taskIds.length === 0) return [];
+  const { data, error } = await supabase
+    .from(DB.TASKS.TABLE)
+    .select(DB.TASKS.SELECT)
+    .in("id", taskIds)
+    .order("updated_at", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []).map((row) => mapTaskRow(row as unknown as TaskRow));
 }
 
 async function replaceTaskTags(
@@ -441,39 +481,6 @@ export async function updateTask(
 
   if (error) throw error;
   return mapTaskRow(data as unknown as TaskRow);
-}
-
-export async function fetchTasksForClient(
-  clientId: string | null,
-): Promise<Task[]> {
-  if (!clientId) return [];
-
-  const assignedIds = await fetchAssignedTaskIdsForClient(clientId);
-
-  const [byClientResult, byDependencyResult] = await Promise.all([
-    supabase
-      .from(DB.TASKS.TABLE)
-      .select(DB.TASKS.SELECT)
-      .eq("client_id", clientId)
-      .order("updated_at", { ascending: false }),
-    supabase
-      .from(DB.TASKS.TABLE)
-      .select(DB.TASKS.SELECT)
-      .eq("dependency_client_id", clientId)
-      .order("updated_at", { ascending: false }),
-  ]);
-
-  if (byClientResult.error) throw byClientResult.error;
-  if (byDependencyResult.error) throw byDependencyResult.error;
-
-  const byClientColumn = (byClientResult.data ?? []).map((row) =>
-    mapTaskRow(row as unknown as TaskRow),
-  );
-  const byDependency = (byDependencyResult.data ?? []).map((row) =>
-    mapTaskRow(row as unknown as TaskRow),
-  );
-  const byJunction = await fetchTasksByIds(assignedIds);
-  return mergeTasksById([byClientColumn, byDependency, byJunction]);
 }
 
 export async function fetchTaskById(taskId: string): Promise<Task | null> {

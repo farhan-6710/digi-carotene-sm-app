@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { SubtaskDialog } from "@/features/tasks-management/components/SubtaskDialog";
 import { SubtasksTable } from "@/features/tasks-management/components/SubtasksTable";
@@ -8,7 +6,6 @@ import { useSubtasksQuery } from "@/features/tasks-management/hooks/useSubtasksQ
 import { useTaskSubtaskAssigneeScope } from "@/features/tasks-management/hooks/useTaskSubtaskAssigneeScope";
 import type { SubtasksSectionProps } from "@/features/tasks-management/types/components";
 import {
-  canClientSeeSubtask,
   canCreateSubtaskAccess,
   canEditSubtaskAccess,
 } from "@/features/tasks-management/utils/taskAccessUtils";
@@ -38,16 +35,11 @@ export function SubtasksSection({
     clientId,
   });
 
-  const visibleSubtasks = useMemo(() => {
-    if (!clientId || teamMemberId) return subtasks;
-    return subtasks.filter((subtask) => canClientSeeSubtask(subtask, clientId));
-  }, [clientId, subtasks, teamMemberId]);
-
   return (
     <div className="space-y-3">
       {error ? <ErrorBanner message={error} /> : null}
       <SubtasksTable
-        subtasks={visibleSubtasks}
+        subtasks={subtasks}
         isLoading={isLoading}
         canAdd={canAdd}
         onAddSubtask={openAddDialog}

@@ -14,7 +14,6 @@ import { TaskDetailSummary } from "@/features/tasks-management/components/TaskDe
 import { useTaskChat } from "@/features/tasks-management/hooks/useTaskChat";
 import { useSubtasksQuery } from "@/features/tasks-management/hooks/useSubtasksQuery";
 import { buildTaskChatParticipants } from "@/features/tasks-management/utils/taskChatMentionUtils";
-import { canClientSeeSubtask } from "@/features/tasks-management/utils/taskAccessUtils";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -62,11 +61,8 @@ export function ClientTaskDetailPage() {
     [adminMembers, task],
   );
   const chatSubtasks = useMemo(
-    () =>
-      subtasks
-        .filter((subtask) => canClientSeeSubtask(subtask, clientId))
-        .map((subtask) => ({ id: subtask.id, title: subtask.title })),
-    [clientId, subtasks],
+    () => subtasks.map((subtask) => ({ id: subtask.id, title: subtask.title })),
+    [subtasks],
   );
 
   if (isLoading && !task) {
