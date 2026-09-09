@@ -1,5 +1,5 @@
-/** Keeps directory grids from crushing cells; scroll kicks in below this width. */
-export const DIRECTORY_TABLE_MIN_WIDTH_CLASS = "min-w-[44rem]";
+/** Keeps directory grids from crushing cells on tablet+; mobile uses stacked/compact rows. */
+export const DIRECTORY_TABLE_MIN_WIDTH_CLASS = "sm:min-w-[44rem]";
 
 /** Wide table scroll shell — horizontal scroll without rubber-band at edges. */
 export const TABLE_HORIZONTAL_SCROLL_CLASS =
