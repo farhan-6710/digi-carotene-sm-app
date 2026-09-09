@@ -1,11 +1,10 @@
-import { format } from "date-fns";
-
 import {
-  TEAM_MEMBER_ROLE_BADGE_CLASS,
-  TEAM_MEMBER_ROLE_LABELS,
+  teamMemberRoleBadgeClass,
+  teamMemberRoleLabel,
 } from "@/features/team-management/constants/teamMemberRoles";
 import type { TeamMemberProfileCardProps } from "@/features/team-management/types/components";
 import { cn } from "@/shared/lib/utils";
+import { format } from "date-fns";
 
 export function TeamMemberProfileCard({ member }: TeamMemberProfileCardProps) {
   const details = [
@@ -38,10 +37,10 @@ export function TeamMemberProfileCard({ member }: TeamMemberProfileCardProps) {
         <span
           className={cn(
             "inline-flex rounded-full px-3 py-1 text-xs font-semibold",
-            TEAM_MEMBER_ROLE_BADGE_CLASS[member.team_role],
+            teamMemberRoleBadgeClass(member.team_role),
           )}
         >
-          {TEAM_MEMBER_ROLE_LABELS[member.team_role]}
+          {teamMemberRoleLabel(member.team_role)}
         </span>
       </div>
 

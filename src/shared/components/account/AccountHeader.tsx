@@ -1,10 +1,6 @@
-import { LogOut } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router";
-
 import {
-  TEAM_MEMBER_ROLE_BADGE_CLASS,
-  TEAM_MEMBER_ROLE_LABELS,
+  teamMemberRoleBadgeClass,
+  teamMemberRoleLabel,
 } from "@/features/team-management/constants/teamMemberRoles";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { Button } from "@/shared/ui/button";
@@ -17,6 +13,9 @@ import {
   getUserInitials,
 } from "@/shared/utils/authUserDisplay";
 import type { AccountHeaderProps } from "@/shared/components/account/types";
+import { LogOut } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router";
 
 export function AccountHeader({
   user,
@@ -72,10 +71,10 @@ export function AccountHeader({
                     <span
                       className={cn(
                         "inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold",
-                        TEAM_MEMBER_ROLE_BADGE_CLASS[teamRole],
+                        teamMemberRoleBadgeClass(teamRole),
                       )}
                     >
-                      {TEAM_MEMBER_ROLE_LABELS[teamRole]}
+                      {teamMemberRoleLabel(teamRole)}
                     </span>
                   ) : (
                     <span className="text-xs font-medium text-muted-foreground">

@@ -10,8 +10,9 @@ export function RouteErrorPage() {
       : "Something went wrong loading this page.";
 
   const isChunkError =
-    message.includes("Failed to fetch dynamically imported module") ||
-    message.includes("Importing a module script failed");
+    typeof message === "string" &&
+    (message.includes("Failed to fetch dynamically imported module") ||
+      message.includes("Importing a module script failed"));
 
   return (
     <section className="mx-auto flex min-h-[50vh] max-w-lg flex-col items-center justify-center gap-4 px-6 text-center">

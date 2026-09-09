@@ -1,17 +1,16 @@
-import type { ReactNode } from "react";
-import { Pencil } from "lucide-react";
-
-import { buildTeamMemberDetailPath } from "@/features/team-management/constants/routes";
-import { TEAM_DIRECTORY_ROW_GRID_CLASS } from "@/features/team-management/constants/teamDirectory";
 import {
-  TEAM_MEMBER_ROLE_BADGE_CLASS,
-  TEAM_MEMBER_ROLE_LABELS,
+  teamMemberRoleBadgeClass,
+  teamMemberRoleLabel,
 } from "@/features/team-management/constants/teamMemberRoles";
 import type { TeamMembersTableRowProps } from "@/features/team-management/types/components";
 import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
 import { stopDirectoryRowNav } from "@/shared/utils/directoryTableRow";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
+import { buildTeamMemberDetailPath } from "@/features/team-management/constants/routes";
+import { TEAM_DIRECTORY_ROW_GRID_CLASS } from "@/features/team-management/constants/teamDirectory";
+import type { ReactNode } from "react";
+import { Pencil } from "lucide-react";
 
 function MobileLabel({ children }: { children: ReactNode }) {
   return (
@@ -62,10 +61,10 @@ export function TeamMembersTableRow({
         <span
           className={cn(
             "inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold",
-            TEAM_MEMBER_ROLE_BADGE_CLASS[member.team_role],
+            teamMemberRoleBadgeClass(member.team_role),
           )}
         >
-          {TEAM_MEMBER_ROLE_LABELS[member.team_role]}
+          {teamMemberRoleLabel(member.team_role)}
         </span>
       </div>
 

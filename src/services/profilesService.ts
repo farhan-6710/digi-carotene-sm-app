@@ -1,7 +1,10 @@
 import { DB } from "@/services/db";
 import { supabase } from "@/services/supabaseClient";
 import type { Profile } from "@/features/auth/types/profile";
-import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
+import {
+  normalizeTeamMemberRole,
+  type TeamMemberRole,
+} from "@/features/team-management/constants/teamMemberRoles";
 
 // Reads the profile row that links an auth user to a portal.
 export async function fetchProfile(userId: string): Promise<Profile | null> {
@@ -19,6 +22,7 @@ export async function fetchProfile(userId: string): Promise<Profile | null> {
 }
 
 // Reads the role of a team member (admin, manager, sm_executive, editor).
+// Legacy DB value `executive` is normalized to `sm_executive`.
 export async function fetchTeamRole(
   teamMemberId: string,
 ): Promise<TeamMemberRole | null> {
@@ -32,7 +36,9 @@ export async function fetchTeamRole(
     return null;
   }
 
-  return data.team_role as TeamMemberRole;
+  return normalizeTeamMemberRole(
+    typeof data.team_role === "string" ? data.team_role : null,
+  );
 }
 
 // Asks the database to link an auth user to a roster row by matching email.

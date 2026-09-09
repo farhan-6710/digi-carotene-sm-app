@@ -1,4 +1,4 @@
-import { TEAM_MEMBER_ROLE_LABELS } from "@/features/team-management/constants/teamMemberRoles";
+import { teamMemberRoleLabel } from "@/features/team-management/constants/teamMemberRoles";
 import { AccountDetailsCard } from "@/shared/components/account/AccountDetailsCard";
 import {
   getUserAuthProvider,
@@ -15,9 +15,7 @@ export function TeamAccountDetailsCard({
   const details = [
     {
       label: "Team role",
-      value: teamRole
-        ? TEAM_MEMBER_ROLE_LABELS[teamRole]
-        : "Not assigned",
+      value: teamRole ? teamMemberRoleLabel(teamRole) : "Not assigned",
     },
     { label: "Department", value: teamAccount.department },
     { label: "Email", value: getUserEmail(user) },

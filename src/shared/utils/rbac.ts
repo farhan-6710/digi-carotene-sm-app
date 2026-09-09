@@ -1,4 +1,7 @@
-import type { TeamMemberRole } from "@/features/team-management/constants/teamMemberRoles";
+import {
+  normalizeTeamMemberRole,
+  type TeamMemberRole,
+} from "@/features/team-management/constants/teamMemberRoles";
 
 // Centralized, frontend-only RBAC. Permissions are derived from the
 // logged-in user's `team_members.team_role`. Add a new role or resource here and
@@ -39,18 +42,30 @@ const ROLE_RESOURCES: Record<TeamMemberRole, RbacResource[]> = {
   editor: ["posts", "productionPlans"],
 };
 
-/** Admin/manager inherit control of SM-executive-controlled actions. */
-export function isAdminOrManagerRole(role: TeamMemberRole | null): boolean {
-  return role === "admin" || role === "manager";
+function resolveRole(role: TeamMemberRole | string | null): TeamMemberRole | null {
+  return normalizeTeamMemberRole(role);
 }
 
-export function can(role: TeamMemberRole | null, permission: Permission): boolean {
-  if (!role) {
+/** Admin/manager inherit control of SM-executive-controlled actions. */
+export function isAdminOrManagerRole(
+  role: TeamMemberRole | string | null,
+): boolean {
+  const resolved = resolveRole(role);
+  return resolved === "admin" || resolved === "manager";
+}
+
+export function can(
+  role: TeamMemberRole | string | null,
+  permission: Permission,
+): boolean {
+  const resolved = resolveRole(role);
+  if (!resolved) {
     return false;
   }
 
   const resource = permission.split(".")[0] as RbacResource;
-  return ROLE_RESOURCES[role].includes(resource);
+  const resources = ROLE_RESOURCES[resolved];
+  return resources?.includes(resource) ?? false;
 }
 
 // ─── Project / post list scoping ─────────────────────────────────────────────
@@ -69,15 +84,16 @@ export const PROJECT_DATA_SCOPE_BY_ROLE: Record<TeamMemberRole, ProjectDataScope
   };
 
 export function projectDataScopeForRole(
-  role: TeamMemberRole | null,
+  role: TeamMemberRole | string | null,
 ): ProjectDataScope {
-  if (!role) {
+  const resolved = resolveRole(role);
+  if (!resolved) {
     return "assigned";
   }
-  return PROJECT_DATA_SCOPE_BY_ROLE[role];
+  return PROJECT_DATA_SCOPE_BY_ROLE[resolved] ?? "assigned";
 }
 
-export function seesAllProjects(role: TeamMemberRole | null): boolean {
+export function seesAllProjects(role: TeamMemberRole | string | null): boolean {
   return projectDataScopeForRole(role) === "all";
 }
 
@@ -95,14 +111,17 @@ export const PRODUCTION_PLAN_DATA_SCOPE_BY_ROLE: Record<
 };
 
 export function productionPlanDataScopeForRole(
-  role: TeamMemberRole | null,
+  role: TeamMemberRole | string | null,
 ): ProductionPlanDataScope {
-  if (!role) {
+  const resolved = resolveRole(role);
+  if (!resolved) {
     return "assigned";
   }
-  return PRODUCTION_PLAN_DATA_SCOPE_BY_ROLE[role];
+  return PRODUCTION_PLAN_DATA_SCOPE_BY_ROLE[resolved] ?? "assigned";
 }
 
-export function seesAllProductionPlans(role: TeamMemberRole | null): boolean {
+export function seesAllProductionPlans(
+  role: TeamMemberRole | string | null,
+): boolean {
   return productionPlanDataScopeForRole(role) === "all";
 }

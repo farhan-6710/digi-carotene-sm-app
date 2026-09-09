@@ -33,3 +33,34 @@ export function isProjectManagerRole(
 ): role is ProjectManagerRole {
   return role === "manager" || role === "admin";
 }
+
+const TEAM_MEMBER_ROLE_SET = new Set<string>(TEAM_MEMBER_ROLES);
+
+/**
+ * Map DB / legacy values to the current role union.
+ * Production DBs that have not run migration 071 still store `executive`.
+ */
+export function normalizeTeamMemberRole(
+  role: string | null | undefined,
+): TeamMemberRole | null {
+  if (!role) return null;
+  if (role === "executive") return "sm_executive";
+  if (TEAM_MEMBER_ROLE_SET.has(role)) return role as TeamMemberRole;
+  return null;
+}
+
+export function teamMemberRoleLabel(
+  role: string | null | undefined,
+): string {
+  const normalized = normalizeTeamMemberRole(role);
+  if (!normalized) return "Unknown role";
+  return TEAM_MEMBER_ROLE_LABELS[normalized];
+}
+
+export function teamMemberRoleBadgeClass(
+  role: string | null | undefined,
+): string {
+  const normalized = normalizeTeamMemberRole(role);
+  if (!normalized) return "bg-muted text-muted-foreground";
+  return TEAM_MEMBER_ROLE_BADGE_CLASS[normalized];
+}
