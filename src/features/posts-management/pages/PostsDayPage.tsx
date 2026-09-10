@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import { ArrowLeft, Plus } from "lucide-react";
 import { useMemo } from "react";
 
-import { ClientProjectFilters } from "@/features/posts-management/components/ClientProjectFilters";
 import { DayPostsTable } from "@/features/posts-management/components/DayPostsTable";
 import {
   buildAddPostsPath,
@@ -124,19 +123,16 @@ export function PostsDayPage() {
         }
       />
 
-      <ClientProjectFilters
-        projects={projects}
-        selectedClientIds={selectedClientIds}
-        selectedProjectIds={selectedProjectIds}
-        onClientChange={setSelectedClientIds}
-        onProjectChange={setSelectedProjectIds}
-      />
-
       {error ? <ErrorBanner message={error} /> : null}
 
       <DayPostsTable
         posts={filteredPosts}
+        projects={projects}
         isLoading={isLoading}
+        selectedClientIds={selectedClientIds}
+        selectedProjectIds={selectedProjectIds}
+        onClientChange={setSelectedClientIds}
+        onProjectChange={setSelectedProjectIds}
         onOpenPost={(post) => navigate(buildPostDetailPath(post.id))}
       />
     </PageContent>

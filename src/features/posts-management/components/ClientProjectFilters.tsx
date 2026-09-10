@@ -10,6 +10,7 @@ type ClientProjectFiltersProps = {
   selectedProjectIds: string[];
   onClientChange: (clientIds: string[]) => void;
   onProjectChange: (projectIds: string[]) => void;
+  className?: string;
 };
 
 export function ClientProjectFilters({
@@ -18,6 +19,7 @@ export function ClientProjectFilters({
   selectedProjectIds,
   onClientChange,
   onProjectChange,
+  className,
 }: ClientProjectFiltersProps) {
   const clientOptions = useMemo(() => {
     const map = new Map<string, string>();
@@ -48,7 +50,11 @@ export function ClientProjectFilters({
   }, [projects, selectedClientIds]);
 
   return (
-    <div className="grid w-full gap-3 md:grid-cols-2 xl:max-w-3xl">
+    <div
+      className={
+        className ?? "grid w-full gap-3 md:grid-cols-2 xl:max-w-3xl"
+      }
+    >
       <MultiSelect
         value={selectedClientIds}
         onChange={onClientChange}

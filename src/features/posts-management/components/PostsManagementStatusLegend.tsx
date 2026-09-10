@@ -1,6 +1,7 @@
 import {
   statusColors,
   statusOptions,
+  statusText,
 } from "@/features/posts-management/constants/postsManagement";
 
 export function PostsManagementStatusLegend() {
@@ -11,8 +12,13 @@ export function PostsManagementStatusLegend() {
           key={label}
           className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1"
         >
-          <span className={`size-2 rounded-full ${statusColors[label]}`} />
-          <span>{label}</span>
+          <span
+            className={`size-2 shrink-0 rounded-full ${statusColors[label]}`}
+            aria-hidden
+          />
+          <span className={`text-xs font-semibold ${statusText[label]}`}>
+            {label}
+          </span>
         </div>
       ))}
     </div>

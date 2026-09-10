@@ -2,8 +2,8 @@ import { ProjectPostsTableRow } from "@/features/projects-management/components/
 import { projectPostsDirectoryConfig } from "@/features/projects-management/constants/projectPostsDirectory";
 import { useProjectPostsFilters } from "@/features/projects-management/hooks/useProjectPostsFilters";
 import type { ProjectPostsTableProps } from "@/features/projects-management/types/components";
+import { PostStatusSelect } from "@/features/posts-management/components/PostStatusSelect";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
-import { PostStatusFilter } from "@/shared/ui/PostStatusFilter";
 
 export function ProjectPostsTable({
   posts,
@@ -11,13 +11,8 @@ export function ProjectPostsTable({
   onOpenPost,
   onEditPost,
 }: ProjectPostsTableProps) {
-  const {
-    filteredPosts,
-    showAll,
-    activeStatuses,
-    toggleStatus,
-    statusOptions,
-  } = useProjectPostsFilters(posts);
+  const { filteredPosts, statusFilter, setStatusFilter } =
+    useProjectPostsFilters(posts);
 
   return (
     <DirectoryTable
@@ -29,12 +24,7 @@ export function ProjectPostsTable({
       isLoading={isLoading}
       isEmpty={filteredPosts.length === 0}
       headerAside={
-        <PostStatusFilter
-          options={statusOptions}
-          showAll={showAll}
-          activeStatuses={activeStatuses}
-          onToggle={toggleStatus}
-        />
+        <PostStatusSelect value={statusFilter} onChange={setStatusFilter} />
       }
     >
       {filteredPosts.map((post) => (

@@ -83,7 +83,11 @@ export function PostsWeekDayCell({
                       <div className="flex min-w-0 flex-col gap-0.5">
                         <div className="flex items-center gap-2">
                           <span
-                            className={`size-2 shrink-0 rounded-full ${statusColors[client.status]}`}
+                            className={cn(
+                              "size-2 shrink-0 rounded-full",
+                              statusColors[client.status],
+                            )}
+                            aria-hidden
                           />
                           <span className="truncate text-sm font-medium">
                             {client.name}
@@ -105,7 +109,10 @@ export function PostsWeekDayCell({
                           {client.toBePostedTime}
                         </span>
                         <span
-                          className={`text-[11px] font-semibold ${statusText[client.status]}`}
+                          className={cn(
+                            "text-[11px] font-semibold",
+                            statusText[client.status],
+                          )}
                         >
                           {client.status}
                         </span>

@@ -279,3 +279,7 @@ export type ShellNavSearchProps = {
   placeholder?: string;
   className?: string;
 };
+
+export type ThemeModeToggleProps = {
+  className?: string;
+};

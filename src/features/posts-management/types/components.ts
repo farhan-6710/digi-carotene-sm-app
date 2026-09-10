@@ -67,7 +67,12 @@ export type PostsWeekDayCellProps = {
 
 export type DayPostsTableProps = {
   posts: import("@/features/posts-management/types/types").Post[];
+  projects: import("@/features/projects-management/types/types").ProjectListItem[];
   isLoading: boolean;
+  selectedClientIds: string[];
+  selectedProjectIds: string[];
+  onClientChange: (clientIds: string[]) => void;
+  onProjectChange: (projectIds: string[]) => void;
   onOpenPost: (
     post: import("@/features/posts-management/types/types").Post,
   ) => void;
@@ -78,6 +83,63 @@ export type DayPostsTableRowProps = {
   onOpenPost: (
     post: import("@/features/posts-management/types/types").Post,
   ) => void;
+};
+
+export type PostsDaysListTableProps = {
+  year: number;
+  month: number;
+  isLoading: boolean;
+  listDateRange?: { from: Date; to?: Date };
+  getSlot: (
+    year: number,
+    month: number,
+    date: number,
+  ) => import("@/features/posts-management/types/types").Slot | undefined;
+};
+
+export type PostsManagementFiltersBarProps = {
+  projects: import("@/features/projects-management/types/types").ProjectListItem[];
+  selectedClientIds: string[];
+  selectedProjectIds: string[];
+  statusFilter: import("@/features/posts-management/constants/postStatusSelect").PostStatusSelectId;
+  onClientChange: (clientIds: string[]) => void;
+  onProjectChange: (projectIds: string[]) => void;
+  onStatusChange: (
+    status: import("@/features/posts-management/constants/postStatusSelect").PostStatusSelectId,
+  ) => void;
+  listView: boolean;
+  listDateRange: {
+    isPickerOpen: boolean;
+    onPickerOpenChange: (open: boolean) => void;
+    pickerRange: import("react-day-picker").DateRange | undefined;
+    rangeButtonLabel: string;
+    isDateRangeActive: boolean;
+    onPickerRangeChange: (
+      range: import("react-day-picker").DateRange | undefined,
+    ) => void;
+    onApplyDateRange: () => void;
+    onClearDateRange: () => void;
+    onPickerKeyDown: (event: import("react").KeyboardEvent) => void;
+    pickerError: string | null;
+  };
+};
+
+export type PostsDaysListStatusMixItem = {
+  status: import("@/features/posts-management/types/types").StatusKey;
+  count: number;
+};
+
+export type PostsDaysListTableRowProps = {
+  date: number;
+  dayLabel: string;
+  postCount: number;
+  statusMix: PostsDaysListStatusMixItem[];
+  href: string;
+};
+
+export type PostsCalendarViewToggleProps = {
+  listView: boolean;
+  onListViewChange: (listView: boolean) => void;
 };
 
 export type PostDetailSummaryProps = {

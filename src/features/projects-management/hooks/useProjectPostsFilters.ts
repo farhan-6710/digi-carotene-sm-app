@@ -1,33 +1,26 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import { statusOptions } from "@/features/posts-management/constants/postsManagement";
-import type { Post } from "@/features/posts-management/types/types";
 import {
-  filterPostsByStatus,
-  getDefaultPostStatusFilterState,
-  togglePostStatusFilter,
-  type PostStatusFilterTarget,
-} from "@/shared/utils/postStatusFilterUtils";
+  POST_STATUS_SELECT_ALL,
+  type PostStatusSelectId,
+} from "@/features/posts-management/constants/postStatusSelect";
+import type { Post } from "@/features/posts-management/types/types";
 
 export function useProjectPostsFilters(posts: Post[]) {
-  const [statusFilter, setStatusFilter] = useState(
-    getDefaultPostStatusFilterState,
+  const [statusFilter, setStatusFilter] = useState<PostStatusSelectId>(
+    POST_STATUS_SELECT_ALL,
   );
 
-  const toggleStatus = useCallback((target: PostStatusFilterTarget) => {
-    setStatusFilter((current) => togglePostStatusFilter(current, target));
-  }, []);
-
-  const filteredPosts = useMemo(
-    () => filterPostsByStatus(posts, statusFilter),
-    [posts, statusFilter],
-  );
+  const filteredPosts = useMemo(() => {
+    if (statusFilter === POST_STATUS_SELECT_ALL) {
+      return posts;
+    }
+    return posts.filter((post) => post.status === statusFilter);
+  }, [posts, statusFilter]);
 
   return {
     filteredPosts,
-    showAll: statusFilter.showAll,
-    activeStatuses: statusFilter.statuses,
-    toggleStatus,
-    statusOptions,
+    statusFilter,
+    setStatusFilter,
   };
 }

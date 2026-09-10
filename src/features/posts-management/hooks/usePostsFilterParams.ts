@@ -5,8 +5,11 @@ import {
   POSTS_CLIENTS_PARAM,
   POSTS_PROJECTS_PARAM,
   parseFilterIdsParam,
+  parsePostsStatusParam,
   setFilterIdsParam,
+  setPostsStatusParam,
 } from "@/features/posts-management/utils/postsManagementUrlParams";
+import type { PostStatusSelectId } from "@/features/posts-management/constants/postStatusSelect";
 
 export function usePostsFilterParams() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,24 +24,49 @@ export function usePostsFilterParams() {
     [searchParams],
   );
 
+  const statusFilter = useMemo(
+    () => parsePostsStatusParam(searchParams),
+    [searchParams],
+  );
+
   const setSelectedClientIds = useCallback(
     (ids: string[]) => {
-      setSearchParams((prev) => {
-        const next = new URLSearchParams(prev);
-        setFilterIdsParam(next, POSTS_CLIENTS_PARAM, ids);
-        return next;
-      }, { replace: true });
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          setFilterIdsParam(next, POSTS_CLIENTS_PARAM, ids);
+          return next;
+        },
+        { replace: true },
+      );
     },
     [setSearchParams],
   );
 
   const setSelectedProjectIds = useCallback(
     (ids: string[]) => {
-      setSearchParams((prev) => {
-        const next = new URLSearchParams(prev);
-        setFilterIdsParam(next, POSTS_PROJECTS_PARAM, ids);
-        return next;
-      }, { replace: true });
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          setFilterIdsParam(next, POSTS_PROJECTS_PARAM, ids);
+          return next;
+        },
+        { replace: true },
+      );
+    },
+    [setSearchParams],
+  );
+
+  const setStatusFilter = useCallback(
+    (status: PostStatusSelectId) => {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          setPostsStatusParam(next, status);
+          return next;
+        },
+        { replace: true },
+      );
     },
     [setSearchParams],
   );
@@ -46,7 +74,9 @@ export function usePostsFilterParams() {
   return {
     selectedClientIds,
     selectedProjectIds,
+    statusFilter,
     setSelectedClientIds,
     setSelectedProjectIds,
+    setStatusFilter,
   };
 }

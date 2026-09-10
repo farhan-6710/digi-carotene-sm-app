@@ -1,5 +1,9 @@
 import { useMemo } from "react";
 
+import {
+  POST_STATUS_SELECT_ALL,
+  type PostStatusSelectId,
+} from "@/features/posts-management/constants/postStatusSelect";
 import { usePostDialog } from "@/features/posts-management/hooks/usePostDialog";
 import { usePostsQuery } from "@/features/posts-management/hooks/usePostsQuery";
 import { postsToSlots } from "@/features/posts-management/utils/postsSlots";
@@ -9,6 +13,7 @@ export function usePostsManagement(
   month: number,
   selectedClientIds: string[],
   selectedProjectIds: string[],
+  statusFilter: PostStatusSelectId = POST_STATUS_SELECT_ALL,
 ) {
   const query = usePostsQuery(year, month);
   const projectClientMap = useMemo(
@@ -17,11 +22,14 @@ export function usePostsManagement(
     [query.projects],
   );
   const filteredPosts = useMemo(() => {
-    if (selectedClientIds.length === 0 && selectedProjectIds.length === 0) {
-      return query.posts;
-    }
-
     return query.posts.filter((post) => {
+      if (
+        statusFilter !== POST_STATUS_SELECT_ALL &&
+        post.status !== statusFilter
+      ) {
+        return false;
+      }
+
       if (
         selectedProjectIds.length > 0 &&
         !selectedProjectIds.includes(post.project_id)
@@ -36,7 +44,13 @@ export function usePostsManagement(
 
       return true;
     });
-  }, [projectClientMap, query.posts, selectedClientIds, selectedProjectIds]);
+  }, [
+    projectClientMap,
+    query.posts,
+    selectedClientIds,
+    selectedProjectIds,
+    statusFilter,
+  ]);
   const filteredSlots = useMemo(
     () => postsToSlots(filteredPosts, year, month),
     [filteredPosts, year, month],

@@ -1,14 +1,14 @@
 import { useRef, useState } from "react";
-import { Menu, Moon, Sun } from "lucide-react";
+import { Menu } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { useTheme } from "@/shared/providers/ThemeProvider";
 import { PortalUserHeaderMenu } from "@/shared/components/PortalUserHeaderMenu";
 import {
   ShellMobileNavSheet,
   ShellSidebar,
 } from "@/shared/components/ShellSidebar";
 import { ShellNavSearch } from "@/shared/components/ShellNavSearch";
+import { ThemeModeToggle } from "@/shared/components/ThemeModeToggle";
 import {
   PageTransitionMain,
   PageTransitionProvider,
@@ -16,7 +16,6 @@ import {
 import { SHELL_HEADER_MOTION } from "@/shared/constants/pageMotion";
 import type { AppShellLayoutProps } from "@/shared/types/components";
 import { Button } from "@/shared/ui/button";
-import { Switch } from "@/shared/ui/switch";
 
 export function AppShellLayout({
   sidebarConfig,
@@ -28,7 +27,6 @@ export function AppShellLayout({
 }: AppShellLayoutProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const { isDarkMode, setDarkMode } = useTheme();
   const mainRef = useRef<HTMLElement>(null);
 
   return (
@@ -75,16 +73,7 @@ export function AppShellLayout({
 
             <div className="ml-auto flex items-center gap-3">
               {headerActions}
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Sun className="size-4" aria-hidden="true" />
-                <Switch
-                  checked={isDarkMode}
-                  onCheckedChange={setDarkMode}
-                  aria-label="Toggle dark mode"
-                  className="cursor-pointer"
-                />
-                <Moon className="size-4" aria-hidden="true" />
-              </div>
+              <ThemeModeToggle />
               {accountPath ? (
                 <PortalUserHeaderMenu
                   accountPath={accountPath}

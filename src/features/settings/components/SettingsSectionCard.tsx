@@ -1,5 +1,9 @@
+import { ThemeModeToggle } from "@/shared/components/ThemeModeToggle";
 import { Switch } from "@/shared/ui/switch";
-import type { SettingsSectionCardProps, SettingToggleRowProps } from "@/features/settings/types/components";
+import type {
+  SettingsSectionCardProps,
+  SettingToggleRowProps,
+} from "@/features/settings/types/components";
 
 export function SettingToggleRow({
   id,
@@ -8,23 +12,31 @@ export function SettingToggleRow({
   checked,
   onCheckedChange,
 }: SettingToggleRowProps) {
+  const isThemeToggle = id === "dark-theme";
+
   return (
     <div className="flex items-start justify-between gap-4 py-4 last:pb-0">
       <div className="space-y-1">
-        <label htmlFor={id} className="text-sm font-medium text-foreground">
-          {label}
-        </label>
+        <p className="text-sm font-medium text-foreground">
+          {isThemeToggle ? "Color mode" : label}
+        </p>
         <p className="text-xs leading-relaxed text-muted-foreground">
-          {description}
+          {isThemeToggle
+            ? "Choose light or dark appearance for daily work."
+            : description}
         </p>
       </div>
-      <Switch
-        id={id}
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-        aria-label={label}
-        className="mt-0.5 shrink-0 cursor-pointer"
-      />
+      {isThemeToggle ? (
+        <ThemeModeToggle className="mt-0.5 shrink-0" />
+      ) : (
+        <Switch
+          id={id}
+          checked={checked}
+          onCheckedChange={onCheckedChange}
+          aria-label={label}
+          className="mt-0.5 shrink-0 cursor-pointer"
+        />
+      )}
     </div>
   );
 }
