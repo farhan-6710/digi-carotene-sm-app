@@ -1,4 +1,5 @@
 import type { DevProjectListItem } from "@/features/development-projects/types/types";
+import type { OtherProjectListItem } from "@/features/other-projects/types/types";
 import type { ProjectListItem } from "@/features/projects-management/types/types";
 
 export type TaskProjectPeopleSource = {
@@ -23,7 +24,7 @@ export function getProjectClientId(
 }
 
 export function toTaskProjectPeopleSource(
-  project: ProjectListItem | DevProjectListItem,
+  project: ProjectListItem | DevProjectListItem | OtherProjectListItem,
 ): TaskProjectPeopleSource {
   return {
     manager_id: project.manager_id,

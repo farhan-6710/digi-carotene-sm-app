@@ -35,8 +35,9 @@ type NestedProject = {
 
 export type TaskRow = {
   id: string;
-  project_id: string | null;
+  sm_project_id: string | null;
   dev_project_id: string | null;
+  other_project_id: string | null;
   client_id: string | null;
   dependency_client_id: string | null;
   title: string;
@@ -51,6 +52,7 @@ export type TaskRow = {
   updated_at: string;
   projects: Rel<NestedProject>;
   dev_projects: Rel<NestedProject>;
+  other_projects: Rel<NestedProject>;
   client: Rel<TaskClientRef>;
   dependency_client: Rel<TaskClientRef>;
   created_by: Rel<TaskMemberRef>;
@@ -102,7 +104,8 @@ function mapNestedProject(project: NestedProject | null): TaskProjectRef | null 
 export function mapTaskRow(row: TaskRow): Task {
   const smProject = mapNestedProject(pickRelation(row.projects));
   const devProject = mapNestedProject(pickRelation(row.dev_projects));
-  const projects = smProject ?? devProject;
+  const otherProject = mapNestedProject(pickRelation(row.other_projects));
+  const projects = smProject ?? devProject ?? otherProject;
   const projectClient = projects?.clients ?? null;
 
   const embeddedClient = pickRelation(row.client);
@@ -170,8 +173,9 @@ export function mapTaskRow(row: TaskRow): Task {
 
   return {
     id: row.id,
-    project_id: row.project_id,
+    sm_project_id: row.sm_project_id,
     dev_project_id: row.dev_project_id,
+    other_project_id: row.other_project_id,
     client_id: row.client_id,
     dependency_client_id: row.dependency_client_id,
     title: row.title,

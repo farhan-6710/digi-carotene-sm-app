@@ -16,6 +16,10 @@ import {
   fetchMemberDevProjectAssignments,
 } from "@/services/devProjectTeamMembersService";
 import {
+  fetchManagedOtherProjects,
+  fetchMemberOtherProjectAssignments,
+} from "@/services/otherProjectTeamMembersService";
+import {
   fetchManagedProjects,
   fetchMemberProjectAssignments,
 } from "@/services/projectTeamMembersService";
@@ -68,6 +72,8 @@ export function useTeamMemberDetailQuery(memberId: string) {
       smManaged,
       devAssignments,
       devManaged,
+      otherAssignments,
+      otherManaged,
       planAssignments,
       roleAssignedPlans,
     ] = await Promise.all([
@@ -76,6 +82,8 @@ export function useTeamMemberDetailQuery(memberId: string) {
       fetchManagedProjects(memberId),
       fetchMemberDevProjectAssignments(memberId),
       fetchManagedDevProjects(memberId),
+      fetchMemberOtherProjectAssignments(memberId),
+      fetchManagedOtherProjects(memberId),
       fetchMemberPlanAssignments(memberId),
       fetchMemberPlanRoleAssignments(memberId),
     ]);
@@ -83,6 +91,7 @@ export function useTeamMemberDetailQuery(memberId: string) {
     const assignments = [
       ...smAssignments.map((row) => withKind(row, "sm")),
       ...devAssignments.map((row) => withKind(row, "dev")),
+      ...otherAssignments.map((row) => withKind(row, "other")),
     ].sort(
       (a, b) =>
         new Date(b.started_at).getTime() - new Date(a.started_at).getTime(),
@@ -91,6 +100,7 @@ export function useTeamMemberDetailQuery(memberId: string) {
     const managedProjects = [
       ...smManaged.map((row) => withManagedKind(row, "sm")),
       ...devManaged.map((row) => withManagedKind(row, "dev")),
+      ...otherManaged.map((row) => withManagedKind(row, "other")),
     ].sort((a, b) => a.project_name.localeCompare(b.project_name));
 
     return {

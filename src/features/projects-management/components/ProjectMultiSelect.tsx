@@ -4,6 +4,7 @@ import type { ProjectMultiSelectProps } from "@/features/projects-management/typ
 import { getProjectDisplayLabel } from "@/features/projects-management/utils/projectFormUtils";
 import { encodeProjectKey } from "@/features/projects-management/utils/projectKindUtils";
 import { fetchDevProjects } from "@/services/devProjectsService";
+import { fetchOtherProjects } from "@/services/otherProjectsService";
 import { fetchProjects } from "@/services/projectsService";
 import { useLazyEntityList } from "@/shared/hooks/useLazyEntityList";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
@@ -26,6 +27,11 @@ export function ProjectMultiSelect({
     isLoading: devLoading,
     handleOpenChange: onDevOpen,
   } = useLazyEntityList(fetchDevProjects, { preload });
+  const {
+    items: otherProjects,
+    isLoading: otherLoading,
+    handleOpenChange: onOtherOpen,
+  } = useLazyEntityList(fetchOtherProjects, { preload });
 
   const options = useMemo(() => {
     const smOptions = smProjects
@@ -48,15 +54,27 @@ export function ProjectMultiSelect({
         group: "Development projects",
       }));
 
-    return [...smOptions, ...devOptions];
-  }, [devProjects, smProjects]);
+    const otherOptions = otherProjects
+      .filter((project) => project.is_active)
+      .map((project) => ({
+        value: encodeProjectKey("other", project.id),
+        label: `${project.project_name}${
+          project.clients?.client_name
+            ? ` (${project.clients.client_name})`
+            : ""
+        }`,
+        group: "Other projects",
+      }));
+
+    return [...smOptions, ...devOptions, ...otherOptions];
+  }, [devProjects, otherProjects, smProjects]);
 
   return (
     <MultiSelect
       value={value}
       onChange={onChange}
       options={options}
-      isLoading={smLoading || devLoading}
+      isLoading={smLoading || devLoading || otherLoading}
       disabled={disabled}
       placeholder={placeholder}
       emptyMessage="No projects left to assign."
@@ -64,6 +82,7 @@ export function ProjectMultiSelect({
       onOpenChange={(nextOpen) => {
         onSmOpen(nextOpen);
         onDevOpen(nextOpen);
+        onOtherOpen(nextOpen);
       }}
     />
   );

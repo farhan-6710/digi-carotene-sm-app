@@ -105,11 +105,11 @@ Project-scoped only (SM **or** Dev project). Status: `pending` → `in_progress`
 Visibility (team):
 
 - **Admin** — all tasks
-- **Manager** (team role) — tasks on assigned SM/Dev projects (`manager_id` or active team membership)
-- **Project manager** (`sm_projects.manager_id` / `dev_projects.manager_id`) — all tasks on projects they manage
+- **Manager** (team role) — tasks on assigned SM/Dev/Other projects (`manager_id` or active team membership)
+- **Project manager** (`sm_projects.manager_id` / `dev_projects.manager_id` / `other_projects.manager_id`) — all tasks on projects they manage
 - **Everyone else** — raised by them, assigned to them, or listed as a dependency
 
-Visibility (client): all tasks on that client’s SM and Dev projects (not only assignee/dependency).
+Visibility (client): all tasks on that client’s SM, Dev, and Other projects (not only assignee/dependency).
 
 On create, notify the team assignee (if teammate), dependency members, project manager, and admins (excluding the raiser). Clients see the task in their portal list (no separate client inbox in V1).
 
@@ -117,7 +117,7 @@ Task detail includes DB-backed chat. Authors are a teammate **or** the task clie
 
 **Task / subtask full edit** — admin, team-role manager, that project’s `manager_id`, or the raiser. Subtask assignees can update status only. Admins / role-managers / PMs / assignees who did not raise it can still view and chat.
 
-**Subtasks** — full-width block below chat on task detail (team + client). Anyone who can open the task can add a subtask (title + description + assign to someone already on that task). Click a subtask title to open its detail page. On the client portal, all subtasks under accessible project tasks are visible.
+**Subtasks** — full-width block below chat on task detail (team + client). Anyone who can open the task can add a subtask (title + description + assign to project teammates and/or the project client). Click a subtask title to open its detail page. On the client portal, all subtasks under accessible project tasks are visible.
 
 ---
 
@@ -129,7 +129,7 @@ The brand sees only their own data (`profiles.client_id`). No team CRUD, no Mana
 |------|------|------|
 | Dashboard | `/client-portal/dashboard` | Post stats, projects/plans counts, upcoming posts, socials |
 | Projects | `/client-portal/projects` | SM + Dev + Other list; detail under `/projects/:id`, `/dev-projects/:id`, `/other-projects/:id` (view-only) |
-| Task Management | `/client-portal/tasks-management` | All tasks on their SM/Dev projects; detail + chat; all subtasks under those tasks |
+| Task Management | `/client-portal/tasks-management` | All tasks on their SM/Dev/Other projects; detail + chat; all subtasks under those tasks |
 | Posts | `/client-portal/posts` | Read-only post list with search |
 | Production planner | `/client-portal/production-planner` | Their plans; detail: **Client approval** dropdown only |
 | Growth | `/client-portal/growth-and-analytics` | Same charts as team, scoped to linked accounts; page-level account dropdown |

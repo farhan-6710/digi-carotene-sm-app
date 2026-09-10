@@ -1,12 +1,14 @@
 import { useCallback, useState } from "react";
 
-import {
-  parseProjectKey,
-} from "@/features/projects-management/utils/projectKindUtils";
+import { parseProjectKey } from "@/features/projects-management/utils/projectKindUtils";
 import {
   assignMemberToDevProject,
   endDevProjectTeamAssignment,
 } from "@/services/devProjectTeamMembersService";
+import {
+  assignMemberToOtherProject,
+  endOtherProjectTeamAssignment,
+} from "@/services/otherProjectTeamMembersService";
 import {
   assignMemberToProject,
   endProjectTeamAssignment,
@@ -43,8 +45,10 @@ export function useTeamMemberProjectActions({
           }
           if (parsed.kind === "sm") {
             await assignMemberToProject(memberId, parsed.id);
-          } else {
+          } else if (parsed.kind === "dev") {
             await assignMemberToDevProject(memberId, parsed.id);
+          } else {
+            await assignMemberToOtherProject(memberId, parsed.id);
           }
         }
         await reload();
@@ -85,8 +89,10 @@ export function useTeamMemberProjectActions({
       try {
         if (parsed.kind === "sm") {
           await endProjectTeamAssignment(parsed.id);
-        } else {
+        } else if (parsed.kind === "dev") {
           await endDevProjectTeamAssignment(parsed.id);
+        } else {
+          await endOtherProjectTeamAssignment(parsed.id);
         }
         await reload();
         showToast("success", "Project assignment ended successfully.");

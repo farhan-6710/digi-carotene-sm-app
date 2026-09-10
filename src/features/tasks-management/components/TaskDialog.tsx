@@ -17,6 +17,7 @@ import {
 } from "@/features/tasks-management/utils/taskProjectPeopleUtils";
 import { parseProjectKey } from "@/features/projects-management/utils/projectKindUtils";
 import { fetchDevProjects } from "@/services/devProjectsService";
+import { fetchOtherProjects } from "@/services/otherProjectsService";
 import { fetchProjects } from "@/services/projectsService";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { formFieldClassName } from "@/shared/constants/formStyles";
@@ -51,6 +52,9 @@ export function TaskDialog({
   const { items: devProjects } = useLazyEntityList(fetchDevProjects, {
     preload: open,
   });
+  const { items: otherProjects } = useLazyEntityList(fetchOtherProjects, {
+    preload: open,
+  });
 
   useEffect(() => {
     if (!open) {
@@ -60,15 +64,19 @@ export function TaskDialog({
   }, [open]);
 
   const selectedProject = useMemo(() => {
-    const parsed = parseProjectKey(values.projectId);
+    const parsed = parseProjectKey(values.projectKey);
     if (!parsed) return null;
     if (parsed.kind === "sm") {
       const project = smProjects.find((row) => row.id === parsed.id);
       return project ? toTaskProjectPeopleSource(project) : null;
     }
-    const project = devProjects.find((row) => row.id === parsed.id);
+    if (parsed.kind === "dev") {
+      const project = devProjects.find((row) => row.id === parsed.id);
+      return project ? toTaskProjectPeopleSource(project) : null;
+    }
+    const project = otherProjects.find((row) => row.id === parsed.id);
     return project ? toTaskProjectPeopleSource(project) : null;
-  }, [devProjects, smProjects, values.projectId]);
+  }, [devProjects, otherProjects, smProjects, values.projectKey]);
 
   const projectMemberIds = useMemo(
     () =>
@@ -90,7 +98,7 @@ export function TaskDialog({
     Boolean(projectMemberIds?.includes(currentTeamMemberId ?? ""));
 
   const canSave =
-    values.projectId.length > 0 &&
+    values.projectKey.length > 0 &&
     values.title.trim().length > 0 &&
     values.assigneeKeys.length > 0 &&
     Boolean(
@@ -139,9 +147,9 @@ export function TaskDialog({
               Select a project
               <div className="mt-2">
                 <TaskProjectSelect
-                  value={values.projectId}
+                  value={values.projectKey}
                   onChange={({ projectKey }) =>
-                    onFieldChange("projectId", projectKey)
+                    onFieldChange("projectKey", projectKey)
                   }
                   disabled={isSaving}
                   preload={open}

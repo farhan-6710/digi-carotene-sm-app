@@ -211,8 +211,9 @@ const PRODUCTION_PLAN_ITEM_SELECT = `
 
 const TASK_SELECT = `
   id,
-  project_id,
+  sm_project_id,
   dev_project_id,
+  other_project_id,
   client_id,
   dependency_client_id,
   title,
@@ -233,6 +234,13 @@ const TASK_SELECT = `
     clients ( id, client_name )
   ),
   dev_projects (
+    id,
+    project_name,
+    manager_id,
+    manager:team_members!manager_id ( id, member_name ),
+    clients ( id, client_name )
+  ),
+  other_projects (
     id,
     project_name,
     manager_id,

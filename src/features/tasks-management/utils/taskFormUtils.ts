@@ -13,8 +13,8 @@ import { assigneeKeysFromTask } from "@/features/tasks-management/utils/taskAssi
 import { dependencyKeysFromTask } from "@/features/tasks-management/utils/taskDependencyUtils";
 
 export type TaskFormValues = {
-  /** Encoded `sm:<id>` or `dev:<id>` key. */
-  projectId: string;
+  /** Encoded `sm:<id>`, `dev:<id>`, or `other:<id>` key. */
+  projectKey: string;
   /** Encoded `team:<id>` / `client:<id>` keys. */
   assigneeKeys: string[];
   title: string;
@@ -27,7 +27,7 @@ export type TaskFormValues = {
 };
 
 export const emptyTaskFormValues = (): TaskFormValues => ({
-  projectId: "",
+  projectKey: "",
   assigneeKeys: [],
   title: "",
   description: "",
@@ -38,14 +38,16 @@ export const emptyTaskFormValues = (): TaskFormValues => ({
 });
 
 export function taskToFormValues(task: Task): TaskFormValues {
-  const projectKey = task.dev_project_id
-    ? encodeProjectKey("dev", task.dev_project_id)
-    : task.project_id
-      ? encodeProjectKey("sm", task.project_id)
-      : "";
+  const projectKey = task.other_project_id
+    ? encodeProjectKey("other", task.other_project_id)
+    : task.dev_project_id
+      ? encodeProjectKey("dev", task.dev_project_id)
+      : task.sm_project_id
+        ? encodeProjectKey("sm", task.sm_project_id)
+        : "";
 
   return {
-    projectId: projectKey,
+    projectKey,
     assigneeKeys: assigneeKeysFromTask(task),
     title: task.title,
     description: task.description ?? "",
@@ -57,7 +59,7 @@ export function taskToFormValues(task: Task): TaskFormValues {
 }
 
 export function validateTaskForm(values: TaskFormValues): string | null {
-  if (!values.projectId) return "Select a project.";
+  if (!values.projectKey) return "Select a project.";
   if (!values.title.trim()) return "Enter a title.";
   if (values.assigneeKeys.length === 0) {
     return "Assign to at least one teammate or client.";

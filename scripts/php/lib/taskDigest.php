@@ -54,7 +54,7 @@ function fetchHighPriorityOpenTasksByIds(array $config, array $ids): array
     }
 
     $query = 'tasks?select=id,title,priority,eta_date,eta_time,status,'
-        . 'projects:sm_projects(project_name),dev_projects(project_name)'
+        . 'projects:sm_projects(project_name),dev_projects(project_name),other_projects(project_name)'
         . '&id=in.(' . implode(',', array_map('rawurlencode', $ids)) . ')'
         . '&priority=eq.high'
         . '&status=in.(pending,in_progress)';
@@ -152,12 +152,15 @@ function formatTaskDigestTaskLabel(array $task): string
 
     $projects = is_array($task['projects'] ?? null) ? $task['projects'] : null;
     $devProjects = is_array($task['dev_projects'] ?? null) ? $task['dev_projects'] : null;
+    $otherProjects = is_array($task['other_projects'] ?? null) ? $task['other_projects'] : null;
     $projectName = 'Task';
 
     if (is_array($projects) && is_string($projects['project_name'] ?? null) && $projects['project_name'] !== '') {
         $projectName = $projects['project_name'];
     } elseif (is_array($devProjects) && is_string($devProjects['project_name'] ?? null) && $devProjects['project_name'] !== '') {
         $projectName = $devProjects['project_name'];
+    } elseif (is_array($otherProjects) && is_string($otherProjects['project_name'] ?? null) && $otherProjects['project_name'] !== '') {
+        $projectName = $otherProjects['project_name'];
     }
 
     return $projectName . ' · ' . $title;

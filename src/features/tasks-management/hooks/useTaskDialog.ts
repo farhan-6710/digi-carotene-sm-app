@@ -41,7 +41,7 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
       setValues((current) => {
         const next: TaskFormValues = { ...current, [field]: value };
 
-        if (field === "projectId" && value !== current.projectId) {
+        if (field === "projectKey" && value !== current.projectKey) {
           next.assigneeKeys = [];
           next.dependencyKeys = [];
         }
@@ -109,7 +109,7 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
         values.dependencyKeys.filter((key) => !assigneeKeySet.has(key)),
       );
 
-      const parsedProject = parseProjectKey(values.projectId);
+      const parsedProject = parseProjectKey(values.projectKey);
       if (!parsedProject) {
         setError("Select a project.");
         return;
@@ -117,8 +117,22 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
 
       const projectPayload =
         parsedProject.kind === "sm"
-          ? { projectId: parsedProject.id, devProjectId: null }
-          : { projectId: null, devProjectId: parsedProject.id };
+          ? {
+              smProjectId: parsedProject.id,
+              devProjectId: null,
+              otherProjectId: null,
+            }
+          : parsedProject.kind === "dev"
+            ? {
+                smProjectId: null,
+                devProjectId: parsedProject.id,
+                otherProjectId: null,
+              }
+            : {
+                smProjectId: null,
+                devProjectId: null,
+                otherProjectId: parsedProject.id,
+              };
 
       if (editingTaskId) {
         await updateTask(editingTaskId, {

@@ -7,10 +7,11 @@ import {
   type TaskProjectPeopleSource,
 } from "@/features/tasks-management/utils/taskProjectPeopleUtils";
 import { fetchDevProjectById } from "@/services/devProjectsService";
+import { fetchOtherProjectById } from "@/services/otherProjectsService";
 import { fetchProjectById } from "@/services/projectsService";
 
 /**
- * Loads the parent task's SM/Dev project and returns the same assignee
+ * Loads the parent task's SM/Dev/Other project and returns the same assignee
  * scope used when assigning a task (teammates + client).
  */
 export function useTaskSubtaskAssigneeScope(parentTask: Task | null) {
@@ -23,8 +24,9 @@ export function useTaskSubtaskAssigneeScope(parentTask: Task | null) {
       return;
     }
 
-    const smId = parentTask.project_id;
+    const smId = parentTask.sm_project_id;
     const devId = parentTask.dev_project_id;
+    const otherId = parentTask.other_project_id;
     let cancelled = false;
 
     void (async () => {
@@ -38,6 +40,13 @@ export function useTaskSubtaskAssigneeScope(parentTask: Task | null) {
         }
         if (devId) {
           const row = await fetchDevProjectById(devId);
+          if (!cancelled) {
+            setProject(row ? toTaskProjectPeopleSource(row) : null);
+          }
+          return;
+        }
+        if (otherId) {
+          const row = await fetchOtherProjectById(otherId);
           if (!cancelled) {
             setProject(row ? toTaskProjectPeopleSource(row) : null);
           }
