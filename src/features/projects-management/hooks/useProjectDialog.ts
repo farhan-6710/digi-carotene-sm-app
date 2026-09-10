@@ -6,6 +6,7 @@ import {
   createProject,
   deleteProject,
   updateProject,
+  updateProjectSocials,
 } from "@/services/projectsService";
 import { fetchTeamMembersByIds } from "@/services/teamMembersService";
 import {
@@ -23,9 +24,15 @@ type UseProjectDialogOptions = {
   setError: (message: string | null) => void;
 };
 
+type OpenEditOptions = {
+  /** SM executive path: only social profile URLs. */
+  socialsOnly?: boolean;
+};
+
 export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+  const [socialsOnly, setSocialsOnly] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [values, setValues] = useState<ProjectFormValues>(emptyProjectFormValues);
   const [formSeeds, setFormSeeds] = useState<ProjectFormSeeds | null>(null);
@@ -33,6 +40,7 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
   const resetForm = useCallback(() => {
     setValues(emptyProjectFormValues());
     setEditingProjectId(null);
+    setSocialsOnly(false);
     setFormSeeds(null);
   }, []);
 
@@ -71,32 +79,37 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
     setIsDialogOpen(true);
   }, [resetForm]);
 
-  const openEditDialog = useCallback((project: ProjectListItem) => {
-    setEditingProjectId(project.id);
-    setValues(projectToFormValues(project));
-    setFormSeeds({
-      client: project.clients,
-      manager: project.team_members,
-      teamMembers: [],
-    });
-    setIsDialogOpen(true);
-
-    if (project.team_member_ids.length > 0) {
-      void fetchTeamMembersByIds(project.team_member_ids).then((members) => {
-        setFormSeeds((current) =>
-          current
-            ? {
-                ...current,
-                teamMembers: members.map(({ id, member_name }) => ({
-                  id,
-                  member_name,
-                })),
-              }
-            : null,
-        );
+  const openEditDialog = useCallback(
+    (project: ProjectListItem, options?: OpenEditOptions) => {
+      const nextSocialsOnly = Boolean(options?.socialsOnly);
+      setEditingProjectId(project.id);
+      setSocialsOnly(nextSocialsOnly);
+      setValues(projectToFormValues(project));
+      setFormSeeds({
+        client: project.clients,
+        manager: project.team_members,
+        teamMembers: [],
       });
-    }
-  }, []);
+      setIsDialogOpen(true);
+
+      if (!nextSocialsOnly && project.team_member_ids.length > 0) {
+        void fetchTeamMembersByIds(project.team_member_ids).then((members) => {
+          setFormSeeds((current) =>
+            current
+              ? {
+                  ...current,
+                  teamMembers: members.map(({ id, member_name }) => ({
+                    id,
+                    member_name,
+                  })),
+                }
+              : null,
+          );
+        });
+      }
+    },
+    [],
+  );
 
   const onActiveChange = useCallback((isActive: boolean) => {
     setValues((current) => ({ ...current, isActive }));
@@ -107,9 +120,16 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
       return;
     }
 
-    const validationError = validateProjectForm(values);
-    if (validationError) {
-      setError(validationError);
+    if (!socialsOnly) {
+      const validationError = validateProjectForm(values);
+      if (validationError) {
+        setError(validationError);
+        return;
+      }
+    }
+
+    if (!editingProjectId && socialsOnly) {
+      setError("Social links can only be updated on an existing project.");
       return;
     }
 
@@ -117,26 +137,34 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
     setError(null);
 
     try {
-      const payload = {
-        projectName: values.projectName.trim(),
-        clientId: values.clientId,
-        managerId: values.managerId,
-        socials: formValuesToSocials(values),
-        teamMemberIds: values.teamMemberIds,
-        startDate: values.startDate || null,
-        etaDate: values.etaDate || null,
-      };
-
       const projectName = values.projectName.trim();
+      const socials = formValuesToSocials(values);
 
-      if (editingProjectId) {
+      if (editingProjectId && socialsOnly) {
+        await updateProjectSocials(editingProjectId, socials);
+        showToast("success", `Social links for "${projectName}" updated.`);
+      } else if (editingProjectId) {
         await updateProject(editingProjectId, {
-          ...payload,
+          projectName,
+          clientId: values.clientId,
+          managerId: values.managerId,
+          socials,
+          teamMemberIds: values.teamMemberIds,
+          startDate: values.startDate || null,
+          etaDate: values.etaDate || null,
           isActive: values.isActive,
         });
         showToast("success", `"${projectName}" updated successfully.`);
       } else {
-        await createProject(payload);
+        await createProject({
+          projectName,
+          clientId: values.clientId,
+          managerId: values.managerId,
+          socials,
+          teamMemberIds: values.teamMemberIds,
+          startDate: values.startDate || null,
+          etaDate: values.etaDate || null,
+        });
         showToast("success", `"${projectName}" added successfully.`);
       }
 
@@ -149,10 +177,18 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
     } finally {
       setIsSaving(false);
     }
-  }, [editingProjectId, handleDialogOpenChange, isSaving, reload, setError, values]);
+  }, [
+    editingProjectId,
+    handleDialogOpenChange,
+    isSaving,
+    reload,
+    setError,
+    socialsOnly,
+    values,
+  ]);
 
   const removeProject = useCallback(async () => {
-    if (!editingProjectId || isSaving) {
+    if (!editingProjectId || isSaving || socialsOnly) {
       return;
     }
 
@@ -172,7 +208,15 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
     } finally {
       setIsSaving(false);
     }
-  }, [editingProjectId, handleDialogOpenChange, isSaving, reload, setError, values.projectName]);
+  }, [
+    editingProjectId,
+    handleDialogOpenChange,
+    isSaving,
+    reload,
+    setError,
+    socialsOnly,
+    values.projectName,
+  ]);
 
   return {
     openAddDialog,
@@ -182,6 +226,7 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
       onOpenChange: handleDialogOpenChange,
       isEditing: editingProjectId !== null,
       isSaving,
+      socialsOnly,
       values,
       formSeeds,
       onFieldChange,
@@ -190,7 +235,7 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
       onTeamMemberIdsChange,
       onActiveChange,
       onSave: saveProject,
-      onDelete: editingProjectId ? removeProject : undefined,
+      onDelete: editingProjectId && !socialsOnly ? removeProject : undefined,
     },
   };
 }

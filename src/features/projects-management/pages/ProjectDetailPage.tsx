@@ -45,6 +45,7 @@ function ProjectDetailHeaderActions({
   projectName,
   canCreatePosts,
   canEditProject,
+  editProjectLabel = "Edit Project",
   canShare,
   dateFilterProps,
   onEditProject,
@@ -53,6 +54,7 @@ function ProjectDetailHeaderActions({
   projectName?: string;
   canCreatePosts: boolean;
   canEditProject: boolean;
+  editProjectLabel?: string;
   canShare: boolean;
   dateFilterProps: DateFiltersTwoProps;
   onEditProject?: () => void;
@@ -69,7 +71,7 @@ function ProjectDetailHeaderActions({
             onClick={onEditProject}
           >
             <Pencil className="mr-2 size-4" />
-            Edit Project
+            {editProjectLabel}
           </Button>
         ) : null}
         {canCreatePosts && projectId && projectName ? (
@@ -102,7 +104,7 @@ function ProjectDetailHeaderActions({
 export function ProjectDetailPage() {
   const { projectId = "" } = useParams();
   const navigate = useNavigate();
-  const { can } = usePermissions();
+  const { can, canFullyEditProject, canEditProjectSocials } = usePermissions();
   const { teamRole, teamMemberId } = useAuth();
   const [dialogError, setDialogError] = useState<string | null>(null);
   const { project, posts, teamMembers, isLoading, error, reload } =
@@ -126,7 +128,8 @@ export function ProjectDetailPage() {
     setError: setDialogError,
   });
   const canCreatePosts = can("posts.create");
-  const canEditProject = can("projects.update");
+  const showProjectEdit = canEditProjectSocials;
+  const socialsOnlyEdit = canEditProjectSocials && !canFullyEditProject;
   const canShare = canGenerateShareLink(
     teamRole,
     teamMemberId,
@@ -163,10 +166,15 @@ export function ProjectDetailPage() {
             projectId={project.id}
             projectName={getProjectDisplayLabel(project)}
             canCreatePosts={canCreatePosts}
-            canEditProject={canEditProject}
+            canEditProject={showProjectEdit}
+            editProjectLabel={
+              socialsOnlyEdit ? "Edit social links" : "Edit Project"
+            }
             canShare={canShare}
             dateFilterProps={dateFilterProps}
-            onEditProject={() => openEditDialog(project)}
+            onEditProject={() =>
+              openEditDialog(project, { socialsOnly: socialsOnlyEdit })
+            }
           />
         }
       />
@@ -188,7 +196,7 @@ export function ProjectDetailPage() {
       />
 
       <PostDialog {...postDialog} />
-      {canEditProject ? (
+      {showProjectEdit ? (
         <ProjectDialog
           {...projectDialog}
           onDelete={

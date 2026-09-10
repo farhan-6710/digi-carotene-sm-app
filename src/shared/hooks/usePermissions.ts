@@ -1,6 +1,8 @@
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import {
   can as canForRole,
+  canEditProjectSocials as canEditProjectSocialsForRole,
+  canFullyEditProject as canFullyEditProjectForRole,
   seesAllProjects as seesAllProjectsForRole,
   type Permission,
 } from "@/shared/utils/rbac";
@@ -13,6 +15,8 @@ export function usePermissions() {
   return {
     role: teamRole,
     can: (permission: Permission) => canForRole(teamRole, permission),
+    canFullyEditProject: canFullyEditProjectForRole(teamRole),
+    canEditProjectSocials: canEditProjectSocialsForRole(teamRole),
     seesAllProjects: seesAllProjectsForRole(teamRole),
   };
 }

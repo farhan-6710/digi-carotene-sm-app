@@ -348,6 +348,23 @@ export async function updateProject(
   return (await fetchProjectById(projectId))!;
 }
 
+/** Socials-only update — used by SM executives (no team sync / other fields). */
+export async function updateProjectSocials(
+  projectId: string,
+  socials: ProjectSocials | null,
+): Promise<ProjectListItem> {
+  const { error } = await supabase
+    .from(DB.PROJECTS.TABLE)
+    .update({ socials: socials || {} })
+    .eq("id", projectId);
+
+  if (error) {
+    throw error;
+  }
+
+  return (await fetchProjectById(projectId))!;
+}
+
 export async function deleteProject(projectId: string): Promise<void> {
   const { error } = await supabase
     .from(DB.PROJECTS.TABLE)

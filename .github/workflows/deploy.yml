@@ -1,0 +1,37 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies and build
+        run: |
+          bun install
+          bun run build
+
+      - name: Prepare deployment bundle
+        run: |
+          mkdir -p deployment-bundle
+          cp -r dist/* deployment-bundle/
+          cp -r scripts/php deployment-bundle/php
+          cp -r docs deployment-bundle/docs
+          cp .htaccess deployment-bundle/
+
+      - name: FTP Deploy Action
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./deployment-bundle/
+          server-dir: /public_html/

@@ -35,7 +35,7 @@ Deleting a team member resets linked profiles to `role = user`.
 |------|----------------|------------|
 | `admin` | team, clients, projects, posts, production plans, tasks, leads | All projects and plans |
 | `manager` | clients, projects, posts, tasks, leads | Assigned projects / plans only |
-| `sm_executive` | posts, tasks | Assigned projects / plans only |
+| `sm_executive` | posts, tasks (+ **SM project social links only**) | Assigned projects / plans only |
 | `editor` | posts, production plans | Assigned projects / plans only |
 
 **Assigned project** = SM: `sm_projects.manager_id` **or** active `project_team_members`; Dev: `dev_projects.manager_id` **or** active `dev_project_team_members`; Other: `other_projects.manager_id` **or** active `other_project_team_members`.  
@@ -48,6 +48,7 @@ UI labels: `sm_executive` → **SM Executive**; `editor` → **Editor/Designer**
 Wherever an **SM executive** can perform an action — or a person-role executives often hold (e.g. plan **shoot incharge**) controls an action — **`admin` and `manager` must be able to do it too**.
 
 - Use `isAdminOrManagerRole(role)` from `src/shared/utils/rbac.ts` when wiring those gates.
+- Example: `canEditProjectSocials` — SM executives update social URLs only; admin/manager keep full project edit (which includes socials).
 - Do **not** leave SM-executive-only or shoot-incharge-only controls that lock out admin/manager.
 - Admins/managers may still have **broader** control (e.g. skip backdated-post approval that SM executives need).
 

@@ -25,6 +25,7 @@ export function ProjectDialog({
   onOpenChange,
   isEditing,
   isSaving = false,
+  socialsOnly = false,
   values,
   formSeeds = null,
   onFieldChange,
@@ -44,105 +45,123 @@ export function ProjectDialog({
     }
   }, [open]);
 
-  const canSave =
-    values.projectName.trim().length > 0 &&
-    values.clientId.length > 0 &&
-    values.managerId.length > 0;
+  const canSave = socialsOnly
+    ? true
+    : values.projectName.trim().length > 0 &&
+      values.clientId.length > 0 &&
+      values.managerId.length > 0;
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="flex max-h-[85vh] max-w-lg! flex-col overflow-hidden">
           <DialogHeader className="shrink-0">
-            <DialogTitle>{isEditing ? "Edit Project" : "Add Project"}</DialogTitle>
+            <DialogTitle>
+              {socialsOnly
+                ? "Edit social links"
+                : isEditing
+                  ? "Edit Project"
+                  : "Add Project"}
+            </DialogTitle>
             <DialogDescription>
-              Link a client, set social profile URLs, assign a manager, and add
-              optional team members. Posts are created against projects.
+              {socialsOnly
+                ? "Update Facebook, Instagram, LinkedIn, YouTube, and Google profile URLs for this project."
+                : "Link a client, set social profile URLs, assign a manager, and add optional team members. Posts are created against projects."}
             </DialogDescription>
           </DialogHeader>
 
           <div className="flex-1 space-y-4 overflow-y-auto py-1 pr-1">
-            <ProjectDialogBasicFields
-              values={values}
-              onFieldChange={onFieldChange}
-              disabled={isSaving}
-            />
-
-            <label className="block text-xs font-semibold text-muted-foreground">
-              Client
-              <div className="mt-2">
-                <ClientCombobox
-                  value={values.clientId}
-                  onChange={onClientChange}
+            {socialsOnly ? (
+              <ProjectDialogSocialFields
+                values={values}
+                onFieldChange={onFieldChange}
+                disabled={isSaving}
+              />
+            ) : (
+              <>
+                <ProjectDialogBasicFields
+                  values={values}
+                  onFieldChange={onFieldChange}
                   disabled={isSaving}
-                  placeholder="e.g. Bloom Skincare"
-                  preload={open}
-                  seedClient={formSeeds?.client}
                 />
-              </div>
-            </label>
 
-            <ProjectDialogSocialFields
-              values={values}
-              onFieldChange={onFieldChange}
-              disabled={isSaving}
-            />
+                <label className="block text-xs font-semibold text-muted-foreground">
+                  Client
+                  <div className="mt-2">
+                    <ClientCombobox
+                      value={values.clientId}
+                      onChange={onClientChange}
+                      disabled={isSaving}
+                      placeholder="e.g. Bloom Skincare"
+                      preload={open}
+                      seedClient={formSeeds?.client}
+                    />
+                  </div>
+                </label>
 
-            <label className="block text-xs font-semibold text-muted-foreground">
-              Manager
-              <div className="mt-2">
-                <ProjectManagerSelect
-                  value={values.managerId}
-                  onChange={onManagerChange}
+                <ProjectDialogSocialFields
+                  values={values}
+                  onFieldChange={onFieldChange}
+                  disabled={isSaving}
+                />
+
+                <label className="block text-xs font-semibold text-muted-foreground">
+                  Manager
+                  <div className="mt-2">
+                    <ProjectManagerSelect
+                      value={values.managerId}
+                      onChange={onManagerChange}
+                      disabled={isSaving}
+                      preload={open}
+                      seedManager={formSeeds?.manager}
+                    />
+                  </div>
+                </label>
+
+                <ProjectTeamMembersSelect
+                  value={values.teamMemberIds}
+                  onChange={onTeamMemberIdsChange}
+                  excludeMemberIds={values.managerId ? [values.managerId] : []}
                   disabled={isSaving}
                   preload={open}
-                  seedManager={formSeeds?.manager}
+                  seedMembers={formSeeds?.teamMembers ?? []}
                 />
-              </div>
-            </label>
 
-            <ProjectTeamMembersSelect
-              value={values.teamMemberIds}
-              onChange={onTeamMemberIdsChange}
-              excludeMemberIds={values.managerId ? [values.managerId] : []}
-              disabled={isSaving}
-              preload={open}
-              seedMembers={formSeeds?.teamMembers ?? []}
-            />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <DatePicker
+                    label="Start date"
+                    value={values.startDate}
+                    onChange={(dateStr) => onFieldChange("startDate", dateStr)}
+                    clearable
+                    onClear={() => onFieldChange("startDate", "")}
+                    disabled={isSaving}
+                    placeholder="Select start date"
+                  />
+                  <DatePicker
+                    label="ETA date"
+                    value={values.etaDate}
+                    onChange={(dateStr) => onFieldChange("etaDate", dateStr)}
+                    clearable
+                    onClear={() => onFieldChange("etaDate", "")}
+                    disabled={isSaving}
+                    placeholder="Select ETA date"
+                  />
+                </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <DatePicker
-                label="Start date"
-                value={values.startDate}
-                onChange={(dateStr) => onFieldChange("startDate", dateStr)}
-                clearable
-                onClear={() => onFieldChange("startDate", "")}
-                disabled={isSaving}
-                placeholder="Select start date"
-              />
-              <DatePicker
-                label="ETA date"
-                value={values.etaDate}
-                onChange={(dateStr) => onFieldChange("etaDate", dateStr)}
-                clearable
-                onClear={() => onFieldChange("etaDate", "")}
-                disabled={isSaving}
-                placeholder="Select ETA date"
-              />
-            </div>
-
-            {isEditing ? (
-              <ActiveStatusSwitchField
-                entityLabel="project"
-                checked={values.isActive}
-                onCheckedChange={onActiveChange}
-                disabled={isSaving}
-              />
-            ) : null}
+                {isEditing ? (
+                  <ActiveStatusSwitchField
+                    entityLabel="project"
+                    checked={values.isActive}
+                    onCheckedChange={onActiveChange}
+                    disabled={isSaving}
+                  />
+                ) : null}
+              </>
+            )}
           </div>
 
           <DialogFooter className="shrink-0 border-t border-border/60 pt-4">
-            {isEditing && onDelete ? (
+            {isEditing && onDelete && !socialsOnly ? (
               <Button
                 variant="destructive-outline"
                 onClick={() => setIsConfirmOpen(true)}
@@ -158,7 +177,13 @@ export function ProjectDialog({
               </Button>
             </DialogClose>
             <Button onClick={onSave} disabled={!canSave || isSaving}>
-              {isSaving ? "Saving..." : isEditing ? "Save Changes" : "Add Project"}
+              {isSaving
+                ? "Saving..."
+                : socialsOnly
+                  ? "Save social links"
+                  : isEditing
+                    ? "Save Changes"
+                    : "Add Project"}
             </Button>
           </DialogFooter>
         </DialogContent>

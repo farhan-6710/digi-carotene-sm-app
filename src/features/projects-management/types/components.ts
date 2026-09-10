@@ -27,6 +27,8 @@ export type ProjectDialogProps = {
   onOpenChange: (open: boolean) => void;
   isEditing: boolean;
   isSaving?: boolean;
+  /** When true, only social profile URL fields are editable. */
+  socialsOnly?: boolean;
   values: ProjectFormValues;
   formSeeds?: ProjectFormSeeds | null;
   onFieldChange: (

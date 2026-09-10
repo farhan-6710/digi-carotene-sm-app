@@ -68,6 +68,27 @@ export function can(
   return resources?.includes(resource) ?? false;
 }
 
+/**
+ * Full SM project create/update/delete.
+ * SM executives do not get this — they may only edit social links.
+ */
+export function canFullyEditProject(
+  role: TeamMemberRole | string | null,
+): boolean {
+  return can(role, "projects.update");
+}
+
+/**
+ * Update social profile URLs on an SM project.
+ * Admin/manager via full projects access; SM executive socials-only.
+ */
+export function canEditProjectSocials(
+  role: TeamMemberRole | string | null,
+): boolean {
+  if (canFullyEditProject(role)) return true;
+  return resolveRole(role) === "sm_executive";
+}
+
 // ─── Project / post list scoping ─────────────────────────────────────────────
 // Controls which projects (and thus which posts) a role sees in team portal
 // lists. Flip a role to "all" here to restore unfiltered lists — one-line change.
