@@ -5,7 +5,7 @@ export function isPostsListDayInRange(
   year: number,
   month: number,
   date: number,
-  range: { from: Date; to?: Date } | undefined,
+  range: { from?: Date; to?: Date } | undefined,
 ): boolean {
   if (!range?.from) return true;
 

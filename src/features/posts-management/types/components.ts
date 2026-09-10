@@ -89,7 +89,7 @@ export type PostsDaysListTableProps = {
   year: number;
   month: number;
   isLoading: boolean;
-  listDateRange?: { from: Date; to?: Date };
+  listDateRange?: import("react-day-picker").DateRange;
   getSlot: (
     year: number,
     month: number,

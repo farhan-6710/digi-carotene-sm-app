@@ -1,12 +1,14 @@
 # Digi Carotene — docs
 
-*Snapshot: 2026-08-27*
+*Snapshot: 2026-09-10*
 
 Service-management app for **Digi Carotene**, a digital marketing agency.
 
 The team runs clients, projects, scheduled posts, production shoots, and Meta (Facebook/Instagram) analytics in one portal. Each client can sign in to a read-only portal for their brand.
 
 **Read this folder first** if you are new. Then `AGENTS.md` (how to change code) and `DESIGN.md` (layers).
+
+> **Deploy check:** If you can open this file on the live host under `/docs/README.md` and see the snapshot date **2026-09-10**, the GitHub Actions FTP job copied the `docs/` folder correctly.
 
 | Doc | What it covers |
 |-----|----------------|
