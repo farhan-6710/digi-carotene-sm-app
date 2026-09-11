@@ -1,12 +1,15 @@
 import { format } from "date-fns";
+import { useState } from "react";
 
 import { growthPostDetailStatItems } from "../constants/postDetailStats";
 import type { GrowthPostProfileCardProps } from "../types/components";
 import { formatCompact, formatPercent } from "../utils/formatters";
+import { ImagePreviewModal } from "@/shared/components/ImagePreviewModal";
 import { cn } from "@/shared/lib/utils";
 
 export function GrowthPostProfileCard({ view }: GrowthPostProfileCardProps) {
   const { post, accountUsername, mediaTypeLabel } = view;
+  const [previewOpen, setPreviewOpen] = useState(false);
   const postedOnInstagram = format(
     new Date(post.createdAt),
     "MMM d, yyyy 'at' h:mm a",
@@ -23,11 +26,18 @@ export function GrowthPostProfileCard({ view }: GrowthPostProfileCardProps) {
     <div className="rounded-2xl border border-border bg-card shadow-sm">
       <div className="flex flex-col gap-4 border-b border-border px-6 py-5 sm:flex-row sm:items-start">
         {post.postThumbnail ? (
-          <img
-            src={post.postThumbnail}
-            alt=""
-            className="size-24 shrink-0 rounded-xl bg-muted object-cover"
-          />
+          <button
+            type="button"
+            onClick={() => setPreviewOpen(true)}
+            className="size-24 shrink-0 overflow-hidden rounded-xl bg-muted transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+            aria-label="View larger image"
+          >
+            <img
+              src={post.postThumbnail}
+              alt=""
+              className="size-full object-cover"
+            />
+          </button>
         ) : (
           <div
             className="size-24 shrink-0 rounded-xl bg-muted"
@@ -100,6 +110,15 @@ export function GrowthPostProfileCard({ view }: GrowthPostProfileCardProps) {
           </p>
         </div>
       </div>
+
+      {post.postThumbnail ? (
+        <ImagePreviewModal
+          open={previewOpen}
+          onOpenChange={setPreviewOpen}
+          src={post.postThumbnail}
+          alt={`${mediaTypeLabel} post preview`}
+        />
+      ) : null}
     </div>
   );
 }

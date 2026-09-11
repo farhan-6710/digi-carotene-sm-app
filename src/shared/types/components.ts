@@ -18,6 +18,13 @@ export type ConfirmationModalProps = {
   onConfirm: () => void | Promise<void>;
 };
 
+export type ImagePreviewModalProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  src: string;
+  alt?: string;
+};
+
 export type PageHeaderProps = {
   heading?: string;
   description?: string;
