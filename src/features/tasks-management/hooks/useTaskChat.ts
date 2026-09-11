@@ -1,7 +1,10 @@
 import { useCallback, useState } from "react";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { CHAT_CONFIG } from "@/features/chat/constants/chatConfig";
+import { extractMentionedIds } from "@/features/chat/utils/mentionIds";
 import type { TaskMessage } from "@/features/tasks-management/types/types";
+import type { TaskChatParticipant } from "@/features/tasks-management/utils/taskChatMentionUtils";
 import {
   createTaskMessage,
   deleteTaskMessage,
@@ -11,17 +14,40 @@ import { showToast } from "@/shared/utils/showToast";
 
 type UseTaskChatOptions = {
   taskId: string;
+  chatParticipants: TaskChatParticipant[];
   reload: () => Promise<void>;
   setError: (message: string | null) => void;
 };
 
-export function useTaskChat({ taskId, reload, setError }: UseTaskChatOptions) {
+export function useTaskChat({
+  taskId,
+  chatParticipants,
+  reload,
+  setError,
+}: UseTaskChatOptions) {
   const { teamMemberId, clientId } = useAuth();
   const [draft, setDraft] = useState("");
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const resolveMentions = useCallback(
+    (body: string) => {
+      if (!CHAT_CONFIG.rules.storeMentionsOnSend) {
+        return { mentionedTeamMemberIds: [], mentionedClientIds: [] };
+      }
+      return extractMentionedIds(
+        body,
+        chatParticipants.map((participant) => ({
+          id: participant.id,
+          name: participant.member_name,
+          kind: participant.kind,
+        })),
+      );
+    },
+    [chatParticipants],
+  );
 
   const cancelEdit = useCallback(() => {
     setEditingMessageId(null);
@@ -40,11 +66,13 @@ export function useTaskChat({ taskId, reload, setError }: UseTaskChatOptions) {
     if (!body) return;
     if (!teamMemberId && !clientId) return;
 
+    const mentions = resolveMentions(body);
+
     setIsSending(true);
     setError(null);
     try {
       if (editingMessageId) {
-        await updateTaskMessage(editingMessageId, body);
+        await updateTaskMessage(editingMessageId, body, mentions);
         showToast("success", "Message updated.");
         setEditingMessageId(null);
       } else {
@@ -53,6 +81,8 @@ export function useTaskChat({ taskId, reload, setError }: UseTaskChatOptions) {
           authorTeamMemberId: teamMemberId,
           authorClientId: teamMemberId ? null : clientId,
           body,
+          mentionedTeamMemberIds: mentions.mentionedTeamMemberIds,
+          mentionedClientIds: mentions.mentionedClientIds,
         });
       }
       setDraft("");
@@ -75,6 +105,7 @@ export function useTaskChat({ taskId, reload, setError }: UseTaskChatOptions) {
     editingMessageId,
     isSending,
     reload,
+    resolveMentions,
     setError,
     taskId,
     teamMemberId,

@@ -171,8 +171,8 @@ export async function fetchPostsForProjectId(projectId: string): Promise<Post[]>
     .from(DB.POSTS.TABLE)
     .select(DB.POSTS.SELECT)
     .eq("project_id", projectId)
-    .order("to_be_posted_date", { ascending: false })
-    .order("to_be_posted_time", { ascending: false });
+    .order("to_be_posted_date", { ascending: true })
+    .order("to_be_posted_time", { ascending: true });
 
   if (error) {
     throw error;

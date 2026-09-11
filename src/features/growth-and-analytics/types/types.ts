@@ -143,7 +143,7 @@ export type SpendTrend = {
 export type ContentPostRow = {
   id: string;
   caption: string;
-  mediaType: "Reel" | "Image" | "Carousel" | "Story";
+  mediaType: "Reel" | "Image" | "Carousel" | "Story" | "Post";
   reach: number;
   views: number;
   likes: number;
@@ -153,6 +153,8 @@ export type ContentPostRow = {
   reposts: number;
   engagementRate: number;
   postThumbnail: string | null;
+  /** When false, table shows caption text without a detail link (Facebook live rows). */
+  linkToDetail?: boolean;
 };
 
 export type CampaignRow = {

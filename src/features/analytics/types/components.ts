@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import type { AnalyticsTabId } from "@/features/analytics/constants/analyticsTabs";
 import type {
   AnalyticsDataset,
-  AnalyticsDateFilterState,
   CategoryDatum,
   EntityPostBreakdown,
   LabeledValue,
@@ -11,7 +10,10 @@ import type {
   PostsTopClient,
 } from "@/features/analytics/types/types";
 import type { Post } from "@/features/posts-management/types/types";
-import type { DateFiltersTwoProps } from "@/shared/types/components";
+import type {
+  DateFiltersTwoFilterState,
+  DateFiltersTwoProps,
+} from "@/shared/types/components";
 
 export type AnalyticsTabNavProps = {
   activeTab: AnalyticsTabId;
@@ -22,7 +24,7 @@ export type AnalyticsTabPanelProps = {
   activeTab: AnalyticsTabId;
   data: AnalyticsDataset;
   filteredPosts: Post[];
-  filter: AnalyticsDateFilterState;
+  filter: DateFiltersTwoFilterState;
   periodLabel: string;
   isLoading: boolean;
 };
@@ -30,7 +32,7 @@ export type AnalyticsTabPanelProps = {
 export type AnalyticsPanelProps = {
   data: AnalyticsDataset;
   filteredPosts: Post[];
-  filter: AnalyticsDateFilterState;
+  filter: DateFiltersTwoFilterState;
   periodLabel: string;
   isLoading: boolean;
 };

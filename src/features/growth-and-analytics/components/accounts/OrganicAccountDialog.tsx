@@ -115,7 +115,7 @@ export function OrganicAccountDialog({
                 placeholder={
                   isEditing
                     ? "Paste a new token to refresh from Meta"
-                    : "Paste the page access token"
+                    : "Paste Digi Carotene’s long-lived system user token"
                 }
                 className={formFieldClassName}
                 containerClassName="mt-1"

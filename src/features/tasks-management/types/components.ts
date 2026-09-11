@@ -84,6 +84,16 @@ export type TaskChatProps = {
   chatParticipants: TaskChatParticipant[];
   /** Parent-task subtasks for `/` mentions. */
   subtasks?: Array<{ id: string; title: string }>;
+  /** Card heading. Default: Task chat. */
+  title?: string;
+  /** Card helper text under the heading. */
+  description?: string;
+  /** Composer placeholder. */
+  placeholder?: string;
+  /** Empty people-picker hint. */
+  emptyPeopleMessage?: string;
+  /** When false, `/` subtask mentions are disabled (project chat). */
+  enableSubtaskMentions?: boolean;
   draft: string;
   onDraftChange: (value: string) => void;
   onSend: () => void;

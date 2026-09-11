@@ -16,4 +16,4 @@ bun run lint
 
 Supabase SQL: new project → `scripts/migrations/001_initial_schema.sql`. Existing → only unapplied files in `scripts/migrations/` ([guide](scripts/migrations/README.md)).
 
-Architecture: [DESIGN.md](DESIGN.md) · Code rules: [AGENTS.md](AGENTS.md) · Crons & Meta: [docs-2026-08-27/ops.md](docs-2026-08-27/ops.md)
+Architecture: [DESIGN.md](DESIGN.md) · Code rules: [AGENTS.md](AGENTS.md) · Deploy: [docs/deploy.md](docs/deploy.md) · Meta Growth: [docs/meta-integration-growth-and-analytics.md](docs/meta-integration-growth-and-analytics.md)

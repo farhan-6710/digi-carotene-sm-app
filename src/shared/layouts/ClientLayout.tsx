@@ -1,4 +1,6 @@
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { ChatHeaderButton } from "@/features/chat/components/ChatHeaderButton";
+import { ChatPanelProvider } from "@/features/chat/providers/ChatPanelProvider";
 import { useClientShellConfig } from "@/features/client-portal/hooks/useClientShellConfig";
 import { ClientPortalProvider } from "@/features/client-portal/providers/ClientPortalProvider";
 import { clientGrowthBasePath } from "@/features/growth-and-analytics/constants/navigation";
@@ -14,6 +16,7 @@ function ClientAppShell() {
     <AppShellLayout
       sidebarConfig={sidebarConfig}
       accountPath="/client-portal/account"
+      headerActions={<ChatHeaderButton />}
       mobileNavDescription="Client portal navigation links and quick actions"
     />
   );
@@ -30,7 +33,9 @@ export function ClientLayout() {
       >
         <GrowthSelectedAccountProvider clientId={clientId}>
           <GrowthSelectedAdAccountProvider clientId={clientId}>
-            <ClientAppShell />
+            <ChatPanelProvider>
+              <ClientAppShell />
+            </ChatPanelProvider>
           </GrowthSelectedAdAccountProvider>
         </GrowthSelectedAccountProvider>
       </GrowthPortalProvider>

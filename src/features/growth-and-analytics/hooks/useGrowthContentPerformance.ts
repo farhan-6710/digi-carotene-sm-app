@@ -9,9 +9,15 @@ import {
   buildEngagementByType,
   mapPostRows,
 } from "../utils/contentMetrics";
+import {
+  buildFacebookContentStatCards,
+  buildFacebookContentTypeSplit,
+  buildFacebookEngagementByType,
+} from "../utils/facebookOrganicMetrics";
 import { mapPastPostToPostRow } from "../utils/instagramPostMetrics";
 import { saveGrowthReport } from "../utils/generateReport";
 import { resolveGrowthReportPeriod } from "../utils/reportPeriod";
+import { useFacebookOrganicAnalytics } from "./useFacebookOrganicAnalytics";
 import { useGrowthDateRange } from "./useGrowthDateRange";
 import { useGrowthOrganicAccountPicker } from "./useGrowthOrganicAccountPicker";
 
@@ -26,14 +32,21 @@ export function useGrowthContentPerformance() {
   } = useGrowthOrganicAccountPicker();
 
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const isFacebook = activeAccount?.platform === "facebook";
   const profileId = activeInstagramProfile?.id ?? "";
+
+  const {
+    analytics: facebookAnalytics,
+    isLoading: isFacebookLoading,
+    error: facebookError,
+  } = useFacebookOrganicAnalytics(activeAccount, range);
 
   const loadPosts = useCallback(
     () =>
-      profileId
+      !isFacebook && profileId
         ? fetchPastPostsForProfile(profileId, range)
         : Promise.resolve([]),
-    [profileId, range],
+    [isFacebook, profileId, range],
   );
   const {
     data: pastPosts,
@@ -46,10 +59,32 @@ export function useGrowthContentPerformance() {
     [pastPosts],
   );
 
-  const statCards = useMemo(() => buildContentStatCards(posts), [posts]);
-  const typeSplit = useMemo(() => buildContentTypeSplit(posts), [posts]);
-  const engagementByType = useMemo(() => buildEngagementByType(posts), [posts]);
-  const postRows = useMemo(() => mapPostRows(posts), [posts]);
+  const statCards = useMemo(
+    () =>
+      isFacebook
+        ? buildFacebookContentStatCards(facebookAnalytics.posts)
+        : buildContentStatCards(posts),
+    [facebookAnalytics.posts, isFacebook, posts],
+  );
+  const typeSplit = useMemo(
+    () =>
+      isFacebook
+        ? buildFacebookContentTypeSplit(facebookAnalytics.posts)
+        : buildContentTypeSplit(posts),
+    [facebookAnalytics.posts, isFacebook, posts],
+  );
+  const engagementByType = useMemo(
+    () =>
+      isFacebook
+        ? buildFacebookEngagementByType(facebookAnalytics.posts)
+        : buildEngagementByType(posts),
+    [facebookAnalytics.posts, isFacebook, posts],
+  );
+  const postRows = useMemo(
+    () =>
+      isFacebook ? facebookAnalytics.contentRows : mapPostRows(posts),
+    [facebookAnalytics.contentRows, isFacebook, posts],
+  );
 
   const generateReport = async () => {
     if (!activeAccount) return;
@@ -74,8 +109,10 @@ export function useGrowthContentPerformance() {
     typeSplit,
     engagementByType,
     postRows,
-    isLoading: isAccountsLoading || isPostsLoading,
-    error: accountsError || postsError,
+    isFacebook,
+    isLoading:
+      isAccountsLoading || (isFacebook ? isFacebookLoading : isPostsLoading),
+    error: accountsError || facebookError || postsError,
     dateFilterProps,
     periodLabel,
     generateReport,

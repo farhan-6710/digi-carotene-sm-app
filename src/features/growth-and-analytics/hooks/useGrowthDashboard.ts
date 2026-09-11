@@ -9,11 +9,13 @@ import { useFetch } from "@/shared/hooks/useFetch";
 
 import { buildDashboardStatCards } from "../utils/dashboardMetrics";
 import { buildContentTypeSplit } from "../utils/contentMetrics";
+import { buildFacebookDashboardStatCards } from "../utils/facebookOrganicMetrics";
 import {
   aggregatePostsToDailyRows,
   mapPastPostToPostRow,
   sumPostInteractionTotals,
 } from "../utils/instagramPostMetrics";
+import { useFacebookOrganicAnalytics } from "./useFacebookOrganicAnalytics";
 import { useGrowthDateRange } from "./useGrowthDateRange";
 import { useGrowthOrganicAccountPicker } from "./useGrowthOrganicAccountPicker";
 
@@ -27,14 +29,21 @@ export function useGrowthDashboard() {
     hasAccounts,
   } = useGrowthOrganicAccountPicker();
 
+  const isFacebook = activeAccount?.platform === "facebook";
   const profileId = activeInstagramProfile?.id ?? "";
+
+  const {
+    analytics: facebookAnalytics,
+    isLoading: isFacebookLoading,
+    error: facebookError,
+  } = useFacebookOrganicAnalytics(activeAccount, range);
 
   const loadPosts = useCallback(
     () =>
-      profileId
+      !isFacebook && profileId
         ? fetchPastPostsForProfile(profileId, range)
         : Promise.resolve([]),
-    [profileId, range],
+    [isFacebook, profileId, range],
   );
   const {
     data: pastPosts,
@@ -44,10 +53,10 @@ export function useGrowthDashboard() {
 
   const loadFollowers = useCallback(
     () =>
-      profileId
+      !isFacebook && profileId
         ? fetchDailyFollowersForProfile(profileId, range)
         : Promise.resolve([]),
-    [profileId, range],
+    [isFacebook, profileId, range],
   );
   const {
     data: dailyFollowers,
@@ -60,46 +69,80 @@ export function useGrowthDashboard() {
     [pastPosts],
   );
 
-  const postsDataRows = useMemo(
-    () =>
-      activeInstagramProfile
-        ? aggregatePostsToDailyRows(pastPosts, activeInstagramProfile)
-        : [],
-    [pastPosts, activeInstagramProfile],
-  );
+  const postsDataRows = useMemo(() => {
+    if (isFacebook) return facebookAnalytics.dailyRows;
+    return activeInstagramProfile
+      ? aggregatePostsToDailyRows(pastPosts, activeInstagramProfile)
+      : [];
+  }, [
+    activeInstagramProfile,
+    facebookAnalytics.dailyRows,
+    isFacebook,
+    pastPosts,
+  ]);
 
   const interactionTotals = useMemo(
-    () => sumPostInteractionTotals(pastPosts),
-    [pastPosts],
+    () =>
+      isFacebook
+        ? facebookAnalytics.interactionTotals
+        : sumPostInteractionTotals(pastPosts),
+    [facebookAnalytics.interactionTotals, isFacebook, pastPosts],
   );
 
   const followersGained = useMemo(
-    () => sumFollowersGained(dailyFollowers),
-    [dailyFollowers],
-  );
-
-  const statCards = useMemo(
     () =>
-      buildDashboardStatCards(
-        postsDataRows,
-        activeAccount,
-        interactionTotals,
-        followersGained,
-      ),
-    [postsDataRows, activeAccount, interactionTotals, followersGained],
+      isFacebook
+        ? facebookAnalytics.fanAdds
+        : sumFollowersGained(dailyFollowers),
+    [dailyFollowers, facebookAnalytics.fanAdds, isFacebook],
   );
 
-  const contentTypeSplit = useMemo(
-    () => buildContentTypeSplit(posts),
-    [posts],
-  );
+  const statCards = useMemo(() => {
+    if (isFacebook && activeAccount) {
+      return buildFacebookDashboardStatCards(activeAccount, facebookAnalytics);
+    }
+    return buildDashboardStatCards(
+      postsDataRows,
+      activeAccount,
+      interactionTotals,
+      followersGained,
+    );
+  }, [
+    activeAccount,
+    facebookAnalytics,
+    followersGained,
+    interactionTotals,
+    isFacebook,
+    postsDataRows,
+  ]);
+
+  const contentTypeSplit = useMemo(() => {
+    if (isFacebook) {
+      const count = facebookAnalytics.posts.length;
+      if (count === 0) return [];
+      return [
+        {
+          key: "post",
+          label: "Posts",
+          value: count,
+          color: "var(--chart-3)",
+        },
+      ];
+    }
+    return buildContentTypeSplit(posts);
+  }, [facebookAnalytics.posts.length, isFacebook, posts]);
 
   return {
     statCards,
     postsDataRows,
     contentTypeSplit,
-    isLoading: isAccountsLoading || isPostsLoading || isFollowersLoading,
-    error: accountsError || postsError || followersError,
+    isFacebook,
+    isLoading:
+      isAccountsLoading ||
+      (isFacebook
+        ? isFacebookLoading
+        : isPostsLoading || isFollowersLoading),
+    error: accountsError || facebookError || postsError || followersError,
     dateFilterProps,
     periodLabel,
     hasAccounts,

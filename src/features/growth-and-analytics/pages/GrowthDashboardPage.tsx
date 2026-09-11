@@ -6,7 +6,7 @@ import { GrowthPlatformComingSoon } from "../components/GrowthPlatformComingSoon
 import { getOrganicDashboardMode } from "../constants/growthPlatformConfig";
 import { useGrowthDashboard } from "../hooks/useGrowthDashboard";
 import { useGrowthSelectedAccount } from "../hooks/useGrowthSelectedAccount";
-import { DateFilters } from "@/shared/components/DateFilters";
+import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
@@ -17,6 +17,7 @@ export function GrowthDashboardPage() {
     statCards,
     postsDataRows,
     contentTypeSplit,
+    isFacebook,
     isLoading,
     error,
     dateFilterProps,
@@ -32,12 +33,16 @@ export function GrowthDashboardPage() {
     <PageContent>
       <PageHeader
         heading="Dashboard"
-        description="Audience growth, reach, and interactions for the selected account."
+        description={
+          isFacebook
+            ? "Page followers, media views, and engagements for the selected Facebook Page."
+            : "Audience growth, reach, and interactions for the selected account."
+        }
         actions={
           hasAccounts ? (
             <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
               <GrowthOrganicAccountSelect />
-              {showLiveDashboard ? <DateFilters {...dateFilterProps} /> : null}
+              {showLiveDashboard ? <DateFiltersTwo {...dateFilterProps} /> : null}
             </div>
           ) : null
         }
@@ -60,16 +65,24 @@ export function GrowthDashboardPage() {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
               <PageContent className="space-y-6 lg:col-span-2">
                 <GrowthPostsDataChart
-                  title="Posts Data"
-                  description="Month-by-month totals for the selected metric across all published posts."
+                  title={isFacebook ? "Page Activity" : "Posts Data"}
+                  description={
+                    isFacebook
+                      ? "Daily page media views, engagements, and new follows in the selected range."
+                      : "Month-by-month totals for the selected metric across all published posts."
+                  }
                   rows={postsDataRows}
                 />
               </PageContent>
 
               <PageContent className="space-y-6 lg:col-span-1">
                 <GrowthDonutChart
-                  title="Posts by Content Type"
-                  description="Posts published in the selected range."
+                  title={isFacebook ? "Published Posts" : "Posts by Content Type"}
+                  description={
+                    isFacebook
+                      ? "Posts published in the selected range."
+                      : "Posts published in the selected range."
+                  }
                   data={contentTypeSplit}
                   centerLabel="Posts"
                 />

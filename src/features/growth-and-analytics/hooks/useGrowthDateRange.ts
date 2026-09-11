@@ -1,14 +1,13 @@
 import { useMemo } from "react";
 
-import { useAnalyticsFilters } from "@/features/analytics/hooks/useAnalyticsFilters";
+import { useDateFiltersTwo } from "@/shared/hooks/useDateFiltersTwo";
 import { serializeUrlDate } from "@/shared/utils/urlDateParams";
 
 import type { GrowthDateRange } from "../types/types";
 
-// Bridges the shared analytics date filter (pills + range picker, synced to the
-// URL) into a `{ from, to }` range the growth Supabase queries can use.
+// Bridges DateFiltersTwo into a `{ from, to }` range growth queries can use.
 export function useGrowthDateRange() {
-  const { resolvedRange, dateFilterProps, periodLabel } = useAnalyticsFilters();
+  const { resolvedRange, dateFilterProps, periodLabel } = useDateFiltersTwo();
 
   const fromKey = resolvedRange ? serializeUrlDate(resolvedRange.from) : "";
   const toKey = resolvedRange ? serializeUrlDate(resolvedRange.to) : "";

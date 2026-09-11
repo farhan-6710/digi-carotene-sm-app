@@ -27,5 +27,10 @@ export const META_SYNC_DAYS = 90;
 // Meta insights endpoints reject ranges wider than 30 days between since/until.
 export const META_INSIGHTS_WINDOW_DAYS = 28;
 
+// Page Insights metrics valid after Nov 2025 deprecations
+// (page_impressions → page_media_view, page_fan_adds → page_daily_follows_unique).
+export const FACEBOOK_DASHBOARD_INSIGHT_METRICS =
+  "page_media_view,page_post_engagements,page_daily_follows_unique";
+
 // follower_count only supports the last 30 days, excluding today.
 export const META_FOLLOWER_COUNT_DAYS = 30;

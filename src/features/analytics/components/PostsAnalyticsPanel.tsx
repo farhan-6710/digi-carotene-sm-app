@@ -7,7 +7,6 @@ import { MonthlyTrendChart } from "@/features/analytics/components/MonthlyTrendC
 import { SessionActivityGraph } from "@/features/analytics/components/SessionActivityGraph";
 import { PostsTopClientsTable } from "@/features/analytics/components/PostsTopClientsTable";
 import type { AnalyticsPanelProps } from "@/features/analytics/types/components";
-import { resolveAnalyticsDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
 import {
   buildMonthlyTrend,
   buildMonthlyTrendForRange,
@@ -15,6 +14,7 @@ import {
   buildStatusBreakdown,
 } from "@/features/analytics/utils/postsAnalyticsCompute";
 import { buildPostsTopClients } from "@/features/analytics/utils/postsAnalyticsUtils";
+import { resolveDateFiltersTwoRange } from "@/shared/utils/dateFiltersTwoUtils";
 
 export function PostsAnalyticsPanel({
   filteredPosts,
@@ -23,7 +23,7 @@ export function PostsAnalyticsPanel({
   isLoading,
 }: AnalyticsPanelProps) {
   const view = useMemo(() => {
-    const resolvedRange = resolveAnalyticsDateRange(filter);
+    const resolvedRange = resolveDateFiltersTwoRange(filter);
     const trend = resolvedRange
       ? buildMonthlyTrendForRange(filteredPosts, resolvedRange)
       : buildMonthlyTrend(filteredPosts, 12);

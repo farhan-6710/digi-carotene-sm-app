@@ -270,7 +270,11 @@ export function buildDailyMetricRows(
         0,
     );
     const impressions = Math.round(
-      values.impressions ?? values.page_impressions ?? values.views ?? reach * 1.3,
+      values.impressions ??
+        values.page_media_view ??
+        values.page_impressions ??
+        values.views ??
+        reach * 1.3,
     );
 
     let newFollowers: number;
@@ -286,7 +290,12 @@ export function buildDailyMetricRows(
       );
       newFollowers = Math.max(
         0,
-        Math.round(values.page_fan_adds ?? followers - prevFollowers),
+        Math.round(
+          values.page_daily_follows_unique ??
+            values.page_daily_follows ??
+            values.page_fan_adds ??
+            followers - prevFollowers,
+        ),
       );
       prevFollowers = followers;
     }

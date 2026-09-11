@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { ProjectChatSection } from "@/features/chat/components/ProjectChatSection";
 import { CLIENT_PROJECTS_PATH } from "@/features/client-portal/constants/routes";
 import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
 import { ProjectPostsTable } from "@/features/projects-management/components/ProjectPostsTable";
@@ -76,6 +77,7 @@ export function ClientProjectDetailPage() {
         hideClientLink
       />
       <ProjectPostsTable posts={dateFilteredPosts} isLoading={false} />
+      <ProjectChatSection project={project} teamMembers={teamMembers} />
     </PageContent>
   );
 }

@@ -8,7 +8,7 @@ import { useGrowthAdDetailQuery } from "../hooks/useGrowthAdDetailQuery";
 import { useGrowthPaths } from "../hooks/useGrowthPaths";
 import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
 import type { DemographicBreakdown } from "../types/types";
-import { DateFilters } from "@/shared/components/DateFilters";
+import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -162,7 +162,7 @@ export function GrowthAdDetailPage() {
                 adAccountId={accountId}
               />
             </div>
-            <DateFilters {...dateFilterProps} />
+            <DateFiltersTwo {...dateFilterProps} />
           </div>
         }
       />

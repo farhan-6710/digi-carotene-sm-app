@@ -32,6 +32,11 @@ export function TaskChat({
   currentClientId = null,
   chatParticipants,
   subtasks = [],
+  title = "Task chat",
+  description = "Use @ to mention people and / to mention a subtask. Refresh for new replies.",
+  placeholder = "Write a message… @ people, / subtasks",
+  emptyPeopleMessage = "No matching people on this task.",
+  enableSubtaskMentions = true,
   draft,
   onDraftChange,
   onSend,
@@ -107,16 +112,22 @@ export function TaskChat({
   }, [activeMention, mentionParticipants]);
 
   const subtaskOptions = useMemo(() => {
-    if (!activeMention || activeMention.kind !== "subtask") {
+    if (
+      !enableSubtaskMentions ||
+      !activeMention ||
+      activeMention.kind !== "subtask"
+    ) {
       return [] as TaskChatSubtaskOption[];
     }
     return filterSubtaskMentionOptions(subtasks, activeMention.query);
-  }, [activeMention, subtasks]);
+  }, [activeMention, enableSubtaskMentions, subtasks]);
 
   const pickerOpen =
     Boolean(activeMention) &&
     ((activeMention?.kind === "person" && mentionParticipants.length > 0) ||
-      (activeMention?.kind === "subtask" && subtasks.length > 0));
+      (enableSubtaskMentions &&
+        activeMention?.kind === "subtask" &&
+        subtasks.length > 0));
 
   const optionCount =
     activeMention?.kind === "subtask"
@@ -125,7 +136,9 @@ export function TaskChat({
 
   const syncMentionState = (text: string, nextCursor: number) => {
     setCursorIndex(nextCursor);
-    const nextMention = getActiveMention(text, nextCursor);
+    const nextMention = getActiveMention(text, nextCursor, {
+      allowSubtaskMentions: enableSubtaskMentions,
+    });
     setActiveMention(nextMention);
     const nextKey = nextMention
       ? `${nextMention.kind}:${nextMention.startIndex}:${nextMention.query}`
@@ -226,11 +239,8 @@ export function TaskChat({
     <div className="flex h-full max-h-[min(40rem,calc(100dvh-12rem))] min-h-[24rem] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm lg:min-h-[28rem]">
       <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border px-4 py-4 sm:px-5">
         <div className="min-w-0">
-          <h3 className="text-sm font-semibold text-foreground">Task chat</h3>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            Use @ to mention people and / to mention a subtask. Refresh for new
-            replies.
-          </p>
+          <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+          <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
         </div>
         <Button
           type="button"
@@ -317,7 +327,7 @@ export function TaskChat({
               )
             ) : personOptions.length === 0 ? (
               <p className="px-3 py-2 text-xs text-muted-foreground">
-                No matching people on this task.
+                {emptyPeopleMessage}
               </p>
             ) : (
               <ul className="max-h-40 overflow-y-auto py-1">
@@ -387,7 +397,7 @@ export function TaskChat({
             syncMentionState(draft, nextCursor);
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Write a message… @ people, / subtasks"
+          placeholder={placeholder}
           disabled={isSending || isDeleting}
           className={cn(formFieldClassName, "max-h-32 min-h-20 resize-none")}
         />

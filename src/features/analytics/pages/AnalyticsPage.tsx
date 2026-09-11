@@ -3,23 +3,27 @@ import { useMemo } from "react";
 import { AnalyticsTabNav } from "@/features/analytics/components/AnalyticsTabNav";
 import { AnalyticsTabPanel } from "@/features/analytics/components/AnalyticsTabPanel";
 import { useAnalyticsData } from "@/features/analytics/hooks/useAnalyticsData";
-import { useAnalyticsFilters } from "@/features/analytics/hooks/useAnalyticsFilters";
 import { useAnalyticsTab } from "@/features/analytics/hooks/useAnalyticsTab";
-import { filterPostsByAnalyticsFilter } from "@/features/analytics/utils/analyticsFilterUtils";
-import { DateFilters } from "@/shared/components/DateFilters";
+import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
+import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { PageContent } from "@/shared/components/PageContent";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageHeader } from "@/shared/components/PageHeader";
+import { useDateFiltersTwo } from "@/shared/hooks/useDateFiltersTwo";
+import { resolveDateFiltersTwoRange } from "@/shared/utils/dateFiltersTwoUtils";
 
 export function AnalyticsPage() {
   const { activeTab, setActiveTab } = useAnalyticsTab();
   const { data, isLoading, error } = useAnalyticsData();
-  const { filter, periodLabel, dateFilterProps } = useAnalyticsFilters();
+  const { filter, periodLabel, dateFilterProps } = useDateFiltersTwo();
 
-  const filteredPosts = useMemo(
-    () => filterPostsByAnalyticsFilter(data.posts, filter),
-    [data.posts, filter],
-  );
+  const filteredPosts = useMemo(() => {
+    const range = resolveDateFiltersTwoRange(filter);
+    if (!range) {
+      return data.posts;
+    }
+    return filterPostsByDateRange(data.posts, range);
+  }, [data.posts, filter]);
 
   return (
     <PageContent>
@@ -32,7 +36,7 @@ export function AnalyticsPage() {
 
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <AnalyticsTabNav activeTab={activeTab} onTabChange={setActiveTab} />
-        <DateFilters {...dateFilterProps} />
+        <DateFiltersTwo {...dateFilterProps} />
       </div>
 
       <AnalyticsTabPanel

@@ -9,7 +9,7 @@ import { useGrowthCampaignDetailQuery } from "../hooks/useGrowthCampaignDetailQu
 import { useGrowthCampaignDemographicBreakdown } from "../hooks/useGrowthCampaignDemographicBreakdown";
 import { useGrowthPaths } from "../hooks/useGrowthPaths";
 import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
-import { DateFilters } from "@/shared/components/DateFilters";
+import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -128,7 +128,7 @@ export function GrowthCampaignDetailPage() {
                 adAccountId={accountId}
               />
             </div>
-            <DateFilters {...dateFilterProps} />
+            <DateFiltersTwo {...dateFilterProps} />
           </div>
         }
       />

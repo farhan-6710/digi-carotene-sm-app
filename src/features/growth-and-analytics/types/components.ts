@@ -11,6 +11,7 @@ import type {
   ContentPostRow,
   DailyMetricRow,
   LabeledValue,
+  GrowthPlatform,
   GrowthPostDetailView,
   GrowthCampaignDetailView,
   GrowthAdsetDetailView,
@@ -64,6 +65,8 @@ export type GrowthSpendChartProps = {
 
 export type ContentPostsTableProps = {
   rows: ContentPostRow[];
+  /** Facebook live rows use reactions/comments/shares instead of reach/saves. */
+  variant?: "instagram" | "facebook";
 };
 
 export type GrowthPostProfileCardProps = {
@@ -157,6 +160,13 @@ export type ReportsTableProps = {
 export type GrowthReportTabsProps = {
   activeType: ReportType | "all";
   onTypeChange: (type: ReportType | "all") => void;
+};
+
+export type GrowthOrganicPlatformToggleProps = {
+  value: GrowthPlatform;
+  onChange: (platform: GrowthPlatform) => void;
+  availablePlatforms: GrowthPlatform[];
+  className?: string;
 };
 
 export type OrganicAccountsListProps = {

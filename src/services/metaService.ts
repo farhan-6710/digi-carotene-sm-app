@@ -1,4 +1,5 @@
 import {
+  FACEBOOK_DASHBOARD_INSIGHT_METRICS,
   META_ACCOUNT_FIELDS,
   META_API_VERSION,
   META_GRAPH_BASE_URL,
@@ -86,6 +87,30 @@ export async function fetchMetaOrganicInfo(
       (data.followers_count as number) ?? (data.fan_count as number) ?? 0,
     profilePicture: (data.profile_picture_url as string) ?? null,
   };
+}
+
+/**
+ * Page Insights / posts require a Page Access Token.
+ * System User long-lived tokens are not Page tokens — exchange via this call
+ * when the Page is assigned to that system user.
+ */
+export async function fetchFacebookPageAccessToken(
+  pageId: string,
+  accessToken: string,
+): Promise<string> {
+  const data = await graphGet(META_API_VERSION.facebook, pageId, {
+    fields: "access_token",
+    access_token: accessToken,
+  });
+
+  const pageToken = (data.access_token as string | undefined)?.trim();
+  if (!pageToken) {
+    throw new Error(
+      "Could not get a Page Access Token for this Facebook Page. Assign the Page to the system user (ANALYZE or higher), then reconnect with Digi Carotene’s long-lived token.",
+    );
+  }
+
+  return pageToken;
 }
 
 export async function fetchMetaAdInfo(
@@ -291,14 +316,14 @@ export async function fetchInstagramMediaInsights(
   }
 }
 
-/** Dashboard: impressions, engagement, and fan adds in one Graph request. */
+/** Dashboard: media views, engagement, and new follows in one Graph request. */
 export async function fetchFacebookDashboardInsights(
   pageId: string,
   accessToken: string,
   range: MetaSyncRange,
 ) {
   const data = (await graphGet(META_API_VERSION.facebook, `${pageId}/insights`, {
-    metric: "page_impressions,page_post_engagements,page_fan_adds",
+    metric: FACEBOOK_DASHBOARD_INSIGHT_METRICS,
     period: "day",
     since: range.sinceUnix,
     until: range.untilUnix,

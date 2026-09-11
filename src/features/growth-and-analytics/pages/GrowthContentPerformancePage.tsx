@@ -7,7 +7,7 @@ import { ContentPostsTable } from "../components/tables/ContentPostsTable";
 import { getOrganicDashboardMode } from "../constants/growthPlatformConfig";
 import { useGrowthContentPerformance } from "../hooks/useGrowthContentPerformance";
 import { useGrowthSelectedAccount } from "../hooks/useGrowthSelectedAccount";
-import { DateFilters } from "@/shared/components/DateFilters";
+import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
@@ -20,6 +20,7 @@ export function GrowthContentPerformancePage() {
     typeSplit,
     engagementByType,
     postRows,
+    isFacebook,
     isLoading,
     error,
     dateFilterProps,
@@ -37,14 +38,18 @@ export function GrowthContentPerformancePage() {
     <PageContent>
       <PageHeader
         heading="Content Performance"
-        description="Break down how individual posts perform across formats and engagement."
+        description={
+          isFacebook
+            ? "See how Facebook Page posts perform across reactions, comments, and shares."
+            : "Break down how individual posts perform across formats and engagement."
+        }
         actions={
           hasAccounts ? (
             <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
               <GrowthOrganicAccountSelect />
               {showLiveContent ? (
                 <div className="flex flex-wrap items-center justify-end gap-2">
-                  <DateFilters {...dateFilterProps} />
+                  <DateFiltersTwo {...dateFilterProps} />
                   <Button
                     onClick={() => void generateReport()}
                     disabled={isGeneratingReport}
@@ -76,20 +81,35 @@ export function GrowthContentPerformancePage() {
             <>
               <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <GrowthDonutChart
-                  title="Posts by Content Type"
-                  description="Distribution of published formats."
+                  title={isFacebook ? "Published Posts" : "Posts by Content Type"}
+                  description={
+                    isFacebook
+                      ? "Posts published in the selected range."
+                      : "Distribution of published formats."
+                  }
                   data={typeSplit}
                   centerLabel="Posts"
                 />
                 <GrowthBarChart
-                  title="Avg Engagement by Format"
-                  description="Engagement rate (%) by content type."
+                  title={
+                    isFacebook
+                      ? "Avg Interactions per Post"
+                      : "Avg Engagement by Format"
+                  }
+                  description={
+                    isFacebook
+                      ? "Average reactions + comments + shares per post."
+                      : "Engagement rate (%) by content type."
+                  }
                   data={engagementByType}
                   color="var(--accent)"
                 />
               </div>
 
-              <ContentPostsTable rows={postRows} />
+              <ContentPostsTable
+                rows={postRows}
+                variant={isFacebook ? "facebook" : "instagram"}
+              />
             </>
           ) : null}
         </>

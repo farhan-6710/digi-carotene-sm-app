@@ -15,6 +15,13 @@ export function formatMetaApiError(message: string, accountName?: string): strin
     return `Missing Meta permissions${label}. Use a token with insights access for this account.`;
   }
 
+  if (
+    normalized.includes("page access token") ||
+    normalized.includes("(#190)")
+  ) {
+    return `Facebook Page Insights need a Page Access Token${label}. Assign the Page to Digi Carotene’s system user, then reconnect the account (or refresh the token) in Manage Accounts.`;
+  }
+
   return message;
 }
 

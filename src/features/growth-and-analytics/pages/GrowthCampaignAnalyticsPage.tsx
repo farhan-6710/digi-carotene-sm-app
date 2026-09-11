@@ -3,7 +3,7 @@ import { GrowthAdAccountSelect } from "../components/GrowthAdAccountSelect";
 import { GrowthNoAccountsEmpty } from "../components/GrowthNoAccountsEmpty";
 import { CampaignTable } from "../components/tables/CampaignTable";
 import { useGrowthCampaigns } from "../hooks/useGrowthCampaigns";
-import { DateFilters } from "@/shared/components/DateFilters";
+import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
@@ -36,7 +36,7 @@ export function GrowthCampaignAnalyticsPage() {
             <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
               <GrowthAdAccountSelect />
               <div className="flex flex-wrap items-center justify-end gap-2">
-                <DateFilters {...dateFilterProps} />
+                <DateFiltersTwo {...dateFilterProps} />
                 <Button
                   onClick={() => void generateReport()}
                   disabled={isGeneratingReport}

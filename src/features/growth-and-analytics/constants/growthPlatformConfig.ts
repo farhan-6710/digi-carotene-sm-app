@@ -43,7 +43,7 @@ export const ORGANIC_PLATFORM_CONFIG: Record<
   facebook: {
     id: "facebook",
     label: "Facebook",
-    status: "coming_soon",
+    status: "live",
   },
 };
 

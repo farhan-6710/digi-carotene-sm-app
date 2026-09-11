@@ -26,6 +26,8 @@ export async function createTaskMessage(input: {
   authorTeamMemberId?: string | null;
   authorClientId?: string | null;
   body: string;
+  mentionedTeamMemberIds?: string[];
+  mentionedClientIds?: string[];
 }): Promise<TaskMessage> {
   const body = input.body.trim();
   if (!body) throw new Error("Message cannot be empty.");
@@ -43,6 +45,8 @@ export async function createTaskMessage(input: {
       author_team_member_id: authorTeamMemberId,
       author_client_id: authorClientId,
       body,
+      mentioned_team_member_ids: input.mentionedTeamMemberIds ?? [],
+      mentioned_client_ids: input.mentionedClientIds ?? [],
     })
     .select(DB.TASK_MESSAGES.SELECT)
     .single();
@@ -54,13 +58,23 @@ export async function createTaskMessage(input: {
 export async function updateTaskMessage(
   messageId: string,
   body: string,
+  mentions?: {
+    mentionedTeamMemberIds: string[];
+    mentionedClientIds: string[];
+  },
 ): Promise<TaskMessage> {
   const nextBody = body.trim();
   if (!nextBody) throw new Error("Message cannot be empty.");
 
+  const patch: Record<string, unknown> = { body: nextBody };
+  if (mentions) {
+    patch.mentioned_team_member_ids = mentions.mentionedTeamMemberIds;
+    patch.mentioned_client_ids = mentions.mentionedClientIds;
+  }
+
   const { data, error } = await supabase
     .from(DB.TASK_MESSAGES.TABLE)
-    .update({ body: nextBody })
+    .update(patch)
     .eq("id", messageId)
     .select(DB.TASK_MESSAGES.SELECT)
     .single();

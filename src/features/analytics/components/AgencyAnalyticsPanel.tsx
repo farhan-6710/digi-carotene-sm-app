@@ -5,13 +5,13 @@ import { HorizontalBarChart } from "@/features/analytics/components/HorizontalBa
 import { MonthlyTrendChart } from "@/features/analytics/components/MonthlyTrendChart";
 import type { AnalyticsPanelProps } from "@/features/analytics/types/components";
 import { PageContent } from "@/shared/components/PageContent";
-import { resolveAnalyticsDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
 import {
   buildMonthlyTrend,
   buildMonthlyTrendForRange,
   buildPlatformDistribution,
   buildStatusBreakdown,
 } from "@/features/analytics/utils/postsAnalyticsCompute";
+import { resolveDateFiltersTwoRange } from "@/shared/utils/dateFiltersTwoUtils";
 
 export function AgencyAnalyticsPanel({
   filteredPosts,
@@ -19,7 +19,7 @@ export function AgencyAnalyticsPanel({
   periodLabel,
 }: AnalyticsPanelProps) {
   const view = useMemo(() => {
-    const resolvedRange = resolveAnalyticsDateRange(filter);
+    const resolvedRange = resolveDateFiltersTwoRange(filter);
     const trend = resolvedRange
       ? buildMonthlyTrendForRange(filteredPosts, resolvedRange)
       : buildMonthlyTrend(filteredPosts, 12);

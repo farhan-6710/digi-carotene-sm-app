@@ -15,6 +15,7 @@ const TYPE_ORDER: ContentPostRow["mediaType"][] = [
   "Image",
   "Carousel",
   "Story",
+  "Post",
 ];
 
 const TYPE_COLOR: Record<ContentPostRow["mediaType"], string> = {
@@ -22,6 +23,7 @@ const TYPE_COLOR: Record<ContentPostRow["mediaType"], string> = {
   Image: "var(--chart-3)",
   Carousel: "var(--chart-2)",
   Story: "var(--chart-4)",
+  Post: "var(--chart-3)",
 };
 
 const TYPE_PLURAL: Record<ContentPostRow["mediaType"], string> = {
@@ -29,6 +31,7 @@ const TYPE_PLURAL: Record<ContentPostRow["mediaType"], string> = {
   Image: "Images",
   Carousel: "Carousels",
   Story: "Stories",
+  Post: "Posts",
 };
 
 export function buildContentStatCards(posts: PostRow[]): StatCardItem[] {

@@ -45,6 +45,15 @@ export function TaskDetailPage() {
     reload,
     setError,
   });
+  const chatParticipants = useMemo(
+    () =>
+      task ? buildTaskChatParticipants(task, { admins: adminMembers }) : [],
+    [adminMembers, task],
+  );
+  const chatSubtasks = useMemo(
+    () => subtasks.map((subtask) => ({ id: subtask.id, title: subtask.title })),
+    [subtasks],
+  );
   const {
     draft,
     setDraft,
@@ -60,19 +69,10 @@ export function TaskDetailPage() {
     isDeleting,
   } = useTaskChat({
     taskId,
+    chatParticipants,
     reload,
     setError,
   });
-
-  const chatParticipants = useMemo(
-    () =>
-      task ? buildTaskChatParticipants(task, { admins: adminMembers }) : [],
-    [adminMembers, task],
-  );
-  const chatSubtasks = useMemo(
-    () => subtasks.map((subtask) => ({ id: subtask.id, title: subtask.title })),
-    [subtasks],
-  );
 
   const canEdit = task
     ? canEditTaskAccess({ task, teamRole, teamMemberId })

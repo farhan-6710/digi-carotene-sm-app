@@ -37,6 +37,14 @@ export function ClientTaskDetailPage() {
   const { task, messages, adminMembers, isLoading, error, setError, reload } =
     useClientTaskDetailQuery(taskId);
   const { subtasks } = useSubtasksQuery(taskId);
+  const chatParticipants = useMemo(
+    () => (task ? buildTaskChatParticipants(task, { admins: adminMembers }) : []),
+    [adminMembers, task],
+  );
+  const chatSubtasks = useMemo(
+    () => subtasks.map((subtask) => ({ id: subtask.id, title: subtask.title })),
+    [subtasks],
+  );
   const {
     draft,
     setDraft,
@@ -52,18 +60,10 @@ export function ClientTaskDetailPage() {
     isDeleting,
   } = useTaskChat({
     taskId,
+    chatParticipants,
     reload,
     setError,
   });
-
-  const chatParticipants = useMemo(
-    () => (task ? buildTaskChatParticipants(task, { admins: adminMembers }) : []),
-    [adminMembers, task],
-  );
-  const chatSubtasks = useMemo(
-    () => subtasks.map((subtask) => ({ id: subtask.id, title: subtask.title })),
-    [subtasks],
-  );
 
   if (isLoading && !task) {
     return <DetailPageLoading backButton={<ClientTaskBackButton />} />;

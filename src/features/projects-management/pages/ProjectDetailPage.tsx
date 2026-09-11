@@ -4,6 +4,7 @@ import { ArrowLeft, Pencil, Plus } from "lucide-react";
 
 import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { ProjectChatSection } from "@/features/chat/components/ProjectChatSection";
 import { PostDialog } from "@/features/posts-management/components/PostDialog";
 import { buildAddPostsPath, buildPostDetailPath } from "@/features/posts-management/constants/routes";
 import { usePostDialog } from "@/features/posts-management/hooks/usePostDialog";
@@ -194,6 +195,8 @@ export function ProjectDetailPage() {
         onOpenPost={(post) => navigate(buildPostDetailPath(post.id))}
         onEditPost={openEditDialogFromPost}
       />
+
+      <ProjectChatSection project={project} teamMembers={teamMembers} />
 
       <PostDialog {...postDialog} />
       {showProjectEdit ? (

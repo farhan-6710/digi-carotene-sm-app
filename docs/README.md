@@ -15,9 +15,9 @@ The team runs clients, projects, scheduled posts, production shoots, and Meta (F
 | [This file](./README.md) | Purpose, stack, commands, architecture, practices |
 | [database.md](./database.md) | Tables, relationships, migrations, RLS |
 | [auth-and-features.md](./auth-and-features.md) | Auth, roles, portals, every feature |
-| [ops.md](./ops.md) | Meta Business setup, PHP crons, Hostinger deploy |
+| [deploy.md](./deploy.md) | Hostinger / GitHub Actions deploy |
+| [meta-integration-growth-and-analytics.md](./meta-integration-growth-and-analytics.md) | New-client Meta connect flow + midnight Growth sync |
 | [meta-business-structure.md](./meta-business-structure.md) | Meta terminology and setup (Ravi's example) |
-| [growth-analytics-legacy-meta-setup.md](./growth-analytics-legacy-meta-setup.md) | Legacy Growth Meta setup (pre-refactor baseline) |
 
 ---
 

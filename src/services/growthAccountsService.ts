@@ -1,7 +1,13 @@
-import { rerunAdBackfillForAccount, runAdBackfill } from "@/services/adBackfillService";
+import {
+  rerunAdBackfillForAccount,
+  runAdBackfill,
+} from "@/services/adBackfillService";
 import { fetchClientById } from "@/services/clientsService";
 import { DB } from "@/services/db";
-import { rerunInstagramBackfillForOrganicAccount, runInstagram29DayBackfill } from "@/services/instagramBackfillService";
+import {
+  rerunInstagramBackfillForOrganicAccount,
+  runInstagram29DayBackfill,
+} from "@/services/instagramBackfillService";
 import {
   createInstagramProfile,
   fetchInstagramProfileByOrganicAccountId,
@@ -10,7 +16,11 @@ import {
   clearAdCachedMetrics,
   clearOrganicCachedMetrics,
 } from "@/services/growthMetaSyncService";
-import { fetchMetaAdInfo, fetchMetaOrganicInfo } from "@/services/metaService";
+import {
+  fetchMetaAdInfo,
+  fetchMetaOrganicInfo,
+  fetchFacebookPageAccessToken,
+} from "@/services/metaService";
 import { supabase } from "@/services/supabaseClient";
 import type {
   AdAccount,
@@ -79,10 +89,12 @@ function normalizeAdAccountId(adAccountId: string): string {
 }
 
 function isDuplicateAccountError(message: string): boolean {
-  return message.includes("growth_organic_accounts_platform_account_id_key")
-    || message.includes("growth_ads_accounts_ad_account_id_key")
-    || message.includes("growth_ad_accounts_ad_account_id_key")
-    || message.includes("duplicate key");
+  return (
+    message.includes("growth_organic_accounts_platform_account_id_key") ||
+    message.includes("growth_ads_accounts_ad_account_id_key") ||
+    message.includes("growth_ad_accounts_ad_account_id_key") ||
+    message.includes("duplicate key")
+  );
 }
 
 async function findOrganicByMetaId(
@@ -100,7 +112,9 @@ async function findOrganicByMetaId(
   return data ? mapOrganic(data as OrganicRow) : null;
 }
 
-async function findAdByMetaId(metaAdAccountId: string): Promise<AdAccount | null> {
+async function findAdByMetaId(
+  metaAdAccountId: string,
+): Promise<AdAccount | null> {
   const { data, error } = await supabase
     .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
     .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
@@ -115,7 +129,7 @@ export async function fetchOrganicAccounts(): Promise<OrganicAccount[]> {
   const { data, error } = await supabase
     .from(DB.GROWTH_ORGANIC_ACCOUNTS.TABLE)
     .select(DB.GROWTH_ORGANIC_ACCOUNTS.SELECT)
-    .order("followers", { ascending: false });
+    .order("created_at", { ascending: true });
 
   if (error) throw new Error(error.message);
   return ((data ?? []) as OrganicRow[]).map(mapOrganic);
@@ -139,7 +153,7 @@ export async function fetchOrganicAccountsByClientId(
     .from(DB.GROWTH_ORGANIC_ACCOUNTS.TABLE)
     .select(DB.GROWTH_ORGANIC_ACCOUNTS.SELECT)
     .eq("client_id", clientId)
-    .order("followers", { ascending: false });
+    .order("created_at", { ascending: true });
 
   if (error) throw new Error(error.message);
   return ((data ?? []) as OrganicRow[]).map(mapOrganic);
@@ -159,7 +173,9 @@ export async function fetchAdAccountsByClientId(
   return ((data ?? []) as AdRow[]).map(mapAd);
 }
 
-export async function fetchAdAccountAccessToken(accountId: string): Promise<string> {
+export async function fetchAdAccountAccessToken(
+  accountId: string,
+): Promise<string> {
   const { data, error } = await supabase
     .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
     .select("access_token")
@@ -168,10 +184,35 @@ export async function fetchAdAccountAccessToken(accountId: string): Promise<stri
 
   if (error) throw new Error(error.message);
 
-  const token = (data as { access_token?: string } | null)?.access_token?.trim();
+  const token = (
+    data as { access_token?: string } | null
+  )?.access_token?.trim();
   if (!token) {
     throw new Error(
       "No Meta access token stored for this ad account. Open Manage Accounts and refresh the token.",
+    );
+  }
+
+  return token;
+}
+
+export async function fetchOrganicAccessToken(
+  accountId: string,
+): Promise<string> {
+  const { data, error } = await supabase
+    .from(DB.GROWTH_ORGANIC_ACCOUNTS.TABLE)
+    .select("access_token")
+    .eq("id", accountId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+
+  const token = (
+    data as { access_token?: string } | null
+  )?.access_token?.trim();
+  if (!token) {
+    throw new Error(
+      "No Meta access token stored for this account. Open Manage Accounts and refresh the token.",
     );
   }
 
@@ -183,7 +224,9 @@ export async function connectOrganicAccount(
 ): Promise<OrganicAccount> {
   const token = form.accessToken.trim();
   if (!token) {
-    throw new Error("Paste the page access token so we can fetch data from Meta.");
+    throw new Error(
+      "Paste Digi Carotene’s long-lived access token so we can fetch data from Meta.",
+    );
   }
 
   const metaAccountId = form.accountId.trim();
@@ -194,7 +237,17 @@ export async function connectOrganicAccount(
     );
   }
 
-  const info = await fetchMetaOrganicInfo(form.platform, metaAccountId, token);
+  // Facebook Page Insights need a Page token; exchange system-user tokens on connect.
+  const storedToken =
+    form.platform === "facebook"
+      ? await fetchFacebookPageAccessToken(metaAccountId, token)
+      : token;
+
+  const info = await fetchMetaOrganicInfo(
+    form.platform,
+    metaAccountId,
+    storedToken,
+  );
 
   const { data, error } = await supabase
     .from(DB.GROWTH_ORGANIC_ACCOUNTS.TABLE)
@@ -202,7 +255,7 @@ export async function connectOrganicAccount(
       platform: form.platform,
       account_name: form.accountName.trim() || info.accountName,
       account_id: metaAccountId,
-      access_token: token,
+      access_token: storedToken,
       followers: info.followers,
       profile_picture: info.profilePicture,
       is_active: true,
@@ -248,8 +301,16 @@ export async function updateOrganicAccount(
   };
 
   if (token) {
-    const info = await fetchMetaOrganicInfo(form.platform, metaAccountId, token);
-    columns.access_token = token;
+    const storedToken =
+      form.platform === "facebook"
+        ? await fetchFacebookPageAccessToken(metaAccountId, token)
+        : token;
+    const info = await fetchMetaOrganicInfo(
+      form.platform,
+      metaAccountId,
+      storedToken,
+    );
+    columns.access_token = storedToken;
     columns.followers = info.followers;
     columns.profile_picture = info.profilePicture;
   }
@@ -285,10 +346,14 @@ export async function deleteOrganicAccount(id: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
-export async function connectAdAccount(form: AdAccountForm): Promise<AdAccount> {
+export async function connectAdAccount(
+  form: AdAccountForm,
+): Promise<AdAccount> {
   const token = form.accessToken.trim();
   if (!token) {
-    throw new Error("Paste the access token so we can fetch the ad account from Meta.");
+    throw new Error(
+      "Paste the access token so we can fetch the ad account from Meta.",
+    );
   }
 
   const metaAdAccountId = normalizeAdAccountId(form.adAccountId);

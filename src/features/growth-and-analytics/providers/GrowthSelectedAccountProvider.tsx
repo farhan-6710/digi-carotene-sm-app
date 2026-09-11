@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useEffect,
   useMemo,
   type ReactNode,
 } from "react";
@@ -12,7 +13,10 @@ import {
 import { fetchInstagramProfiles } from "@/services/instagramProfilesService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
-import { GROWTH_ORGANIC_ACCOUNT_PARAM } from "../constants/growthUrlParams";
+import {
+  GROWTH_ORGANIC_ACCOUNT_PARAM,
+  GROWTH_ORGANIC_ACCOUNT_STORAGE_KEY,
+} from "../constants/growthUrlParams";
 import type { InstagramProfile, OrganicAccount } from "../types/types";
 import { useGrowthAccountsUpdated } from "../hooks/useGrowthAccountsUpdated";
 import {
@@ -22,6 +26,44 @@ import {
 
 const NO_ACCOUNTS: OrganicAccount[] = [];
 const NO_PROFILES: InstagramProfile[] = [];
+
+function readStoredOrganicAccountId(): string | null {
+  try {
+    return sessionStorage.getItem(GROWTH_ORGANIC_ACCOUNT_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredOrganicAccountId(id: string | null): void {
+  try {
+    if (id) {
+      sessionStorage.setItem(GROWTH_ORGANIC_ACCOUNT_STORAGE_KEY, id);
+    } else {
+      sessionStorage.removeItem(GROWTH_ORGANIC_ACCOUNT_STORAGE_KEY);
+    }
+  } catch {
+    // Private mode / blocked storage — URL param still works on the same page.
+  }
+}
+
+function resolveOrganicAccount(
+  accounts: OrganicAccount[],
+  accountParam: string | null,
+): OrganicAccount | undefined {
+  if (accountParam) {
+    const fromUrl = accounts.find((account) => account.id === accountParam);
+    if (fromUrl) return fromUrl;
+  }
+
+  const storedId = readStoredOrganicAccountId();
+  if (storedId) {
+    const fromStorage = accounts.find((account) => account.id === storedId);
+    if (fromStorage) return fromStorage;
+  }
+
+  return accounts[0];
+}
 
 export function GrowthSelectedAccountProvider({
   children,
@@ -57,13 +99,18 @@ export function GrowthSelectedAccountProvider({
 
   const accountParam = searchParams.get(GROWTH_ORGANIC_ACCOUNT_PARAM);
 
-  const activeAccount = useMemo(() => {
-    if (accountParam) {
-      const selected = accounts.find((account) => account.id === accountParam);
-      if (selected) return selected;
+  const activeAccount = useMemo(
+    () => resolveOrganicAccount(accounts, accountParam),
+    [accounts, accountParam],
+  );
+
+  // Keep storage in sync so Dashboard ↔ Content Performance keep the same account
+  // even when sidebar links drop `?account=`.
+  useEffect(() => {
+    if (activeAccount?.id) {
+      writeStoredOrganicAccountId(activeAccount.id);
     }
-    return accounts[0];
-  }, [accounts, accountParam]);
+  }, [activeAccount?.id]);
 
   const activeInstagramProfile = useMemo(
     () =>
@@ -77,6 +124,7 @@ export function GrowthSelectedAccountProvider({
 
   const setAccountId = useCallback(
     (id: string) => {
+      writeStoredOrganicAccountId(id || null);
       setSearchParams(
         (current) => {
           const next = new URLSearchParams(current);

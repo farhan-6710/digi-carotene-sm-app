@@ -63,6 +63,8 @@ export type TaskMessage = {
   author_team_member_id: string | null;
   author_client_id: string | null;
   body: string;
+  mentioned_team_member_ids: string[];
+  mentioned_client_ids: string[];
   created_at: string;
   author: TaskMemberRef | null;
   author_client: TaskClientRef | null;

@@ -288,6 +288,27 @@ const TASK_MESSAGE_SELECT = `
   author_team_member_id,
   author_client_id,
   body,
+  mentioned_team_member_ids,
+  mentioned_client_ids,
+  created_at,
+  author:team_members!author_team_member_id (
+    id,
+    member_name
+  ),
+  author_client:clients!author_client_id (
+    id,
+    client_name
+  )
+`;
+
+const PROJECT_MESSAGE_SELECT = `
+  id,
+  sm_project_id,
+  author_team_member_id,
+  author_client_id,
+  body,
+  mentioned_team_member_ids,
+  mentioned_client_ids,
   created_at,
   author:team_members!author_team_member_id (
     id,
@@ -415,6 +436,10 @@ export const DB = {
   TASK_MESSAGES: {
     TABLE: "task_messages",
     SELECT: TASK_MESSAGE_SELECT,
+  },
+  PROJECT_MESSAGES: {
+    TABLE: "project_messages",
+    SELECT: PROJECT_MESSAGE_SELECT,
   },
   SUBTASKS: {
     TABLE: "subtasks",

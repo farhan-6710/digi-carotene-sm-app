@@ -11,6 +11,8 @@ export type TaskChatParticipant = {
   id: string;
   member_name: string;
   roles: TaskChatMentionRole[];
+  /** Distinguishes client vs team member ids for mention storage. */
+  kind: "team" | "client";
 };
 
 export type TaskChatSubtaskOption = {
@@ -42,6 +44,7 @@ export function buildTaskChatParticipants(
   const add = (
     member: TaskMemberRef | null | undefined,
     role: TaskChatMentionRole,
+    kind: "team" | "client" = "team",
   ) => {
     if (!member?.id) return;
     if (excludeMemberId && member.id === excludeMemberId) return;
@@ -58,6 +61,7 @@ export function buildTaskChatParticipants(
       id: member.id,
       member_name: member.member_name,
       roles: [role],
+      kind,
     });
   };
 
@@ -69,9 +73,11 @@ export function buildTaskChatParticipants(
       add(
         { id: assignee.client.id, member_name: assignee.client.client_name },
         "assignee",
+        "client",
       );
       add(
         { id: assignee.client.id, member_name: assignee.client.client_name },
+        "client",
         "client",
       );
     }
@@ -86,12 +92,17 @@ export function buildTaskChatParticipants(
         member_name: task.dependency_client.client_name,
       },
       "dependency",
+      "client",
     );
   }
   add(task.projects?.manager ?? null, "manager");
 
   if (task.client && !task.assignees.some((row) => row.client_id === task.client_id)) {
-    add({ id: task.client.id, member_name: task.client.client_name }, "client");
+    add(
+      { id: task.client.id, member_name: task.client.client_name },
+      "client",
+      "client",
+    );
   }
 
   for (const admin of admins) {
@@ -136,8 +147,14 @@ function getActiveTriggerMention(
 export function getActiveMention(
   text: string,
   cursorIndex: number,
+  options: { allowSubtaskMentions?: boolean } = {},
 ): ActiveMention | null {
+  const allowSubtaskMentions = options.allowSubtaskMentions !== false;
   const atMention = getActiveTriggerMention(text, cursorIndex, "@", "person");
+  if (!allowSubtaskMentions) {
+    return atMention;
+  }
+
   const slashMention = getActiveTriggerMention(
     text,
     cursorIndex,
