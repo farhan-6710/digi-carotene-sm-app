@@ -15,6 +15,10 @@ jobs:
         uses: oven-sh/setup-bun@v1
 
       - name: Install dependencies and build
+        env:
+          # Vite bakes these into the JS at build time (no server .env in production).
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
         run: |
           bun install
           bun run build

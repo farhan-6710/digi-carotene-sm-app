@@ -96,6 +96,20 @@ RewriteRule . /index.html [L]
 
 3. **`php/`** folder as `public_html/php/` (crons + `config.php`). Do not overwrite `config.php` blindly.
 
+### GitHub Actions deploy
+
+Workflow: `.github/workflows/deploy.yml` (push to `main` → build → FTP to `public_html/`).
+
+Repo **Settings → Secrets and variables → Actions** must include:
+
+| Secret | Used for |
+|--------|----------|
+| `FTP_HOST` / `FTP_USERNAME` / `FTP_PASSWORD` | Hostinger FTP |
+| `VITE_SUPABASE_URL` | Baked into JS at build time |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Baked into JS at build time (anon key) |
+
+Without the two `VITE_*` secrets, CI builds a blank app — `supabaseClient` throws and `#root` stays empty.
+
 Do not upload `src/`, `node_modules/`, or migrations to the web root. Run SQL in the **Supabase SQL Editor**, not on Hostinger.
 
 Supabase dashboard: add the live site URL and `/auth?form-type=reset-password` to Auth URL allow-list. Google OAuth: authorized redirect `https://<project-ref>.supabase.co/auth/v1/callback`.
