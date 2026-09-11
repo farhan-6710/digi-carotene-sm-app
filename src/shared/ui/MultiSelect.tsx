@@ -134,7 +134,7 @@ export function MultiSelect({
           type="button"
           variant="outline"
           disabled={disabled}
-          className="h-auto w-full min-w-0 justify-between gap-2 overflow-hidden rounded-lg border border-ring/60 bg-card px-3 py-2 text-sm font-medium text-foreground shadow-xs hover:bg-muted/50 dark:border-input dark:bg-muted/40"
+          className="h-auto w-full min-w-0 justify-between gap-2 overflow-hidden rounded-lg border border-ring/60 px-3 py-2 text-sm font-medium text-foreground shadow-xs hover:bg-muted/50 dark:border-input dark:bg-muted/40"
         >
           <span className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 overflow-hidden">
             {value.length === 0 ? (

@@ -61,7 +61,7 @@ export function AppShellLayout({
               <Menu className="size-4" aria-hidden="true" />
             </Button>
 
-            <div className="flex min-w-0 flex-1 items-center gap-4">
+            <div className="min-w-0 flex-1 items-center gap-4 hidden sm:flex">
               <ShellNavSearch
                 nav={sidebarConfig.nav}
                 placeholder={
@@ -72,8 +72,8 @@ export function AppShellLayout({
             </div>
 
             <div className="ml-auto flex items-center gap-3">
-              {headerActions}
               <ThemeModeToggle />
+              {headerActions}
               {accountPath ? (
                 <PortalUserHeaderMenu
                   accountPath={accountPath}

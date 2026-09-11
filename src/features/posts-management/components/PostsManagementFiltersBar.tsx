@@ -16,7 +16,7 @@ export function PostsManagementFiltersBar({
 }: PostsManagementFiltersBarProps) {
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-      <div className="grid w-full min-w-0 gap-3 sm:grid-cols-2 xl:grid-cols-3 xl:max-w-4xl">
+      <div className="grid w-full min-w-0 gap-3 sm:grid-cols-3 xl:grid-cols-3 xl:max-w-2xl">
         <ClientProjectFilters
           projects={projects}
           selectedClientIds={selectedClientIds}
