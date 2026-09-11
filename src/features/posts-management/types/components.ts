@@ -130,7 +130,7 @@ export type PostsDaysListStatusMixItem = {
 };
 
 export type PostsDaysListTableRowProps = {
-  date: number;
+  dateLabel: string;
   dayLabel: string;
   postCount: number;
   statusMix: PostsDaysListStatusMixItem[];

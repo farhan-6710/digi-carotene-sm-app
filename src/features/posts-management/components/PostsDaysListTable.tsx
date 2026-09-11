@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { getDaysInMonth } from "date-fns";
+import { format, getDaysInMonth } from "date-fns";
 import { useSearchParams } from "react-router";
 
 import { PostsDaysListTableRow } from "@/features/posts-management/components/PostsDaysListTableRow";
@@ -44,16 +44,18 @@ export function PostsDaysListTable({
   const days = useMemo(() => {
     const allDays = Array.from({ length: daysInMonth }, (_, index) => {
       const date = index + 1;
+      const dayDate = new Date(year, month - 1, date);
       const slot = getSlot(year, month, date);
       const postCount = slot?.clients.length ?? 0;
       const statuses = (slot?.clients ?? []).map((client) => client.status);
 
       return {
         date,
+        dateLabel: format(dayDate, "MMM d"),
         dayLabel: getDayLabel(year, month, date),
         postCount,
         statusMix: buildStatusMix(statuses),
-        href: buildPostsDayPath(new Date(year, month - 1, date), searchParams),
+        href: buildPostsDayPath(dayDate, searchParams),
       };
     });
 
@@ -81,7 +83,7 @@ export function PostsDaysListTable({
       {days.map((day) => (
         <PostsDaysListTableRow
           key={day.date}
-          date={day.date}
+          dateLabel={day.dateLabel}
           dayLabel={day.dayLabel}
           postCount={day.postCount}
           statusMix={day.statusMix}

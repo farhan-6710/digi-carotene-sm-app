@@ -8,7 +8,7 @@ import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
 import { cn } from "@/shared/lib/utils";
 
 export function PostsDaysListTableRow({
-  date,
+  dateLabel,
   dayLabel,
   postCount,
   statusMix,
@@ -26,7 +26,7 @@ export function PostsDaysListTableRow({
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           DAY
         </span>
-        <p className="text-sm font-semibold text-foreground">{date}</p>
+        <p className="text-sm font-semibold text-foreground">{dateLabel}</p>
       </div>
 
       <div className="min-w-0">

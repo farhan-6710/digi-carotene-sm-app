@@ -11,14 +11,21 @@ Do **not** create a Meta app per client. Do **not** reuse this Business app for 
 ### One-time setup
 
 1. Open **Meta Business Suite** and create a **Business Portfolio** (the agency’s primary portfolio).
-2. In that portfolio create a **Meta app** (type: Business). Add the products you need (Graph / Instagram / Marketing API).
-3. Create a **System User** (e.g. `analytics-cron`).
-4. **Link the app and the system user** (assign the app to the system user with control).
-5. **Add assets** to the system user: the Pages, Instagram accounts, and ad accounts you will sync (share client assets into this portfolio first if they live elsewhere).
-6. **Generate a token** for that system user against the app. Use a **long-lived / never-expiring System User token**. Typical scopes:
+2. In that portfolio create a **Meta app** (type: Business).
+3. In **developers.facebook.com → your app → Use cases**, add these three (only these):
+   - **Create & manage ads with Marketing API** — ads metrics (`ads_read`)
+   - **Manage everything on your Page** — Page access (`pages_read_engagement`, `pages_show_list`)
+   - **Manage messaging & content on Instagram** — organic IG (`instagram_basic`, `instagram_manage_insights`)
+4. Open the Instagram use case → **Customize** → choose **API setup with Facebook Login** (not Instagram Login). Confirm `instagram_basic` and `instagram_manage_insights` are included.
+5. Create a **System User** (e.g. `analytics-cron`).
+6. **Link the app and the system user** (assign the app to the system user with control).
+7. **Add assets** to the system user: the Pages, Instagram accounts, and ad accounts you will sync (share client assets into this portfolio first if they live elsewhere).
+8. **Generate a token** for that system user against the app. Use a **long-lived / never-expiring** token. Pick at least:
    - Organic: `instagram_basic`, `instagram_manage_insights`, `pages_read_engagement`
-   - Ads: `ads_read` (and related ads read permissions as required)
-7. Copy the token. In the team portal: **Growth & Analytics → Manage Accounts** → connect organic and/or ads → pick the **client** → paste the **same** token (it works for every asset assigned to that system user).
+   - Ads: `ads_read`
+9. Copy the token. In the team portal: **Growth & Analytics → Manage Accounts** → connect organic and/or ads → pick the **client** → paste the **same** token (it works for every asset assigned to that system user).
+
+If a permission is missing when generating the token, the matching use case is not on the app yet — add it, customize, then generate a **new** token.
 
 On connect, the app validates via Graph, stores the account under that `client_id`, and runs a backfill (organic ~29 days of posts + followers; ads ~90 days of campaign/ad set/ad metrics). Nightly PHP crons add yesterday’s rows.
 
