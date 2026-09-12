@@ -32,7 +32,7 @@ export function buildReportableAccounts(
     ...ads.map((account) => ({
       id: account.id,
       label: account.accountName,
-      caption: `Ad account · ${account.clientName}`,
+      caption: `${account.platform === "google_ads" ? "Google Ads" : "Meta Ads"} · ${account.clientName}`,
       kind: "ad" as const,
     })),
   ];

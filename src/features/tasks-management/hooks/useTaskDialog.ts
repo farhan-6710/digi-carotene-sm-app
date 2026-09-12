@@ -67,10 +67,15 @@ export function useTaskDialog({ reload, setError }: UseTaskDialogOptions) {
     [resetForm],
   );
 
-  const openAddDialog = useCallback(() => {
-    resetForm();
+  const openAddDialog = useCallback((options?: { projectKey?: string }) => {
+    const projectKey = options?.projectKey?.trim() ?? "";
+    setEditingTaskId(null);
+    setValues({
+      ...emptyTaskFormValues(),
+      ...(projectKey ? { projectKey } : {}),
+    });
     setIsDialogOpen(true);
-  }, [resetForm]);
+  }, []);
 
   const openEditDialog = useCallback((task: Task) => {
     setEditingTaskId(task.id);

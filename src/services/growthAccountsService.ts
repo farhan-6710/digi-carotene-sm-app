@@ -5,6 +5,10 @@ import {
 import { fetchClientById } from "@/services/clientsService";
 import { DB } from "@/services/db";
 import {
+  fetchGoogleAdsCustomerInfo,
+  normalizeGoogleCustomerId,
+} from "@/services/googleAdsService";
+import {
   rerunInstagramBackfillForOrganicAccount,
   runInstagram29DayBackfill,
 } from "@/services/instagramBackfillService";
@@ -25,6 +29,7 @@ import { supabase } from "@/services/supabaseClient";
 import type {
   AdAccount,
   AdAccountForm,
+  AdsAccountKind,
   OrganicAccount,
   OrganicAccountForm,
 } from "@/features/growth-and-analytics/types/types";
@@ -46,6 +51,8 @@ type AdRow = {
   account_name: string;
   ad_account_id: string;
   currency_code: string;
+  platform?: AdsAccountKind | null;
+  login_customer_id?: string | null;
 };
 
 function mapOrganic(row: OrganicRow): OrganicAccount {
@@ -68,6 +75,8 @@ function mapAd(row: AdRow): AdAccount {
     accountName: row.account_name,
     adAccountId: row.ad_account_id,
     currencyCode: row.currency_code || "INR",
+    platform: row.platform === "google_ads" ? "google_ads" : "meta_ads",
+    loginCustomerId: row.login_customer_id?.trim() || "",
   };
 }
 
@@ -83,7 +92,7 @@ function normalizeClientId(clientId: string): string | null {
   return trimmed === "" ? null : trimmed;
 }
 
-function normalizeAdAccountId(adAccountId: string): string {
+function normalizeMetaAdAccountId(adAccountId: string): string {
   const trimmed = adAccountId.trim();
   return trimmed.startsWith("act_") ? trimmed : `act_${trimmed}`;
 }
@@ -92,6 +101,7 @@ function isDuplicateAccountError(message: string): boolean {
   return (
     message.includes("growth_organic_accounts_platform_account_id_key") ||
     message.includes("growth_ads_accounts_ad_account_id_key") ||
+    message.includes("growth_ads_accounts_platform_ad_account_id_key") ||
     message.includes("growth_ad_accounts_ad_account_id_key") ||
     message.includes("duplicate key")
   );
@@ -112,13 +122,15 @@ async function findOrganicByMetaId(
   return data ? mapOrganic(data as OrganicRow) : null;
 }
 
-async function findAdByMetaId(
-  metaAdAccountId: string,
+async function findAdByExternalId(
+  platform: AdsAccountKind,
+  externalAdAccountId: string,
 ): Promise<AdAccount | null> {
   const { data, error } = await supabase
     .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
     .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
-    .eq("ad_account_id", metaAdAccountId)
+    .eq("platform", platform)
+    .eq("ad_account_id", externalAdAccountId)
     .maybeSingle();
 
   if (error) throw new Error(error.message);
@@ -349,6 +361,13 @@ export async function deleteOrganicAccount(id: string): Promise<void> {
 export async function connectAdAccount(
   form: AdAccountForm,
 ): Promise<AdAccount> {
+  if (form.platform === "google_ads") {
+    return connectGoogleAdAccount(form);
+  }
+  return connectMetaAdAccount(form);
+}
+
+async function connectMetaAdAccount(form: AdAccountForm): Promise<AdAccount> {
   const token = form.accessToken.trim();
   if (!token) {
     throw new Error(
@@ -356,8 +375,8 @@ export async function connectAdAccount(
     );
   }
 
-  const metaAdAccountId = normalizeAdAccountId(form.adAccountId);
-  const existing = await findAdByMetaId(metaAdAccountId);
+  const metaAdAccountId = normalizeMetaAdAccountId(form.adAccountId);
+  const existing = await findAdByExternalId("meta_ads", metaAdAccountId);
   if (existing) {
     throw new Error(
       `"${existing.accountName}" is already connected. Edit it from the list to refresh the token.`,
@@ -372,6 +391,7 @@ export async function connectAdAccount(
   const { data, error } = await supabase
     .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
     .insert({
+      platform: "meta_ads",
       client_id: clientId,
       client_name: clientName,
       account_name: form.accountName.trim() || info.accountName,
@@ -395,15 +415,105 @@ export async function connectAdAccount(
   return account;
 }
 
+async function connectGoogleAdAccount(form: AdAccountForm): Promise<AdAccount> {
+  const customerId = normalizeGoogleCustomerId(form.adAccountId);
+  const loginCustomerId = normalizeGoogleCustomerId(form.loginCustomerId);
+  const developerToken = form.developerToken.trim();
+  const oauthClientId = form.oauthClientId.trim();
+  const oauthClientSecret = form.oauthClientSecret.trim();
+  const oauthRefreshToken = form.oauthRefreshToken.trim();
+
+  if (!oauthClientId || !oauthClientSecret || !oauthRefreshToken) {
+    throw new Error(
+      "Paste OAuth client ID, client secret, and refresh token so we can reach Google Ads.",
+    );
+  }
+
+  const existing = await findAdByExternalId("google_ads", customerId);
+  if (existing) {
+    throw new Error(
+      `"${existing.accountName}" is already connected. Edit it from the list to refresh credentials.`,
+    );
+  }
+
+  let info;
+  try {
+    info = await fetchGoogleAdsCustomerInfo({
+      customerId,
+      loginCustomerId,
+      developerToken,
+      oauthClientId,
+      oauthClientSecret,
+      oauthRefreshToken,
+    });
+  } catch (error) {
+    // Google Ads REST is not browser-CORS friendly (unlike Meta Graph).
+    // Still save credentials so Manage Accounts works; PHP sync will verify later.
+    const message = error instanceof Error ? error.message : "";
+    const isNetwork =
+      /failed to fetch|networkerror|load failed|cors/i.test(message) ||
+      error instanceof TypeError;
+    if (!isNetwork) throw error;
+    info = {
+      customerId,
+      accountName: form.accountName.trim(),
+      currency: form.currencyCode.trim() || "INR",
+    };
+  }
+
+  const currencyCode = form.currencyCode.trim() || info.currency || "INR";
+  const clientId = normalizeClientId(form.clientId);
+  const clientName = clientId ? await resolveClientName(clientId) : "";
+
+  const { data, error } = await supabase
+    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
+    .insert({
+      platform: "google_ads",
+      client_id: clientId,
+      client_name: clientName,
+      account_name: form.accountName.trim() || info.accountName,
+      ad_account_id: info.customerId || customerId,
+      currency_code: currencyCode,
+      login_customer_id: loginCustomerId,
+      developer_token: developerToken,
+      oauth_client_id: oauthClientId,
+      oauth_client_secret: oauthClientSecret,
+      oauth_refresh_token: oauthRefreshToken,
+    })
+    .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
+    .single();
+
+  if (error) {
+    if (isDuplicateAccountError(error.message)) {
+      throw new Error("This Google Ads account is already connected.");
+    }
+    throw new Error(error.message);
+  }
+
+  // Metrics sync / campaign UI for Google comes in a follow-up pass.
+  return mapAd(data as AdRow);
+}
+
 export async function updateAdAccount(
   id: string,
   form: AdAccountForm,
 ): Promise<AdAccount> {
+  if (form.platform === "google_ads") {
+    return updateGoogleAdAccount(id, form);
+  }
+  return updateMetaAdAccount(id, form);
+}
+
+async function updateMetaAdAccount(
+  id: string,
+  form: AdAccountForm,
+): Promise<AdAccount> {
   const token = form.accessToken.trim();
-  const metaAdAccountId = normalizeAdAccountId(form.adAccountId);
+  const metaAdAccountId = normalizeMetaAdAccountId(form.adAccountId);
   const currencyCode = form.currencyCode.trim() || "INR";
   const clientId = normalizeClientId(form.clientId);
   const columns: Record<string, unknown> = {
+    platform: "meta_ads",
     client_id: clientId,
     client_name: clientId ? await resolveClientName(clientId) : "",
     account_name: form.accountName.trim(),
@@ -431,6 +541,66 @@ export async function updateAdAccount(
   }
 
   return account;
+}
+
+async function updateGoogleAdAccount(
+  id: string,
+  form: AdAccountForm,
+): Promise<AdAccount> {
+  const customerId = normalizeGoogleCustomerId(form.adAccountId);
+  const loginCustomerId = normalizeGoogleCustomerId(form.loginCustomerId);
+  const currencyCode = form.currencyCode.trim() || "INR";
+  const clientId = normalizeClientId(form.clientId);
+  const developerToken = form.developerToken.trim();
+  const oauthClientId = form.oauthClientId.trim();
+  const oauthClientSecret = form.oauthClientSecret.trim();
+  const oauthRefreshToken = form.oauthRefreshToken.trim();
+
+  const columns: Record<string, unknown> = {
+    platform: "google_ads",
+    client_id: clientId,
+    client_name: clientId ? await resolveClientName(clientId) : "",
+    account_name: form.accountName.trim(),
+    ad_account_id: customerId,
+    currency_code: currencyCode,
+    login_customer_id: loginCustomerId,
+  };
+
+  const refreshingCreds =
+    Boolean(developerToken) &&
+    Boolean(oauthClientId) &&
+    Boolean(oauthClientSecret) &&
+    Boolean(oauthRefreshToken);
+
+  if (refreshingCreds) {
+    const info = await fetchGoogleAdsCustomerInfo({
+      customerId,
+      loginCustomerId,
+      developerToken,
+      oauthClientId,
+      oauthClientSecret,
+      oauthRefreshToken,
+    });
+    columns.ad_account_id = info.customerId || customerId;
+    if (info.currency && !form.currencyCode.trim()) {
+      columns.currency_code = info.currency;
+    }
+    columns.developer_token = developerToken;
+    columns.oauth_client_id = oauthClientId;
+    columns.oauth_client_secret = oauthClientSecret;
+    columns.oauth_refresh_token = oauthRefreshToken;
+  }
+
+  const { data, error } = await supabase
+    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
+    .update(columns)
+    .eq("id", id)
+    .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
+    .single();
+
+  if (error) throw new Error(error.message);
+
+  return mapAd(data as AdRow);
 }
 
 export async function deleteAdAccount(id: string): Promise<void> {

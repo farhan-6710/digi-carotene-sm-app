@@ -17,6 +17,7 @@ The team runs clients, projects, scheduled posts, production shoots, and Meta (F
 | [auth-and-features.md](./auth-and-features.md) | Auth, roles, portals, every feature |
 | [deploy.md](./deploy.md) | Hostinger / GitHub Actions deploy |
 | [meta-integration-growth-and-analytics.md](./meta-integration-growth-and-analytics.md) | New-client Meta connect flow + midnight Growth sync |
+| [google-ads-integration.md](./google-ads-integration.md) | Google Ads MCC / OAuth / connect fields (Growth) |
 | [meta-business-structure.md](./meta-business-structure.md) | Meta terminology and setup (Ravi's example) |
 
 ---

@@ -6,6 +6,7 @@ import { DevProjectProfileCard } from "@/features/development-projects/component
 import { DEV_PROJECTS_MANAGEMENT_PATH } from "@/features/development-projects/constants/routes";
 import { useDevProjectDetailQuery } from "@/features/development-projects/hooks/useDevProjectDetailQuery";
 import { useDevProjectDialog } from "@/features/development-projects/hooks/useDevProjectDialog";
+import { ProjectTasksSection } from "@/features/tasks-management/components/ProjectTasksSection";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -77,6 +78,8 @@ export function DevProjectDetailPage() {
       {error ? <ErrorBanner message={error} /> : null}
 
       <DevProjectProfileCard project={project} />
+
+      <ProjectTasksSection projectId={project.id} projectKind="dev" />
 
       {canEdit ? (
         <DevProjectDialog

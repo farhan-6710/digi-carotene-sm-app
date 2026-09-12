@@ -4,10 +4,10 @@ import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 
-import { MobileLabel } from "../tables/tableBits";
+import { AdsPlatformBadge, MobileLabel } from "../tables/tableBits";
 import type { AdAccountsListProps } from "../../types/components";
 
-const GRID_CLASS = "grid-cols-[1.4fr_1.2fr_1fr_0.6fr_0.5fr]";
+const GRID_CLASS = "grid-cols-[1fr_1.2fr_1.1fr_1fr_0.6fr_0.5fr]";
 
 export function AdAccountsList({
   accounts,
@@ -18,9 +18,10 @@ export function AdAccountsList({
   return (
     <DirectoryTable
       title="Ad Accounts"
-      description="Connected Meta ad accounts for paid campaign reporting."
+      description="Connected Meta and Google Ads accounts for paid campaign reporting."
       gridClass={GRID_CLASS}
       columns={[
+        { label: "PLATFORM" },
         { label: "CLIENT" },
         { label: "AD ACCOUNT" },
         { label: "ACCOUNT ID" },
@@ -45,6 +46,10 @@ export function AdAccountsList({
             GRID_CLASS,
           )}
         >
+          <div>
+            <MobileLabel>PLATFORM</MobileLabel>
+            <AdsPlatformBadge platform={account.platform} />
+          </div>
           <div className="text-sm font-medium text-foreground">
             <MobileLabel>CLIENT</MobileLabel>
             {account.clientName}

@@ -133,12 +133,18 @@ export function useManageAccounts() {
 
   const openAdEdit = useCallback((account: AdAccount) => {
     setAdForm({
+      platform: account.platform,
       clientId: account.clientId ?? "",
       clientName: account.clientName,
       accountName: account.accountName,
       adAccountId: account.adAccountId,
       accessToken: "",
       currencyCode: account.currencyCode,
+      loginCustomerId: account.loginCustomerId,
+      developerToken: "",
+      oauthClientId: "",
+      oauthClientSecret: "",
+      oauthRefreshToken: "",
     });
     setAdEditId(account.id);
     setIsAdOpen(true);
@@ -156,16 +162,32 @@ export function useManageAccounts() {
     try {
       if (adEditId) {
         await updateAdAccount(adEditId, adForm);
+        const refreshedCreds =
+          adForm.platform === "google_ads"
+            ? Boolean(adForm.oauthRefreshToken.trim())
+            : Boolean(adForm.accessToken.trim());
         showToast(
           "success",
-          adForm.accessToken.trim()
-            ? "Ad account updated. Cached metrics cleared — open Campaign Analytics to reload."
+          refreshedCreds
+            ? adForm.platform === "google_ads"
+              ? "Google Ads account updated."
+              : "Ad account updated. Cached metrics cleared — open Campaign Analytics to reload."
             : "Ad account updated.",
         );
       } else {
-        showToast("info", "Validating ad account and syncing 90 days of campaign data…");
+        showToast(
+          "info",
+          adForm.platform === "google_ads"
+            ? "Validating Google Ads customer with Digi Carotene MCC credentials…"
+            : "Validating ad account and syncing 90 days of campaign data…",
+        );
         await connectAdAccount(adForm);
-        showToast("success", "Ad account connected. Open Campaign Analytics to view metrics.");
+        showToast(
+          "success",
+          adForm.platform === "google_ads"
+            ? "Google Ads account connected. Campaign analytics for Google ships next."
+            : "Ad account connected. Open Campaign Analytics to view metrics.",
+        );
       }
       setIsAdOpen(false);
       await reloadAds();

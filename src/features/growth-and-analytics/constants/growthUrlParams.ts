@@ -10,3 +10,7 @@ export const GROWTH_ORGANIC_ACCOUNT_STORAGE_KEY =
 /** Last selected organic account id per platform (instagram / facebook). */
 export const GROWTH_ORGANIC_ACCOUNT_BY_PLATFORM_STORAGE_KEY =
   "digi-carotene.growth.organicAccountByPlatform";
+
+/** Last selected ad account id per ads platform (meta_ads / google_ads). */
+export const GROWTH_AD_ACCOUNT_BY_PLATFORM_STORAGE_KEY =
+  "digi-carotene.growth.adAccountByPlatform";

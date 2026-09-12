@@ -91,13 +91,15 @@ function updateInstagramProfile(array $config, string $profileId, string $userna
 
 // ─── Growth: ads ─────────────────────────────────────────────────────────────
 
-/** @return list<array{id: string, ad_account_id: string, account_name: string, access_token: string}> */
+/** @return list<array<string, mixed>> */
 function fetchAdAccounts(array $config): array
 {
     $rows = supabaseRequest(
         $config,
         'GET',
-        'growth_ads_accounts?select=id,ad_account_id,account_name,access_token',
+        'growth_ads_accounts?select=id,ad_account_id,account_name,access_token,'
+        . 'platform,login_customer_id,developer_token,'
+        . 'oauth_client_id,oauth_client_secret,oauth_refresh_token',
     );
 
     return is_array($rows) ? $rows : [];

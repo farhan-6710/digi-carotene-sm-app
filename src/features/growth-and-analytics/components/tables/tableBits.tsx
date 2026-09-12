@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/shared/lib/utils";
 
-import type { GrowthPlatform } from "../../types/types";
+import type { AdsAccountKind, GrowthPlatform } from "../../types/types";
+import { adsAccountKindLabel } from "../../constants/growthPlatformConfig";
 
 export function MobileLabel({ children }: { children: ReactNode }) {
   return (
@@ -32,6 +33,28 @@ export function PlatformBadge({ platform }: { platform: GrowthPlatform }) {
         aria-hidden="true"
       />
       {isInstagram ? "Instagram" : "Facebook"}
+    </span>
+  );
+}
+
+export function AdsPlatformBadge({ platform }: { platform: AdsAccountKind }) {
+  const isMeta = platform === "meta_ads";
+
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+        isMeta ? "bg-primary/10 text-primary" : "bg-accent/10 text-accent",
+      )}
+    >
+      <span
+        className={cn(
+          "size-1.5 rounded-full",
+          isMeta ? "bg-primary" : "bg-accent",
+        )}
+        aria-hidden="true"
+      />
+      {adsAccountKindLabel(platform)}
     </span>
   );
 }

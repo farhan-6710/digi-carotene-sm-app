@@ -18,6 +18,7 @@ import { buildProjectPostStats } from "@/features/projects-management/utils/proj
 import { getProjectDisplayLabel } from "@/features/projects-management/utils/projectFormUtils";
 import { ShareLinkButton } from "@/features/share/components/ShareLinkButton";
 import { canGenerateShareLink } from "@/features/share/utils/shareAccess";
+import { ProjectTasksSection } from "@/features/tasks-management/components/ProjectTasksSection";
 import { copyProjectShareLink } from "@/services/shareService";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
@@ -195,6 +196,8 @@ export function ProjectDetailPage() {
         onOpenPost={(post) => navigate(buildPostDetailPath(post.id))}
         onEditPost={openEditDialogFromPost}
       />
+
+      <ProjectTasksSection projectId={project.id} projectKind="sm" />
 
       <ProjectChatSection project={project} teamMembers={teamMembers} />
 

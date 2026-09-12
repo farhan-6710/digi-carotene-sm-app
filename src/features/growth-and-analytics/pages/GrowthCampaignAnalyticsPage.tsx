@@ -1,5 +1,6 @@
 import { GrowthSpendChart } from "../components/charts/GrowthSpendChart";
 import { GrowthAdAccountSelect } from "../components/GrowthAdAccountSelect";
+import { GrowthAdsAnalyticsComingSoon } from "../components/GrowthAdsAnalyticsComingSoon";
 import { GrowthNoAccountsEmpty } from "../components/GrowthNoAccountsEmpty";
 import { CampaignTable } from "../components/tables/CampaignTable";
 import { useGrowthCampaigns } from "../hooks/useGrowthCampaigns";
@@ -17,6 +18,8 @@ export function GrowthCampaignAnalyticsPage() {
     spendTrendTitle,
     campaignRows,
     adAccountId,
+    adsPlatform,
+    analyticsReady,
     isLoading,
     error,
     dateFilterProps,
@@ -30,21 +33,23 @@ export function GrowthCampaignAnalyticsPage() {
     <PageContent>
       <PageHeader
         heading="Campaign Analytics"
-        description="Track paid performance — spend, impressions, clicks, and conversions from Meta."
+        description="Track paid performance — Meta Ads live today; Google Ads reporting next."
         actions={
           hasAccounts ? (
             <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
               <GrowthAdAccountSelect />
-              <div className="flex flex-wrap items-center justify-end gap-2">
-                <DateFiltersTwo {...dateFilterProps} />
-                <Button
-                  onClick={() => void generateReport()}
-                  disabled={isGeneratingReport}
-                  className="rounded-full"
-                >
-                  {isGeneratingReport ? "Saving..." : "Generate Report"}
-                </Button>
-              </div>
+              {analyticsReady ? (
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  <DateFiltersTwo {...dateFilterProps} />
+                  <Button
+                    onClick={() => void generateReport()}
+                    disabled={isGeneratingReport}
+                    className="rounded-full"
+                  >
+                    {isGeneratingReport ? "Saving..." : "Generate Report"}
+                  </Button>
+                </div>
+              ) : null}
             </div>
           ) : null
         }
@@ -54,6 +59,8 @@ export function GrowthCampaignAnalyticsPage() {
 
       {showNoAccounts ? (
         <GrowthNoAccountsEmpty accountKind="ads" />
+      ) : !analyticsReady ? (
+        <GrowthAdsAnalyticsComingSoon platform={adsPlatform} />
       ) : (
         <>
           <StatsCards cards={statCards} isLoading={isLoading} />

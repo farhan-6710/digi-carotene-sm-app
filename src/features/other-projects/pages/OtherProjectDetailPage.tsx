@@ -6,6 +6,7 @@ import { OtherProjectProfileCard } from "@/features/other-projects/components/Ot
 import { OTHER_PROJECTS_MANAGEMENT_PATH } from "@/features/other-projects/constants/routes";
 import { useOtherProjectDetailQuery } from "@/features/other-projects/hooks/useOtherProjectDetailQuery";
 import { useOtherProjectDialog } from "@/features/other-projects/hooks/useOtherProjectDialog";
+import { ProjectTasksSection } from "@/features/tasks-management/components/ProjectTasksSection";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -77,6 +78,8 @@ export function OtherProjectDetailPage() {
       {error ? <ErrorBanner message={error} /> : null}
 
       <OtherProjectProfileCard project={project} />
+
+      <ProjectTasksSection projectId={project.id} projectKind="other" />
 
       {canEdit ? (
         <OtherProjectDialog

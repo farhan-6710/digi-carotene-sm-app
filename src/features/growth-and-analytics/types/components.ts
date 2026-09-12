@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type {
   AdAccount,
   AdAccountForm,
+  AdsAccountKind,
   CampaignDemographicMetric,
   CampaignDemographicTableView,
   CampaignRow,
@@ -166,6 +167,15 @@ export type GrowthOrganicPlatformToggleProps = {
   value: GrowthPlatform;
   onChange: (platform: GrowthPlatform) => void;
   availablePlatforms: GrowthPlatform[];
+  className?: string;
+};
+
+export type GrowthAdsPlatformToggleProps = {
+  value: AdsAccountKind;
+  onChange: (platform: AdsAccountKind) => void;
+  /** When omitted, both Meta and Google stay enabled (connect modal). */
+  availablePlatforms?: AdsAccountKind[];
+  disableUnavailable?: boolean;
   className?: string;
 };
 

@@ -1,5 +1,8 @@
 export type GrowthPlatform = "instagram" | "facebook";
 
+/** Paid ads platforms on `growth_ads_accounts.platform`. */
+export type AdsAccountKind = "meta_ads" | "google_ads";
+
 // `from`/`to` are `yyyy-MM-dd`; omit both for "all time".
 export type GrowthDateRange = { from?: string; to?: string };
 
@@ -387,6 +390,9 @@ export type AdAccount = {
   accountName: string;
   adAccountId: string;
   currencyCode: string;
+  platform: AdsAccountKind;
+  /** Google Ads MCC / manager customer id (no hyphens). Empty for Meta. */
+  loginCustomerId: string;
 };
 
 export type Currency = {
@@ -406,11 +412,19 @@ export type OrganicAccountForm = {
 };
 
 export type AdAccountForm = {
+  platform: AdsAccountKind;
   clientId: string;
   // Only used to seed the client selector label when editing.
   clientName: string;
   accountName: string;
+  /** Meta: act_… · Google: 10-digit customer id (hyphens ok). */
   adAccountId: string;
   accessToken: string;
   currencyCode: string;
+  /** Google Ads manager (MCC) customer id — required when using MCC access. */
+  loginCustomerId: string;
+  developerToken: string;
+  oauthClientId: string;
+  oauthClientSecret: string;
+  oauthRefreshToken: string;
 };

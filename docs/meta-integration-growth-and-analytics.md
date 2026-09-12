@@ -100,8 +100,8 @@ After an account is connected, Digi Carotene stores the token and runs an initia
 
 | Cron                             | What it syncs                                                              |
 | -------------------------------- | -------------------------------------------------------------------------- |
-| `sync_yesterday_organic_acc.php` | Instagram post metrics + follower gain for every connected organic account |
-| `sync_yesterday_ads_acc.php`     | Ads campaign / ad set / ad daily metrics for every connected ad account    |
+| `sync_yesterday_organic_acc.php` | Instagram post metrics + follower gain for every connected organic profile |
+| `sync_yesterday_ads_acc.php`     | Meta **and** Google Ads campaign / ad set / ad daily metrics (`platform` on `growth_ads_accounts`) |
 
 
 Each cron reads connected accounts from Supabase, calls Meta Graph with that account’s stored token, and upserts yesterday’s rows. Dashboards read this cached data — they do not pull full history every page load.

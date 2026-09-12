@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 import { fetchAdCampaignMetricsForAccount } from "@/services/adCampaignMetricsService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
+import { isAdsAnalyticsReady } from "../constants/growthPlatformConfig";
 import {
   buildCampaignRows,
   buildCampaignStatCards,
@@ -27,13 +28,15 @@ export function useGrowthCampaigns() {
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const adAccountId = activeAccount?.id ?? "";
   const currencyCode = activeAccount?.currencyCode ?? "INR";
+  const adsPlatform = activeAccount?.platform ?? "meta_ads";
+  const analyticsReady = isAdsAnalyticsReady(adsPlatform);
 
   const loadMetrics = useCallback(
     () =>
-      adAccountId
+      adAccountId && analyticsReady
         ? fetchAdCampaignMetricsForAccount(adAccountId, range)
         : Promise.resolve([]),
-    [adAccountId, range],
+    [adAccountId, analyticsReady, range],
   );
   const {
     data: metrics,
@@ -47,21 +50,27 @@ export function useGrowthCampaigns() {
   );
 
   const statCards = useMemo(
-    () => buildCampaignStatCards(filteredMetrics, currencyCode),
-    [filteredMetrics, currencyCode],
+    () =>
+      analyticsReady
+        ? buildCampaignStatCards(filteredMetrics, currencyCode)
+        : [],
+    [analyticsReady, filteredMetrics, currencyCode],
   );
   const spendTrend = useMemo(
-    () => buildSpendTrend(filteredMetrics),
-    [filteredMetrics],
+    () =>
+      analyticsReady
+        ? buildSpendTrend(filteredMetrics)
+        : { points: [], granularity: "day" as const },
+    [analyticsReady, filteredMetrics],
   );
   const spendTrendTitle = spendTrendChartTitle(spendTrend.granularity);
   const campaignRows = useMemo(
-    () => buildCampaignRows(filteredMetrics),
-    [filteredMetrics],
+    () => (analyticsReady ? buildCampaignRows(filteredMetrics) : []),
+    [analyticsReady, filteredMetrics],
   );
 
   const generateReport = async () => {
-    if (!activeAccount) return;
+    if (!activeAccount || !analyticsReady) return;
 
     const { periodStart, periodEnd } = resolveGrowthReportPeriod(range);
     setIsGeneratingReport(true);
@@ -84,7 +93,9 @@ export function useGrowthCampaigns() {
     spendTrendTitle,
     campaignRows,
     adAccountId,
-    isLoading: isAccountsLoading || isMetricsLoading,
+    adsPlatform,
+    analyticsReady,
+    isLoading: isAccountsLoading || (analyticsReady && isMetricsLoading),
     error: accountsError || metricsError,
     dateFilterProps,
     periodLabel,

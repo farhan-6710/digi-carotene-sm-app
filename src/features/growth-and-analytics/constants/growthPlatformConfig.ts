@@ -1,4 +1,7 @@
-import type { GrowthPlatform } from "@/features/growth-and-analytics/types/types";
+import type {
+  AdsAccountKind,
+  GrowthPlatform,
+} from "@/features/growth-and-analytics/types/types";
 
 /** Organic social platforms stored on `growth_organic_accounts.platform`. */
 export type OrganicPlatformStatus = "live" | "coming_soon";
@@ -9,16 +12,20 @@ export type OrganicPlatformConfig = {
   status: OrganicPlatformStatus;
 };
 
-/**
- * Ads account kinds. Meta ads are live today; Google Ads is reserved for a
- * later table / connect flow (no DB work in this pass).
- */
-export type AdsAccountKind = "meta_ads" | "google_ads";
+export type { AdsAccountKind };
 
+/**
+ * Ads account kinds stored on `growth_ads_accounts.platform`.
+ * Connect UI is live for both; Campaign Analytics metrics are Meta-only until
+ * Google Ads reporting is wired.
+ */
 export type AdsAccountKindConfig = {
   id: AdsAccountKind;
   label: string;
+  /** Connect + store credentials. */
   status: OrganicPlatformStatus;
+  /** Campaign Analytics charts/tables for this kind. */
+  analyticsStatus: OrganicPlatformStatus;
 };
 
 export type GrowthAccountSelectorKind = "organic" | "ads" | "all" | "none";
@@ -53,16 +60,29 @@ export const ADS_ACCOUNT_KIND_CONFIG: Record<
 > = {
   meta_ads: {
     id: "meta_ads",
-    label: "Meta Ads",
+    label: "Meta",
     status: "live",
+    analyticsStatus: "live",
   },
-  // Future: connect Google Ads accounts into Growth (separate from Meta ads).
   google_ads: {
     id: "google_ads",
-    label: "Google Ads",
-    status: "coming_soon",
+    label: "Google",
+    status: "live",
+    analyticsStatus: "coming_soon",
   },
 };
+
+export function adsAccountKindLabel(kind: AdsAccountKind): string {
+  return ADS_ACCOUNT_KIND_CONFIG[kind].label;
+}
+
+export function isAdsAccountKindReady(kind: AdsAccountKind): boolean {
+  return ADS_ACCOUNT_KIND_CONFIG[kind].status === "live";
+}
+
+export function isAdsAnalyticsReady(kind: AdsAccountKind): boolean {
+  return ADS_ACCOUNT_KIND_CONFIG[kind].analyticsStatus === "live";
+}
 
 /** Which account selector each Growth surface should present. */
 export const GROWTH_SURFACE_ACCOUNT_SELECTOR: Record<

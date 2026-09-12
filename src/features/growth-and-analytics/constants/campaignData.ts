@@ -10,6 +10,8 @@ export const DUMMY_AD_ACCOUNTS: AdAccount[] = [
     accountName: "Carotene Ads",
     adAccountId: "act_100200300",
     currencyCode: "INR",
+    platform: "meta_ads",
+    loginCustomerId: "",
   },
   {
     id: "ad-acc-veda",
@@ -18,6 +20,8 @@ export const DUMMY_AD_ACCOUNTS: AdAccount[] = [
     accountName: "Veda Performance",
     adAccountId: "act_400500600",
     currencyCode: "INR",
+    platform: "meta_ads",
+    loginCustomerId: "",
   },
 ];
 

@@ -45,3 +45,5 @@ Without the two `VITE_*` secrets, CI builds a blank app — `supabaseClient` thr
 Supabase dashboard: add the live site URL and `/auth?form-type=reset-password` to Auth URL allow-list. Google OAuth: authorized redirect `https://<project-ref>.supabase.co/auth/v1/callback`.
 
 Meta client connect + midnight Growth sync: [meta-integration-growth-and-analytics.md](./meta-integration-growth-and-analytics.md).
+
+Google Ads connect (MCC / OAuth fields): [google-ads-integration.md](./google-ads-integration.md).

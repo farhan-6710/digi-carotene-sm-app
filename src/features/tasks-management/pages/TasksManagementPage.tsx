@@ -79,7 +79,10 @@ export function TasksManagementPage() {
       error={error}
       actions={
         can("tasks.create") ? (
-          <Button onClick={openAddDialog} className="rounded-full shadow-sm">
+          <Button
+            onClick={() => openAddDialog()}
+            className="rounded-full shadow-sm"
+          >
             <Plus className="mr-2 size-4" />
             Add Task
           </Button>
