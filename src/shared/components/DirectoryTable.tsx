@@ -1,16 +1,27 @@
+import {
+  Children,
+  isValidElement,
+  useMemo,
+} from "react";
+
 import { cn } from "@/shared/lib/utils";
-import { TableLoadingState } from "@/shared/components/LoadingSpinner";
+import { LoadingSpinner, TableLoadingState } from "@/shared/components/LoadingSpinner";
 import {
   DIRECTORY_TABLE_MIN_WIDTH_CLASS,
   DIRECTORY_TABLE_TRACK_ALIGN_CLASS,
   TABLE_HORIZONTAL_SCROLL_CLASS,
 } from "@/shared/constants/directoryTable";
+import { useLoadMoreSentinel } from "@/shared/hooks/useLoadMoreSentinel";
+import { useWindowedList } from "@/shared/hooks/useWindowedList";
 import type { DirectoryTableProps } from "@/shared/types/components";
 
 /**
  * Shared directory listing table.
  * Track align class keeps header + body column widths in sync when cell
  * content length differs (default grid min-width:auto otherwise blows tracks).
+ *
+ * By default rows are windowed (30 at a time): full lists still load in the
+ * page/hook, but only a chunk renders until the user scrolls to the bottom.
  */
 export function DirectoryTable({
   title,
@@ -25,7 +36,34 @@ export function DirectoryTable({
   children,
   divided = false,
   gridStyle,
+  windowed = true,
 }: DirectoryTableProps) {
+  const childArray = useMemo(() => Children.toArray(children), [children]);
+
+  const resetKey = useMemo(
+    () =>
+      childArray
+        .map((child) => (isValidElement(child) ? String(child.key ?? "") : ""))
+        .join("\0"),
+    [childArray],
+  );
+
+  const windowingEnabled = windowed && !isLoading && !isEmpty;
+  const { visibleCount, hasMore, isLoadingMore, loadMore } = useWindowedList({
+    total: childArray.length,
+    resetKey,
+    enabled: windowingEnabled,
+  });
+
+  const sentinelRef = useLoadMoreSentinel({
+    enabled: windowingEnabled && hasMore && !isLoadingMore,
+    onLoadMore: loadMore,
+  });
+
+  const visibleChildren = windowingEnabled
+    ? childArray.slice(0, visibleCount)
+    : childArray;
+
   return (
     <div className="w-full min-w-0 rounded-2xl border border-border bg-card shadow-sm">
       <div className="flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
@@ -92,7 +130,28 @@ export function DirectoryTable({
               {emptyMessage}
             </div>
           ) : (
-            <div className="divide-y divide-border">{children}</div>
+            <>
+              <div className="divide-y divide-border">{visibleChildren}</div>
+
+              {windowingEnabled && (hasMore || isLoadingMore) ? (
+                <div
+                  ref={sentinelRef}
+                  className="flex items-center justify-center gap-2 px-6 py-4"
+                  aria-hidden={!isLoadingMore}
+                >
+                  {isLoadingMore ? (
+                    <>
+                      <LoadingSpinner size="sm" />
+                      <span className="text-xs text-muted-foreground">
+                        Loading more…
+                      </span>
+                    </>
+                  ) : (
+                    <span className="h-4" />
+                  )}
+                </div>
+              ) : null}
+            </>
           )}
         </div>
       </div>

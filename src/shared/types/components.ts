@@ -78,6 +78,11 @@ export type DirectoryTableProps = {
   children: ReactNode;
   divided?: boolean;
   gridStyle?: import("react").CSSProperties;
+  /**
+   * Client-side windowing (default true): render first N rows, then load more
+   * on scroll. Keep fetch-all + browser filters; only UI is chunked.
+   */
+  windowed?: boolean;
 };
 
 export type PageShellProps = {
