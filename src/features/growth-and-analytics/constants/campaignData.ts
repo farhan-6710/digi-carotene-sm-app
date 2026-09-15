@@ -93,6 +93,13 @@ function buildMetricsForAccount(adAccountId: string): CampaignMetricRow[] {
         videoQuartileP50Rate: null,
         videoQuartileP75Rate: null,
         videoQuartileP100Rate: null,
+        localShopVisits: 0,
+        localWebsiteVisits: 0,
+        localDirectionViews: 0,
+        localCalls: 0,
+        localOrders: 0,
+        localMenuViews: 0,
+        localOtherActions: 0,
         date,
       });
     }

@@ -94,6 +94,22 @@ export function buildGrowthCampaignDetailView(
       dailyRows,
       (row) => row.videoQuartileP100Rate,
     ),
+    localShopVisits: dailyRows.reduce((sum, row) => sum + row.localShopVisits, 0),
+    localWebsiteVisits: dailyRows.reduce(
+      (sum, row) => sum + row.localWebsiteVisits,
+      0,
+    ),
+    localDirectionViews: dailyRows.reduce(
+      (sum, row) => sum + row.localDirectionViews,
+      0,
+    ),
+    localCalls: dailyRows.reduce((sum, row) => sum + row.localCalls, 0),
+    localOrders: dailyRows.reduce((sum, row) => sum + row.localOrders, 0),
+    localMenuViews: dailyRows.reduce((sum, row) => sum + row.localMenuViews, 0),
+    localOtherActions: dailyRows.reduce(
+      (sum, row) => sum + row.localOtherActions,
+      0,
+    ),
     cpm: impressions > 0 ? Number(((spend / impressions) * 1000).toFixed(2)) : 0,
     dailyRows,
     adsetRows: buildAdsetRows(adsets, adsetMetricRows),

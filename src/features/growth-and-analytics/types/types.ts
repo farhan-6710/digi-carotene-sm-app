@@ -120,6 +120,13 @@ export type CampaignMetricRow = {
   videoQuartileP50Rate: number | null;
   videoQuartileP75Rate: number | null;
   videoQuartileP100Rate: number | null;
+  localShopVisits: number;
+  localWebsiteVisits: number;
+  localDirectionViews: number;
+  localCalls: number;
+  localOrders: number;
+  localMenuViews: number;
+  localOtherActions: number;
   date: string;
 };
 
@@ -309,6 +316,13 @@ export type GrowthCampaignDetailView = {
   videoQuartileP50Rate: number | null;
   videoQuartileP75Rate: number | null;
   videoQuartileP100Rate: number | null;
+  localShopVisits: number;
+  localWebsiteVisits: number;
+  localDirectionViews: number;
+  localCalls: number;
+  localOrders: number;
+  localMenuViews: number;
+  localOtherActions: number;
   cpm: number;
   dailyRows: CampaignMetricRow[];
   adsetRows: AdsetRow[];

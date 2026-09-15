@@ -12,8 +12,18 @@ import {
   formatCurrency,
   formatPercent,
 } from "../../utils/formatters";
+import { GOOGLE_CAMPAIGN_TYPE_LABEL } from "../../constants/googleCampaignTypeMatrix";
+import { resolveGoogleCampaignType } from "../../utils/resolveGoogleCampaignType";
 
 const GRID_CLASS = "grid-cols-[1.5fr_1fr_0.7fr_0.8fr_0.7fr_0.8fr]";
+
+function campaignTypeLabel(
+  isGoogle: boolean,
+  objective: string | null,
+): string {
+  if (!isGoogle) return formatCampaignObjective(objective);
+  return GOOGLE_CAMPAIGN_TYPE_LABEL[resolveGoogleCampaignType(objective)];
+}
 
 export function CampaignTable({
   rows,
@@ -22,7 +32,7 @@ export function CampaignTable({
 }: CampaignTableProps) {
   const { buildCampaignDetailPath } = useGrowthPaths();
   const isGoogle = platform === "google_ads";
-  const objectiveLabel = isGoogle ? "CHANNEL" : "OBJECTIVE";
+  const objectiveLabel = isGoogle ? "CAMPAIGN TYPE" : "OBJECTIVE";
 
   return (
     <DirectoryTable
@@ -60,7 +70,7 @@ export function CampaignTable({
           </div>
           <div className="text-sm text-muted-foreground">
             <MobileLabel>{objectiveLabel}</MobileLabel>
-            {formatCampaignObjective(row.objective)}
+            {campaignTypeLabel(isGoogle, row.objective)}
           </div>
           <div>
             <MobileLabel>STATUS</MobileLabel>

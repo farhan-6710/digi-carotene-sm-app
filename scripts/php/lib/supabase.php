@@ -132,6 +132,13 @@ function upsertAdCampaignMetric(array $config, string $adAccountId, array $row):
         'video_quartile_p50_rate' => $row['video_quartile_p50_rate'] ?? null,
         'video_quartile_p75_rate' => $row['video_quartile_p75_rate'] ?? null,
         'video_quartile_p100_rate' => $row['video_quartile_p100_rate'] ?? null,
+        'local_shop_visits' => $row['local_shop_visits'] ?? 0,
+        'local_website_visits' => $row['local_website_visits'] ?? 0,
+        'local_direction_views' => $row['local_direction_views'] ?? 0,
+        'local_calls' => $row['local_calls'] ?? 0,
+        'local_orders' => $row['local_orders'] ?? 0,
+        'local_menu_views' => $row['local_menu_views'] ?? 0,
+        'local_other_actions' => $row['local_other_actions'] ?? 0,
     ];
 
     supabaseRequest(

@@ -513,7 +513,7 @@ export const DB = {
   GROWTH_ADS_CAMPAIGN_DAILY_METRICS: {
     TABLE: "growth_ads_campaign_daily_metrics",
     SELECT:
-      "id, ad_account_id, campaign_id, campaign_name, status, objective, metric_date, spend, impressions, reach, clicks, cpm, frequency, conversions, conversion_value, search_impression_share, search_budget_lost_impression_share, search_rank_lost_impression_share, active_view_viewability, video_views, average_cpv, video_quartile_p25_rate, video_quartile_p50_rate, video_quartile_p75_rate, video_quartile_p100_rate",
+      "id, ad_account_id, campaign_id, campaign_name, status, objective, metric_date, spend, impressions, reach, clicks, cpm, frequency, conversions, conversion_value, search_impression_share, search_budget_lost_impression_share, search_rank_lost_impression_share, active_view_viewability, video_views, average_cpv, video_quartile_p25_rate, video_quartile_p50_rate, video_quartile_p75_rate, video_quartile_p100_rate, local_shop_visits, local_website_visits, local_direction_views, local_calls, local_orders, local_menu_views, local_other_actions",
   },
   GROWTH_ADS_ASSET_GROUP_DAILY_METRICS: {
     TABLE: "growth_ads_asset_group_daily_metrics",

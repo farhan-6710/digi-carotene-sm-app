@@ -47,6 +47,13 @@ export function buildGoogleCampaignKpiValues(
     call_count: null,
     call_duration: null,
     direction_requests: null,
+    local_shop_visits: view.localShopVisits,
+    local_website_visits: view.localWebsiteVisits,
+    local_direction_views: view.localDirectionViews,
+    local_calls: view.localCalls,
+    local_orders: view.localOrders,
+    local_menu_views: view.localMenuViews,
+    local_other_actions: view.localOtherActions,
     quality_score: null,
     installs: null,
   };

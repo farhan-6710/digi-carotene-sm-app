@@ -49,8 +49,36 @@ function googleAdsTypeExtraCampaignSelect(string $typeId): string
         'video' => 'metrics.average_cpm, metrics.video_views, metrics.average_cpv, '
             . 'metrics.video_quartile_p25_rate, metrics.video_quartile_p50_rate, '
             . 'metrics.video_quartile_p75_rate, metrics.video_quartile_p100_rate',
+        // Smart/Local "Local action details" (Google Ads Smart campaign RMF).
+        'local_call' => 'metrics.all_conversions_from_store_visit, '
+            . 'metrics.all_conversions_from_store_website, '
+            . 'metrics.all_conversions_from_directions, '
+            . 'metrics.all_conversions_from_click_to_call, '
+            . 'metrics.all_conversions_from_order, '
+            . 'metrics.all_conversions_from_menu, '
+            . 'metrics.all_conversions_from_other_engagement',
         default => '',
     };
+}
+
+/**
+ * Sum related local-action metric keys (camelCase + snake_case pairs).
+ *
+ * @param list<string> $keys
+ */
+function googleAdsLocalActionCount(array $metrics, string ...$keys): float
+{
+    $total = 0.0;
+    $i = 0;
+    $n = count($keys);
+    while ($i < $n) {
+        $camel = $keys[$i];
+        $snake = $keys[$i + 1] ?? $camel;
+        $total += googleAdsCountMetric($metrics, $camel, $snake);
+        $i += 2;
+    }
+
+    return round($total, 4);
 }
 
 /** @return list<string> Google advertising_channel_type enums for a Digi type id. */
@@ -76,7 +104,17 @@ function googleAdsChannelTypesForDigiType(string $typeId): array
  */
 function googleAdsTypesWithCampaignExtras(): array
 {
-    return ['search', 'shopping', 'display', 'demand_gen', 'video'];
+    return ['search', 'shopping', 'display', 'demand_gen', 'video', 'local_call'];
+}
+
+function googleAdsCountMetric(array $metrics, string ...$keys): float
+{
+    $raw = googleAdsMetricGet($metrics, ...$keys);
+    if ($raw === null || $raw === '') {
+        return 0.0;
+    }
+
+    return round((float) $raw, 4);
 }
 
 function googleAdsMetricGet(array $metrics, string ...$keys): mixed

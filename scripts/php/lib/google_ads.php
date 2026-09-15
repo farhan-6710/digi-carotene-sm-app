@@ -249,6 +249,13 @@ function googleAdsBuildCampaignMetricRow(array $row, string $fallbackDate): ?arr
         'video_quartile_p50_rate' => null,
         'video_quartile_p75_rate' => null,
         'video_quartile_p100_rate' => null,
+        'local_shop_visits' => 0.0,
+        'local_website_visits' => 0.0,
+        'local_direction_views' => 0.0,
+        'local_calls' => 0.0,
+        'local_orders' => 0.0,
+        'local_menu_views' => 0.0,
+        'local_other_actions' => 0.0,
         '_type' => googleAdsResolveCampaignType(is_string($objective) ? $objective : null),
     ];
 
@@ -302,6 +309,44 @@ function googleAdsMergeTypeExtras(array $payload, array $metrics, string $typeId
         );
         $payload['video_quartile_p100_rate'] = googleAdsShareToFloat(
             googleAdsMetricGet($metrics, 'videoQuartileP100Rate', 'video_quartile_p100_rate'),
+        );
+    }
+    if ($typeId === 'local_call') {
+        // Feed-item local actions (Smart campaign RMF) — not location_asset_*.
+        $payload['local_shop_visits'] = googleAdsLocalActionCount(
+            $metrics,
+            'allConversionsFromStoreVisit',
+            'all_conversions_from_store_visit',
+        );
+        $payload['local_website_visits'] = googleAdsLocalActionCount(
+            $metrics,
+            'allConversionsFromStoreWebsite',
+            'all_conversions_from_store_website',
+        );
+        $payload['local_direction_views'] = googleAdsLocalActionCount(
+            $metrics,
+            'allConversionsFromDirections',
+            'all_conversions_from_directions',
+        );
+        $payload['local_calls'] = googleAdsLocalActionCount(
+            $metrics,
+            'allConversionsFromClickToCall',
+            'all_conversions_from_click_to_call',
+        );
+        $payload['local_orders'] = googleAdsLocalActionCount(
+            $metrics,
+            'allConversionsFromOrder',
+            'all_conversions_from_order',
+        );
+        $payload['local_menu_views'] = googleAdsLocalActionCount(
+            $metrics,
+            'allConversionsFromMenu',
+            'all_conversions_from_menu',
+        );
+        $payload['local_other_actions'] = googleAdsLocalActionCount(
+            $metrics,
+            'allConversionsFromOtherEngagement',
+            'all_conversions_from_other_engagement',
         );
     }
 

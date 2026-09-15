@@ -47,7 +47,7 @@ export function GoogleCampaignTypeShell({
 
   const details = [
     { label: "Ad account", value: view.adAccountName },
-    { label: "Channel type", value: typeLabel },
+    { label: "Campaign type", value: typeLabel },
     { label: "Campaign ID", value: view.campaignId },
     { label: "Days in period", value: String(view.dailyRows.length) },
   ];
@@ -66,7 +66,7 @@ export function GoogleCampaignTypeShell({
             <StatusBadge status={view.status} />
           </div>
           <p className="mt-2 text-sm text-muted-foreground">
-            KPIs for this channel type · {periodLabel.toLowerCase()}.
+            KPIs for this campaign type · {periodLabel.toLowerCase()}.
           </p>
         </div>
 

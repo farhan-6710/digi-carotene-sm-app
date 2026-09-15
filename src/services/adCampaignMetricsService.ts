@@ -31,6 +31,13 @@ type MetricRow = {
   video_quartile_p50_rate?: number | null;
   video_quartile_p75_rate?: number | null;
   video_quartile_p100_rate?: number | null;
+  local_shop_visits?: number | null;
+  local_website_visits?: number | null;
+  local_direction_views?: number | null;
+  local_calls?: number | null;
+  local_orders?: number | null;
+  local_menu_views?: number | null;
+  local_other_actions?: number | null;
 };
 
 function nullableNumber(value: number | null | undefined): number | null {
@@ -66,6 +73,13 @@ function mapMetric(row: MetricRow): CampaignMetricRow {
     videoQuartileP50Rate: nullableNumber(row.video_quartile_p50_rate),
     videoQuartileP75Rate: nullableNumber(row.video_quartile_p75_rate),
     videoQuartileP100Rate: nullableNumber(row.video_quartile_p100_rate),
+    localShopVisits: Number(row.local_shop_visits ?? 0),
+    localWebsiteVisits: Number(row.local_website_visits ?? 0),
+    localDirectionViews: Number(row.local_direction_views ?? 0),
+    localCalls: Number(row.local_calls ?? 0),
+    localOrders: Number(row.local_orders ?? 0),
+    localMenuViews: Number(row.local_menu_views ?? 0),
+    localOtherActions: Number(row.local_other_actions ?? 0),
     date: row.metric_date,
   };
 }

@@ -37,6 +37,13 @@ export type GoogleCampaignKpiId =
   | "call_count"
   | "call_duration"
   | "direction_requests"
+  | "local_shop_visits"
+  | "local_website_visits"
+  | "local_direction_views"
+  | "local_calls"
+  | "local_orders"
+  | "local_menu_views"
+  | "local_other_actions"
   | "quality_score"
   | "installs";
 
@@ -255,6 +262,62 @@ export const GOOGLE_CAMPAIGN_KPI_DEFS: Record<
     renderableToday: false,
     format: "compact",
   },
+  local_shop_visits: {
+    id: "local_shop_visits",
+    label: "Shop visits",
+    phase: 3,
+    computed: false,
+    renderableToday: true,
+    format: "compact",
+  },
+  local_website_visits: {
+    id: "local_website_visits",
+    label: "Local website visits",
+    phase: 3,
+    computed: false,
+    renderableToday: true,
+    format: "compact",
+  },
+  local_direction_views: {
+    id: "local_direction_views",
+    label: "Direction views",
+    phase: 3,
+    computed: false,
+    renderableToday: true,
+    format: "compact",
+  },
+  local_calls: {
+    id: "local_calls",
+    label: "Local action calls",
+    phase: 3,
+    computed: false,
+    renderableToday: true,
+    format: "compact",
+  },
+  local_orders: {
+    id: "local_orders",
+    label: "Local action orders",
+    phase: 3,
+    computed: false,
+    renderableToday: true,
+    format: "compact",
+  },
+  local_menu_views: {
+    id: "local_menu_views",
+    label: "Menu views",
+    phase: 3,
+    computed: false,
+    renderableToday: true,
+    format: "compact",
+  },
+  local_other_actions: {
+    id: "local_other_actions",
+    label: "Other local actions",
+    phase: 3,
+    computed: false,
+    renderableToday: true,
+    format: "compact",
+  },
   quality_score: {
     id: "quality_score",
     label: "Quality Score",
@@ -376,9 +439,13 @@ export const GOOGLE_CAMPAIGN_TYPE_KPIS: Record<
     "cost_per_conversion",
     "conversion_rate",
     "roas",
-    "call_count",
-    "call_duration",
-    "direction_requests",
+    "local_shop_visits",
+    "local_website_visits",
+    "local_direction_views",
+    "local_calls",
+    "local_orders",
+    "local_menu_views",
+    "local_other_actions",
   ],
   app: [
     "impressions",
