@@ -90,7 +90,9 @@ Go to Growth → Manage Accounts → Connect Ad Account:
 
 On connect, Digi Carotene exchanges the refresh token, calls Google Ads with `developer-token` + `login-customer-id` (from our `manager_id`), and verifies the customer before saving.
 
-**Browser note:** Google Ads API responses are often blocked by CORS in the browser (Meta Graph is not). If verification fails with a network/CORS error, Digi Carotene still stores the credentials so the account appears in Manage Accounts; a Hostinger PHP sync (same pattern as Meta midnight crons) will be the durable verify + metrics path.
+**Browser note:** Google Ads API responses are often blocked by CORS in the browser (Meta Graph is not). Digi Carotene still verifies when possible; after saving the account it calls Hostinger `sync_google_ad_acc_backfill.php` (same 90-day window as Meta) using `VITE_GROWTH_PHP_BASE_URL` + `VITE_GROWTH_PHP_CRON_SECRET`. Midnight cron (`sync_yesterday_ad_acc.php`) continues to sync **yesterday** only.
+
+Local connect testing: put those two vars in a root `.env` (same `cron_secret` as Hostinger `php/config.php`) and restart `bun run dev`.
 
 ## Final client flow
 
@@ -100,7 +102,7 @@ On connect, Digi Carotene exchanges the refresh token, calls Google Ads with `de
 
 ## Midnight cron data sync
 
-After an account is connected, Digi Carotene stores credentials and (for Meta) runs an initial backfill. Hostinger PHP crons sync **yesterday’s** data every night (around midnight IST).
+After an account is connected, Digi Carotene stores credentials and runs an initial **90-day** backfill (Meta in-browser; Google via Hostinger PHP). Hostinger PHP crons then sync **yesterday’s** data every night (around midnight IST).
 
 | Cron | What it syncs |
 | --- | --- |
@@ -127,7 +129,7 @@ Sync follows the same Campaign Type Matrix as the UI (`googleCampaignTypeMatrix.
 
 Nullable type-specific columns live on `growth_ads_campaign_daily_metrics` (migration **078**). Asset-group and call rows use `growth_ads_asset_group_daily_metrics` / `growth_ads_call_metrics`.
 
-**Historical backfill** (after 078 + PHP deploy):
+**Historical backfill** for Google runs on connect via `sync_google_ad_acc_backfill.php`. Manual:
 
 ```bash
 php sync_google_ad_acc_backfill.php 90

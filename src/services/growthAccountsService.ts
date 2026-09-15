@@ -8,6 +8,7 @@ import {
   fetchGoogleAdsCustomerInfo,
   normalizeGoogleCustomerId,
 } from "@/services/googleAdsService";
+import { triggerGoogleAdAccountBackfill } from "@/services/googleAdBackfillService";
 import {
   rerunInstagramBackfillForOrganicAccount,
   runInstagram29DayBackfill,
@@ -491,8 +492,9 @@ async function connectGoogleAdAccount(form: AdAccountForm): Promise<AdAccount> {
     throw new Error(error.message);
   }
 
-  // Metrics sync / campaign UI for Google comes in a follow-up pass.
-  return mapAd(data as AdRow);
+  const account = mapAd(data as AdRow);
+  await triggerGoogleAdAccountBackfill(account.id);
+  return account;
 }
 
 export async function updateAdAccount(
@@ -601,7 +603,13 @@ async function updateGoogleAdAccount(
 
   if (error) throw new Error(error.message);
 
-  return mapAd(data as AdRow);
+  const account = mapAd(data as AdRow);
+  if (refreshingCreds) {
+    await clearAdCachedMetrics(id);
+    await triggerGoogleAdAccountBackfill(account.id);
+  }
+
+  return account;
 }
 
 export async function deleteAdAccount(id: string): Promise<void> {

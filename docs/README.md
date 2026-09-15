@@ -46,12 +46,13 @@ Domain: **client (company) → project (social profiles + team) → posts**. Pro
 | Crons / email | PHP 8.2 on Hostinger (`scripts/php/`), Resend for digest mail |
 | Meta | Graph API via a **System User** long-lived token |
 
-There is **no `.env` in the repo**. Local Vite still needs two values at **build/dev time** (they are compiled into the JS; production does not read a server env file):
+There is **no `.env` in the repo**. Local Vite still needs values at **build/dev time** (they are compiled into the JS; production does not read a server env file):
 
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_PUBLISHABLE_KEY` (anon / publishable key)
+- `VITE_GROWTH_PHP_BASE_URL` / `VITE_GROWTH_PHP_CRON_SECRET` — required for **Google Ads** connect to auto-run the 90-day Hostinger backfill (same `cron_secret` as `php/config.php`)
 
-Put them in a local `.env` that you do not commit, or export them in the shell before `bun run dev` / `bun run build`. PHP secrets live in `public_html/php/config.php` (copied from `scripts/php/config.example.php`), not in env vars.
+Put them in a local `.env` that you do not commit, or export them in the shell before `bun run dev` / `bun run build`. PHP secrets live in `public_html/php/config.php` (copied from `scripts/php/config.example.php`), not only in env vars.
 
 ---
 

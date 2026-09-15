@@ -19,6 +19,8 @@ jobs:
           # Vite bakes these into the JS at build time (no server .env in production).
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_GROWTH_PHP_BASE_URL: ${{ secrets.VITE_GROWTH_PHP_BASE_URL }}
+          VITE_GROWTH_PHP_CRON_SECRET: ${{ secrets.VITE_GROWTH_PHP_CRON_SECRET }}
         run: |
           bun install
           bun run build

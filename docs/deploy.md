@@ -37,8 +37,10 @@ Repo **Settings → Secrets and variables → Actions** must include:
 | `FTP_HOST` / `FTP_USERNAME` / `FTP_PASSWORD` | Hostinger FTP |
 | `VITE_SUPABASE_URL` | Baked into JS at build time |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Baked into JS at build time (anon key) |
+| `VITE_GROWTH_PHP_BASE_URL` | Hostinger PHP base URL, e.g. `https://digicarotene.in/php` (Google Ads connect backfill) |
+| `VITE_GROWTH_PHP_CRON_SECRET` | Same as `php/config.php` `cron_secret` (Google Ads connect backfill) |
 
-Without the two `VITE_*` secrets, CI builds a blank app — `supabaseClient` throws and `#root` stays empty.
+Without the two Supabase `VITE_*` secrets, CI builds a blank app — `supabaseClient` throws and `#root` stays empty. Google Ads connect also needs the two Growth PHP secrets or the 90-day backfill step fails after insert.
 
 ## After deploy
 

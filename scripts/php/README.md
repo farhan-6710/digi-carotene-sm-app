@@ -6,8 +6,7 @@ Deploy this folder to `public_html/php/`. Deploy overview: **[docs/deploy.md](..
 |--------|-----|
 | `sync_yesterday_organic_acc.php` | Instagram organic yesterday |
 | `sync_yesterday_ad_acc.php` | Meta + Google ad account metrics (yesterday) |
-| `sync_google_ad_acc_backfill.php` | Google Ads N-day backfill (default 90; matrix-driven GAQL) |
-| `sync_yesterday_ads_acc.php` | Deprecated stub → `sync_yesterday_ad_acc.php` |
+| `sync_google_ad_acc_backfill.php` | Google Ads N-day backfill (default 90; triggered on Manage Accounts connect) |
 | `send_midnight_post_digest.php` | Digest email + in-app notifications |
 | `send_midnight_task_digest.php` | High-priority task digest email + in-app notifications |
 | `test.php` | Smoke test |

@@ -9,6 +9,8 @@ declare(strict_types=1);
  *
  * CLI:  php sync_yesterday_ad_acc.php
  * HTTP: https://your-domain.com/.../sync_yesterday_ad_acc.php?secret=YOUR_CRON_SECRET
+ *
+ * Google connect 90-day history: sync_google_ad_acc_backfill.php
  */
 
 require_once __DIR__ . '/lib/supabase.php';

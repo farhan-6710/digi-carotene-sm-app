@@ -170,7 +170,7 @@ export function useManageAccounts() {
           "success",
           refreshedCreds
             ? adForm.platform === "google_ads"
-              ? "Google ad account updated."
+              ? "Google ad account updated. Re-synced 90 days of campaign data."
               : "Ad account updated. Cached metrics cleared — open Campaign Analytics to reload."
             : "Ad account updated.",
         );
@@ -178,15 +178,13 @@ export function useManageAccounts() {
         showToast(
           "info",
           adForm.platform === "google_ads"
-            ? "Validating Google ad account with Digi Carotene MCC credentials…"
+            ? "Connecting Google ad account and syncing 90 days of campaign data…"
             : "Validating ad account and syncing 90 days of campaign data…",
         );
         await connectAdAccount(adForm);
         showToast(
           "success",
-          adForm.platform === "google_ads"
-            ? "Google ad account connected. Open Campaign Analytics to view metrics."
-            : "Ad account connected. Open Campaign Analytics to view metrics.",
+          "Ad account connected. Open Campaign Analytics to view metrics.",
         );
       }
       setIsAdOpen(false);
