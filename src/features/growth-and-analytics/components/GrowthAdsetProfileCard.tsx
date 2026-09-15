@@ -15,33 +15,50 @@ function summaryOrDash(value: string | null): string {
 export function GrowthAdsetProfileCard({
   view,
   adAccountId,
+  platform = "meta_ads",
   periodLabel = "All time",
   breakdowns,
   onBreakdownsChange,
   demographicView,
   isDemographicLoading,
 }: GrowthAdsetProfileCardProps) {
-  const details = [
-    { label: "Ad account", value: view.adAccountName },
-    { label: "Performance goal", value: summaryOrDash(view.performanceGoal) },
-    { label: "Location", value: summaryOrDash(view.locationSummary) },
-    { label: "Age", value: summaryOrDash(view.ageSummary) },
-    { label: "Custom targeting", value: summaryOrDash(view.customTargetingSummary) },
-    { label: "Detailed targeting", value: summaryOrDash(view.detailedTargetingSummary) },
-    { label: "Placements", value: summaryOrDash(view.placementsSummary) },
-    { label: "Meta ad set ID", value: view.adsetId },
-  ];
+  const isGoogle = platform === "google_ads";
+  const details = isGoogle
+    ? [
+        { label: "Ad account", value: view.adAccountName },
+        { label: "Ad group ID", value: view.adsetId },
+      ]
+    : [
+        { label: "Ad account", value: view.adAccountName },
+        { label: "Performance goal", value: summaryOrDash(view.performanceGoal) },
+        { label: "Location", value: summaryOrDash(view.locationSummary) },
+        { label: "Age", value: summaryOrDash(view.ageSummary) },
+        {
+          label: "Custom targeting",
+          value: summaryOrDash(view.customTargetingSummary),
+        },
+        {
+          label: "Detailed targeting",
+          value: summaryOrDash(view.detailedTargetingSummary),
+        },
+        { label: "Placements", value: summaryOrDash(view.placementsSummary) },
+        { label: "Ad set ID", value: view.adsetId },
+      ];
 
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-border bg-card shadow-sm">
         <div className="border-b border-border px-6 py-5">
           <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-            Ad set details
+            {isGoogle ? "Ad group details" : "Ad set details"}
           </p>
-          <h2 className="mt-2 text-xl font-semibold tracking-tight">{view.adsetName}</h2>
+          <h2 className="mt-2 text-xl font-semibold tracking-tight">
+            {view.adsetName}
+          </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Audience, placement, and performance for {periodLabel.toLowerCase()}.
+            {isGoogle
+              ? `Performance for ${periodLabel.toLowerCase()}.`
+              : `Audience, placement, and performance for ${periodLabel.toLowerCase()}.`}
           </p>
         </div>
 
@@ -99,10 +116,12 @@ export function GrowthAdsetProfileCard({
         adsetId={view.adsetId}
         adAccountId={adAccountId}
         currencyCode={view.currencyCode}
+        platform={platform}
         breakdowns={breakdowns}
         onBreakdownsChange={onBreakdownsChange}
         demographicView={demographicView}
         isDemographicLoading={isDemographicLoading}
+        showDemographicBreakdown={!isGoogle}
       />
     </div>
   );

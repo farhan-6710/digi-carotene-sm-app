@@ -18,7 +18,7 @@ export function AdAccountsList({
   return (
     <DirectoryTable
       title="Ad Accounts"
-      description="Connected Meta and Google Ads accounts for paid campaign reporting."
+      description="Connected Meta and Google ad accounts for paid campaign reporting."
       gridClass={GRID_CLASS}
       columns={[
         { label: "PLATFORM" },

@@ -22,16 +22,26 @@ export function AdsetsTable({
   campaignId,
   adAccountId,
   currencyCode,
+  platform = "meta_ads",
+  entityLabel,
 }: AdsetsTableProps) {
   const { buildAdsetDetailPath } = useGrowthPaths();
+  const isGoogle = platform === "google_ads";
+  const plural =
+    entityLabel?.plural ?? (isGoogle ? "Ad groups" : "Ad sets");
+  const singular =
+    entityLabel?.singular ?? (isGoogle ? "Ad group" : "Ad set");
+  const entityColumn = singular.toUpperCase();
+  const description = `Spend and performance by ${singular.toLowerCase()} in this campaign.`;
+  const emptyMessage = `No ${plural.toLowerCase()} for this campaign yet.`;
 
   return (
     <DirectoryTable
-      title="Ad sets"
-      description="Spend and performance by ad set in this campaign."
+      title={plural}
+      description={description}
       gridClass={GRID_CLASS}
       columns={[
-        { label: "AD SET" },
+        { label: entityColumn },
         { label: "SPEND", align: "right" },
         { label: "IMPRESSIONS", align: "right" },
         { label: "REACH", align: "right" },
@@ -43,7 +53,7 @@ export function AdsetsTable({
       ]}
       isLoading={false}
       isEmpty={rows.length === 0}
-      emptyMessage="No ad sets for this campaign yet."
+      emptyMessage={emptyMessage}
     >
       {rows.map((row) => (
         <div
@@ -54,7 +64,7 @@ export function AdsetsTable({
           )}
         >
           <div className="min-w-0 text-sm font-medium text-foreground">
-            <MobileLabel>AD SET</MobileLabel>
+            <MobileLabel>{entityColumn}</MobileLabel>
             <Link
               to={buildAdsetDetailPath(campaignId, row.id, adAccountId)}
               className="line-clamp-2 text-primary hover:underline"

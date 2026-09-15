@@ -22,7 +22,7 @@ export function ClientGrowthOutlet() {
     return <Navigate to={GROWTH_BASE} replace />;
   }
 
-  // Only ads accounts → keep organic content routes off.
+  // Only ad accounts → keep organic content routes off.
   if (!hasAds && hasOrganic && onCampaigns) {
     return <Navigate to={GROWTH_BASE} replace />;
   }

@@ -82,6 +82,17 @@ function buildMetricsForAccount(adAccountId: string): CampaignMetricRow[] {
         cpm: seedValue(seed + 3, 40, 180),
         frequency: Number((1 + (seed % 20) / 10).toFixed(2)),
         conversions: seedValue(seed + 6, 2, 42),
+        conversionValue: seedValue(seed + 7, 200, 8_000),
+        searchImpressionShare: null,
+        searchBudgetLostImpressionShare: null,
+        searchRankLostImpressionShare: null,
+        activeViewViewability: null,
+        videoViews: 0,
+        averageCpv: null,
+        videoQuartileP25Rate: null,
+        videoQuartileP50Rate: null,
+        videoQuartileP75Rate: null,
+        videoQuartileP100Rate: null,
         date,
       });
     }

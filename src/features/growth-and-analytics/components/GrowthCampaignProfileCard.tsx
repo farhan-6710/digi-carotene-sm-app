@@ -1,4 +1,5 @@
 import { growthCampaignDetailStatItems } from "../constants/campaignDetailStats";
+import { googleCampaignTypeSwitch } from "./google-campaigns/googleCampaignTypeSwitch";
 import { AdsetsTable } from "./tables/AdsetsTable";
 import { CampaignDailyMetricsTable } from "./tables/CampaignDailyMetricsTable";
 import { StatusBadge } from "./tables/tableBits";
@@ -14,16 +15,25 @@ import { cn } from "@/shared/lib/utils";
 export function GrowthCampaignProfileCard({
   view,
   adAccountId,
+  platform = "meta_ads",
   periodLabel = "All time",
   breakdowns,
   onBreakdownsChange,
   demographicView,
   isDemographicLoading,
 }: GrowthCampaignProfileCardProps) {
+  if (platform === "google_ads") {
+    return googleCampaignTypeSwitch({
+      view,
+      adAccountId,
+      periodLabel,
+    });
+  }
+
   const details = [
     { label: "Ad account", value: view.adAccountName },
     { label: "Objective", value: formatCampaignObjective(view.objective) },
-    { label: "Meta campaign ID", value: view.campaignId },
+    { label: "Campaign ID", value: view.campaignId },
     { label: "Days in period", value: String(view.dailyRows.length) },
   ];
 
@@ -96,6 +106,7 @@ export function GrowthCampaignProfileCard({
         campaignId={view.campaignId}
         adAccountId={adAccountId}
         currencyCode={view.currencyCode}
+        platform={platform}
       />
 
       <CampaignDailyMetricsTable
@@ -105,6 +116,7 @@ export function GrowthCampaignProfileCard({
         onBreakdownsChange={onBreakdownsChange}
         demographicView={demographicView}
         isDemographicLoading={isDemographicLoading}
+        showDemographicBreakdown
       />
     </div>
   );

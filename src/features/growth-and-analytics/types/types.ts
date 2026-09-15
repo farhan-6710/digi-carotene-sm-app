@@ -1,7 +1,7 @@
 export type GrowthPlatform = "instagram" | "facebook";
 
-/** Paid ads platforms on `growth_ads_accounts.platform`. */
-export type AdsAccountKind = "meta_ads" | "google_ads";
+/** Paid ads platforms on `growth_ad_accounts.platform`. */
+export type AdAccountKind = "meta_ads" | "google_ads";
 
 // `from`/`to` are `yyyy-MM-dd`; omit both for "all time".
 export type GrowthDateRange = { from?: string; to?: string };
@@ -109,6 +109,17 @@ export type CampaignMetricRow = {
   cpm: number;
   frequency: number;
   conversions: number;
+  conversionValue: number;
+  searchImpressionShare: number | null;
+  searchBudgetLostImpressionShare: number | null;
+  searchRankLostImpressionShare: number | null;
+  activeViewViewability: number | null;
+  videoViews: number;
+  averageCpv: number | null;
+  videoQuartileP25Rate: number | null;
+  videoQuartileP50Rate: number | null;
+  videoQuartileP75Rate: number | null;
+  videoQuartileP100Rate: number | null;
   date: string;
 };
 
@@ -286,7 +297,19 @@ export type GrowthCampaignDetailView = {
   impressions: number;
   clicks: number;
   conversions: number;
+  conversionValue: number;
   ctr: number;
+  searchImpressionShare: number | null;
+  searchBudgetLostImpressionShare: number | null;
+  searchRankLostImpressionShare: number | null;
+  activeViewViewability: number | null;
+  videoViews: number;
+  averageCpv: number | null;
+  videoQuartileP25Rate: number | null;
+  videoQuartileP50Rate: number | null;
+  videoQuartileP75Rate: number | null;
+  videoQuartileP100Rate: number | null;
+  cpm: number;
   dailyRows: CampaignMetricRow[];
   adsetRows: AdsetRow[];
   previousCampaignId: string | null;
@@ -390,7 +413,7 @@ export type AdAccount = {
   accountName: string;
   adAccountId: string;
   currencyCode: string;
-  platform: AdsAccountKind;
+  platform: AdAccountKind;
   /** Google Ads MCC / manager customer id (no hyphens). Empty for Meta. */
   loginCustomerId: string;
 };
@@ -412,7 +435,7 @@ export type OrganicAccountForm = {
 };
 
 export type AdAccountForm = {
-  platform: AdsAccountKind;
+  platform: AdAccountKind;
   clientId: string;
   // Only used to seed the client selector label when editing.
   clientName: string;

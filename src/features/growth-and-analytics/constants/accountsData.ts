@@ -1,6 +1,6 @@
 import type {
   AdAccountForm,
-  AdsAccountKind,
+  AdAccountKind,
   GrowthPlatform,
   OrganicAccountForm,
 } from "../types/types";
@@ -11,7 +11,7 @@ export const platformOptions: { value: GrowthPlatform; label: string }[] = [
 ];
 
 export const adsPlatformOptions: {
-  value: AdsAccountKind;
+  value: AdAccountKind;
   label: string;
 }[] = [
   { value: "meta_ads", label: "Meta" },

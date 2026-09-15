@@ -38,7 +38,7 @@ Run only migrations you have **not** applied yet, in order:
 | `024_ad_campaign_reach_cpm_frequency.sql` | Adds reach / CPM / frequency to campaign daily metrics |
 | `025_ad_adset_tables.sql` | Ad set + ad master/daily metric tables |
 | `026_posts_post_type.sql` | Posts `post_type` column |
-| `027_growth_account_client_link.sql` | Adds nullable `client_id` FK to organic + ads account tables |
+| `027_growth_account_client_link.sql` | Adds nullable `client_id` FK to organic + ad account tables |
 | `028_rename_growth_tables.sql` | Renames Growth tables to `growth_organic_*` / `growth_ads_*` prefixes |
 | `029_production_plans.sql` | Adds `production_plans` table for the Production Planner feature |
 | `030_production_plan_items.sql` | Moves approvals onto `production_plan_items`; drops plan-level approval columns |
@@ -68,6 +68,9 @@ Run only migrations you have **not** applied yet, in order:
 | `063_notifications_task_digest_type.sql` | Adds `task_digest` to `notifications.notification_type` |
 | `064_other_projects.sql` | `other_projects` + `other_project_team_members` |
 | `065_drop_dev_projects_tech_stack.sql` | Drops `tech_stack` from `dev_projects` |
+| `076_growth_ads_accounts_platform_google.sql` | Meta/Google platform + Google creds on ad accounts table (then named `growth_ads_accounts`) |
+| `077_rename_growth_ads_accounts_to_ad_accounts.sql` | Renames `growth_ads_accounts` → `growth_ad_accounts` |
+| `078_google_ads_campaign_type_metrics.sql` | Google campaign-type KPI columns + asset-group / call metric tables |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 import { fetchAdCampaignMetricsForAccount } from "@/services/adCampaignMetricsService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
-import { isAdsAnalyticsReady } from "../constants/growthPlatformConfig";
+import { isAdAnalyticsReady } from "../constants/growthPlatformConfig";
 import {
   buildCampaignRows,
   buildCampaignStatCards,
@@ -29,7 +29,7 @@ export function useGrowthCampaigns() {
   const adAccountId = activeAccount?.id ?? "";
   const currencyCode = activeAccount?.currencyCode ?? "INR";
   const adsPlatform = activeAccount?.platform ?? "meta_ads";
-  const analyticsReady = isAdsAnalyticsReady(adsPlatform);
+  const analyticsReady = isAdAnalyticsReady(adsPlatform);
 
   const loadMetrics = useCallback(
     () =>

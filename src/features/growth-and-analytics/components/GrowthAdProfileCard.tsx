@@ -14,18 +14,25 @@ function summaryOrDash(value: string | null): string {
 
 export function GrowthAdProfileCard({
   view,
+  platform = "meta_ads",
   periodLabel = "All time",
   breakdowns,
   onBreakdownsChange,
   demographicView,
   isDemographicLoading,
 }: GrowthAdProfileCardProps) {
-  const details = [
-    { label: "Ad account", value: view.adAccountName },
-    { label: "Primary text", value: summaryOrDash(view.primaryText) },
-    { label: "Headline", value: summaryOrDash(view.headline) },
-    { label: "Meta ad ID", value: view.adId },
-  ];
+  const isGoogle = platform === "google_ads";
+  const details = isGoogle
+    ? [
+        { label: "Ad account", value: view.adAccountName },
+        { label: "Ad ID", value: view.adId },
+      ]
+    : [
+        { label: "Ad account", value: view.adAccountName },
+        { label: "Primary text", value: summaryOrDash(view.primaryText) },
+        { label: "Headline", value: summaryOrDash(view.headline) },
+        { label: "Ad ID", value: view.adId },
+      ];
 
   return (
     <div className="space-y-6">
@@ -34,9 +41,13 @@ export function GrowthAdProfileCard({
           <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
             Ad details
           </p>
-          <h2 className="mt-2 text-xl font-semibold tracking-tight">{view.adName}</h2>
+          <h2 className="mt-2 text-xl font-semibold tracking-tight">
+            {view.adName}
+          </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Creative and daily performance for {periodLabel.toLowerCase()}.
+            {isGoogle
+              ? `Daily performance for ${periodLabel.toLowerCase()}.`
+              : `Creative and daily performance for ${periodLabel.toLowerCase()}.`}
           </p>
         </div>
 
@@ -105,6 +116,7 @@ export function GrowthAdProfileCard({
         onBreakdownsChange={onBreakdownsChange}
         demographicView={demographicView}
         isDemographicLoading={isDemographicLoading}
+        showDemographicBreakdown={!isGoogle}
       />
     </div>
   );

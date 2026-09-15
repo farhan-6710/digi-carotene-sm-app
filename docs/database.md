@@ -38,7 +38,7 @@ clients
   │     ├── production_plan_team_members ──► team_members
   │     └── production_plan_items
   ├── growth_organic_accounts
-  └── growth_ads_accounts
+  └── growth_ad_accounts
 
 leads   (flat CRM table — not tied to a client in V1)
   ├── lead_notes

@@ -15,8 +15,14 @@ import {
 
 const GRID_CLASS = "grid-cols-[1.5fr_1fr_0.7fr_0.8fr_0.7fr_0.8fr]";
 
-export function CampaignTable({ rows, adAccountId }: CampaignTableProps) {
+export function CampaignTable({
+  rows,
+  adAccountId,
+  platform = "meta_ads",
+}: CampaignTableProps) {
   const { buildCampaignDetailPath } = useGrowthPaths();
+  const isGoogle = platform === "google_ads";
+  const objectiveLabel = isGoogle ? "CHANNEL" : "OBJECTIVE";
 
   return (
     <DirectoryTable
@@ -25,7 +31,7 @@ export function CampaignTable({ rows, adAccountId }: CampaignTableProps) {
       gridClass={GRID_CLASS}
       columns={[
         { label: "CAMPAIGN" },
-        { label: "OBJECTIVE" },
+        { label: objectiveLabel },
         { label: "STATUS" },
         { label: "SPEND", align: "right" },
         { label: "CTR", align: "right" },
@@ -53,7 +59,7 @@ export function CampaignTable({ rows, adAccountId }: CampaignTableProps) {
             </Link>
           </div>
           <div className="text-sm text-muted-foreground">
-            <MobileLabel>OBJECTIVE</MobileLabel>
+            <MobileLabel>{objectiveLabel}</MobileLabel>
             {formatCampaignObjective(row.objective)}
           </div>
           <div>

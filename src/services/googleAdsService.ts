@@ -72,7 +72,7 @@ type GoogleAdsSearchRow = {
 };
 
 /**
- * Validates Digi Carotene can reach the client Google Ads account via MCC
+ * Validates Digi Carotene can reach the client Google ad account via MCC
  * credentials (same pattern as Meta system-user token + act_…).
  */
 export async function fetchGoogleAdsCustomerInfo(

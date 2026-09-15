@@ -77,7 +77,8 @@ function GrowthCampaignPager({
 
 export function GrowthCampaignDetailPage() {
   const { campaignId = "" } = useParams();
-  const { accountId } = useGrowthSelectedAdAccount();
+  const { accountId, activeAccount } = useGrowthSelectedAdAccount();
+  const platform = activeAccount?.platform ?? "meta_ads";
   const [breakdowns, setBreakdowns] = useState<DemographicBreakdown[]>([]);
   const { view, isLoading, error, dateFilterProps, periodLabel, range } =
     useGrowthCampaignDetailQuery(campaignId);
@@ -139,6 +140,7 @@ export function GrowthCampaignDetailPage() {
       <GrowthCampaignProfileCard
         view={view}
         adAccountId={accountId}
+        platform={platform}
         periodLabel={periodLabel}
         breakdowns={breakdowns}
         onBreakdownsChange={setBreakdowns}

@@ -19,10 +19,12 @@ function GrowthAdDetailBackButton({
   campaignId,
   adsetId,
   adAccountId,
+  platform = "meta_ads",
 }: {
   campaignId: string;
   adsetId: string;
   adAccountId: string;
+  platform?: "meta_ads" | "google_ads";
 }) {
   const { buildAdsetDetailPath } = useGrowthPaths();
 
@@ -30,7 +32,7 @@ function GrowthAdDetailBackButton({
     <Button asChild variant="outline" className="rounded-full">
       <Link to={buildAdsetDetailPath(campaignId, adsetId, adAccountId)}>
         <ArrowLeft className="mr-2 size-4" />
-        Back to ad set
+        {platform === "google_ads" ? "Back to ad group" : "Back to ad set"}
       </Link>
     </Button>
   );
@@ -89,7 +91,8 @@ function GrowthAdPager({
 
 export function GrowthAdDetailPage() {
   const { campaignId = "", adsetId = "", adId = "" } = useParams();
-  const { accountId } = useGrowthSelectedAdAccount();
+  const { accountId, activeAccount } = useGrowthSelectedAdAccount();
+  const platform = activeAccount?.platform ?? "meta_ads";
   const [breakdowns, setBreakdowns] = useState<DemographicBreakdown[]>([]);
   const { view, isLoading, error, dateFilterProps, periodLabel, range } =
     useGrowthAdDetailQuery(campaignId, adsetId, adId);
@@ -111,6 +114,7 @@ export function GrowthAdDetailPage() {
             campaignId={campaignId}
             adsetId={adsetId}
             adAccountId={accountId}
+            platform={platform}
           />
         }
       />
@@ -127,6 +131,7 @@ export function GrowthAdDetailPage() {
                 campaignId={campaignId}
                 adsetId={adsetId}
                 adAccountId={accountId}
+                platform={platform}
               />
               <GrowthAdPager
                 campaignId={campaignId}
@@ -153,6 +158,7 @@ export function GrowthAdDetailPage() {
                 campaignId={campaignId}
                 adsetId={adsetId}
                 adAccountId={accountId}
+                platform={platform}
               />
               <GrowthAdPager
                 campaignId={campaignId}
@@ -172,6 +178,7 @@ export function GrowthAdDetailPage() {
 
       <GrowthAdProfileCard
         view={view}
+        platform={platform}
         periodLabel={periodLabel}
         breakdowns={breakdowns}
         onBreakdownsChange={setBreakdowns}

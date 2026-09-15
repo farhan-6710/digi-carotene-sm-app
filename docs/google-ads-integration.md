@@ -105,19 +105,43 @@ After an account is connected, Digi Carotene stores credentials and (for Meta) r
 | Cron | What it syncs |
 | --- | --- |
 | `sync_yesterday_organic_acc.php` | Instagram post metrics + follower gain (unchanged; organic only) |
-| `sync_yesterday_ads_acc.php` | **Meta** + **Google** ads: campaign / ad set (ad group) / ad daily metrics into the same `growth_ads_*` tables |
+| `sync_yesterday_ad_acc.php` | **Meta** + **Google** ads: campaign / ad set (ad group) / ad daily metrics into the same `growth_ads_*` tables |
 
-`sync_yesterday_ads_acc.php` reads `growth_ads_accounts.platform`:
+`sync_yesterday_ad_acc.php` reads `growth_ad_accounts.platform`:
 
 - `meta_ads` — Meta Marketing API (system user access token), same as before
 - `google_ads` — Google Ads API with OAuth refresh token + developer token + `login-customer-id` (MCC)
 
 Google maps **ad group → ad set** and **ad → ad** so Campaign Analytics tables stay shared. Reach/frequency are Meta concepts; Google rows store impressions as reach and `0` frequency until a Google-specific UI lands.
 
+### Campaign-type matrix sync (Phase 1–4)
+
+Sync follows the same Campaign Type Matrix as the UI (`googleCampaignTypeMatrix.ts` / `google_ads_matrix.php`):
+
+1. **Universal Phase 1** GAQL for every campaign: impressions, clicks, cost, conversions, conversion value, CPM, `advertisingChannelType`.
+2. **Type-specific follow-up queries** (Google cannot mix incompatible metrics in one SELECT):
+   - Search / Shopping → impression share (+ Search lost IS budget/rank)
+   - Display → viewability + CPM
+   - Demand Gen / Video → CPM; Video also views, CPV, quartile rates
+3. **Separate resources:** Performance Max → `asset_group` (+ network split); Local/Call → `call_view` (upserted; UI KPIs for calls not wired yet).
+
+Nullable type-specific columns live on `growth_ads_campaign_daily_metrics` (migration **078**). Asset-group and call rows use `growth_ads_asset_group_daily_metrics` / `growth_ads_call_metrics`.
+
+**Historical backfill** (after 078 + PHP deploy):
+
+```bash
+php sync_google_ad_acc_backfill.php 90
+# optional: php sync_google_ad_acc_backfill.php 90 <growth_ad_accounts.id>
+```
+
+HTTP: `.../sync_google_ad_acc_backfill.php?secret=YOUR_CRON_SECRET&days=90`
+
+Not in V1 yet: keyword Quality Score table, App installs as filtered conversions, direction requests, dedicated asset-group / call UI tables.
+
 ---
 
 ## Campaign Analytics note
 
-Meta Ads campaign charts are live in the app today.
+Meta and Google Ads share the same Campaign Analytics shell (stats → spend chart → campaign table → drill-down). Google maps **ad group → ad set** in the DB; the UI labels them as ad groups. Campaign detail KPIs are **channel-type aware** (Search vs Video vs PMax, etc.).
 
-Google Ads rows sync into Supabase via the midnight cron above. The Campaign Analytics UI for Google remains a separate surface until Google-specific charts ship.
+Age / gender / placement demographic breakdowns remain **Meta-only** (Marketing API). Google rows still sync reach as impressions and frequency as `0` until a Google-specific breakdown lands.

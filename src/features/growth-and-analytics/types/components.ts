@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import type {
   AdAccount,
   AdAccountForm,
-  AdsAccountKind,
+  AdAccountKind,
   CampaignDemographicMetric,
   CampaignDemographicTableView,
   CampaignRow,
@@ -74,9 +74,16 @@ export type GrowthPostProfileCardProps = {
   view: GrowthPostDetailView;
 };
 
+export type CampaignTableProps = {
+  rows: CampaignRow[];
+  adAccountId?: string;
+  platform?: AdAccountKind;
+};
+
 export type GrowthCampaignProfileCardProps = {
   view: GrowthCampaignDetailView;
   adAccountId?: string;
+  platform?: AdAccountKind;
   periodLabel?: string;
   breakdowns: DemographicBreakdown[];
   onBreakdownsChange: (breakdowns: DemographicBreakdown[]) => void;
@@ -84,7 +91,11 @@ export type GrowthCampaignProfileCardProps = {
   isDemographicLoading: boolean;
 };
 
-export type CampaignMetricCellsMetric = CampaignDemographicMetric;
+export type GoogleCampaignTypePageProps = {
+  view: GrowthCampaignDetailView;
+  adAccountId?: string;
+  periodLabel?: string;
+};
 
 export type CampaignDailyMetricsTableProps = {
   rows: GrowthCampaignDetailView["dailyRows"];
@@ -93,7 +104,11 @@ export type CampaignDailyMetricsTableProps = {
   onBreakdownsChange: (breakdowns: DemographicBreakdown[]) => void;
   demographicView: CampaignDemographicTableView;
   isDemographicLoading: boolean;
+  /** Meta-only age/gender/placement breakdown controls. */
+  showDemographicBreakdown?: boolean;
 };
+
+export type CampaignMetricCellsMetric = CampaignDemographicMetric;
 
 export type DailyMetricsBreakdownSelectProps = {
   value: DemographicBreakdown[];
@@ -106,6 +121,9 @@ export type AdsetsTableProps = {
   campaignId: string;
   adAccountId?: string;
   currencyCode: string;
+  platform?: AdAccountKind;
+  /** Override default Ad set / Ad group copy (e.g. Asset groups for PMax). */
+  entityLabel?: { plural: string; singular: string };
 };
 
 export type AdsTableProps = {
@@ -114,15 +132,18 @@ export type AdsTableProps = {
   adsetId: string;
   adAccountId?: string;
   currencyCode: string;
+  platform?: AdAccountKind;
   breakdowns: DemographicBreakdown[];
   onBreakdownsChange: (breakdowns: DemographicBreakdown[]) => void;
   demographicView: CampaignDemographicTableView;
   isDemographicLoading: boolean;
+  showDemographicBreakdown?: boolean;
 };
 
 export type GrowthAdsetProfileCardProps = {
   view: GrowthAdsetDetailView;
   adAccountId?: string;
+  platform?: AdAccountKind;
   periodLabel?: string;
   breakdowns: DemographicBreakdown[];
   onBreakdownsChange: (breakdowns: DemographicBreakdown[]) => void;
@@ -132,6 +153,7 @@ export type GrowthAdsetProfileCardProps = {
 
 export type GrowthAdProfileCardProps = {
   view: GrowthAdDetailView;
+  platform?: AdAccountKind;
   periodLabel?: string;
   breakdowns: DemographicBreakdown[];
   onBreakdownsChange: (breakdowns: DemographicBreakdown[]) => void;
@@ -146,11 +168,7 @@ export type AdDailyMetricsTableProps = {
   onBreakdownsChange: (breakdowns: DemographicBreakdown[]) => void;
   demographicView: CampaignDemographicTableView;
   isDemographicLoading: boolean;
-};
-
-export type CampaignTableProps = {
-  rows: CampaignRow[];
-  adAccountId?: string;
+  showDemographicBreakdown?: boolean;
 };
 
 export type ReportsTableProps = {
@@ -171,10 +189,10 @@ export type GrowthOrganicPlatformToggleProps = {
 };
 
 export type GrowthAdsPlatformToggleProps = {
-  value: AdsAccountKind;
-  onChange: (platform: AdsAccountKind) => void;
+  value: AdAccountKind;
+  onChange: (platform: AdAccountKind) => void;
   /** When omitted, both Meta and Google stay enabled (connect modal). */
-  availablePlatforms?: AdsAccountKind[];
+  availablePlatforms?: AdAccountKind[];
   disableUnavailable?: boolean;
   className?: string;
 };

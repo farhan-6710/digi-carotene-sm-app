@@ -1,5 +1,5 @@
 import type {
-  AdsAccountKind,
+  AdAccountKind,
   GrowthPlatform,
 } from "@/features/growth-and-analytics/types/types";
 
@@ -12,15 +12,14 @@ export type OrganicPlatformConfig = {
   status: OrganicPlatformStatus;
 };
 
-export type { AdsAccountKind };
+export type { AdAccountKind };
 
 /**
- * Ads account kinds stored on `growth_ads_accounts.platform`.
- * Connect UI is live for both; Campaign Analytics metrics are Meta-only until
- * Google Ads reporting is wired.
+ * Ad account kinds stored on `growth_ad_accounts.platform`.
+ * Connect + Campaign Analytics are live for Meta and Google.
  */
-export type AdsAccountKindConfig = {
-  id: AdsAccountKind;
+export type AdAccountKindConfig = {
+  id: AdAccountKind;
   label: string;
   /** Connect + store credentials. */
   status: OrganicPlatformStatus;
@@ -54,9 +53,9 @@ export const ORGANIC_PLATFORM_CONFIG: Record<
   },
 };
 
-export const ADS_ACCOUNT_KIND_CONFIG: Record<
-  AdsAccountKind,
-  AdsAccountKindConfig
+export const AD_ACCOUNT_KIND_CONFIG: Record<
+  AdAccountKind,
+  AdAccountKindConfig
 > = {
   meta_ads: {
     id: "meta_ads",
@@ -68,20 +67,20 @@ export const ADS_ACCOUNT_KIND_CONFIG: Record<
     id: "google_ads",
     label: "Google",
     status: "live",
-    analyticsStatus: "coming_soon",
+    analyticsStatus: "live",
   },
 };
 
-export function adsAccountKindLabel(kind: AdsAccountKind): string {
-  return ADS_ACCOUNT_KIND_CONFIG[kind].label;
+export function adAccountKindLabel(kind: AdAccountKind): string {
+  return AD_ACCOUNT_KIND_CONFIG[kind].label;
 }
 
-export function isAdsAccountKindReady(kind: AdsAccountKind): boolean {
-  return ADS_ACCOUNT_KIND_CONFIG[kind].status === "live";
+export function isAdAccountKindReady(kind: AdAccountKind): boolean {
+  return AD_ACCOUNT_KIND_CONFIG[kind].status === "live";
 }
 
-export function isAdsAnalyticsReady(kind: AdsAccountKind): boolean {
-  return ADS_ACCOUNT_KIND_CONFIG[kind].analyticsStatus === "live";
+export function isAdAnalyticsReady(kind: AdAccountKind): boolean {
+  return AD_ACCOUNT_KIND_CONFIG[kind].analyticsStatus === "live";
 }
 
 /** Which account selector each Growth surface should present. */

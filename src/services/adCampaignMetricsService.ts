@@ -20,7 +20,23 @@ type MetricRow = {
   cpm: number;
   frequency: number;
   conversions: number;
+  conversion_value?: number | null;
+  search_impression_share?: number | null;
+  search_budget_lost_impression_share?: number | null;
+  search_rank_lost_impression_share?: number | null;
+  active_view_viewability?: number | null;
+  video_views?: number | null;
+  average_cpv?: number | null;
+  video_quartile_p25_rate?: number | null;
+  video_quartile_p50_rate?: number | null;
+  video_quartile_p75_rate?: number | null;
+  video_quartile_p100_rate?: number | null;
 };
+
+function nullableNumber(value: number | null | undefined): number | null {
+  if (value === null || value === undefined) return null;
+  return Number(value);
+}
 
 function mapMetric(row: MetricRow): CampaignMetricRow {
   return {
@@ -35,6 +51,21 @@ function mapMetric(row: MetricRow): CampaignMetricRow {
     cpm: Number(row.cpm),
     frequency: Number(row.frequency),
     conversions: row.conversions,
+    conversionValue: Number(row.conversion_value ?? 0),
+    searchImpressionShare: nullableNumber(row.search_impression_share),
+    searchBudgetLostImpressionShare: nullableNumber(
+      row.search_budget_lost_impression_share,
+    ),
+    searchRankLostImpressionShare: nullableNumber(
+      row.search_rank_lost_impression_share,
+    ),
+    activeViewViewability: nullableNumber(row.active_view_viewability),
+    videoViews: Number(row.video_views ?? 0),
+    averageCpv: nullableNumber(row.average_cpv),
+    videoQuartileP25Rate: nullableNumber(row.video_quartile_p25_rate),
+    videoQuartileP50Rate: nullableNumber(row.video_quartile_p50_rate),
+    videoQuartileP75Rate: nullableNumber(row.video_quartile_p75_rate),
+    videoQuartileP100Rate: nullableNumber(row.video_quartile_p100_rate),
     date: row.metric_date,
   };
 }
@@ -67,6 +98,7 @@ export type AdCampaignMetricInsert = {
   cpm: number;
   frequency: number;
   conversions: number;
+  conversionValue?: number;
 };
 
 function toInsertRow(adAccountId: string, row: AdCampaignMetricInsert) {
@@ -84,6 +116,7 @@ function toInsertRow(adAccountId: string, row: AdCampaignMetricInsert) {
     cpm: row.cpm,
     frequency: row.frequency,
     conversions: row.conversions,
+    conversion_value: row.conversionValue ?? 0,
   };
 }
 

@@ -39,13 +39,16 @@ function GrowthAdsetPager({
   previousAdsetId,
   nextAdsetId,
   adAccountId,
+  platform = "meta_ads",
 }: {
   campaignId: string;
   previousAdsetId: string | null;
   nextAdsetId: string | null;
   adAccountId: string;
+  platform?: "meta_ads" | "google_ads";
 }) {
   const { buildAdsetDetailPath } = useGrowthPaths();
+  const entity = platform === "google_ads" ? "ad group" : "ad set";
 
   return (
     <div className="flex items-center gap-2">
@@ -55,25 +58,25 @@ function GrowthAdsetPager({
             to={buildAdsetDetailPath(campaignId, previousAdsetId, adAccountId)}
           >
             <ArrowLeft className="mr-2 size-4" />
-            Prev ad set
+            Prev {entity}
           </Link>
         </Button>
       ) : (
         <Button variant="outline" className="rounded-full" disabled>
           <ArrowLeft className="mr-2 size-4" />
-          Prev ad set
+          Prev {entity}
         </Button>
       )}
       {nextAdsetId ? (
         <Button asChild variant="outline" className="rounded-full">
           <Link to={buildAdsetDetailPath(campaignId, nextAdsetId, adAccountId)}>
-            Next ad set
+            Next {entity}
             <ArrowRight className="ml-2 size-4" />
           </Link>
         </Button>
       ) : (
         <Button variant="outline" className="rounded-full" disabled>
-          Next ad set
+          Next {entity}
           <ArrowRight className="ml-2 size-4" />
         </Button>
       )}
@@ -83,7 +86,8 @@ function GrowthAdsetPager({
 
 export function GrowthAdsetDetailPage() {
   const { campaignId = "", adsetId = "" } = useParams();
-  const { accountId } = useGrowthSelectedAdAccount();
+  const { accountId, activeAccount } = useGrowthSelectedAdAccount();
+  const platform = activeAccount?.platform ?? "meta_ads";
   const [breakdowns, setBreakdowns] = useState<DemographicBreakdown[]>([]);
   const { view, isLoading, error, dateFilterProps, periodLabel, range } =
     useGrowthAdsetDetailQuery(campaignId, adsetId);
@@ -119,11 +123,12 @@ export function GrowthAdsetDetailPage() {
                 previousAdsetId={null}
                 nextAdsetId={null}
                 adAccountId={accountId}
+                platform={platform}
               />
             </div>
           }
         />
-        <ErrorBanner message={error ?? "Ad set not found."} />
+        <ErrorBanner message={error ?? (platform === "google_ads" ? "Ad group not found." : "Ad set not found.")} />
       </section>
     );
   }
@@ -140,6 +145,7 @@ export function GrowthAdsetDetailPage() {
                 previousAdsetId={view.previousAdsetId}
                 nextAdsetId={view.nextAdsetId}
                 adAccountId={accountId}
+                platform={platform}
               />
             </div>
             <DateFiltersTwo {...dateFilterProps} />
@@ -153,6 +159,7 @@ export function GrowthAdsetDetailPage() {
       <GrowthAdsetProfileCard
         view={view}
         adAccountId={accountId}
+        platform={platform}
         periodLabel={periodLabel}
         breakdowns={breakdowns}
         onBreakdownsChange={setBreakdowns}

@@ -3,15 +3,15 @@ import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 
 import {
-  adsAccountKindLabel,
-  isAdsAccountKindReady,
+  adAccountKindLabel,
+  isAdAccountKindReady,
 } from "../constants/growthPlatformConfig";
 import type { GrowthAdsPlatformToggleProps } from "../types/components";
-import type { AdsAccountKind } from "../types/types";
+import type { AdAccountKind } from "../types/types";
 
-const PLATFORM_ORDER: AdsAccountKind[] = ["meta_ads", "google_ads"];
+const PLATFORM_ORDER: AdAccountKind[] = ["meta_ads", "google_ads"];
 
-const PLATFORM_ICON: Record<AdsAccountKind, typeof FacebookIcon> = {
+const PLATFORM_ICON: Record<AdAccountKind, typeof FacebookIcon> = {
   meta_ads: FacebookIcon,
   google_ads: GoogleIcon,
 };
@@ -39,7 +39,7 @@ export function GrowthAdsPlatformToggle({
     >
       {PLATFORM_ORDER.map((platform) => {
         const isActive = value === platform;
-        const isReady = isAdsAccountKindReady(platform);
+        const isReady = isAdAccountKindReady(platform);
         const isInAvailable = available ? available.has(platform) : true;
         const isEnabled = disableUnavailable
           ? isReady && isInAvailable
@@ -57,12 +57,12 @@ export function GrowthAdsPlatformToggle({
               !isActive && "text-muted-foreground",
             )}
             aria-pressed={isActive}
-            aria-label={adsAccountKindLabel(platform)}
+            aria-label={adAccountKindLabel(platform)}
             disabled={!isEnabled}
             onClick={() => onChange(platform)}
           >
             <Icon className="size-3.5" aria-hidden />
-            {adsAccountKindLabel(platform)}
+            {adAccountKindLabel(platform)}
           </Button>
         );
       })}

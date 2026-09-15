@@ -33,7 +33,7 @@ export function GrowthCampaignAnalyticsPage() {
     <PageContent>
       <PageHeader
         heading="Campaign Analytics"
-        description="Track paid performance — Meta Ads live today; Google Ads reporting next."
+        description="Track paid performance across Meta and Google Ads."
         actions={
           hasAccounts ? (
             <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
@@ -72,7 +72,11 @@ export function GrowthCampaignAnalyticsPage() {
             granularity={spendTrend.granularity}
           />
 
-          <CampaignTable rows={campaignRows} adAccountId={adAccountId} />
+          <CampaignTable
+            rows={campaignRows}
+            adAccountId={adAccountId}
+            platform={adsPlatform}
+          />
         </>
       )}
     </PageContent>

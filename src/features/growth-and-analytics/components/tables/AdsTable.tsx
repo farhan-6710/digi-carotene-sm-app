@@ -87,15 +87,20 @@ export function AdsTable({
   adsetId,
   adAccountId,
   currencyCode,
+  platform = "meta_ads",
   breakdowns,
   onBreakdownsChange,
   demographicView,
   isDemographicLoading,
+  showDemographicBreakdown = true,
 }: AdsTableProps) {
   const { buildAdDetailPath } = useGrowthPaths();
-  const hasAge = breakdowns.includes("age");
-  const hasGender = breakdowns.includes("gender");
-  const hasPlacement = breakdowns.includes("placement");
+  const isGoogle = platform === "google_ads";
+  const parentLabel = isGoogle ? "ad group" : "ad set";
+  const effectiveBreakdowns = showDemographicBreakdown ? breakdowns : [];
+  const hasAge = effectiveBreakdowns.includes("age");
+  const hasGender = effectiveBreakdowns.includes("gender");
+  const hasPlacement = effectiveBreakdowns.includes("placement");
   const isBreakdown = hasAge || hasGender || hasPlacement;
   const isTwoDimensional = hasAge && hasGender;
   const gridClass = isTwoDimensional ? DOUBLE_GRID_CLASS : GRID_CLASS;
@@ -115,24 +120,26 @@ export function AdsTable({
       title={isBreakdown ? breakdownTitle : "Ads"}
       description={
         isBreakdown
-          ? `Spend and results split by ${breakdownTitle.toLowerCase()} across this ad set.`
-          : "Spend and performance by ad in this ad set."
+          ? `Spend and results split by ${breakdownTitle.toLowerCase()} across this ${parentLabel}.`
+          : `Spend and performance by ad in this ${parentLabel}.`
       }
       gridClass={gridClass}
       columns={[...leadingColumns, ...METRIC_COLUMNS]}
       headerAside={
-        <DailyMetricsBreakdownSelect
-          value={breakdowns}
-          onChange={onBreakdownsChange}
-          emptyLabel="Ads"
-        />
+        showDemographicBreakdown ? (
+          <DailyMetricsBreakdownSelect
+            value={breakdowns}
+            onChange={onBreakdownsChange}
+            emptyLabel="Ads"
+          />
+        ) : undefined
       }
       isLoading={isBreakdown ? isDemographicLoading : false}
       isEmpty={isBreakdown ? demographicView.rows.length === 0 : rows.length === 0}
       emptyMessage={
         isBreakdown
-          ? `This ad set has no ${breakdownTitle.toLowerCase()} results in the selected period.`
-          : "This ad set has no ads in the selected period."
+          ? `This ${parentLabel} has no ${breakdownTitle.toLowerCase()} results in the selected period.`
+          : `This ${parentLabel} has no ads in the selected period.`
       }
     >
       {isBreakdown

@@ -97,7 +97,7 @@ function fetchAdAccounts(array $config): array
     $rows = supabaseRequest(
         $config,
         'GET',
-        'growth_ads_accounts?select=id,ad_account_id,account_name,access_token,'
+        'growth_ad_accounts?select=id,ad_account_id,account_name,access_token,'
         . 'platform,login_customer_id,developer_token,'
         . 'oauth_client_id,oauth_client_secret,oauth_refresh_token',
     );
@@ -107,24 +107,83 @@ function fetchAdAccounts(array $config): array
 
 function upsertAdCampaignMetric(array $config, string $adAccountId, array $row): void
 {
+    $payload = [
+        'ad_account_id' => $adAccountId,
+        'campaign_id' => $row['campaign_id'],
+        'campaign_name' => $row['campaign_name'],
+        'status' => $row['status'],
+        'objective' => $row['objective'] ?? null,
+        'metric_date' => $row['metric_date'],
+        'spend' => $row['spend'],
+        'impressions' => $row['impressions'],
+        'reach' => $row['reach'],
+        'clicks' => $row['clicks'],
+        'cpm' => $row['cpm'],
+        'frequency' => $row['frequency'],
+        'conversions' => $row['conversions'],
+        'conversion_value' => $row['conversion_value'] ?? 0,
+        'search_impression_share' => $row['search_impression_share'] ?? null,
+        'search_budget_lost_impression_share' => $row['search_budget_lost_impression_share'] ?? null,
+        'search_rank_lost_impression_share' => $row['search_rank_lost_impression_share'] ?? null,
+        'active_view_viewability' => $row['active_view_viewability'] ?? null,
+        'video_views' => $row['video_views'] ?? 0,
+        'average_cpv' => $row['average_cpv'] ?? null,
+        'video_quartile_p25_rate' => $row['video_quartile_p25_rate'] ?? null,
+        'video_quartile_p50_rate' => $row['video_quartile_p50_rate'] ?? null,
+        'video_quartile_p75_rate' => $row['video_quartile_p75_rate'] ?? null,
+        'video_quartile_p100_rate' => $row['video_quartile_p100_rate'] ?? null,
+    ];
+
     supabaseRequest(
         $config,
         'POST',
         'growth_ads_campaign_daily_metrics?on_conflict=ad_account_id,campaign_id,metric_date',
+        $payload,
+        ['Prefer: resolution=merge-duplicates,return=minimal'],
+    );
+}
+
+function upsertGoogleAssetGroupMetric(array $config, string $adAccountId, array $row): void
+{
+    supabaseRequest(
+        $config,
+        'POST',
+        'growth_ads_asset_group_daily_metrics?on_conflict=ad_account_id,asset_group_id,metric_date,ad_network_type',
         [
             'ad_account_id' => $adAccountId,
             'campaign_id' => $row['campaign_id'],
-            'campaign_name' => $row['campaign_name'],
-            'status' => $row['status'],
-            'objective' => $row['objective'] ?? null,
+            'asset_group_id' => $row['asset_group_id'],
+            'asset_group_name' => $row['asset_group_name'] ?? null,
             'metric_date' => $row['metric_date'],
+            'ad_network_type' => $row['ad_network_type'] ?? 'UNSPECIFIED',
             'spend' => $row['spend'],
             'impressions' => $row['impressions'],
-            'reach' => $row['reach'],
             'clicks' => $row['clicks'],
-            'cpm' => $row['cpm'],
-            'frequency' => $row['frequency'],
             'conversions' => $row['conversions'],
+            'conversion_value' => $row['conversion_value'] ?? 0,
+        ],
+        ['Prefer: resolution=merge-duplicates,return=minimal'],
+    );
+}
+
+function upsertGoogleCallMetric(array $config, string $adAccountId, array $row): void
+{
+    supabaseRequest(
+        $config,
+        'POST',
+        'growth_ads_call_metrics?on_conflict=ad_account_id,call_resource_name',
+        [
+            'ad_account_id' => $adAccountId,
+            'campaign_id' => $row['campaign_id'],
+            'call_resource_name' => $row['call_resource_name'],
+            'start_call_at' => $row['start_call_at'] ?? null,
+            'end_call_at' => $row['end_call_at'] ?? null,
+            'call_duration_seconds' => $row['call_duration_seconds'] ?? null,
+            'call_status' => $row['call_status'] ?? null,
+            'caller_area_code' => $row['caller_area_code'] ?? null,
+            'caller_country_code' => $row['caller_country_code'] ?? null,
+            'call_tracking_display_location' => $row['call_tracking_display_location'] ?? null,
+            'metric_date' => $row['metric_date'] ?? null,
         ],
         ['Prefer: resolution=merge-duplicates,return=minimal'],
     );

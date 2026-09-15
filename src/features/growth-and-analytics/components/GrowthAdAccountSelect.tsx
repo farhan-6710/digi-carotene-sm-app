@@ -6,7 +6,7 @@ import { useGrowthSelectedAdAccount } from "@/features/growth-and-analytics/hook
 import { ComboBox } from "@/shared/ui/ComboBox";
 
 import { GrowthAdsPlatformToggle } from "./GrowthAdsPlatformToggle";
-import type { AdsAccountKind } from "../types/types";
+import type { AdAccountKind } from "../types/types";
 import {
   pickAdAccountForPlatform,
   writeAdAccountIdForPlatform,
@@ -23,14 +23,14 @@ export function GrowthAdAccountSelect() {
   const [searchParams] = useSearchParams();
 
   const availablePlatforms = useMemo(() => {
-    const platforms = new Set<AdsAccountKind>();
+    const platforms = new Set<AdAccountKind>();
     for (const account of accounts) {
       platforms.add(account.platform);
     }
     return [...platforms];
   }, [accounts]);
 
-  const platform: AdsAccountKind =
+  const platform: AdAccountKind =
     activeAccount?.platform ?? availablePlatforms[0] ?? "meta_ads";
 
   const options = useMemo(
@@ -55,7 +55,7 @@ export function GrowthAdAccountSelect() {
     writeAdAccountIdForPlatform(activeAccount.platform, activeAccount.id);
   }, [activeAccount]);
 
-  const handlePlatformChange = (nextPlatform: AdsAccountKind) => {
+  const handlePlatformChange = (nextPlatform: AdAccountKind) => {
     if (nextPlatform === platform) return;
     const nextAccount = pickAdAccountForPlatform(accounts, nextPlatform);
     if (!nextAccount) return;
@@ -80,15 +80,15 @@ export function GrowthAdAccountSelect() {
           isLoading={isLoading}
           placeholder={
             platform === "google_ads"
-              ? "Select Google Ads account"
+              ? "Select Google ad account"
               : "Select Meta ad account"
           }
           listTitle={
-            platform === "google_ads" ? "Google Ads accounts" : "Meta ad accounts"
+            platform === "google_ads" ? "Google ad accounts" : "Meta ad accounts"
           }
           emptyMessage={
             platform === "google_ads"
-              ? "No Google Ads accounts connected yet."
+              ? "No Google ad accounts connected yet."
               : "No Meta ad accounts connected yet."
           }
           noMatchMessage="No matching ad accounts found."

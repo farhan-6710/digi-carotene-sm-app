@@ -1,16 +1,16 @@
 import { FolderKanban } from "lucide-react";
 
-import { adsAccountKindLabel } from "@/features/growth-and-analytics/constants/growthPlatformConfig";
-import type { AdsAccountKind } from "@/features/growth-and-analytics/types/types";
+import { adAccountKindLabel } from "@/features/growth-and-analytics/constants/growthPlatformConfig";
+import type { AdAccountKind } from "@/features/growth-and-analytics/types/types";
 
 type GrowthAdsAnalyticsComingSoonProps = {
-  platform: AdsAccountKind;
+  platform: AdAccountKind;
 };
 
 export function GrowthAdsAnalyticsComingSoon({
   platform,
 }: GrowthAdsAnalyticsComingSoonProps) {
-  const label = adsAccountKindLabel(platform);
+  const label = adAccountKindLabel(platform);
 
   return (
     <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 rounded-2xl border border-border bg-card px-6 py-16 text-center">

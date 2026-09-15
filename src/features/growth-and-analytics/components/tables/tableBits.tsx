@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/shared/lib/utils";
 
-import type { AdsAccountKind, GrowthPlatform } from "../../types/types";
-import { adsAccountKindLabel } from "../../constants/growthPlatformConfig";
+import type { AdAccountKind, GrowthPlatform } from "../../types/types";
+import { adAccountKindLabel } from "../../constants/growthPlatformConfig";
 
 export function MobileLabel({ children }: { children: ReactNode }) {
   return (
@@ -37,7 +37,7 @@ export function PlatformBadge({ platform }: { platform: GrowthPlatform }) {
   );
 }
 
-export function AdsPlatformBadge({ platform }: { platform: AdsAccountKind }) {
+export function AdsPlatformBadge({ platform }: { platform: AdAccountKind }) {
   const isMeta = platform === "meta_ads";
 
   return (
@@ -54,7 +54,7 @@ export function AdsPlatformBadge({ platform }: { platform: AdsAccountKind }) {
         )}
         aria-hidden="true"
       />
-      {adsAccountKindLabel(platform)}
+      {adAccountKindLabel(platform)}
     </span>
   );
 }

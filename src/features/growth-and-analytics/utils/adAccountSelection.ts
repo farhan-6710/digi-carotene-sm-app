@@ -1,9 +1,9 @@
 import {
   GROWTH_AD_ACCOUNT_BY_PLATFORM_STORAGE_KEY,
 } from "../constants/growthUrlParams";
-import type { AdAccount, AdsAccountKind } from "../types/types";
+import type { AdAccount, AdAccountKind } from "../types/types";
 
-export type AdAccountIdByPlatform = Partial<Record<AdsAccountKind, string>>;
+export type AdAccountIdByPlatform = Partial<Record<AdAccountKind, string>>;
 
 export function readAdAccountIdByPlatform(): AdAccountIdByPlatform {
   try {
@@ -18,7 +18,7 @@ export function readAdAccountIdByPlatform(): AdAccountIdByPlatform {
 }
 
 export function writeAdAccountIdForPlatform(
-  platform: AdsAccountKind,
+  platform: AdAccountKind,
   accountId: string,
 ): void {
   try {
@@ -38,7 +38,7 @@ export function writeAdAccountIdForPlatform(
 /** Prefer last picked account for this ads platform; otherwise the first one. */
 export function pickAdAccountForPlatform(
   accounts: AdAccount[],
-  platform: AdsAccountKind,
+  platform: AdAccountKind,
 ): AdAccount | undefined {
   const forPlatform = accounts.filter(
     (account) => account.platform === platform,

@@ -29,7 +29,7 @@ import { supabase } from "@/services/supabaseClient";
 import type {
   AdAccount,
   AdAccountForm,
-  AdsAccountKind,
+  AdAccountKind,
   OrganicAccount,
   OrganicAccountForm,
 } from "@/features/growth-and-analytics/types/types";
@@ -51,7 +51,7 @@ type AdRow = {
   account_name: string;
   ad_account_id: string;
   currency_code: string;
-  platform?: AdsAccountKind | null;
+  platform?: AdAccountKind | null;
   login_customer_id?: string | null;
 };
 
@@ -100,9 +100,10 @@ function normalizeMetaAdAccountId(adAccountId: string): string {
 function isDuplicateAccountError(message: string): boolean {
   return (
     message.includes("growth_organic_accounts_platform_account_id_key") ||
-    message.includes("growth_ads_accounts_ad_account_id_key") ||
-    message.includes("growth_ads_accounts_platform_ad_account_id_key") ||
+    message.includes("growth_ad_accounts_platform_ad_account_id_key") ||
     message.includes("growth_ad_accounts_ad_account_id_key") ||
+    message.includes("growth_ads_accounts_platform_ad_account_id_key") ||
+    message.includes("growth_ads_accounts_ad_account_id_key") ||
     message.includes("duplicate key")
   );
 }
@@ -123,12 +124,12 @@ async function findOrganicByMetaId(
 }
 
 async function findAdByExternalId(
-  platform: AdsAccountKind,
+  platform: AdAccountKind,
   externalAdAccountId: string,
 ): Promise<AdAccount | null> {
   const { data, error } = await supabase
-    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
-    .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
+    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
+    .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
     .eq("platform", platform)
     .eq("ad_account_id", externalAdAccountId)
     .maybeSingle();
@@ -149,8 +150,8 @@ export async function fetchOrganicAccounts(): Promise<OrganicAccount[]> {
 
 export async function fetchAdAccounts(): Promise<AdAccount[]> {
   const { data, error } = await supabase
-    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
-    .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
+    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
+    .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
     .order("created_at", { ascending: true });
 
   if (error) throw new Error(error.message);
@@ -176,8 +177,8 @@ export async function fetchAdAccountsByClientId(
   clientId: string,
 ): Promise<AdAccount[]> {
   const { data, error } = await supabase
-    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
-    .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
+    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
+    .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
     .eq("client_id", clientId)
     .order("created_at", { ascending: true });
 
@@ -189,7 +190,7 @@ export async function fetchAdAccountAccessToken(
   accountId: string,
 ): Promise<string> {
   const { data, error } = await supabase
-    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
+    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
     .select("access_token")
     .eq("id", accountId)
     .maybeSingle();
@@ -389,7 +390,7 @@ async function connectMetaAdAccount(form: AdAccountForm): Promise<AdAccount> {
   const clientName = clientId ? await resolveClientName(clientId) : "";
 
   const { data, error } = await supabase
-    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
+    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
     .insert({
       platform: "meta_ads",
       client_id: clientId,
@@ -399,7 +400,7 @@ async function connectMetaAdAccount(form: AdAccountForm): Promise<AdAccount> {
       access_token: token,
       currency_code: currencyCode,
     })
-    .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
+    .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
     .single();
 
   if (error) {
@@ -466,7 +467,7 @@ async function connectGoogleAdAccount(form: AdAccountForm): Promise<AdAccount> {
   const clientName = clientId ? await resolveClientName(clientId) : "";
 
   const { data, error } = await supabase
-    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
+    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
     .insert({
       platform: "google_ads",
       client_id: clientId,
@@ -480,12 +481,12 @@ async function connectGoogleAdAccount(form: AdAccountForm): Promise<AdAccount> {
       oauth_client_secret: oauthClientSecret,
       oauth_refresh_token: oauthRefreshToken,
     })
-    .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
+    .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
     .single();
 
   if (error) {
     if (isDuplicateAccountError(error.message)) {
-      throw new Error("This Google Ads account is already connected.");
+      throw new Error("This Google ad account is already connected.");
     }
     throw new Error(error.message);
   }
@@ -526,10 +527,10 @@ async function updateMetaAdAccount(
   }
 
   const { data, error } = await supabase
-    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
+    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
     .update(columns)
     .eq("id", id)
-    .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
+    .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
     .single();
 
   if (error) throw new Error(error.message);
@@ -592,10 +593,10 @@ async function updateGoogleAdAccount(
   }
 
   const { data, error } = await supabase
-    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
+    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
     .update(columns)
     .eq("id", id)
-    .select(DB.GROWTH_ADS_ACCOUNTS.SELECT)
+    .select(DB.GROWTH_AD_ACCOUNTS.SELECT)
     .single();
 
   if (error) throw new Error(error.message);
@@ -605,7 +606,7 @@ async function updateGoogleAdAccount(
 
 export async function deleteAdAccount(id: string): Promise<void> {
   const { error } = await supabase
-    .from(DB.GROWTH_ADS_ACCOUNTS.TABLE)
+    .from(DB.GROWTH_AD_ACCOUNTS.TABLE)
     .delete()
     .eq("id", id);
 

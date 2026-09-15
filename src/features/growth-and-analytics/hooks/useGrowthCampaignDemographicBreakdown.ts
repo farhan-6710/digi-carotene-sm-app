@@ -63,6 +63,11 @@ export function useGrowthAdEntityBreakdown(
       return EMPTY_VIEW;
     }
 
+    // Age / gender / placement insights are Meta Marketing API only.
+    if (activeAccount.platform === "google_ads") {
+      return EMPTY_VIEW;
+    }
+
     const accessToken = await fetchAdAccountAccessToken(accountId);
     const isPlacement = breakdownKey === "placement";
 

@@ -88,10 +88,12 @@ export function AdDailyMetricsTable({
   onBreakdownsChange,
   demographicView,
   isDemographicLoading,
+  showDemographicBreakdown = true,
 }: AdDailyMetricsTableProps) {
-  const hasAge = breakdowns.includes("age");
-  const hasGender = breakdowns.includes("gender");
-  const hasPlacement = breakdowns.includes("placement");
+  const effectiveBreakdowns = showDemographicBreakdown ? breakdowns : [];
+  const hasAge = effectiveBreakdowns.includes("age");
+  const hasGender = effectiveBreakdowns.includes("gender");
+  const hasPlacement = effectiveBreakdowns.includes("placement");
   const isBreakdown = hasAge || hasGender || hasPlacement;
   const isTwoDimensional = hasAge && hasGender;
   const gridClass = isTwoDimensional ? DOUBLE_GRID_CLASS : GRID_CLASS;
@@ -117,10 +119,12 @@ export function AdDailyMetricsTable({
       gridClass={gridClass}
       columns={[...leadingColumns, ...METRIC_COLUMNS]}
       headerAside={
-        <DailyMetricsBreakdownSelect
-          value={breakdowns}
-          onChange={onBreakdownsChange}
-        />
+        showDemographicBreakdown ? (
+          <DailyMetricsBreakdownSelect
+            value={breakdowns}
+            onChange={onBreakdownsChange}
+          />
+        ) : undefined
       }
       isLoading={isBreakdown ? isDemographicLoading : false}
       isEmpty={isBreakdown ? demographicView.rows.length === 0 : rows.length === 0}

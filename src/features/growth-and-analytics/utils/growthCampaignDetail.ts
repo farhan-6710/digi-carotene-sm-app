@@ -6,6 +6,17 @@ type CampaignDetailMetadata = {
   adsetMetricRows: AdsetMetricRow[];
 };
 
+function averageNullable(
+  rows: CampaignMetricRow[],
+  get: (row: CampaignMetricRow) => number | null,
+): number | null {
+  const values = rows
+    .map(get)
+    .filter((value): value is number => value !== null && !Number.isNaN(value));
+  if (values.length === 0) return null;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
 export function buildGrowthCampaignDetailView(
   dailyRows: CampaignMetricRow[],
   adsets: Adset[],
@@ -21,6 +32,11 @@ export function buildGrowthCampaignDetailView(
   const impressions = dailyRows.reduce((sum, row) => sum + row.impressions, 0);
   const clicks = dailyRows.reduce((sum, row) => sum + row.clicks, 0);
   const conversions = dailyRows.reduce((sum, row) => sum + row.conversions, 0);
+  const conversionValue = dailyRows.reduce(
+    (sum, row) => sum + row.conversionValue,
+    0,
+  );
+  const videoViews = dailyRows.reduce((sum, row) => sum + row.videoViews, 0);
 
   const campaignId =
     latestRow?.campaignId ??
@@ -42,7 +58,43 @@ export function buildGrowthCampaignDetailView(
     impressions,
     clicks,
     conversions,
+    conversionValue,
     ctr: impressions ? Number(((clicks / impressions) * 100).toFixed(2)) : 0,
+    searchImpressionShare: averageNullable(
+      dailyRows,
+      (row) => row.searchImpressionShare,
+    ),
+    searchBudgetLostImpressionShare: averageNullable(
+      dailyRows,
+      (row) => row.searchBudgetLostImpressionShare,
+    ),
+    searchRankLostImpressionShare: averageNullable(
+      dailyRows,
+      (row) => row.searchRankLostImpressionShare,
+    ),
+    activeViewViewability: averageNullable(
+      dailyRows,
+      (row) => row.activeViewViewability,
+    ),
+    videoViews,
+    averageCpv: averageNullable(dailyRows, (row) => row.averageCpv),
+    videoQuartileP25Rate: averageNullable(
+      dailyRows,
+      (row) => row.videoQuartileP25Rate,
+    ),
+    videoQuartileP50Rate: averageNullable(
+      dailyRows,
+      (row) => row.videoQuartileP50Rate,
+    ),
+    videoQuartileP75Rate: averageNullable(
+      dailyRows,
+      (row) => row.videoQuartileP75Rate,
+    ),
+    videoQuartileP100Rate: averageNullable(
+      dailyRows,
+      (row) => row.videoQuartileP100Rate,
+    ),
+    cpm: impressions > 0 ? Number(((spend / impressions) * 1000).toFixed(2)) : 0,
     dailyRows,
     adsetRows: buildAdsetRows(adsets, adsetMetricRows),
     previousCampaignId: neighbors.previousCampaignId,
