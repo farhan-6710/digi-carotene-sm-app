@@ -1,9 +1,13 @@
+import { useMemo, useState } from "react";
+
 import { StatusBadge } from "../tables/tableBits";
 import { AdsetsTable } from "../tables/AdsetsTable";
 import { GoogleCampaignDailyMetricsTable } from "./GoogleCampaignDailyMetricsTable";
+import { GOOGLE_CAMPAIGN_DEFAULT_VISIBLE_KPI_IDS } from "../../constants/googleCampaignDetailLayout";
 import {
   GOOGLE_CAMPAIGN_TYPE_LABEL,
   googleCampaignChildEntityLabel,
+  type GoogleCampaignKpiId,
   type GoogleCampaignTypeId,
 } from "../../constants/googleCampaignTypeMatrix";
 import type { GoogleCampaignTypePageProps } from "../../types/components";
@@ -15,7 +19,7 @@ import {
   formatNumber,
   formatPercent,
 } from "../../utils/formatters";
-import { cn } from "@/shared/lib/utils";
+import { MultiSelect } from "@/shared/ui/MultiSelect";
 
 type GoogleCampaignTypeShellProps = GoogleCampaignTypePageProps & {
   typeId: GoogleCampaignTypeId;
@@ -33,7 +37,15 @@ function formatKpiValue(
   return formatNumber(value);
 }
 
-/** Shared Google campaign detail body — KPI set comes from the type matrix. */
+function defaultVisibleIds(
+  renderableIds: Set<GoogleCampaignKpiId>,
+): string[] {
+  return GOOGLE_CAMPAIGN_DEFAULT_VISIBLE_KPI_IDS.filter((id) =>
+    renderableIds.has(id),
+  );
+}
+
+/** Shared Google campaign detail — flat metric rows with visible-column control. */
 export function GoogleCampaignTypeShell({
   typeId,
   view,
@@ -42,8 +54,33 @@ export function GoogleCampaignTypeShell({
 }: GoogleCampaignTypeShellProps) {
   const typeLabel = GOOGLE_CAMPAIGN_TYPE_LABEL[typeId];
   const childEntity = googleCampaignChildEntityLabel(typeId);
-  const kpis = googleCampaignRenderableKpis(typeId);
+  const kpis = useMemo(() => googleCampaignRenderableKpis(typeId), [typeId]);
   const values = buildGoogleCampaignKpiValues(view);
+
+  const renderableIds = useMemo(
+    () => new Set(kpis.map((kpi) => kpi.id)),
+    [kpis],
+  );
+
+  const metricOptions = useMemo(
+    () =>
+      kpis.map((kpi) => ({
+        value: kpi.id,
+        label: kpi.label,
+      })),
+    [kpis],
+  );
+
+  const [visibleMetricIds, setVisibleMetricIds] = useState(() =>
+    defaultVisibleIds(renderableIds),
+  );
+
+  const visibleIdSet = useMemo(
+    () => new Set(visibleMetricIds),
+    [visibleMetricIds],
+  );
+
+  const visibleKpis = kpis.filter((kpi) => visibleIdSet.has(kpi.id));
 
   const details = [
     { label: "Ad account", value: view.adAccountName },
@@ -52,99 +89,78 @@ export function GoogleCampaignTypeShell({
     { label: "Days in period", value: String(view.dailyRows.length) },
   ];
 
-  const lastRowStart2 = Math.floor((kpis.length - 1) / 2) * 2;
-  const lastRowStart3 = Math.floor((kpis.length - 1) / 3) * 3;
-  const lastRowStart5 = Math.floor((kpis.length - 1) / 5) * 5;
-
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-border bg-card shadow-sm">
+      <div className="rounded-2xl border border-border bg-card">
         <div className="border-b border-border px-6 py-5">
-          <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-            {typeLabel} campaign
-          </p>
-          <div className="mt-2 flex flex-wrap items-center gap-3">
-            <h2 className="text-xl font-semibold tracking-tight">
-              {view.campaignName}
-            </h2>
-            <StatusBadge status={view.status} />
-          </div>
-          <p className="mt-2 text-sm text-muted-foreground">
-            KPIs for this campaign type · {periodLabel.toLowerCase()}.
-          </p>
-        </div>
-
-        <div className="relative grid grid-cols-2 border-b border-border sm:grid-cols-3 lg:grid-cols-5">
-          {/* Full-height column rules so short last rows don't cut vertical borders. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 grid grid-cols-2 sm:hidden"
-          >
-            <div className="border-r border-border" />
-            <div />
-          </div>
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 hidden grid-cols-3 sm:grid lg:hidden"
-          >
-            <div className="border-r border-border" />
-            <div className="border-r border-border" />
-            <div />
-          </div>
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 hidden grid-cols-5 lg:grid"
-          >
-            <div className="border-r border-border" />
-            <div className="border-r border-border" />
-            <div className="border-r border-border" />
-            <div className="border-r border-border" />
-            <div />
-          </div>
-
-          {kpis.map((kpi, index) => (
-              <div
-                key={kpi.id}
-                className={cn(
-                  "relative z-[1] px-6 py-4",
-                  index < lastRowStart2 && "border-b border-border sm:border-b-0",
-                  index < lastRowStart3 &&
-                    "sm:border-b sm:border-border lg:border-b-0",
-                  index < lastRowStart5 && "lg:border-b lg:border-border",
-                )}
-              >
-                <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  {kpi.label}
-                </p>
-                <p
-                  className={cn(
-                    "mt-1 text-2xl font-semibold tracking-tight",
-                    (kpi.id === "conversions" ||
-                      kpi.id === "ctr" ||
-                      kpi.id === "cost_per_conversion") &&
-                      "text-primary",
-                  )}
-                >
-                  {formatKpiValue(
-                    kpi.format,
-                    values[kpi.id],
-                    view.currencyCode,
-                  )}
-                </p>
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="min-w-0 space-y-2">
+              <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                {typeLabel} campaign
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <h2 className="text-xl font-semibold tracking-tight">
+                  {view.campaignName}
+                </h2>
+                <StatusBadge status={view.status} />
               </div>
-          ))}
+              <p className="text-sm text-muted-foreground">
+                KPIs for this campaign type · {periodLabel.toLowerCase()}.
+              </p>
+            </div>
+
+            <div className="w-full shrink-0 lg:max-w-sm">
+              <MultiSelect
+                id="google-campaign-visible-metrics"
+                label="Visible metrics"
+                value={visibleMetricIds}
+                onChange={setVisibleMetricIds}
+                options={metricOptions}
+                placeholder="Select metrics"
+                emptyMessage="No metrics available."
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="divide-y divide-border">
+        <div>
+          {visibleKpis.length === 0 ? (
+            <p className="px-6 py-8 text-sm text-muted-foreground">
+              Select one or more metrics to display.
+            </p>
+          ) : (
+            <div className="grid md:grid-cols-2 md:divide-x md:divide-border">
+              {visibleKpis.map((kpi) => (
+                <div
+                  key={kpi.id}
+                  className="flex items-center justify-between gap-4 border-b border-border px-6 py-3"
+                >
+                  <span className="text-sm text-muted-foreground">
+                    {kpi.label}
+                  </span>
+                  <span className="font-mono text-sm font-medium text-foreground">
+                    {formatKpiValue(
+                      kpi.format,
+                      values[kpi.id],
+                      view.currencyCode,
+                    )}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="divide-y divide-border border-t border-border">
           {details.map((detail) => (
             <div
               key={detail.label}
-              className="flex flex-wrap items-center justify-between gap-2 px-6 py-3"
+              className="flex items-center justify-between gap-4 px-6 py-3"
             >
-              <span className="text-xs font-semibold tracking-wider text-muted-foreground">
-                {detail.label.toUpperCase()}
+              <span className="text-sm text-muted-foreground">{detail.label}</span>
+              <span className="text-sm font-medium text-foreground">
+                {detail.value}
               </span>
-              <span className="text-sm text-foreground">{detail.value}</span>
             </div>
           ))}
         </div>

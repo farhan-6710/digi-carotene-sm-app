@@ -126,6 +126,22 @@ export function MultiSelect({
     </div>
   );
 
+  const selectedLabels = useMemo(
+    () =>
+      value.map(
+        (selectedValue) =>
+          labelByValue.get(selectedValue) ?? fallbackSelectedLabel,
+      ),
+    [fallbackSelectedLabel, labelByValue, value],
+  );
+
+  const selectedSummary = selectedLabels.join(", ");
+  const previewLimit = 4;
+  const isTruncated = selectedLabels.length > previewLimit;
+  const selectedPreview = isTruncated
+    ? `${selectedLabels.slice(0, previewLimit).join(", ")}…`
+    : selectedSummary;
+
   const trigger = (
     <Popover open={open} onOpenChange={handleOpenChange} modal>
       <PopoverTrigger asChild>
@@ -134,27 +150,18 @@ export function MultiSelect({
           type="button"
           variant="outline"
           disabled={disabled}
+          title={value.length > 0 ? selectedSummary : undefined}
           className="h-auto w-full min-w-0 justify-between gap-2 overflow-hidden rounded-lg border border-ring/60 px-3 py-2 text-sm font-medium text-foreground shadow-xs hover:bg-muted/50 dark:border-input dark:bg-muted/40"
         >
-          <span className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 overflow-hidden">
-            {value.length === 0 ? (
-              <span className="truncate font-normal text-muted-foreground">
-                {placeholder}
-              </span>
-            ) : (
-              value.map((selectedValue) => (
-                <span
-                  key={selectedValue}
-                  title={
-                    labelByValue.get(selectedValue) ?? fallbackSelectedLabel
-                  }
-                  className="block max-w-full truncate rounded-md border border-border bg-muted px-2 py-0.5 text-xs font-medium text-foreground"
-                >
-                  {labelByValue.get(selectedValue) ?? fallbackSelectedLabel}
-                </span>
-              ))
-            )}
-          </span>
+          {value.length === 0 ? (
+            <span className="min-w-0 flex-1 truncate text-left font-normal text-muted-foreground">
+              {placeholder}
+            </span>
+          ) : (
+            <span className="line-clamp-2 min-w-0 flex-1 overflow-hidden text-left text-sm leading-5 font-normal text-ellipsis text-foreground">
+              {selectedPreview}
+            </span>
+          )}
           <ChevronDown
             className={cn(
               "size-3.5 shrink-0 opacity-50 transition-transform",
