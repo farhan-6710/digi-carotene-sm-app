@@ -312,39 +312,53 @@ function googleAdsMergeTypeExtras(array $payload, array $metrics, string $typeId
         );
     }
     if ($typeId === 'local_call') {
-        // Feed-item local actions (Smart campaign RMF) — not location_asset_*.
+        // Prefer location_asset_*; also sum legacy feed-item metrics when present.
         $payload['local_shop_visits'] = googleAdsLocalActionCount(
             $metrics,
+            'allConversionsFromLocationAssetStoreVisits',
+            'all_conversions_from_location_asset_store_visits',
             'allConversionsFromStoreVisit',
             'all_conversions_from_store_visit',
         );
         $payload['local_website_visits'] = googleAdsLocalActionCount(
             $metrics,
+            'allConversionsFromLocationAssetWebsite',
+            'all_conversions_from_location_asset_website',
             'allConversionsFromStoreWebsite',
             'all_conversions_from_store_website',
         );
         $payload['local_direction_views'] = googleAdsLocalActionCount(
             $metrics,
+            'allConversionsFromLocationAssetDirections',
+            'all_conversions_from_location_asset_directions',
             'allConversionsFromDirections',
             'all_conversions_from_directions',
         );
         $payload['local_calls'] = googleAdsLocalActionCount(
             $metrics,
+            'allConversionsFromLocationAssetClickToCall',
+            'all_conversions_from_location_asset_click_to_call',
             'allConversionsFromClickToCall',
             'all_conversions_from_click_to_call',
         );
         $payload['local_orders'] = googleAdsLocalActionCount(
             $metrics,
+            'allConversionsFromLocationAssetOrder',
+            'all_conversions_from_location_asset_order',
             'allConversionsFromOrder',
             'all_conversions_from_order',
         );
         $payload['local_menu_views'] = googleAdsLocalActionCount(
             $metrics,
+            'allConversionsFromLocationAssetMenu',
+            'all_conversions_from_location_asset_menu',
             'allConversionsFromMenu',
             'all_conversions_from_menu',
         );
         $payload['local_other_actions'] = googleAdsLocalActionCount(
             $metrics,
+            'allConversionsFromLocationAssetOtherEngagement',
+            'all_conversions_from_location_asset_other_engagement',
             'allConversionsFromOtherEngagement',
             'all_conversions_from_other_engagement',
         );

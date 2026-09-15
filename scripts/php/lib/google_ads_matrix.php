@@ -49,8 +49,15 @@ function googleAdsTypeExtraCampaignSelect(string $typeId): string
         'video' => 'metrics.average_cpm, metrics.video_views, metrics.average_cpv, '
             . 'metrics.video_quartile_p25_rate, metrics.video_quartile_p50_rate, '
             . 'metrics.video_quartile_p75_rate, metrics.video_quartile_p100_rate',
-        // Smart/Local "Local action details" (Google Ads Smart campaign RMF).
-        'local_call' => 'metrics.all_conversions_from_store_visit, '
+        // Modern Smart/Local UI uses location_asset_*; older feed-item metrics still used on some accounts.
+        'local_call' => 'metrics.all_conversions_from_location_asset_store_visits, '
+            . 'metrics.all_conversions_from_location_asset_website, '
+            . 'metrics.all_conversions_from_location_asset_directions, '
+            . 'metrics.all_conversions_from_location_asset_click_to_call, '
+            . 'metrics.all_conversions_from_location_asset_order, '
+            . 'metrics.all_conversions_from_location_asset_menu, '
+            . 'metrics.all_conversions_from_location_asset_other_engagement, '
+            . 'metrics.all_conversions_from_store_visit, '
             . 'metrics.all_conversions_from_store_website, '
             . 'metrics.all_conversions_from_directions, '
             . 'metrics.all_conversions_from_click_to_call, '
