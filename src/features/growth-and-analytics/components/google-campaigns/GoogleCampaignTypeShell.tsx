@@ -52,6 +52,10 @@ export function GoogleCampaignTypeShell({
     { label: "Days in period", value: String(view.dailyRows.length) },
   ];
 
+  const lastRowStart2 = Math.floor((kpis.length - 1) / 2) * 2;
+  const lastRowStart3 = Math.floor((kpis.length - 1) / 3) * 3;
+  const lastRowStart5 = Math.floor((kpis.length - 1) / 5) * 5;
+
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-border bg-card shadow-sm">
@@ -70,37 +74,64 @@ export function GoogleCampaignTypeShell({
           </p>
         </div>
 
-        <div
-          className={cn(
-            "grid grid-cols-2 border-b border-border sm:grid-cols-3 lg:grid-cols-5",
-          )}
-        >
+        <div className="relative grid grid-cols-2 border-b border-border sm:grid-cols-3 lg:grid-cols-5">
+          {/* Full-height column rules so short last rows don't cut vertical borders. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 grid grid-cols-2 sm:hidden"
+          >
+            <div className="border-r border-border" />
+            <div />
+          </div>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 hidden grid-cols-3 sm:grid lg:hidden"
+          >
+            <div className="border-r border-border" />
+            <div className="border-r border-border" />
+            <div />
+          </div>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 hidden grid-cols-5 lg:grid"
+          >
+            <div className="border-r border-border" />
+            <div className="border-r border-border" />
+            <div className="border-r border-border" />
+            <div className="border-r border-border" />
+            <div />
+          </div>
+
           {kpis.map((kpi, index) => (
-            <div
-              key={kpi.id}
-              className={cn(
-                "px-6 py-4",
-                index < kpis.length - 1 && "lg:border-r lg:border-border",
-                index % 2 === 0 && "border-r border-border sm:border-r",
-                index < kpis.length - (kpis.length % 2 === 0 ? 2 : 1) &&
-                  "border-b border-border lg:border-b-0",
-              )}
-            >
-              <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                {kpi.label}
-              </p>
-              <p
+              <div
+                key={kpi.id}
                 className={cn(
-                  "mt-1 text-2xl font-semibold tracking-tight",
-                  (kpi.id === "conversions" ||
-                    kpi.id === "ctr" ||
-                    kpi.id === "cost_per_conversion") &&
-                    "text-primary",
+                  "relative z-[1] px-6 py-4",
+                  index < lastRowStart2 && "border-b border-border sm:border-b-0",
+                  index < lastRowStart3 &&
+                    "sm:border-b sm:border-border lg:border-b-0",
+                  index < lastRowStart5 && "lg:border-b lg:border-border",
                 )}
               >
-                {formatKpiValue(kpi.format, values[kpi.id], view.currencyCode)}
-              </p>
-            </div>
+                <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                  {kpi.label}
+                </p>
+                <p
+                  className={cn(
+                    "mt-1 text-2xl font-semibold tracking-tight",
+                    (kpi.id === "conversions" ||
+                      kpi.id === "ctr" ||
+                      kpi.id === "cost_per_conversion") &&
+                      "text-primary",
+                  )}
+                >
+                  {formatKpiValue(
+                    kpi.format,
+                    values[kpi.id],
+                    view.currencyCode,
+                  )}
+                </p>
+              </div>
           ))}
         </div>
 
