@@ -504,7 +504,7 @@ export const DB = {
   GROWTH_AD_ACCOUNTS: {
     TABLE: "growth_ad_accounts",
     SELECT:
-      "id, client_id, client_name, account_name, ad_account_id, currency_code, platform, login_customer_id, created_at",
+      "id, client_id, client_name, account_name, ad_account_id, currency_code, platform, manager_id, created_at",
   },
   CURRENCIES: {
     TABLE: "currencies",

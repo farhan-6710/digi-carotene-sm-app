@@ -414,8 +414,8 @@ export type AdAccount = {
   adAccountId: string;
   currencyCode: string;
   platform: AdAccountKind;
-  /** Google Ads MCC / manager customer id (no hyphens). Empty for Meta. */
-  loginCustomerId: string;
+  /** Google Ads MCC / manager id (no hyphens). Empty for Meta. */
+  managerId: string;
 };
 
 export type Currency = {
@@ -444,8 +444,8 @@ export type AdAccountForm = {
   adAccountId: string;
   accessToken: string;
   currencyCode: string;
-  /** Google Ads manager (MCC) customer id — required when using MCC access. */
-  loginCustomerId: string;
+  /** Google Ads MCC / manager id — required when using MCC access. */
+  managerId: string;
   developerToken: string;
   oauthClientId: string;
   oauthClientSecret: string;

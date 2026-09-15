@@ -12,7 +12,7 @@ Same agency use case as Meta: Digi Carotene holds MCC + API credentials; each cl
 | **Developer token** | Sent as `developer-token` on every Google Ads API call ([API Center](https://ads.google.com/aw/apicenter)) |
 | **Google Cloud OAuth client** | Client ID + secret for OAuth 2.0 |
 | **OAuth refresh token** | Scope `https://www.googleapis.com/auth/adwords` — Digi Carotene exchanges this for short-lived access tokens |
-| **Login customer ID** | Digi Carotene MCC id (digits only, no hyphens) — sent as `login-customer-id` when calling a client account through the MCC |
+| **Manager ID** | Digi Carotene MCC id (digits only, no hyphens) — stored as `manager_id`; sent to Google as the `login-customer-id` header |
 
 Official refs:
 
@@ -52,7 +52,7 @@ Copy and securely save:
 - Developer token
 - OAuth client ID + secret
 - OAuth refresh token
-- Manager (login) Customer ID
+- Manager ID (MCC)
 
 These are the agency equivalents of Meta’s long-lived system user token.
 
@@ -84,11 +84,11 @@ Go to Growth → Manage Accounts → Connect Ad Account:
 2. Select **Client**.
 3. Enter **Ad account name**.
 4. Enter **Customer ID** (client’s 10-digit Google Ads id).
-5. Enter Digi Carotene **Manager (login) Customer ID**.
+5. Enter Digi Carotene **Manager ID** (MCC).
 6. Paste Digi Carotene **Developer token**, **OAuth client ID**, **client secret**, and **refresh token** (same agency values for every client, like Meta’s system user token).
 7. Currency (defaults to INR; API may return the account currency).
 
-On connect, Digi Carotene exchanges the refresh token, calls Google Ads with `developer-token` + `login-customer-id`, and verifies the customer before saving.
+On connect, Digi Carotene exchanges the refresh token, calls Google Ads with `developer-token` + `login-customer-id` (from our `manager_id`), and verifies the customer before saving.
 
 **Browser note:** Google Ads API responses are often blocked by CORS in the browser (Meta Graph is not). If verification fails with a network/CORS error, Digi Carotene still stores the credentials so the account appears in Manage Accounts; a Hostinger PHP sync (same pattern as Meta midnight crons) will be the durable verify + metrics path.
 
@@ -110,7 +110,7 @@ After an account is connected, Digi Carotene stores credentials and (for Meta) r
 `sync_yesterday_ad_acc.php` reads `growth_ad_accounts.platform`:
 
 - `meta_ads` — Meta Marketing API (system user access token), same as before
-- `google_ads` — Google Ads API with OAuth refresh token + developer token + `login-customer-id` (MCC)
+- `google_ads` — Google Ads API with OAuth refresh token + developer token + `manager_id` (sent as Google’s `login-customer-id` header)
 
 Google maps **ad group → ad set** and **ad → ad** so Campaign Analytics tables stay shared. Reach/frequency are Meta concepts; Google rows store impressions as reach and `0` frequency until a Google-specific UI lands.
 

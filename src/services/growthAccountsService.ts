@@ -52,7 +52,7 @@ type AdRow = {
   ad_account_id: string;
   currency_code: string;
   platform?: AdAccountKind | null;
-  login_customer_id?: string | null;
+  manager_id?: string | null;
 };
 
 function mapOrganic(row: OrganicRow): OrganicAccount {
@@ -76,7 +76,7 @@ function mapAd(row: AdRow): AdAccount {
     adAccountId: row.ad_account_id,
     currencyCode: row.currency_code || "INR",
     platform: row.platform === "google_ads" ? "google_ads" : "meta_ads",
-    loginCustomerId: row.login_customer_id?.trim() || "",
+    managerId: row.manager_id?.trim() || "",
   };
 }
 
@@ -418,7 +418,7 @@ async function connectMetaAdAccount(form: AdAccountForm): Promise<AdAccount> {
 
 async function connectGoogleAdAccount(form: AdAccountForm): Promise<AdAccount> {
   const customerId = normalizeGoogleCustomerId(form.adAccountId);
-  const loginCustomerId = normalizeGoogleCustomerId(form.loginCustomerId);
+  const managerId = normalizeGoogleCustomerId(form.managerId);
   const developerToken = form.developerToken.trim();
   const oauthClientId = form.oauthClientId.trim();
   const oauthClientSecret = form.oauthClientSecret.trim();
@@ -441,7 +441,7 @@ async function connectGoogleAdAccount(form: AdAccountForm): Promise<AdAccount> {
   try {
     info = await fetchGoogleAdsCustomerInfo({
       customerId,
-      loginCustomerId,
+      managerId,
       developerToken,
       oauthClientId,
       oauthClientSecret,
@@ -475,7 +475,7 @@ async function connectGoogleAdAccount(form: AdAccountForm): Promise<AdAccount> {
       account_name: form.accountName.trim() || info.accountName,
       ad_account_id: info.customerId || customerId,
       currency_code: currencyCode,
-      login_customer_id: loginCustomerId,
+      manager_id: managerId,
       developer_token: developerToken,
       oauth_client_id: oauthClientId,
       oauth_client_secret: oauthClientSecret,
@@ -549,7 +549,7 @@ async function updateGoogleAdAccount(
   form: AdAccountForm,
 ): Promise<AdAccount> {
   const customerId = normalizeGoogleCustomerId(form.adAccountId);
-  const loginCustomerId = normalizeGoogleCustomerId(form.loginCustomerId);
+  const managerId = normalizeGoogleCustomerId(form.managerId);
   const currencyCode = form.currencyCode.trim() || "INR";
   const clientId = normalizeClientId(form.clientId);
   const developerToken = form.developerToken.trim();
@@ -564,7 +564,7 @@ async function updateGoogleAdAccount(
     account_name: form.accountName.trim(),
     ad_account_id: customerId,
     currency_code: currencyCode,
-    login_customer_id: loginCustomerId,
+    manager_id: managerId,
   };
 
   const refreshingCreds =
@@ -576,7 +576,7 @@ async function updateGoogleAdAccount(
   if (refreshingCreds) {
     const info = await fetchGoogleAdsCustomerInfo({
       customerId,
-      loginCustomerId,
+      managerId,
       developerToken,
       oauthClientId,
       oauthClientSecret,

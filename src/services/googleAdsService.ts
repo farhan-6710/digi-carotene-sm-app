@@ -16,7 +16,7 @@ export type GoogleAdsCustomerInfo = {
 
 export type GoogleAdsConnectCredentials = {
   customerId: string;
-  loginCustomerId: string;
+  managerId: string;
   developerToken: string;
   oauthClientId: string;
   oauthClientSecret: string;
@@ -85,10 +85,10 @@ export async function fetchGoogleAdsCustomerInfo(
     );
   }
 
-  const loginCustomerId = normalizeGoogleCustomerId(creds.loginCustomerId);
-  if (!loginCustomerId) {
+  const managerId = normalizeGoogleCustomerId(creds.managerId);
+  if (!managerId) {
     throw new Error(
-      "Manager (login) Customer ID is required when connecting via Digi Carotene’s MCC.",
+      "Manager ID is required when connecting via Digi Carotene’s MCC.",
     );
   }
 
@@ -110,7 +110,8 @@ export async function fetchGoogleAdsCustomerInfo(
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "developer-token": developerToken,
-        "login-customer-id": loginCustomerId,
+        // Google Ads API header name (our DB/UI field is manager_id).
+        "login-customer-id": managerId,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

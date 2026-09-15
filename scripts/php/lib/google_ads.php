@@ -82,13 +82,13 @@ function googleAdsExchangeAccessToken(
 function googleAdsSearch(
     array $config,
     string $customerId,
-    string $loginCustomerId,
+    string $managerId,
     string $developerToken,
     string $accessToken,
     string $query,
 ): array {
     $customerId = normalizeGoogleCustomerIdPhp($customerId);
-    $loginCustomerId = normalizeGoogleCustomerIdPhp($loginCustomerId);
+    $managerId = normalizeGoogleCustomerIdPhp($managerId);
     $version = googleAdsApiVersion($config);
     $url = 'https://googleads.googleapis.com/' . $version
         . '/customers/' . rawurlencode($customerId) . '/googleAds:search';
@@ -96,7 +96,8 @@ function googleAdsSearch(
     $headers = [
         'Authorization: Bearer ' . $accessToken,
         'developer-token: ' . $developerToken,
-        'login-customer-id: ' . $loginCustomerId,
+        // Google Ads API header name; Digi stores this as manager_id.
+        'login-customer-id: ' . $managerId,
     ];
 
     $results = [];
@@ -312,7 +313,7 @@ function syncGoogleAdAccountForDateRange(
 ): void {
     $accountId = (string) ($account['id'] ?? '');
     $customerId = normalizeGoogleCustomerIdPhp((string) ($account['ad_account_id'] ?? ''));
-    $loginCustomerId = normalizeGoogleCustomerIdPhp((string) ($account['login_customer_id'] ?? ''));
+    $managerId = normalizeGoogleCustomerIdPhp((string) ($account['manager_id'] ?? ''));
     $developerToken = trim((string) ($account['developer_token'] ?? ''));
     if ($developerToken === '' || strtoupper($developerToken) === 'UNUSED') {
         $developerToken = 'UNUSED';
@@ -325,13 +326,13 @@ function syncGoogleAdAccountForDateRange(
     if (
         $accountId === ''
         || $customerId === ''
-        || $loginCustomerId === ''
+        || $managerId === ''
         || $oauthClientId === ''
         || $oauthClientSecret === ''
         || $oauthRefreshToken === ''
     ) {
         throw new RuntimeException(
-            'Missing Google Ads credentials (customer id, login customer id, or OAuth).',
+            'Missing Google Ads credentials (customer id, manager id, or OAuth).',
         );
     }
 
@@ -347,7 +348,7 @@ function syncGoogleAdAccountForDateRange(
     $adGroupMasters = googleAdsSearch(
         $config,
         $customerId,
-        $loginCustomerId,
+        $managerId,
         $developerToken,
         $accessToken,
         'SELECT campaign.id, ad_group.id, ad_group.name '
@@ -357,7 +358,7 @@ function syncGoogleAdAccountForDateRange(
     $adMasters = googleAdsSearch(
         $config,
         $customerId,
-        $loginCustomerId,
+        $managerId,
         $developerToken,
         $accessToken,
         'SELECT campaign.id, ad_group.id, ad_group_ad.ad.id, ad_group_ad.ad.name '
@@ -420,7 +421,7 @@ function syncGoogleAdAccountForDateRange(
     $campaignRows = googleAdsSearch(
         $config,
         $customerId,
-        $loginCustomerId,
+        $managerId,
         $developerToken,
         $accessToken,
         'SELECT ' . googleAdsUniversalCampaignSelect()
@@ -455,7 +456,7 @@ function syncGoogleAdAccountForDateRange(
             $extraRows = googleAdsSearch(
                 $config,
                 $customerId,
-                $loginCustomerId,
+                $managerId,
                 $developerToken,
                 $accessToken,
                 'SELECT campaign.id, segments.date, ' . $extraSelect
@@ -497,7 +498,7 @@ function syncGoogleAdAccountForDateRange(
     $adGroupRows = googleAdsSearch(
         $config,
         $customerId,
-        $loginCustomerId,
+        $managerId,
         $developerToken,
         $accessToken,
         'SELECT campaign.id, ad_group.id, ad_group.name, segments.date, '
@@ -509,7 +510,7 @@ function syncGoogleAdAccountForDateRange(
     $adRows = googleAdsSearch(
         $config,
         $customerId,
-        $loginCustomerId,
+        $managerId,
         $developerToken,
         $accessToken,
         'SELECT campaign.id, ad_group.id, ad_group_ad.ad.id, ad_group_ad.ad.name, segments.date, '
@@ -607,7 +608,7 @@ function syncGoogleAdAccountForDateRange(
         $assetGroupRows = googleAdsSearch(
             $config,
             $customerId,
-            $loginCustomerId,
+            $managerId,
             $developerToken,
             $accessToken,
             'SELECT campaign.id, asset_group.id, asset_group.name, segments.date, '
@@ -659,7 +660,7 @@ function syncGoogleAdAccountForDateRange(
         $callRows = googleAdsSearch(
             $config,
             $customerId,
-            $loginCustomerId,
+            $managerId,
             $developerToken,
             $accessToken,
             'SELECT campaign.id, call_view.resourceName, call_view.startCallDateTime, '

@@ -98,7 +98,7 @@ function fetchAdAccounts(array $config): array
         $config,
         'GET',
         'growth_ad_accounts?select=id,ad_account_id,account_name,access_token,'
-        . 'platform,login_customer_id,developer_token,'
+        . 'platform,manager_id,developer_token,'
         . 'oauth_client_id,oauth_client_secret,oauth_refresh_token',
     );
 

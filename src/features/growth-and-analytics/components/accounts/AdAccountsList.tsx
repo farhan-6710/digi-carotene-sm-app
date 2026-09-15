@@ -7,7 +7,7 @@ import { cn } from "@/shared/lib/utils";
 import { AdsPlatformBadge, MobileLabel } from "../tables/tableBits";
 import type { AdAccountsListProps } from "../../types/components";
 
-const GRID_CLASS = "grid-cols-[1fr_1.2fr_1.1fr_1fr_0.6fr_0.5fr]";
+const GRID_CLASS = "grid-cols-[1.4fr_1fr_1.1fr_0.8fr_0.5fr]";
 
 export function AdAccountsList({
   accounts,
@@ -21,10 +21,9 @@ export function AdAccountsList({
       description="Connected Meta and Google ad accounts for paid campaign reporting."
       gridClass={GRID_CLASS}
       columns={[
+        { label: "ACCOUNT" },
         { label: "PLATFORM" },
         { label: "CLIENT" },
-        { label: "AD ACCOUNT" },
-        { label: "ACCOUNT ID" },
         { label: "CURRENCY" },
         { label: "", align: "right" },
       ]}
@@ -46,6 +45,13 @@ export function AdAccountsList({
             GRID_CLASS,
           )}
         >
+          <div className="text-sm font-medium text-foreground">
+            <MobileLabel>ACCOUNT</MobileLabel>
+            {account.accountName}
+            <span className="block font-mono text-xs text-muted-foreground">
+              {account.adAccountId}
+            </span>
+          </div>
           <div>
             <MobileLabel>PLATFORM</MobileLabel>
             <AdsPlatformBadge platform={account.platform} />
@@ -53,14 +59,6 @@ export function AdAccountsList({
           <div className="text-sm font-medium text-foreground">
             <MobileLabel>CLIENT</MobileLabel>
             {account.clientName}
-          </div>
-          <div className="text-sm text-muted-foreground">
-            <MobileLabel>AD ACCOUNT</MobileLabel>
-            {account.accountName}
-          </div>
-          <div className="font-mono text-sm text-muted-foreground">
-            <MobileLabel>ACCOUNT ID</MobileLabel>
-            {account.adAccountId}
           </div>
           <div className="text-sm text-foreground">
             <MobileLabel>CURRENCY</MobileLabel>

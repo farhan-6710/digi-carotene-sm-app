@@ -39,7 +39,7 @@ export const emptyAdForm: AdAccountForm = {
   adAccountId: "",
   accessToken: "",
   currencyCode: "INR",
-  loginCustomerId: "",
+  managerId: "",
   developerToken: "",
   oauthClientId: "",
   oauthClientSecret: "",

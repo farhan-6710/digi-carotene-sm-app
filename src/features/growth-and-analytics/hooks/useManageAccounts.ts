@@ -140,7 +140,7 @@ export function useManageAccounts() {
       adAccountId: account.adAccountId,
       accessToken: "",
       currencyCode: account.currencyCode,
-      loginCustomerId: account.loginCustomerId,
+      managerId: account.managerId,
       developerToken: "",
       oauthClientId: "",
       oauthClientSecret: "",

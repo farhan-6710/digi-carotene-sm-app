@@ -51,7 +51,7 @@ export function AdAccountDialog({
     values.clientId.trim() !== "" &&
     values.accountName.trim() !== "" &&
     values.adAccountId.trim() !== "" &&
-    values.loginCustomerId.trim() !== "" &&
+    values.managerId.trim() !== "" &&
     (isEditing ||
       (values.developerToken.trim() !== "" &&
         values.oauthClientId.trim() !== "" &&
@@ -136,11 +136,11 @@ export function AdAccountDialog({
 
             {isGoogle ? (
               <label className="block text-xs font-semibold text-muted-foreground">
-                Manager (login) Customer ID
+                Manager ID
                 <input
-                  value={values.loginCustomerId}
+                  value={values.managerId}
                   onChange={(event) =>
-                    onFieldChange("loginCustomerId", event.target.value)
+                    onFieldChange("managerId", event.target.value)
                   }
                   placeholder="Digi Carotene MCC id, e.g. 987-654-3210"
                   className={formFieldClassName}

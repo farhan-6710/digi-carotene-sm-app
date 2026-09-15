@@ -11,7 +11,7 @@ export const DUMMY_AD_ACCOUNTS: AdAccount[] = [
     adAccountId: "act_100200300",
     currencyCode: "INR",
     platform: "meta_ads",
-    loginCustomerId: "",
+    managerId: "",
   },
   {
     id: "ad-acc-veda",
@@ -21,7 +21,7 @@ export const DUMMY_AD_ACCOUNTS: AdAccount[] = [
     adAccountId: "act_400500600",
     currencyCode: "INR",
     platform: "meta_ads",
-    loginCustomerId: "",
+    managerId: "",
   },
 ];
 
