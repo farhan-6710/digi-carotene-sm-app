@@ -5,9 +5,19 @@ import type { StatCardItem } from "@/shared/types/statsCards";
 import { addDays, differenceInCalendarDays } from "date-fns";
 
 import { SPEND_TREND_DAILY_MAX_DAYS } from "../constants/spendTrend";
-import type { CampaignMetricRow, CampaignRow, SpendPoint, SpendTrend } from "../types/types";
-import { dayLabel, formatCompact, formatCurrency, formatNumber, monthLabel } from "./formatters";
+import type {
+  AdAccountKind,
+  CampaignMetricRow,
+  CampaignRow,
+  SpendPoint,
+  SpendTrend,
+} from "../types/types";
+import { dayLabel, formatCompact, formatCpm, formatCurrency, formatNumber, monthLabel } from "./formatters";
 import { parseUrlDateParam, serializeUrlDate } from "@/shared/utils/urlDateParams";
+import {
+  googleCampaignTypeKpis,
+  resolveGoogleCampaignType,
+} from "./resolveGoogleCampaignType";
 
 const CAMPAIGN_STATUS_SORT_ORDER: Record<CampaignRow["status"], number> = {
   Active: 0,
@@ -25,9 +35,24 @@ function compareCampaignRows(a: CampaignRow, b: CampaignRow): number {
   return b.spend - a.spend;
 }
 
+/** True when every campaign type in the set includes avg_cpc in the Google matrix. */
+function rowsSupportAvgCpc(rows: CampaignMetricRow[]): boolean {
+  if (rows.length === 0) return true;
+  const typeIds = new Set(
+    rows.map((row) => resolveGoogleCampaignType(row.objective)),
+  );
+  for (const typeId of typeIds) {
+    if (!googleCampaignTypeKpis(typeId).includes("avg_cpc")) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export function buildCampaignStatCards(
   rows: CampaignMetricRow[],
   currency: string,
+  platform: AdAccountKind = "meta_ads",
 ): StatCardItem[] {
   const spend = rows.reduce((sum, row) => sum + row.spend, 0);
   const impressions = rows.reduce((sum, row) => sum + row.impressions, 0);
@@ -35,6 +60,8 @@ export function buildCampaignStatCards(
   const conversions = rows.reduce((sum, row) => sum + row.conversions, 0);
   const campaignCount = new Set(rows.map((row) => row.campaignId)).size;
   const description = `Across ${campaignCount} campaigns`;
+  const showCpc = platform === "google_ads" && rowsSupportAvgCpc(rows);
+  const avgCpc = clicks > 0 ? spend / clicks : 0;
 
   return [
     {
@@ -58,13 +85,21 @@ export function buildCampaignStatCards(
       description,
       icon: MousePointerClick,
     },
-    {
-      id: "conversions",
-      label: "Conversions",
-      value: formatNumber(conversions),
-      description: "In selected range",
-      icon: TrendingUp,
-    },
+    showCpc
+      ? {
+          id: "avg_cpc",
+          label: "Cost per click",
+          value: formatCpm(avgCpc, currency),
+          description: "In selected range",
+          icon: TrendingUp,
+        }
+      : {
+          id: "conversions",
+          label: "Conversions",
+          value: formatNumber(conversions),
+          description: "In selected range",
+          icon: TrendingUp,
+        },
   ];
 }
 

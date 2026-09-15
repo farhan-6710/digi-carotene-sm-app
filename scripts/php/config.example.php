@@ -22,7 +22,7 @@ return [
     'meta_graph_base_url' => 'https://graph.facebook.com',
 
     // Optional — Google Ads REST version used by sync_yesterday_ad_acc.php.
-    'google_ads_api_version' => 'v19',
+    'google_ads_api_version' => 'v25',
 
     // REQUIRED for post digest — Resend → API Keys (starts with re_).
     'resend_api_key' => '',

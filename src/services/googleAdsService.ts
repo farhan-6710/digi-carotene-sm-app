@@ -5,7 +5,7 @@
 
 const GOOGLE_OAUTH_TOKEN_URL = "https://oauth2.googleapis.com/token";
 /** Pin a stable REST version; bump when Google deprecates. */
-const GOOGLE_ADS_API_VERSION = "v19";
+const GOOGLE_ADS_API_VERSION = "v25";
 const GOOGLE_ADS_BASE = `https://googleads.googleapis.com/${GOOGLE_ADS_API_VERSION}`;
 
 export type GoogleAdsCustomerInfo = {

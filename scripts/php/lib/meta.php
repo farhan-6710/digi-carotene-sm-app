@@ -51,6 +51,10 @@ function parseMetricValue(mixed $value): int
     if (is_float($value)) {
         return (int) round($value);
     }
+    // Google Ads REST often returns metric counts as numeric strings.
+    if (is_string($value) && is_numeric($value)) {
+        return (int) round((float) $value);
+    }
     if (is_array($value) && isset($value['value']) && is_numeric($value['value'])) {
         return (int) round((float) $value['value']);
     }

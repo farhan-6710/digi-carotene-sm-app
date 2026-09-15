@@ -102,7 +102,7 @@ function httpJson(string $method, string $url, ?array $body, array $headers = []
             ? $json['message']
             : (is_string($json['error']['message'] ?? null)
                 ? $json['error']['message']
-                : 'HTTP ' . $status . ': ' . $raw);
+                : 'HTTP ' . $status . ': ' . substr(preg_replace('/\s+/', ' ', $raw) ?? $raw, 0, 300));
         throw new RuntimeException($message);
     }
 

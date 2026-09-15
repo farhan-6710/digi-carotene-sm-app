@@ -5,6 +5,7 @@ declare(strict_types=1);
 /**
  * Google Ads campaign-type matrix helpers (mirrors UI googleCampaignTypeMatrix.ts).
  * Universal Phase 1 fields for all types; type-specific GAQL extras by channel.
+ * GAQL field names are snake_case (REST JSON responses may still be camelCase).
  */
 
 /** @return 'search'|'performance_max'|'display'|'demand_gen'|'video'|'shopping'|'local_call'|'app'|'unknown' */
@@ -28,9 +29,9 @@ function googleAdsResolveCampaignType(?string $channelType): string
 /** GAQL SELECT metrics shared by every campaign type (Phase 1). */
 function googleAdsUniversalCampaignSelect(): string
 {
-    return 'campaign.id, campaign.name, campaign.status, campaign.advertisingChannelType, '
-        . 'segments.date, metrics.impressions, metrics.clicks, metrics.costMicros, '
-        . 'metrics.conversions, metrics.conversionsValue, metrics.averageCpm';
+    return 'campaign.id, campaign.name, campaign.status, campaign.advertising_channel_type, '
+        . 'segments.date, metrics.impressions, metrics.clicks, metrics.cost_micros, '
+        . 'metrics.conversions, metrics.conversions_value, metrics.average_cpm';
 }
 
 /**
@@ -40,19 +41,19 @@ function googleAdsUniversalCampaignSelect(): string
 function googleAdsTypeExtraCampaignSelect(string $typeId): string
 {
     return match ($typeId) {
-        'search' => 'metrics.searchImpressionShare, metrics.searchBudgetLostImpressionShare, '
-            . 'metrics.searchRankLostImpressionShare',
-        'shopping' => 'metrics.searchImpressionShare',
-        'display' => 'metrics.activeViewViewability, metrics.averageCpm',
-        'demand_gen' => 'metrics.averageCpm',
-        'video' => 'metrics.averageCpm, metrics.videoViews, metrics.averageCpv, '
-            . 'metrics.videoQuartileP25Rate, metrics.videoQuartileP50Rate, '
-            . 'metrics.videoQuartileP75Rate, metrics.videoQuartileP100Rate',
+        'search' => 'metrics.search_impression_share, metrics.search_budget_lost_impression_share, '
+            . 'metrics.search_rank_lost_impression_share',
+        'shopping' => 'metrics.search_impression_share',
+        'display' => 'metrics.active_view_viewability, metrics.average_cpm',
+        'demand_gen' => 'metrics.average_cpm',
+        'video' => 'metrics.average_cpm, metrics.video_views, metrics.average_cpv, '
+            . 'metrics.video_quartile_p25_rate, metrics.video_quartile_p50_rate, '
+            . 'metrics.video_quartile_p75_rate, metrics.video_quartile_p100_rate',
         default => '',
     };
 }
 
-/** @return list<string> Google advertisingChannelType enums for a Digi type id. */
+/** @return list<string> Google advertising_channel_type enums for a Digi type id. */
 function googleAdsChannelTypesForDigiType(string $typeId): array
 {
     return match ($typeId) {

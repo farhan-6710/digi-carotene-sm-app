@@ -20,9 +20,9 @@ function normalizeGoogleCustomerIdPhp(string $raw): string
 
 function googleAdsApiVersion(array $config): string
 {
-    $version = trim((string) ($config['google_ads_api_version'] ?? 'v19'));
+    $version = trim((string) ($config['google_ads_api_version'] ?? 'v25'));
 
-    return $version !== '' ? $version : 'v19';
+    return $version !== '' ? $version : 'v25';
 }
 
 function googleAdsExchangeAccessToken(
@@ -147,21 +147,30 @@ function googleAdsMicrosToCurrency(mixed $micros): float
 
 function googleAdsRowHasDelivery(array $metrics): bool
 {
-    $spend = googleAdsMicrosToCurrency($metrics['costMicros'] ?? 0);
-    $impressions = parseMetricValue($metrics['impressions'] ?? 0);
-    $clicks = parseMetricValue($metrics['clicks'] ?? 0);
+    $spend = googleAdsMicrosToCurrency(
+        googleAdsMetricGet($metrics, 'costMicros', 'cost_micros') ?? 0,
+    );
+    $impressions = parseMetricValue(
+        googleAdsMetricGet($metrics, 'impressions') ?? 0,
+    );
+    $clicks = parseMetricValue(googleAdsMetricGet($metrics, 'clicks') ?? 0);
 
     return $spend > 0 || $impressions > 0 || $clicks > 0;
 }
 
 function googleAdsCpm(array $metrics): float
 {
-    if (isset($metrics['averageCpm'])) {
-        return googleAdsMicrosToCurrency($metrics['averageCpm']);
+    $avgCpm = googleAdsMetricGet($metrics, 'averageCpm', 'average_cpm');
+    if ($avgCpm !== null) {
+        return googleAdsMicrosToCurrency($avgCpm);
     }
 
-    $impressions = parseMetricValue($metrics['impressions'] ?? 0);
-    $spend = googleAdsMicrosToCurrency($metrics['costMicros'] ?? 0);
+    $impressions = parseMetricValue(
+        googleAdsMetricGet($metrics, 'impressions') ?? 0,
+    );
+    $spend = googleAdsMicrosToCurrency(
+        googleAdsMetricGet($metrics, 'costMicros', 'cost_micros') ?? 0,
+    );
     if ($impressions <= 0) {
         return 0.0;
     }
@@ -461,7 +470,7 @@ function syncGoogleAdAccountForDateRange(
                 $accessToken,
                 'SELECT campaign.id, segments.date, ' . $extraSelect
                 . ' FROM campaign WHERE ' . $dateFilter
-                . ' AND campaign.advertisingChannelType IN (' . $channelList . ')',
+                . ' AND campaign.advertising_channel_type IN (' . $channelList . ')',
             );
         } catch (Throwable $e) {
             logLine('Google type extras skipped for ' . $typeId . ': ' . $e->getMessage());
@@ -502,8 +511,8 @@ function syncGoogleAdAccountForDateRange(
         $developerToken,
         $accessToken,
         'SELECT campaign.id, ad_group.id, ad_group.name, segments.date, '
-        . 'metrics.impressions, metrics.clicks, metrics.costMicros, '
-        . 'metrics.conversions, metrics.averageCpm '
+        . 'metrics.impressions, metrics.clicks, metrics.cost_micros, '
+        . 'metrics.conversions, metrics.average_cpm '
         . 'FROM ad_group WHERE ' . $dateFilter,
     );
 
@@ -514,8 +523,8 @@ function syncGoogleAdAccountForDateRange(
         $developerToken,
         $accessToken,
         'SELECT campaign.id, ad_group.id, ad_group_ad.ad.id, ad_group_ad.ad.name, segments.date, '
-        . 'metrics.impressions, metrics.clicks, metrics.costMicros, '
-        . 'metrics.conversions, metrics.averageCpm '
+        . 'metrics.impressions, metrics.clicks, metrics.cost_micros, '
+        . 'metrics.conversions, metrics.average_cpm '
         . 'FROM ad_group_ad WHERE ' . $dateFilter,
     );
 
@@ -612,10 +621,10 @@ function syncGoogleAdAccountForDateRange(
             $developerToken,
             $accessToken,
             'SELECT campaign.id, asset_group.id, asset_group.name, segments.date, '
-            . 'segments.adNetworkType, metrics.impressions, metrics.clicks, '
-            . 'metrics.costMicros, metrics.conversions, metrics.conversionsValue '
+            . 'segments.ad_network_type, metrics.impressions, metrics.clicks, '
+            . 'metrics.cost_micros, metrics.conversions, metrics.conversions_value '
             . 'FROM asset_group WHERE ' . $dateFilter
-            . ' AND campaign.advertisingChannelType = \'PERFORMANCE_MAX\'',
+            . ' AND campaign.advertising_channel_type = \'PERFORMANCE_MAX\'',
         );
 
         foreach ($assetGroupRows as $row) {
@@ -663,11 +672,11 @@ function syncGoogleAdAccountForDateRange(
             $managerId,
             $developerToken,
             $accessToken,
-            'SELECT campaign.id, call_view.resourceName, call_view.startCallDateTime, '
-            . 'call_view.endCallDateTime, call_view.callDurationSeconds, call_view.callStatus, '
-            . 'call_view.callerAreaCode, call_view.callerCountryCode, '
-            . 'call_view.callTrackingDisplayLocation '
-            . 'FROM call_view WHERE campaign.advertisingChannelType IN '
+            'SELECT campaign.id, call_view.resource_name, call_view.start_call_date_time, '
+            . 'call_view.end_call_date_time, call_view.call_duration_seconds, call_view.call_status, '
+            . 'call_view.caller_area_code, call_view.caller_country_code, '
+            . 'call_view.call_tracking_display_location '
+            . 'FROM call_view WHERE campaign.advertising_channel_type IN '
             . "('LOCAL', 'LOCAL_SERVICES', 'SMART', 'SEARCH')",
         );
 

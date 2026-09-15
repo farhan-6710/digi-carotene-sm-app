@@ -52,9 +52,9 @@ export function useGrowthCampaigns() {
   const statCards = useMemo(
     () =>
       analyticsReady
-        ? buildCampaignStatCards(filteredMetrics, currencyCode)
+        ? buildCampaignStatCards(filteredMetrics, currencyCode, adsPlatform)
         : [],
-    [analyticsReady, filteredMetrics, currencyCode],
+    [analyticsReady, filteredMetrics, currencyCode, adsPlatform],
   );
   const spendTrend = useMemo(
     () =>
