@@ -345,8 +345,34 @@ function fetchAdDailyInsightsForDay(
     string $date,
     string $level = 'campaign',
 ): array {
+    return fetchAdDailyInsightsForRange(
+        $config,
+        $adAccountId,
+        $accessToken,
+        $date,
+        $date,
+        $level,
+    );
+}
+
+/**
+ * Daily insights for an inclusive date range (time_increment=1).
+ *
+ * @return list<array<string, mixed>>
+ */
+function fetchAdDailyInsightsForRange(
+    array $config,
+    string $adAccountId,
+    string $accessToken,
+    string $fromDate,
+    string $toDate,
+    string $level = 'campaign',
+): array {
     $id = str_starts_with($adAccountId, 'act_') ? $adAccountId : 'act_' . $adAccountId;
-    $timeRange = json_encode(['since' => $date, 'until' => $date], JSON_THROW_ON_ERROR);
+    $timeRange = json_encode(
+        ['since' => $fromDate, 'until' => $toDate],
+        JSON_THROW_ON_ERROR,
+    );
 
     $fieldsByLevel = [
         'campaign' => 'campaign_id,campaign_name,spend,impressions,reach,clicks,cpm,frequency,results,actions',

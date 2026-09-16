@@ -3,25 +3,22 @@
 declare(strict_types=1);
 
 /**
- * Midnight ad account sync — yesterday's campaign, adset, and ad metrics.
- * Supports Meta Ads and Google Ads (growth_ad_accounts.platform).
- * Run daily at 12:05 AM (server timezone in config.php).
- *
- * CLI:  php sync_yesterday_ad_acc.php
- * HTTP: https://your-domain.com/.../sync_yesterday_ad_acc.php?secret=YOUR_CRON_SECRET
- *
- * Google connect 90-day history: sync_google_ad_acc_backfill.php
+ * Meta Ads rolling range sync — masters + daily insights for fromDate..toDate.
  */
 
-require_once __DIR__ . '/lib/supabase.php';
-require_once __DIR__ . '/lib/meta.php';
-require_once __DIR__ . '/lib/google_ads.php';
+require_once __DIR__ . '/../../lib/supabase.php';
+require_once __DIR__ . '/../../lib/meta.php';
 
 /**
+ * @param array<string, mixed> $config
  * @param array<string, mixed> $account
  */
-function syncMetaAdAccountYesterday(array $config, array $account, string $yesterdayDate): void
-{
+function syncMetaAdAccountForDateRange(
+    array $config,
+    array $account,
+    string $fromDate,
+    string $toDate,
+): void {
     $accountId = (string) ($account['id'] ?? '');
     $metaAdAccountId = (string) ($account['ad_account_id'] ?? '');
     $accessToken = (string) ($account['access_token'] ?? '');
@@ -78,25 +75,28 @@ function syncMetaAdAccountYesterday(array $config, array $account, string $yeste
         $syncedAdMasters++;
     }
 
-    $campaignInsights = fetchAdDailyInsightsForDay(
+    $campaignInsights = fetchAdDailyInsightsForRange(
         $config,
         $metaAdAccountId,
         $accessToken,
-        $yesterdayDate,
+        $fromDate,
+        $toDate,
         'campaign',
     );
-    $adsetInsights = fetchAdDailyInsightsForDay(
+    $adsetInsights = fetchAdDailyInsightsForRange(
         $config,
         $metaAdAccountId,
         $accessToken,
-        $yesterdayDate,
+        $fromDate,
+        $toDate,
         'adset',
     );
-    $adInsights = fetchAdDailyInsightsForDay(
+    $adInsights = fetchAdDailyInsightsForRange(
         $config,
         $metaAdAccountId,
         $accessToken,
-        $yesterdayDate,
+        $fromDate,
+        $toDate,
         'ad',
     );
 
@@ -114,7 +114,7 @@ function syncMetaAdAccountYesterday(array $config, array $account, string $yeste
             : '';
         $metricDate = is_string($insight['date_start'] ?? null)
             ? trim($insight['date_start'])
-            : $yesterdayDate;
+            : $toDate;
         if ($campaignId === '') {
             continue;
         }
@@ -159,7 +159,7 @@ function syncMetaAdAccountYesterday(array $config, array $account, string $yeste
             : '';
         $metricDate = is_string($insight['date_start'] ?? null)
             ? trim($insight['date_start'])
-            : $yesterdayDate;
+            : $toDate;
         if ($adsetId === '' || $campaignId === '') {
             continue;
         }
@@ -206,7 +206,7 @@ function syncMetaAdAccountYesterday(array $config, array $account, string $yeste
             : '';
         $metricDate = is_string($insight['date_start'] ?? null)
             ? trim($insight['date_start'])
-            : $yesterdayDate;
+            : $toDate;
         if ($adId === '' || $adsetId === '' || $campaignId === '') {
             continue;
         }
@@ -244,57 +244,7 @@ function syncMetaAdAccountYesterday(array $config, array $account, string $yeste
         . ' adset_masters=' . $syncedAdsetMasters
         . ' ad_masters=' . $syncedAdMasters
         . ' adset_rows=' . $syncedAdsetRows
-        . ' ad_rows=' . $syncedAdRows,
+        . ' ad_rows=' . $syncedAdRows
+        . ' range=' . $fromDate . '..' . $toDate,
     );
-}
-
-try {
-    $config = loadConfig();
-    assertCronAccess($config);
-
-    $tz = new DateTimeZone($config['timezone'] ?? 'UTC');
-    $yesterdayStart = new DateTimeImmutable('yesterday', $tz);
-    $yesterdayDate = $yesterdayStart->format('Y-m-d');
-
-    logLine('Starting ad sync for ' . $yesterdayDate);
-
-    $accounts = fetchAdAccounts($config);
-    if ($accounts === []) {
-        logLine('No growth_ad_accounts rows found.');
-        exit(0);
-    }
-
-    foreach ($accounts as $account) {
-        if (!is_array($account)) {
-            continue;
-        }
-
-        $accountName = (string) ($account['account_name'] ?? '');
-        $platform = strtolower(trim((string) ($account['platform'] ?? 'meta_ads')));
-        if ($platform === '') {
-            $platform = 'meta_ads';
-        }
-
-        logLine('Syncing ' . $accountName . ' (' . $platform . ')');
-
-        try {
-            if ($platform === 'google_ads') {
-                syncGoogleAdAccountYesterday($config, $account, $yesterdayDate);
-                continue;
-            }
-
-            if ($platform !== 'meta_ads') {
-                logLine('Skipping unsupported ads platform "' . $platform . '": ' . $accountName);
-                continue;
-            }
-
-            syncMetaAdAccountYesterday($config, $account, $yesterdayDate);
-        } catch (Throwable $error) {
-            logLine('Error for ' . $accountName . ': ' . $error->getMessage());
-        }
-    }
-
-    logLine('Ad sync complete.');
-} catch (Throwable $error) {
-    cronFail('Fatal: ' . $error->getMessage());
 }

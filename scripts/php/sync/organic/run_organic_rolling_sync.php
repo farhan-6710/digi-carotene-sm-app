@@ -3,33 +3,39 @@
 declare(strict_types=1);
 
 /**
- * Midnight Instagram organic account sync — yesterday's posts + follower gain.
- * Run daily at 12:01 AM (server timezone in config.php).
- *
- * CLI:  php sync_yesterday_organic_acc.php
- * HTTP: https://your-domain.com/.../sync_yesterday_organic_acc.php?secret=YOUR_CRON_SECRET
+ * Rolling organic Instagram sync — posts posted in last ORGANIC_ROLLING_DAYS,
+ * follower gains for last ORGANIC_FOLLOWER_ROLLING_DAYS (Meta API cap).
  */
 
-require_once __DIR__ . '/lib/supabase.php';
-require_once __DIR__ . '/lib/meta.php';
+require_once __DIR__ . '/../../lib/supabase.php';
+require_once __DIR__ . '/../../lib/meta.php';
+require_once __DIR__ . '/../../lib/sync_windows.php';
 
-try {
-    $config = loadConfig();
-    assertCronAccess($config);
+/**
+ * @param array<string, mixed> $config
+ */
+function runOrganicRollingSync(array $config): void
+{
+    $timezone = (string) ($config['timezone'] ?? 'UTC');
+    $window = organicPostWindow($timezone, ORGANIC_ROLLING_DAYS);
+    $from = $window['from'];
+    $toExclusive = $window['toExclusive'];
+    $yesterdayDate = $window['yesterdayDate'];
+    $fromDate = $from->format('Y-m-d');
+    $toDate = $yesterdayDate;
 
-    $tz = new DateTimeZone($config['timezone'] ?? 'UTC');
-    $todayStart = new DateTimeImmutable('today', $tz);
-    $yesterdayStart = $todayStart->modify('-1 day');
-    $yesterdayDate = $yesterdayStart->format('Y-m-d');
-    $sinceUnix = (string) $yesterdayStart->getTimestamp();
-    $untilUnix = (string) $yesterdayStart->getTimestamp();
+    $followerWindow = syncWindowDates($timezone, ORGANIC_FOLLOWER_ROLLING_DAYS);
 
-    logLine('Starting sync for ' . $yesterdayDate);
+    logLine(
+        'Starting organic sync. window=' . $fromDate . '..' . $toDate
+        . ' (' . ORGANIC_ROLLING_DAYS . 'd posts, includes yesterday=' . $yesterdayDate . ')'
+        . '; follower_days=' . ORGANIC_FOLLOWER_ROLLING_DAYS,
+    );
 
     $profiles = fetchInstagramProfiles($config);
     if ($profiles === []) {
         logLine('No growth_organic_profiles rows found.');
-        exit(0);
+        return;
     }
 
     foreach ($profiles as $profile) {
@@ -52,7 +58,7 @@ try {
 
             foreach ($media as $item) {
                 $timestamp = is_string($item['timestamp'] ?? null) ? $item['timestamp'] : '';
-                if ($timestamp === '' || !isPostedBetween($timestamp, $yesterdayStart, $todayStart)) {
+                if ($timestamp === '' || !isPostedBetween($timestamp, $from, $toExclusive)) {
                     continue;
                 }
 
@@ -88,14 +94,24 @@ try {
                 $syncedPosts++;
             }
 
-            $followersGained = fetchFollowerGainForDay(
-                $config,
-                $instagramId,
-                $accessToken,
-                $sinceUnix,
-                $untilUnix,
-            );
-            upsertDailyFollower($config, $profileId, $yesterdayDate, $followersGained);
+            $followerDays = 0;
+            $dayCursor = new DateTimeImmutable($followerWindow['fromDate'], $from->getTimezone());
+            $lastDay = new DateTimeImmutable($followerWindow['toDate'], $from->getTimezone());
+            while ($dayCursor <= $lastDay) {
+                $dayDate = $dayCursor->format('Y-m-d');
+                $sinceUnix = (string) $dayCursor->getTimestamp();
+                $untilUnix = (string) $dayCursor->getTimestamp();
+                $followersGained = fetchFollowerGainForDay(
+                    $config,
+                    $instagramId,
+                    $accessToken,
+                    $sinceUnix,
+                    $untilUnix,
+                );
+                upsertDailyFollower($config, $profileId, $dayDate, $followersGained);
+                $followerDays++;
+                $dayCursor = $dayCursor->modify('+1 day');
+            }
 
             updateInstagramProfile(
                 $config,
@@ -106,14 +122,17 @@ try {
             );
 
             logLine(
-                'Done ' . $username . ': posts=' . $syncedPosts . ', followers_gained=' . $followersGained,
+                'Done ' . $username . ': posts=' . $syncedPosts
+                . ', follower_days=' . $followerDays,
             );
         } catch (Throwable $error) {
             logLine('Error for ' . $username . ': ' . $error->getMessage());
         }
     }
 
-    logLine('Sync complete.');
-} catch (Throwable $error) {
-    cronFail('Fatal: ' . $error->getMessage());
+    logLine(
+        'Organic sync complete. window=' . $fromDate . '..' . $toDate
+        . ' (' . ORGANIC_ROLLING_DAYS . 'd posts, includes yesterday=' . $yesterdayDate . ')'
+        . '; follower_days=' . ORGANIC_FOLLOWER_ROLLING_DAYS,
+    );
 }

@@ -10,7 +10,7 @@ declare(strict_types=1);
  * Optional: &account_id=<growth_ad_accounts.id>
  *
  * Called from Manage Accounts after Google connect (browser → this URL).
- * Midnight yesterday sync stays on sync_yesterday_ad_acc.php.
+ * Midnight rolling sync: sync_last_7_days_ad_acc.php
  */
 
 require_once __DIR__ . '/lib/supabase.php';

@@ -49,3 +49,14 @@ Supabase dashboard: add the live site URL and `/auth?form-type=reset-password` t
 Meta client connect + midnight Growth sync: [meta-integration-growth-and-analytics.md](./meta-integration-growth-and-analytics.md).
 
 Google Ads connect (MCC / OAuth fields): [google-ads-integration.md](./google-ads-integration.md).
+
+### Hostinger Growth cron Commands
+
+Point midnight sync crons at the rolling refresh scripts (update paths after deploy if still on the old names):
+
+| Job | Command script |
+| --- | --- |
+| Organic (60d posts / 30d followers) | `public_html/php/sync_last_60_days_org_acc.php` |
+| Ads Meta + Google (7d) | `public_html/php/sync_last_7_days_ad_acc.php` |
+
+Remove any schedule still pointing at `sync_yesterday_organic_acc.php` / `sync_yesterday_ad_acc.php` (removed from the repo).

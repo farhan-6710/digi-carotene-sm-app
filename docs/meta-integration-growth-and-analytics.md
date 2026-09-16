@@ -95,13 +95,13 @@ Go to:
 
 ## Midnight cron data sync
 
-After an account is connected, Digi Carotene stores the token and runs an initial backfill. Going forward, Hostinger PHP crons sync **yesterday’s** Meta data every night (around midnight IST).
+After an account is connected, Digi Carotene stores the token and runs an initial backfill. Going forward, Hostinger PHP crons run a **rolling re-sync** every night (around midnight IST) so recent days stay fresh as Meta/Google revise metrics.
 
+| Cron | What it syncs |
+| --- | --- |
+| `sync_last_60_days_org_acc.php` | Instagram posts posted in the last **60** completed days (lifetime insights upsert) + follower gains for the last **30** days (Meta API cap) |
+| `sync_last_7_days_ad_acc.php` | Meta **and** Google campaign / ad set / ad daily metrics for the last **7** completed days (`platform` on `growth_ad_accounts`) |
 
-| Cron                             | What it syncs                                                              |
-| -------------------------------- | -------------------------------------------------------------------------- |
-| `sync_yesterday_organic_acc.php` | Instagram post metrics + follower gain for every connected organic profile |
-| `sync_yesterday_ad_acc.php`     | Meta **and** Google campaign / ad set / ad daily metrics (`platform` on `growth_ad_accounts`) |
+Each cron reads connected accounts from Supabase, calls Meta Graph / Google Ads with stored credentials, and **upserts** the rolling window (through yesterday). Older cached rows stay as-is. Dashboards read this cached data — they do not pull full history every page load.
 
-
-Each cron reads connected accounts from Supabase, calls Meta Graph with that account’s stored token, and upserts yesterday’s rows. Dashboards read this cached data — they do not pull full history every page load.
+**Hostinger:** after deploy, point cron Commands at these filenames (not the old `sync_yesterday_*` scripts).
