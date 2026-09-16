@@ -72,7 +72,9 @@ export function AppShellLayout({
             </div>
 
             <div className="ml-auto flex items-center gap-3">
-              <ThemeModeToggle />
+              <div className="hidden sm:block">
+                <ThemeModeToggle />
+              </div>
               {headerActions}
               {accountPath ? (
                 <PortalUserHeaderMenu
