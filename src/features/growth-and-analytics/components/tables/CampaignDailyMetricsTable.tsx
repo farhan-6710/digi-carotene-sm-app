@@ -1,8 +1,18 @@
+import { useMemo, useState } from "react";
+
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { cn } from "@/shared/lib/utils";
+import { showToast } from "@/shared/utils/showToast";
+import { MultiSelect } from "@/shared/ui/MultiSelect";
 
 import { DailyMetricsBreakdownSelect } from "./DailyMetricsBreakdownSelect";
 import { MobileLabel } from "./tableBits";
+import {
+  DAILY_METRICS_MAX_COLUMNS,
+  META_DAILY_METRIC_COLUMNS,
+  META_DAILY_METRICS_DEFAULT_COLUMN_IDS,
+  type MetaDailyMetricColumnId,
+} from "../../constants/googleCampaignDetailLayout";
 import type {
   CampaignDailyMetricsTableProps,
   CampaignMetricCellsMetric,
@@ -15,66 +25,55 @@ import {
   formatFrequency,
   formatPercent,
 } from "../../utils/formatters";
+import { dailyMetricsGridClass } from "../../utils/googleCampaignDailyMetrics";
 
-const SINGLE_GRID_CLASS = "grid-cols-[0.85fr_repeat(8,minmax(0,0.72fr))]";
-const DOUBLE_GRID_CLASS = "grid-cols-[0.6fr_0.6fr_repeat(8,minmax(0,0.72fr))]";
-
-const METRIC_COLUMNS = [
-  { label: "SPEND", align: "right" as const },
-  { label: "IMPRESSIONS", align: "right" as const },
-  { label: "REACH", align: "right" as const },
-  { label: "CLICKS", align: "right" as const },
-  { label: "CTR", align: "right" as const },
-  { label: "CPM", align: "right" as const },
-  { label: "FREQ.", align: "right" as const },
-  { label: "CONVERSIONS", align: "right" as const },
-];
-
-function MetricCells({
-  metrics,
-  currencyCode,
-}: {
-  metrics: CampaignMetricCellsMetric;
-  currencyCode: string;
-}) {
+function formatMetaDailyCell(
+  metrics: CampaignMetricCellsMetric,
+  columnId: MetaDailyMetricColumnId,
+  currencyCode: string,
+): string {
   const ctr = metrics.impressions
     ? Number(((metrics.clicks / metrics.impressions) * 100).toFixed(2))
     : 0;
 
+  if (columnId === "spend") return formatCurrency(metrics.spend, currencyCode);
+  if (columnId === "impressions") return formatCompact(metrics.impressions);
+  if (columnId === "reach") return formatCompact(metrics.reach);
+  if (columnId === "clicks") return formatCompact(metrics.clicks);
+  if (columnId === "ctr") return formatPercent(ctr);
+  if (columnId === "cpm") return formatCpm(metrics.cpm, currencyCode);
+  if (columnId === "frequency") return formatFrequency(metrics.frequency);
+  return formatCompact(metrics.conversions);
+}
+
+function MetricCells({
+  metrics,
+  currencyCode,
+  columnIds,
+}: {
+  metrics: CampaignMetricCellsMetric;
+  currencyCode: string;
+  columnIds: MetaDailyMetricColumnId[];
+}) {
   return (
     <>
-      <div className="text-right font-mono text-sm text-foreground">
-        <MobileLabel>SPEND</MobileLabel>
-        {formatCurrency(metrics.spend, currencyCode)}
-      </div>
-      <div className="text-right font-mono text-sm text-foreground">
-        <MobileLabel>IMPRESSIONS</MobileLabel>
-        {formatCompact(metrics.impressions)}
-      </div>
-      <div className="text-right font-mono text-sm text-foreground">
-        <MobileLabel>REACH</MobileLabel>
-        {formatCompact(metrics.reach)}
-      </div>
-      <div className="text-right font-mono text-sm text-foreground">
-        <MobileLabel>CLICKS</MobileLabel>
-        {formatCompact(metrics.clicks)}
-      </div>
-      <div className="text-right font-mono text-sm text-foreground">
-        <MobileLabel>CTR</MobileLabel>
-        {formatPercent(ctr)}
-      </div>
-      <div className="text-right font-mono text-sm text-foreground">
-        <MobileLabel>CPM</MobileLabel>
-        {formatCpm(metrics.cpm, currencyCode)}
-      </div>
-      <div className="text-right font-mono text-sm text-foreground">
-        <MobileLabel>FREQ.</MobileLabel>
-        {formatFrequency(metrics.frequency)}
-      </div>
-      <div className="text-right font-mono text-sm text-primary">
-        <MobileLabel>CONVERSIONS</MobileLabel>
-        {formatCompact(metrics.conversions)}
-      </div>
+      {columnIds.map((columnId) => {
+        const label =
+          META_DAILY_METRIC_COLUMNS.find((column) => column.id === columnId)
+            ?.label ?? columnId;
+        return (
+          <div
+            key={columnId}
+            className={cn(
+              "text-right font-mono text-sm text-foreground",
+              columnId === "conversions" && "text-primary",
+            )}
+          >
+            <MobileLabel>{label.toUpperCase()}</MobileLabel>
+            {formatMetaDailyCell(metrics, columnId, currencyCode)}
+          </div>
+        );
+      })}
     </>
   );
 }
@@ -88,6 +87,23 @@ export function CampaignDailyMetricsTable({
   isDemographicLoading,
   showDemographicBreakdown = true,
 }: CampaignDailyMetricsTableProps) {
+  const metricOptions = META_DAILY_METRIC_COLUMNS.map((column) => ({
+    value: column.id,
+    label: column.label,
+  }));
+
+  const [selectedIds, setSelectedIds] = useState<string[]>(() => [
+    ...META_DAILY_METRICS_DEFAULT_COLUMN_IDS,
+  ]);
+
+  const selectedColumnIds = useMemo(
+    () =>
+      selectedIds.filter((id): id is MetaDailyMetricColumnId =>
+        META_DAILY_METRIC_COLUMNS.some((column) => column.id === id),
+      ),
+    [selectedIds],
+  );
+
   const effectiveBreakdowns = showDemographicBreakdown ? breakdowns : [];
   const hasAge = effectiveBreakdowns.includes("age");
   const hasGender = effectiveBreakdowns.includes("gender");
@@ -95,7 +111,11 @@ export function CampaignDailyMetricsTable({
   const isBreakdown = hasAge || hasGender || hasPlacement;
   const isTwoDimensional = hasAge && hasGender;
 
-  const gridClass = isTwoDimensional ? DOUBLE_GRID_CLASS : SINGLE_GRID_CLASS;
+  const metricCount = Math.max(selectedColumnIds.length, 1);
+  const gridClass = dailyMetricsGridClass(
+    metricCount,
+    isTwoDimensional ? 2 : 1,
+  );
 
   const leadingColumns = isTwoDimensional
     ? [{ label: "AGE" }, { label: "GENDER" }]
@@ -107,7 +127,24 @@ export function CampaignDailyMetricsTable({
           ? [{ label: "PLACEMENT" }]
           : [{ label: "DATE" }];
 
+  const metricColumns = selectedColumnIds.map((id) => {
+    const label =
+      META_DAILY_METRIC_COLUMNS.find((column) => column.id === id)?.label ?? id;
+    return { label: label.toUpperCase(), align: "right" as const };
+  });
+
   const breakdownTitle = hasPlacement ? "Placement" : "Age & gender";
+
+  const handleColumnsChange = (next: string[]) => {
+    if (next.length > DAILY_METRICS_MAX_COLUMNS) {
+      showToast(
+        "info",
+        `You can show up to ${DAILY_METRICS_MAX_COLUMNS} columns.`,
+      );
+      return;
+    }
+    setSelectedIds(next);
+  };
 
   return (
     <DirectoryTable
@@ -115,17 +152,28 @@ export function CampaignDailyMetricsTable({
       description={
         isBreakdown
           ? `Spend and results split by ${breakdownTitle.toLowerCase()} for the selected period.`
-          : "Day-by-day spend and results for the selected period."
+          : "Day-by-day spend and results for the selected period. Choose up to 6 columns."
       }
       gridClass={gridClass}
-      columns={[...leadingColumns, ...METRIC_COLUMNS]}
+      columns={[...leadingColumns, ...metricColumns]}
       headerAside={
-        showDemographicBreakdown ? (
-          <DailyMetricsBreakdownSelect
-            value={breakdowns}
-            onChange={onBreakdownsChange}
+        <div className="flex w-full min-w-0 flex-col gap-2 sm:w-72 sm:items-stretch">
+          <MultiSelect
+            id="meta-daily-metric-columns"
+            label="Columns"
+            value={selectedIds}
+            onChange={handleColumnsChange}
+            options={metricOptions}
+            placeholder="Select columns"
+            emptyMessage="No metrics available."
           />
-        ) : undefined
+          {showDemographicBreakdown ? (
+            <DailyMetricsBreakdownSelect
+              value={breakdowns}
+              onChange={onBreakdownsChange}
+            />
+          ) : null}
+        </div>
       }
       isLoading={isBreakdown ? isDemographicLoading : false}
       isEmpty={isBreakdown ? demographicView.rows.length === 0 : rows.length === 0}
@@ -170,7 +218,11 @@ export function CampaignDailyMetricsTable({
                     ""}
                 </div>
               )}
-              <MetricCells metrics={row.metrics} currencyCode={currencyCode} />
+              <MetricCells
+                metrics={row.metrics}
+                currencyCode={currencyCode}
+                columnIds={selectedColumnIds}
+              />
             </div>
           ))
         : rows.map((row) => (
@@ -185,7 +237,11 @@ export function CampaignDailyMetricsTable({
                 <MobileLabel>DATE</MobileLabel>
                 {dayLabel(row.date)}
               </div>
-              <MetricCells metrics={row} currencyCode={currencyCode} />
+              <MetricCells
+                metrics={row}
+                currencyCode={currencyCode}
+                columnIds={selectedColumnIds}
+              />
             </div>
           ))}
     </DirectoryTable>

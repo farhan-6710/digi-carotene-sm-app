@@ -1,13 +1,11 @@
-import { useMemo, useState } from "react";
-
 import { StatusBadge } from "../tables/tableBits";
 import { AdsetsTable } from "../tables/AdsetsTable";
 import { GoogleCampaignDailyMetricsTable } from "./GoogleCampaignDailyMetricsTable";
-import { GOOGLE_CAMPAIGN_DEFAULT_VISIBLE_KPI_IDS } from "../../constants/googleCampaignDetailLayout";
+import { GOOGLE_CAMPAIGN_SUMMARY_KPI_IDS } from "../../constants/googleCampaignDetailLayout";
 import {
+  GOOGLE_CAMPAIGN_KPI_DEFS,
   GOOGLE_CAMPAIGN_TYPE_LABEL,
   googleCampaignChildEntityLabel,
-  type GoogleCampaignKpiId,
   type GoogleCampaignTypeId,
 } from "../../constants/googleCampaignTypeMatrix";
 import type { GoogleCampaignTypePageProps } from "../../types/components";
@@ -19,7 +17,6 @@ import {
   formatNumber,
   formatPercent,
 } from "../../utils/formatters";
-import { MultiSelect } from "@/shared/ui/MultiSelect";
 
 type GoogleCampaignTypeShellProps = GoogleCampaignTypePageProps & {
   typeId: GoogleCampaignTypeId;
@@ -37,15 +34,7 @@ function formatKpiValue(
   return formatNumber(value);
 }
 
-function defaultVisibleIds(
-  renderableIds: Set<GoogleCampaignKpiId>,
-): string[] {
-  return GOOGLE_CAMPAIGN_DEFAULT_VISIBLE_KPI_IDS.filter((id) =>
-    renderableIds.has(id),
-  );
-}
-
-/** Shared Google campaign detail — flat metric rows with visible-column control. */
+/** Shared Google campaign detail — fixed summary rows + daily column picker. */
 export function GoogleCampaignTypeShell({
   typeId,
   view,
@@ -54,33 +43,13 @@ export function GoogleCampaignTypeShell({
 }: GoogleCampaignTypeShellProps) {
   const typeLabel = GOOGLE_CAMPAIGN_TYPE_LABEL[typeId];
   const childEntity = googleCampaignChildEntityLabel(typeId);
-  const kpis = useMemo(() => googleCampaignRenderableKpis(typeId), [typeId]);
   const values = buildGoogleCampaignKpiValues(view);
-
-  const renderableIds = useMemo(
-    () => new Set(kpis.map((kpi) => kpi.id)),
-    [kpis],
+  const renderableIds = new Set(
+    googleCampaignRenderableKpis(typeId).map((def) => def.id),
   );
-
-  const metricOptions = useMemo(
-    () =>
-      kpis.map((kpi) => ({
-        value: kpi.id,
-        label: kpi.label,
-      })),
-    [kpis],
-  );
-
-  const [visibleMetricIds, setVisibleMetricIds] = useState(() =>
-    defaultVisibleIds(renderableIds),
-  );
-
-  const visibleIdSet = useMemo(
-    () => new Set(visibleMetricIds),
-    [visibleMetricIds],
-  );
-
-  const visibleKpis = kpis.filter((kpi) => visibleIdSet.has(kpi.id));
+  const summaryKpis = GOOGLE_CAMPAIGN_SUMMARY_KPI_IDS.filter((id) =>
+    renderableIds.has(id),
+  ).map((id) => GOOGLE_CAMPAIGN_KPI_DEFS[id]);
 
   const details = [
     { label: "Ad account", value: view.adAccountName },
@@ -93,62 +62,32 @@ export function GoogleCampaignTypeShell({
     <div className="space-y-6">
       <div className="rounded-2xl border border-border bg-card">
         <div className="border-b border-border px-6 py-5">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="min-w-0 space-y-2">
-              <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                {typeLabel} campaign
-              </p>
-              <div className="flex flex-wrap items-center gap-3">
-                <h2 className="text-xl font-semibold tracking-tight">
-                  {view.campaignName}
-                </h2>
-                <StatusBadge status={view.status} />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                KPIs for this campaign type · {periodLabel.toLowerCase()}.
-              </p>
-            </div>
-
-            <div className="w-full shrink-0 lg:max-w-sm">
-              <MultiSelect
-                id="google-campaign-visible-metrics"
-                label="Visible metrics"
-                value={visibleMetricIds}
-                onChange={setVisibleMetricIds}
-                options={metricOptions}
-                placeholder="Select metrics"
-                emptyMessage="No metrics available."
-              />
-            </div>
+          <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+            {typeLabel} campaign
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <h2 className="text-xl font-semibold tracking-tight">
+              {view.campaignName}
+            </h2>
+            <StatusBadge status={view.status} />
           </div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            KPIs for this campaign type · {periodLabel.toLowerCase()}.
+          </p>
         </div>
 
-        <div>
-          {visibleKpis.length === 0 ? (
-            <p className="px-6 py-8 text-sm text-muted-foreground">
-              Select one or more metrics to display.
-            </p>
-          ) : (
-            <div className="grid md:grid-cols-2 md:divide-x md:divide-border">
-              {visibleKpis.map((kpi) => (
-                <div
-                  key={kpi.id}
-                  className="flex items-center justify-between gap-4 border-b border-border px-6 py-3"
-                >
-                  <span className="text-sm text-muted-foreground">
-                    {kpi.label}
-                  </span>
-                  <span className="font-mono text-sm font-medium text-foreground">
-                    {formatKpiValue(
-                      kpi.format,
-                      values[kpi.id],
-                      view.currencyCode,
-                    )}
-                  </span>
-                </div>
-              ))}
+        <div className="grid md:grid-cols-2 md:divide-x md:divide-border">
+          {summaryKpis.map((kpi) => (
+            <div
+              key={kpi.id}
+              className="flex items-center justify-between gap-4 border-b border-border px-6 py-3"
+            >
+              <span className="text-sm text-muted-foreground">{kpi.label}</span>
+              <span className="font-mono text-sm font-medium text-foreground">
+                {formatKpiValue(kpi.format, values[kpi.id], view.currencyCode)}
+              </span>
             </div>
-          )}
+          ))}
         </div>
 
         <div className="divide-y divide-border border-t border-border">
@@ -178,6 +117,7 @@ export function GoogleCampaignTypeShell({
       <GoogleCampaignDailyMetricsTable
         rows={view.dailyRows}
         currencyCode={view.currencyCode}
+        typeId={typeId}
       />
     </div>
   );
