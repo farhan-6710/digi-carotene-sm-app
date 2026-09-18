@@ -12,3 +12,9 @@ export const TABLE_HORIZONTAL_SCROLL_CLASS =
  */
 export const DIRECTORY_TABLE_TRACK_ALIGN_CLASS =
   "[&_.grid]:w-full [&_.grid>*]:min-w-0";
+
+/**
+ * Wide / many-column tables: stretch every grid to the shared track width
+ * (fixed px columns). Do not use min-w-0 — that lets header/body diverge.
+ */
+export const DIRECTORY_TABLE_SCROLL_TRACK_CLASS = "[&_.grid]:w-full";

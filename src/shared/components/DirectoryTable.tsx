@@ -5,15 +5,18 @@ import {
 } from "react";
 
 import { cn } from "@/shared/lib/utils";
+import { DirectoryTableHeaderCell } from "@/shared/components/DirectoryTableHeaderCell";
 import { LoadingSpinner, TableLoadingState } from "@/shared/components/LoadingSpinner";
 import {
   DIRECTORY_TABLE_MIN_WIDTH_CLASS,
+  DIRECTORY_TABLE_SCROLL_TRACK_CLASS,
   DIRECTORY_TABLE_TRACK_ALIGN_CLASS,
   TABLE_HORIZONTAL_SCROLL_CLASS,
 } from "@/shared/constants/directoryTable";
 import { useLoadMoreSentinel } from "@/shared/hooks/useLoadMoreSentinel";
 import { useWindowedList } from "@/shared/hooks/useWindowedList";
 import type { DirectoryTableProps } from "@/shared/types/components";
+import { TooltipProvider } from "@/shared/ui/tooltip";
 
 /**
  * Shared directory listing table.
@@ -22,6 +25,9 @@ import type { DirectoryTableProps } from "@/shared/types/components";
  *
  * By default rows are windowed (30 at a time): full lists still load in the
  * page/hook, but only a chunk renders until the user scrolls to the bottom.
+ *
+ * Optional: `contentMinWidthPx` for wide/scrollable columns; `onColumnMove`
+ * + `column.reorderable` for accessible column reorder menu.
  */
 export function DirectoryTable({
   title,
@@ -37,6 +43,8 @@ export function DirectoryTable({
   divided = false,
   gridStyle,
   windowed = true,
+  contentMinWidthPx,
+  onColumnMove,
 }: DirectoryTableProps) {
   const childArray = useMemo(() => Children.toArray(children), [children]);
 
@@ -64,6 +72,16 @@ export function DirectoryTable({
     ? childArray.slice(0, visibleCount)
     : childArray;
 
+  const reorderableIds = useMemo(
+    () =>
+      columns
+        .filter((column) => column.reorderable && column.id)
+        .map((column) => column.id as string),
+    [columns],
+  );
+
+  const truncateHeaders = Boolean(contentMinWidthPx);
+
   return (
     <div className="w-full min-w-0 rounded-2xl border border-border bg-card shadow-sm">
       <div className="flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
@@ -90,38 +108,64 @@ export function DirectoryTable({
         className={cn(
           TABLE_HORIZONTAL_SCROLL_CLASS,
           "border-t border-border",
-          DIRECTORY_TABLE_TRACK_ALIGN_CLASS,
+          contentMinWidthPx
+            ? DIRECTORY_TABLE_SCROLL_TRACK_CLASS
+            : DIRECTORY_TABLE_TRACK_ALIGN_CLASS,
         )}
       >
-        <div className={DIRECTORY_TABLE_MIN_WIDTH_CLASS}>
-          <div
-            className={cn(
-              "grid w-full text-xs font-semibold tracking-wider text-muted-foreground max-sm:hidden bg-muted px-6",
-              divided
-                ? "items-stretch divide-x divide-border border-b border-border"
-                : "gap-4 py-3",
-              gridClass,
-            )}
-            style={gridStyle}
-          >
-            {columns.map((column, index) => (
-              <div
-                key={column.label}
-                className={cn(
-                  "min-w-0",
-                  column.align === "right" ? "text-right" : undefined,
-                  divided
-                    ? cn(
-                        "py-3 pr-4 relative",
-                        index === 0 ? "pl-0" : "pl-4",
-                      )
-                    : undefined,
-                )}
-              >
-                {column.label}
-              </div>
-            ))}
-          </div>
+        <div
+          className={DIRECTORY_TABLE_MIN_WIDTH_CLASS}
+          style={
+            contentMinWidthPx
+              ? { minWidth: Math.max(contentMinWidthPx, 44 * 16) }
+              : undefined
+          }
+        >
+          <TooltipProvider delayDuration={300}>
+            <div
+              className={cn(
+                "grid text-xs font-semibold tracking-wider text-muted-foreground max-sm:hidden bg-muted px-6 border-b border-border",
+                contentMinWidthPx ? "min-w-full" : "w-full",
+                divided
+                  ? "items-stretch divide-x divide-border"
+                  : "gap-4 py-3",
+                gridClass,
+              )}
+              style={gridStyle}
+            >
+              {columns.map((column, index) => {
+                const canReorder =
+                  Boolean(onColumnMove) &&
+                  Boolean(column.reorderable) &&
+                  Boolean(column.id);
+                const reorderIndex = column.id
+                  ? reorderableIds.indexOf(column.id)
+                  : -1;
+
+                return (
+                  <DirectoryTableHeaderCell
+                    key={column.id ?? `${column.label}-${index}`}
+                    column={column}
+                    index={index}
+                    divided={divided}
+                    truncate={truncateHeaders}
+                    canReorder={canReorder}
+                    canMoveLeft={reorderIndex > 0}
+                    canMoveRight={
+                      reorderIndex >= 0 &&
+                      reorderIndex < reorderableIds.length - 1
+                    }
+                    onMove={
+                      canReorder && column.id && onColumnMove
+                        ? (direction) =>
+                            onColumnMove(column.id as string, direction)
+                        : undefined
+                    }
+                  />
+                );
+              })}
+            </div>
+          </TooltipProvider>
 
           {isLoading ? (
             <TableLoadingState />

@@ -14,8 +14,11 @@ export const GOOGLE_CAMPAIGN_SUMMARY_KPI_IDS: GoogleCampaignKpiId[] = [
   "roas",
 ];
 
-/** Max metric columns in campaign daily metrics tables. */
-export const DAILY_METRICS_MAX_COLUMNS = 6;
+/** localStorage keys for daily metric column visibility + order. */
+export const META_DAILY_METRICS_COLUMNS_STORAGE_KEY =
+  "dc.growth.daily-metrics.columns.meta";
+export const GOOGLE_DAILY_METRICS_COLUMNS_STORAGE_KEY =
+  "dc.growth.daily-metrics.columns.google";
 
 export type MetaDailyMetricColumnId =
   | "spend"

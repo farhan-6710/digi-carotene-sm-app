@@ -61,7 +61,13 @@ export type ErrorBannerProps = {
 
 export type DirectoryTableColumn = {
   label: string;
+  /** Full name for tooltip when `label` is truncated. Defaults to `label`. */
+  title?: string;
   align?: "right";
+  /** Stable id — required for reorderable headers. */
+  id?: string;
+  /** Opt-in: column menu (click / keyboard / context menu) to Move left/right. */
+  reorderable?: boolean;
 };
 
 export type DirectoryTableProps = {
@@ -83,6 +89,16 @@ export type DirectoryTableProps = {
    * on scroll. Keep fetch-all + browser filters; only UI is chunked.
    */
   windowed?: boolean;
+  /**
+   * Forces a wider track so many columns scroll horizontally.
+   * Existing pages omit this and keep the default min width.
+   */
+  contentMinWidthPx?: number;
+  /**
+   * Called when the user moves a reorderable column left/right.
+   * Parent owns order state (and persistence). Omit = no column menu.
+   */
+  onColumnMove?: (columnId: string, direction: "left" | "right") => void;
 };
 
 export type PageShellProps = {

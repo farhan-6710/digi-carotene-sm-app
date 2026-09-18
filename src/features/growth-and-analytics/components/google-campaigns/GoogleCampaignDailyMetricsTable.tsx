@@ -1,14 +1,14 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { usePersistedColumnIds } from "@/shared/hooks/usePersistedColumnIds";
 import { cn } from "@/shared/lib/utils";
-import { showToast } from "@/shared/utils/showToast";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
 
 import { MobileLabel } from "../tables/tableBits";
 import {
   DAILY_METRICS_DEFAULT_COLUMN_IDS,
-  DAILY_METRICS_MAX_COLUMNS,
+  GOOGLE_DAILY_METRICS_COLUMNS_STORAGE_KEY,
 } from "../../constants/googleCampaignDetailLayout";
 import {
   GOOGLE_CAMPAIGN_KPI_DEFS,
@@ -18,7 +18,7 @@ import {
 import type { GrowthCampaignDetailView } from "../../types/types";
 import { dayLabel } from "../../utils/formatters";
 import {
-  dailyMetricsGridClass,
+  dailyMetricsGridLayout,
   formatGoogleDailyMetricCell,
 } from "../../utils/googleCampaignDailyMetrics";
 import { googleCampaignRenderableKpis } from "../../utils/resolveGoogleCampaignType";
@@ -29,7 +29,7 @@ type GoogleCampaignDailyMetricsTableProps = {
   typeId: GoogleCampaignTypeId;
 };
 
-/** Google daily table — user picks up to 6 metric columns. */
+/** Google daily table — pick any columns; right-click headers to reorder. */
 export function GoogleCampaignDailyMetricsTable({
   rows,
   currencyCode,
@@ -49,56 +49,51 @@ export function GoogleCampaignDailyMetricsTable({
     [metricOptions],
   );
 
-  const [selectedIds, setSelectedIds] = useState<string[]>(() =>
-    DAILY_METRICS_DEFAULT_COLUMN_IDS.filter((id) =>
-      renderableIds.has(id as GoogleCampaignKpiId),
-    ),
+  const { columnIds, setColumnIds, moveColumn } = usePersistedColumnIds(
+    GOOGLE_DAILY_METRICS_COLUMNS_STORAGE_KEY,
+    DAILY_METRICS_DEFAULT_COLUMN_IDS,
+    renderableIds,
   );
 
   const selectedMetrics = useMemo(
     () =>
-      selectedIds
+      columnIds
         .filter((id): id is GoogleCampaignKpiId =>
           renderableIds.has(id as GoogleCampaignKpiId),
         )
         .map((id) => GOOGLE_CAMPAIGN_KPI_DEFS[id]),
-    [renderableIds, selectedIds],
+    [columnIds, renderableIds],
   );
 
-  const gridClass = dailyMetricsGridClass(Math.max(selectedMetrics.length, 1));
+  const layout = dailyMetricsGridLayout(Math.max(selectedMetrics.length, 1));
 
   const columns = [
     { label: "DATE" },
     ...selectedMetrics.map((metric) => ({
+      id: metric.id,
       label: metric.label.toUpperCase(),
+      title: metric.label,
       align: "right" as const,
+      reorderable: true,
     })),
   ];
-
-  const handleColumnsChange = (next: string[]) => {
-    if (next.length > DAILY_METRICS_MAX_COLUMNS) {
-      showToast(
-        "info",
-        `You can show up to ${DAILY_METRICS_MAX_COLUMNS} columns.`,
-      );
-      return;
-    }
-    setSelectedIds(next);
-  };
 
   return (
     <DirectoryTable
       title="Daily metrics"
-      description="Day-by-day results for the selected period. Choose up to 6 columns."
-      gridClass={gridClass}
+      description="Day-by-day results. Pick columns; click or two-finger tap a header to reorder."
+      gridClass={layout.gridClass}
+      gridStyle={layout.gridStyle}
+      contentMinWidthPx={layout.contentMinWidthPx}
       columns={columns}
+      onColumnMove={moveColumn}
       headerAside={
         <div className="w-full min-w-0 sm:w-72">
           <MultiSelect
             id="google-daily-metric-columns"
             label="Columns"
-            value={selectedIds}
-            onChange={handleColumnsChange}
+            value={columnIds}
+            onChange={setColumnIds}
             options={metricOptions}
             placeholder="Select columns"
             emptyMessage="No metrics available."
@@ -113,9 +108,10 @@ export function GoogleCampaignDailyMetricsTable({
         <div
           key={row.date}
           className={cn(
-            "grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:gap-3",
-            gridClass,
+            "items-center gap-4 px-6 py-4 transition-colors hover:bg-muted/10",
+            layout.gridClass,
           )}
+          style={layout.gridStyle}
         >
           <div className="text-sm font-medium text-foreground">
             <MobileLabel>DATE</MobileLabel>

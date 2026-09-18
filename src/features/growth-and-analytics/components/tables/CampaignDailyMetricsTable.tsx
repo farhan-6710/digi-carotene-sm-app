@@ -1,14 +1,14 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { usePersistedColumnIds } from "@/shared/hooks/usePersistedColumnIds";
 import { cn } from "@/shared/lib/utils";
-import { showToast } from "@/shared/utils/showToast";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
 
 import { DailyMetricsBreakdownSelect } from "./DailyMetricsBreakdownSelect";
 import { MobileLabel } from "./tableBits";
 import {
-  DAILY_METRICS_MAX_COLUMNS,
+  META_DAILY_METRICS_COLUMNS_STORAGE_KEY,
   META_DAILY_METRIC_COLUMNS,
   META_DAILY_METRICS_DEFAULT_COLUMN_IDS,
   type MetaDailyMetricColumnId,
@@ -25,7 +25,7 @@ import {
   formatFrequency,
   formatPercent,
 } from "../../utils/formatters";
-import { dailyMetricsGridClass } from "../../utils/googleCampaignDailyMetrics";
+import { dailyMetricsGridLayout } from "../../utils/googleCampaignDailyMetrics";
 
 function formatMetaDailyCell(
   metrics: CampaignMetricCellsMetric,
@@ -78,6 +78,10 @@ function MetricCells({
   );
 }
 
+const META_ALLOWED_IDS = new Set(
+  META_DAILY_METRIC_COLUMNS.map((column) => column.id),
+);
+
 export function CampaignDailyMetricsTable({
   rows,
   currencyCode,
@@ -92,16 +96,18 @@ export function CampaignDailyMetricsTable({
     label: column.label,
   }));
 
-  const [selectedIds, setSelectedIds] = useState<string[]>(() => [
-    ...META_DAILY_METRICS_DEFAULT_COLUMN_IDS,
-  ]);
+  const { columnIds, setColumnIds, moveColumn } = usePersistedColumnIds(
+    META_DAILY_METRICS_COLUMNS_STORAGE_KEY,
+    META_DAILY_METRICS_DEFAULT_COLUMN_IDS,
+    META_ALLOWED_IDS,
+  );
 
   const selectedColumnIds = useMemo(
     () =>
-      selectedIds.filter((id): id is MetaDailyMetricColumnId =>
-        META_DAILY_METRIC_COLUMNS.some((column) => column.id === id),
+      columnIds.filter((id): id is MetaDailyMetricColumnId =>
+        META_ALLOWED_IDS.has(id as MetaDailyMetricColumnId),
       ),
-    [selectedIds],
+    [columnIds],
   );
 
   const effectiveBreakdowns = showDemographicBreakdown ? breakdowns : [];
@@ -112,7 +118,7 @@ export function CampaignDailyMetricsTable({
   const isTwoDimensional = hasAge && hasGender;
 
   const metricCount = Math.max(selectedColumnIds.length, 1);
-  const gridClass = dailyMetricsGridClass(
+  const layout = dailyMetricsGridLayout(
     metricCount,
     isTwoDimensional ? 2 : 1,
   );
@@ -130,21 +136,16 @@ export function CampaignDailyMetricsTable({
   const metricColumns = selectedColumnIds.map((id) => {
     const label =
       META_DAILY_METRIC_COLUMNS.find((column) => column.id === id)?.label ?? id;
-    return { label: label.toUpperCase(), align: "right" as const };
+    return {
+      id,
+      label: label.toUpperCase(),
+      title: label,
+      align: "right" as const,
+      reorderable: true,
+    };
   });
 
   const breakdownTitle = hasPlacement ? "Placement" : "Age & gender";
-
-  const handleColumnsChange = (next: string[]) => {
-    if (next.length > DAILY_METRICS_MAX_COLUMNS) {
-      showToast(
-        "info",
-        `You can show up to ${DAILY_METRICS_MAX_COLUMNS} columns.`,
-      );
-      return;
-    }
-    setSelectedIds(next);
-  };
 
   return (
     <DirectoryTable
@@ -152,17 +153,20 @@ export function CampaignDailyMetricsTable({
       description={
         isBreakdown
           ? `Spend and results split by ${breakdownTitle.toLowerCase()} for the selected period.`
-          : "Day-by-day spend and results for the selected period. Choose up to 6 columns."
+          : "Day-by-day spend and results. Pick columns; click or two-finger tap a header to reorder."
       }
-      gridClass={gridClass}
+      gridClass={layout.gridClass}
+      gridStyle={layout.gridStyle}
+      contentMinWidthPx={layout.contentMinWidthPx}
       columns={[...leadingColumns, ...metricColumns]}
+      onColumnMove={moveColumn}
       headerAside={
         <div className="flex w-full min-w-0 flex-col gap-2 sm:w-72 sm:items-stretch">
           <MultiSelect
             id="meta-daily-metric-columns"
             label="Columns"
-            value={selectedIds}
-            onChange={handleColumnsChange}
+            value={selectedColumnIds}
+            onChange={setColumnIds}
             options={metricOptions}
             placeholder="Select columns"
             emptyMessage="No metrics available."
@@ -188,10 +192,11 @@ export function CampaignDailyMetricsTable({
             <div
               key={row.id}
               className={cn(
-                "grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:gap-3",
-                gridClass,
+                "items-center gap-4 px-6 py-4 transition-colors hover:bg-muted/10",
+                layout.gridClass,
                 row.isAgeSummary && "bg-muted/5",
               )}
+              style={layout.gridStyle}
             >
               {isTwoDimensional ? (
                 <>
@@ -229,9 +234,10 @@ export function CampaignDailyMetricsTable({
             <div
               key={row.date}
               className={cn(
-                "grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:gap-3",
-                gridClass,
+                "items-center gap-4 px-6 py-4 transition-colors hover:bg-muted/10",
+                layout.gridClass,
               )}
+              style={layout.gridStyle}
             >
               <div className="text-sm font-medium text-foreground">
                 <MobileLabel>DATE</MobileLabel>

@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 import type { GoogleCampaignKpiId } from "../constants/googleCampaignTypeMatrix";
 import { GOOGLE_CAMPAIGN_KPI_DEFS } from "../constants/googleCampaignTypeMatrix";
 import type { CampaignMetricRow } from "../types/types";
@@ -83,32 +85,54 @@ export function formatGoogleDailyMetricCell(
   return formatNumber(raw);
 }
 
-/** Static templates so Tailwind can see full class names (dynamic `repeat(${n})` is purged). */
-const DAILY_METRICS_SINGLE_GRID: Record<number, string> = {
-  1: "grid-cols-[0.85fr_minmax(0,0.72fr)]",
-  2: "grid-cols-[0.85fr_repeat(2,minmax(0,0.72fr))]",
-  3: "grid-cols-[0.85fr_repeat(3,minmax(0,0.72fr))]",
-  4: "grid-cols-[0.85fr_repeat(4,minmax(0,0.72fr))]",
-  5: "grid-cols-[0.85fr_repeat(5,minmax(0,0.72fr))]",
-  6: "grid-cols-[0.85fr_repeat(6,minmax(0,0.72fr))]",
+const METRIC_COL_MIN_PX = 128;
+const LEADING_COL_PX = 136;
+const TABLE_PAD_PX = 48;
+/** Matches Tailwind `gap-4` on daily metric header/rows. */
+const GRID_GAP_PX = 16;
+
+export type DailyMetricsGridLayout = {
+  /** Shared on header + each body row (template lives in gridStyle). */
+  gridClass: string;
+  gridStyle: CSSProperties;
+  /** Passed to DirectoryTable `contentMinWidthPx` for horizontal scroll. */
+  contentMinWidthPx: number;
 };
 
-const DAILY_METRICS_DOUBLE_GRID: Record<number, string> = {
-  1: "grid-cols-[0.6fr_0.6fr_minmax(0,0.72fr)]",
-  2: "grid-cols-[0.6fr_0.6fr_repeat(2,minmax(0,0.72fr))]",
-  3: "grid-cols-[0.6fr_0.6fr_repeat(3,minmax(0,0.72fr))]",
-  4: "grid-cols-[0.6fr_0.6fr_repeat(4,minmax(0,0.72fr))]",
-  5: "grid-cols-[0.6fr_0.6fr_repeat(5,minmax(0,0.72fr))]",
-  6: "grid-cols-[0.6fr_0.6fr_repeat(6,minmax(0,0.72fr))]",
-};
+/**
+ * Unlimited metric columns via inline grid-template (avoids Tailwind purge).
+ * Fixed px tracks only — header and body are separate grids; `max-content` /
+ * content-based fr sizing makes them diverge (wide labels vs short numbers).
+ */
+export function dailyMetricsGridLayout(
+  metricCount: number,
+  leadingCols = 1,
+): DailyMetricsGridLayout {
+  const n = Math.max(metricCount, 1);
+  const leading =
+    leadingCols === 2
+      ? `${LEADING_COL_PX}px ${LEADING_COL_PX}px`
+      : `${LEADING_COL_PX}px`;
+  const metrics = `repeat(${n}, ${METRIC_COL_MIN_PX}px)`;
+  const totalCols = leadingCols + n;
 
+  return {
+    gridClass: "grid",
+    gridStyle: {
+      gridTemplateColumns: `${leading} ${metrics}`,
+    },
+    contentMinWidthPx:
+      leadingCols * LEADING_COL_PX +
+      n * METRIC_COL_MIN_PX +
+      Math.max(0, totalCols - 1) * GRID_GAP_PX +
+      TABLE_PAD_PX,
+  };
+}
+
+/** @deprecated Prefer dailyMetricsGridLayout for unlimited columns. */
 export function dailyMetricsGridClass(
   metricCount: number,
   leadingCols = 1,
 ): string {
-  const count = Math.min(Math.max(metricCount, 1), 6);
-  if (leadingCols === 2) {
-    return DAILY_METRICS_DOUBLE_GRID[count];
-  }
-  return DAILY_METRICS_SINGLE_GRID[count];
+  return dailyMetricsGridLayout(metricCount, leadingCols).gridClass;
 }
