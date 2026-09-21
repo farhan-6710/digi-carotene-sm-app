@@ -1,114 +1,188 @@
-import { useCallback, useState } from "react";
+import { format } from "date-fns";
+import { useCallback, useMemo, useState } from "react";
+
+import { useFetch } from "@/shared/hooks/useFetch";
+import { showToast } from "@/shared/utils/showToast";
+import { sendCustomReportEmail } from "@/services/customReportEmailService";
 
 import {
-  DUMMY_REPORTABLE_ACCOUNTS,
-  defaultCustomReportForm,
-} from "../constants/customReportData";
-import type { CustomReportFormState } from "../types/components";
-import { buildCustomReportInput } from "../utils/customReportMeta";
-import { saveGrowthReport } from "../utils/generateReport";
-import { resolveGrowthReportPeriod } from "../utils/reportPeriod";
-import { useUrlDateFields } from "@/shared/hooks/useUrlDateFields";
-import { showToast } from "@/shared/utils/showToast";
+  CUSTOM_REPORT_MAX_ACCOUNTS,
+  type CustomReportKind,
+  type CustomReportPeriodId,
+} from "../constants/customReport";
+import type { CustomReportFormState } from "../types/customReport";
+import type { AdAccountKind, GrowthPlatform } from "../types/types";
+import {
+  buildCustomReportDocument,
+  listCustomReportAccounts,
+} from "../utils/buildCustomReportDocument";
+import {
+  resolveCustomReportPeriod,
+  validateCustomReportRange,
+} from "../utils/customReportPeriod";
+import {
+  blobToBase64,
+  buildCustomReportPdfBlob,
+  downloadBlob,
+} from "../utils/customReportPdf";
 
-function toggleId(ids: string[], id: string): string[] {
-  return ids.includes(id)
-    ? ids.filter((value) => value !== id)
-    : [...ids, id];
+function defaultPlatform(kind: CustomReportKind): GrowthPlatform | AdAccountKind {
+  return kind === "organic" ? "instagram" : "meta_ads";
 }
 
 export function useCustomReportBuilder() {
-  const { fromDate, toDate, setFromDate, setToDate } = useUrlDateFields();
-  const reportableAccounts = DUMMY_REPORTABLE_ACCOUNTS;
-
-  const [localValues, setLocalValues] = useState(() => ({
-    selectedAccountIds: defaultCustomReportForm.selectedAccountIds,
-    selectedMetricIds: defaultCustomReportForm.selectedMetricIds,
-    format: defaultCustomReportForm.format,
+  const today = format(new Date(), "yyyy-MM-dd");
+  const [values, setValues] = useState<CustomReportFormState>(() => ({
+    kind: "organic",
+    platform: "instagram",
+    selectedAccountIds: [],
+    periodId: "this_month",
+    startDate: today,
+    endDate: today,
   }));
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [periodLabel, setPeriodLabel] = useState("");
 
-  const values: CustomReportFormState = {
-    ...localValues,
-    startDate: fromDate,
-    endDate: toDate,
-  };
+  const loadAccounts = useCallback(
+    () => listCustomReportAccounts(values.kind),
+    [values.kind],
+  );
+  const { data: accounts, isLoading, error } = useFetch(loadAccounts, []);
 
-  const toggleAccount = useCallback((id: string) => {
-    setLocalValues((prev) => ({
-      ...prev,
-      selectedAccountIds: toggleId(prev.selectedAccountIds, id),
-    }));
-  }, []);
-
-  const toggleMetric = useCallback((id: string) => {
-    setLocalValues((prev) => ({
-      ...prev,
-      selectedMetricIds: toggleId(prev.selectedMetricIds, id),
-    }));
-  }, []);
-
-  const changeField = useCallback(
-    (field: "startDate" | "endDate" | "format", value: string) => {
-      if (field === "startDate") {
-        setFromDate(value);
-        return;
-      }
-      if (field === "endDate") {
-        setToDate(value);
-        return;
-      }
-      setLocalValues((prev) => ({ ...prev, [field]: value }));
-    },
-    [setFromDate, setToDate],
+  const platformAccounts = useMemo(
+    () => accounts.filter((account) => account.platform === values.platform),
+    [accounts, values.platform],
   );
 
-  const generate = useCallback(async () => {
+  const setKind = (kind: CustomReportKind) => {
+    setValues((prev) => ({
+      ...prev,
+      kind,
+      platform: defaultPlatform(kind),
+      selectedAccountIds: [],
+    }));
+    setPdfBlob(null);
+  };
+
+  const setPlatform = (platform: GrowthPlatform | AdAccountKind) => {
+    setValues((prev) => ({
+      ...prev,
+      platform,
+      selectedAccountIds: [],
+    }));
+    setPdfBlob(null);
+  };
+
+  const setAccounts = (ids: string[]) => {
+    setValues((prev) => ({
+      ...prev,
+      selectedAccountIds: ids.slice(0, CUSTOM_REPORT_MAX_ACCOUNTS),
+    }));
+    setPdfBlob(null);
+  };
+
+  const setPeriodId = (periodId: CustomReportPeriodId) => {
+    setValues((prev) => ({ ...prev, periodId }));
+    setPdfBlob(null);
+  };
+
+  const setDate = (field: "startDate" | "endDate", value: string) => {
+    setValues((prev) => ({ ...prev, [field]: value }));
+    setPdfBlob(null);
+  };
+
+  const generate = async () => {
     if (values.selectedAccountIds.length === 0) {
-      showToast("error", "Select at least one account to include in the report.");
-      return;
-    }
-    if (values.selectedMetricIds.length === 0) {
-      showToast("error", "Select at least one metric to include in the report.");
+      showToast("error", "Select at least one account.");
       return;
     }
 
-    const { periodStart, periodEnd } = resolveGrowthReportPeriod({
-      from: values.startDate,
-      to: values.endDate,
-    });
+    const { from, to } = resolveCustomReportPeriod(
+      values.periodId,
+      values.startDate,
+      values.endDate,
+    );
+    const rangeError = validateCustomReportRange(from, to);
+    if (rangeError) {
+      showToast("error", rangeError);
+      return;
+    }
 
     setIsGenerating(true);
     try {
-      await saveGrowthReport(
-        buildCustomReportInput(
-          values.selectedAccountIds,
-          reportableAccounts,
-          periodStart,
-          periodEnd,
-        ),
+      const documentData = await buildCustomReportDocument({
+        kind: values.kind,
+        accountIds: values.selectedAccountIds,
+        from,
+        to,
+      });
+      const blob = await buildCustomReportPdfBlob(documentData);
+      setPdfBlob(blob);
+      setPeriodLabel(documentData.periodLabel);
+      showToast("success", "Report PDF ready — download or email it.");
+    } catch (err) {
+      showToast(
+        "error",
+        err instanceof Error ? err.message : "Could not generate the report.",
       );
     } finally {
       setIsGenerating(false);
     }
-  }, [
-    reportableAccounts,
-    values.endDate,
-    values.selectedAccountIds,
-    values.selectedMetricIds.length,
-    values.startDate,
-  ]);
+  };
+
+  const download = () => {
+    if (!pdfBlob) return;
+    downloadBlob(pdfBlob, `digi-carotene-growth-report-${Date.now()}.pdf`);
+  };
+
+  const sendEmail = async (emails: string[]) => {
+    if (!pdfBlob) {
+      showToast("error", "Generate the report first.");
+      return;
+    }
+    setIsSending(true);
+    try {
+      const base64 = await blobToBase64(pdfBlob);
+      await sendCustomReportEmail({
+        toEmails: emails,
+        pdfBase64: base64,
+        filename: `digi-carotene-growth-report.pdf`,
+        periodLabel: periodLabel || "Selected period",
+        accountCount: values.selectedAccountIds.length,
+      });
+      showToast("success", `Report emailed to ${emails.length} recipient(s).`);
+      setEmailOpen(false);
+    } catch (err) {
+      showToast(
+        "error",
+        err instanceof Error ? err.message : "Could not send the email.",
+      );
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   return {
     values,
-    reportableAccounts,
-    isAccountsLoading: false,
-    accountsError: null,
-    accountsEmpty: false,
+    accounts: platformAccounts,
+    isAccountsLoading: isLoading,
+    accountsError: error,
+    accountsEmpty: !isLoading && accounts.length === 0,
     isGenerating,
-    toggleAccount,
-    toggleMetric,
-    changeField,
+    isSending,
+    hasPdf: Boolean(pdfBlob),
+    emailOpen,
+    setEmailOpen,
+    setKind,
+    setPlatform,
+    setAccounts,
+    setPeriodId,
+    setDate,
     generate,
+    download,
+    sendEmail,
   };
 }

@@ -14,6 +14,8 @@ export type ComboBoxOption = {
   icon?: React.ReactNode;
   /** Optional subset heading shown above this option in the list. */
   group?: string;
+  /** Trailing label (e.g. colored platform name). */
+  badge?: React.ReactNode;
 };
 
 export type ComboBoxProps = {
@@ -89,9 +91,10 @@ export function ComboBox({
       return options;
     }
 
-    return options.filter((option) =>
-      option.label.toLowerCase().includes(search),
-    );
+    return options.filter((option) => {
+      const haystack = `${option.label} ${option.group ?? ""}`.toLowerCase();
+      return haystack.includes(search);
+    });
   }, [filterText, mode, options]);
 
   const groupedRows = useMemo(() => {
@@ -231,7 +234,12 @@ export function ComboBox({
                     className={optionClassName(isSelected)}
                   >
                     {option.icon}
-                    <span className="truncate">{option.label}</span>
+                    <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                    {option.badge ? (
+                      <span className="shrink-0 text-xs font-semibold">
+                        {option.badge}
+                      </span>
+                    ) : null}
                   </button>
                 );
               })}

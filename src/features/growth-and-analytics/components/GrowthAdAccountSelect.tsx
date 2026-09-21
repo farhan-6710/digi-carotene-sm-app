@@ -2,15 +2,15 @@ import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router";
 
 import { GROWTH_AD_ACCOUNT_PARAM } from "@/features/growth-and-analytics/constants/growthUrlParams";
+import {
+  AD_PLATFORM_BADGE_CLASS,
+  AD_PLATFORM_LIST_ORDER,
+  adAccountKindLabel,
+} from "@/features/growth-and-analytics/constants/growthPlatformConfig";
 import { useGrowthSelectedAdAccount } from "@/features/growth-and-analytics/hooks/useGrowthSelectedAdAccount";
 import { ComboBox } from "@/shared/ui/ComboBox";
 
-import { GrowthAdsPlatformToggle } from "./GrowthAdsPlatformToggle";
-import type { AdAccountKind } from "../types/types";
-import {
-  pickAdAccountForPlatform,
-  writeAdAccountIdForPlatform,
-} from "../utils/adAccountSelection";
+import { writeAdAccountIdForPlatform } from "../utils/adAccountSelection";
 
 export function GrowthAdAccountSelect() {
   const {
@@ -22,27 +22,29 @@ export function GrowthAdAccountSelect() {
   } = useGrowthSelectedAdAccount();
   const [searchParams] = useSearchParams();
 
-  const availablePlatforms = useMemo(() => {
-    const platforms = new Set<AdAccountKind>();
-    for (const account of accounts) {
-      platforms.add(account.platform);
-    }
-    return [...platforms];
+  const options = useMemo(() => {
+    const sorted = [...accounts].sort((a, b) => {
+      const platformDiff =
+        AD_PLATFORM_LIST_ORDER.indexOf(a.platform) -
+        AD_PLATFORM_LIST_ORDER.indexOf(b.platform);
+      if (platformDiff !== 0) return platformDiff;
+      return a.accountName.localeCompare(b.accountName);
+    });
+
+    return sorted.map((account) => {
+      const platformName = adAccountKindLabel(account.platform);
+      return {
+        value: account.id,
+        label: `${account.accountName} · ${account.clientName}`,
+        group: platformName,
+        badge: (
+          <span className={AD_PLATFORM_BADGE_CLASS[account.platform]}>
+            {platformName}
+          </span>
+        ),
+      };
+    });
   }, [accounts]);
-
-  const platform: AdAccountKind =
-    activeAccount?.platform ?? availablePlatforms[0] ?? "meta_ads";
-
-  const options = useMemo(
-    () =>
-      accounts
-        .filter((account) => account.platform === platform)
-        .map((account) => ({
-          value: account.id,
-          label: `${account.accountName} · ${account.clientName}`,
-        })),
-    [accounts, platform],
-  );
 
   useEffect(() => {
     if (!accountId) return;
@@ -55,47 +57,22 @@ export function GrowthAdAccountSelect() {
     writeAdAccountIdForPlatform(activeAccount.platform, activeAccount.id);
   }, [activeAccount]);
 
-  const handlePlatformChange = (nextPlatform: AdAccountKind) => {
-    if (nextPlatform === platform) return;
-    const nextAccount = pickAdAccountForPlatform(accounts, nextPlatform);
-    if (!nextAccount) return;
-    setAccountId(nextAccount.id);
-  };
-
   return (
-    <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-end">
-      <GrowthAdsPlatformToggle
-        value={platform}
-        onChange={handlePlatformChange}
-        availablePlatforms={availablePlatforms}
-        disableUnavailable
+    <div className="w-full sm:w-80">
+      <ComboBox
+        value={accountId}
+        onChange={(next) => {
+          if (next) setAccountId(next);
+        }}
+        options={options}
+        isLoading={isLoading}
+        placeholder="Search ad accounts..."
+        listTitle="Ad accounts"
+        emptyMessage="No ad accounts connected yet."
+        noMatchMessage="No matching ad accounts found."
+        mode="value"
+        disabled={options.length === 0 && !isLoading}
       />
-      <div className="w-full sm:w-72">
-        <ComboBox
-          value={accountId}
-          onChange={(next) => {
-            if (next) setAccountId(next);
-          }}
-          options={options}
-          isLoading={isLoading}
-          placeholder={
-            platform === "google_ads"
-              ? "Select Google ad account"
-              : "Select Meta ad account"
-          }
-          listTitle={
-            platform === "google_ads" ? "Google ad accounts" : "Meta ad accounts"
-          }
-          emptyMessage={
-            platform === "google_ads"
-              ? "No Google ad accounts connected yet."
-              : "No Meta ad accounts connected yet."
-          }
-          noMatchMessage="No matching ad accounts found."
-          mode="value"
-          disabled={options.length === 0 && !isLoading}
-        />
-      </div>
     </div>
   );
 }

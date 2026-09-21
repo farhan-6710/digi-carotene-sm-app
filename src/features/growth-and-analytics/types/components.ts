@@ -19,7 +19,6 @@ import type {
   GrowthAdDetailView,
   OrganicAccount,
   OrganicAccountForm,
-  ReportableAccount,
   ReportRow,
   ReportType,
   SpendPoint,
@@ -239,25 +238,3 @@ export type AdAccountDialogProps = {
   onDelete?: () => void;
 };
 
-export type CustomReportFormState = {
-  selectedAccountIds: string[];
-  selectedMetricIds: string[];
-  startDate: string;
-  endDate: string;
-  format: string;
-};
-
-export type CustomReportBuilderFormProps = {
-  values: CustomReportFormState;
-  accounts: ReportableAccount[];
-  isAccountsLoading?: boolean;
-  accountsEmpty?: boolean;
-  isGenerating?: boolean;
-  onToggleAccount: (id: string) => void;
-  onToggleMetric: (id: string) => void;
-  onFieldChange: <Field extends "startDate" | "endDate" | "format">(
-    field: Field,
-    value: string,
-  ) => void;
-  onGenerate: () => void;
-};

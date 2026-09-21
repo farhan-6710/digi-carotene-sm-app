@@ -9,6 +9,7 @@ Deploy this folder to `public_html/php/`. Deploy overview: **[docs/deploy.md](..
 | `sync_google_ad_acc_backfill.php` | Google Ads N-day backfill (default 90; triggered on Manage Accounts connect) |
 | `send_midnight_post_digest.php` | Digest email + in-app notifications |
 | `send_midnight_task_digest.php` | High-priority task digest email + in-app notifications |
+| `send_custom_report.php` | Email custom Growth report PDF (Resend attachment; called from Custom Report Builder) |
 | `test.php` | Smoke test |
 
 Logic lives under `lib/` (shared) and `sync/organic/`, `sync/ads/` (runners). Root scripts stay thin cron entrypoints.

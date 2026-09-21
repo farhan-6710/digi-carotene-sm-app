@@ -402,14 +402,6 @@ export type CreateGrowthReportInput = {
   periodEnd: string;
 };
 
-export type ReportableAccount = {
-  id: string;
-  label: string;
-  caption: string;
-  kind: "organic" | "ad";
-  growthPlatform?: GrowthPlatform;
-};
-
 export type OrganicAccount = {
   id: string;
   platform: GrowthPlatform;

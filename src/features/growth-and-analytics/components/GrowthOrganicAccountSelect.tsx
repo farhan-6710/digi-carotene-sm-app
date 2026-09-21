@@ -2,15 +2,15 @@ import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router";
 
 import { GROWTH_ORGANIC_ACCOUNT_PARAM } from "@/features/growth-and-analytics/constants/growthUrlParams";
+import {
+  ORGANIC_PLATFORM_BADGE_CLASS,
+  ORGANIC_PLATFORM_LIST_ORDER,
+  organicPlatformLabel,
+} from "@/features/growth-and-analytics/constants/growthPlatformConfig";
 import { useGrowthSelectedAccount } from "@/features/growth-and-analytics/hooks/useGrowthSelectedAccount";
 import { ComboBox } from "@/shared/ui/ComboBox";
 
-import { GrowthOrganicPlatformToggle } from "./GrowthOrganicPlatformToggle";
-import type { GrowthPlatform } from "../types/types";
-import {
-  pickOrganicAccountForPlatform,
-  writeOrganicAccountIdForPlatform,
-} from "../utils/organicAccountSelection";
+import { writeOrganicAccountIdForPlatform } from "../utils/organicAccountSelection";
 
 export function GrowthOrganicAccountSelect() {
   const {
@@ -22,27 +22,29 @@ export function GrowthOrganicAccountSelect() {
   } = useGrowthSelectedAccount();
   const [searchParams] = useSearchParams();
 
-  const availablePlatforms = useMemo(() => {
-    const platforms = new Set<GrowthPlatform>();
-    for (const account of accounts) {
-      platforms.add(account.platform);
-    }
-    return [...platforms];
+  const options = useMemo(() => {
+    const sorted = [...accounts].sort((a, b) => {
+      const platformDiff =
+        ORGANIC_PLATFORM_LIST_ORDER.indexOf(a.platform) -
+        ORGANIC_PLATFORM_LIST_ORDER.indexOf(b.platform);
+      if (platformDiff !== 0) return platformDiff;
+      return a.accountName.localeCompare(b.accountName);
+    });
+
+    return sorted.map((account) => {
+      const platformName = organicPlatformLabel(account.platform);
+      return {
+        value: account.id,
+        label: account.accountName,
+        group: platformName,
+        badge: (
+          <span className={ORGANIC_PLATFORM_BADGE_CLASS[account.platform]}>
+            {platformName}
+          </span>
+        ),
+      };
+    });
   }, [accounts]);
-
-  const platform: GrowthPlatform =
-    activeAccount?.platform ?? availablePlatforms[0] ?? "instagram";
-
-  const options = useMemo(
-    () =>
-      accounts
-        .filter((account) => account.platform === platform)
-        .map((account) => ({
-          value: account.id,
-          label: account.accountName,
-        })),
-    [accounts, platform],
-  );
 
   // When selection comes from sessionStorage (nav dropped `?account=`), put it
   // back in the URL so this page stays shareable / refreshable.
@@ -52,50 +54,27 @@ export function GrowthOrganicAccountSelect() {
     setAccountId(accountId);
   }, [accountId, searchParams, setAccountId]);
 
-  // Remember last pick per platform for tab switches.
   useEffect(() => {
     if (!activeAccount) return;
     writeOrganicAccountIdForPlatform(activeAccount.platform, activeAccount.id);
   }, [activeAccount]);
 
-  const handlePlatformChange = (nextPlatform: GrowthPlatform) => {
-    if (nextPlatform === platform) return;
-    const nextAccount = pickOrganicAccountForPlatform(accounts, nextPlatform);
-    if (!nextAccount) return;
-    setAccountId(nextAccount.id);
-  };
-
   return (
-    <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-end">
-      <GrowthOrganicPlatformToggle
-        value={platform}
-        onChange={handlePlatformChange}
-        availablePlatforms={availablePlatforms}
+    <div className="w-full sm:w-72">
+      <ComboBox
+        value={accountId}
+        onChange={(next) => {
+          if (next) setAccountId(next);
+        }}
+        options={options}
+        isLoading={isLoading}
+        placeholder="Search accounts..."
+        listTitle="Organic accounts"
+        emptyMessage="No organic accounts connected yet."
+        noMatchMessage="No matching accounts found."
+        mode="value"
+        disabled={options.length === 0 && !isLoading}
       />
-      <div className="w-full sm:w-64">
-        <ComboBox
-          value={accountId}
-          onChange={(next) => {
-            if (next) setAccountId(next);
-          }}
-          options={options}
-          isLoading={isLoading}
-          placeholder={
-            platform === "facebook" ? "Select Facebook Page" : "Select Instagram"
-          }
-          listTitle={
-            platform === "facebook" ? "Facebook Pages" : "Instagram accounts"
-          }
-          emptyMessage={
-            platform === "facebook"
-              ? "No Facebook Pages connected yet."
-              : "No Instagram accounts connected yet."
-          }
-          noMatchMessage="No matching accounts found."
-          mode="value"
-          disabled={options.length === 0 && !isLoading}
-        />
-      </div>
     </div>
   );
 }

@@ -112,3 +112,24 @@ export function getOrganicDashboardMode(
 export function organicPlatformLabel(platform: GrowthPlatform): string {
   return ORGANIC_PLATFORM_CONFIG[platform].label;
 }
+
+/** Text color for platform badges in account comboboxes. */
+export const ORGANIC_PLATFORM_BADGE_CLASS: Record<GrowthPlatform, string> = {
+  instagram: "text-[#E1306C]",
+  facebook: "text-[#1877F2]",
+};
+
+export const AD_PLATFORM_BADGE_CLASS: Record<AdAccountKind, string> = {
+  meta_ads: "text-[#1877F2]",
+  google_ads: "text-[#34A853]",
+};
+
+export const ORGANIC_PLATFORM_LIST_ORDER: GrowthPlatform[] = [
+  "instagram",
+  "facebook",
+];
+
+export const AD_PLATFORM_LIST_ORDER: AdAccountKind[] = [
+  "meta_ads",
+  "google_ads",
+];
