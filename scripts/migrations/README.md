@@ -73,6 +73,8 @@ Run only migrations you have **not** applied yet, in order:
 | `078_google_ads_campaign_type_metrics.sql` | Google campaign-type KPI columns + asset-group / call metric tables |
 | `079_rename_login_customer_id_to_manager_id.sql` | Renames `growth_ad_accounts.login_customer_id` → `manager_id` |
 | `080_google_ads_local_action_metrics.sql` | Local/Call location-asset action columns on campaign daily metrics |
+| `081_rename_growth_ads_tables_to_ad.sql` | Renames remaining `growth_ads_*` → `growth_ad_*` (creative master/daily → `growth_ad_ad` / `growth_ad_ad_daily_metrics`) |
+| `082_rename_growth_ad_ad_daily_metrics.sql` | Renames `growth_ad_ad_daily_metrics` → `growth_ad_daily_metrics` |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

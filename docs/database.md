@@ -85,7 +85,7 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 | `production_plan_items` | Content in a plan: shoot date, context, content pillar, script, reference link, three approvals, shoot completed + optional notes |
 | `production_plan_team_members` | Extra people on a plan. All `admin` team members are auto-assigned on create/update (unless they are already manager or shoot incharge). |
 | `growth_organic_*` | Connected IG/Page + post metrics + daily followers |
-| `growth_ads_*` | Connected ad accounts + campaign / ad set / ad daily metrics |
+| `growth_ad_*` | Connected ad accounts + campaign / ad set / ad daily metrics |
 
 Types for the UI live in `src/features/<feature>/types/types.ts` — not duplicated here.
 

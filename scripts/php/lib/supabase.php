@@ -144,7 +144,7 @@ function upsertAdCampaignMetric(array $config, string $adAccountId, array $row):
     supabaseRequest(
         $config,
         'POST',
-        'growth_ads_campaign_daily_metrics?on_conflict=ad_account_id,campaign_id,metric_date',
+        'growth_ad_campaign_daily_metrics?on_conflict=ad_account_id,campaign_id,metric_date',
         $payload,
         ['Prefer: resolution=merge-duplicates,return=minimal'],
     );
@@ -155,7 +155,7 @@ function upsertGoogleAssetGroupMetric(array $config, string $adAccountId, array 
     supabaseRequest(
         $config,
         'POST',
-        'growth_ads_asset_group_daily_metrics?on_conflict=ad_account_id,asset_group_id,metric_date,ad_network_type',
+        'growth_ad_asset_group_daily_metrics?on_conflict=ad_account_id,asset_group_id,metric_date,ad_network_type',
         [
             'ad_account_id' => $adAccountId,
             'campaign_id' => $row['campaign_id'],
@@ -178,7 +178,7 @@ function upsertGoogleCallMetric(array $config, string $adAccountId, array $row):
     supabaseRequest(
         $config,
         'POST',
-        'growth_ads_call_metrics?on_conflict=ad_account_id,call_resource_name',
+        'growth_ad_call_metrics?on_conflict=ad_account_id,call_resource_name',
         [
             'ad_account_id' => $adAccountId,
             'campaign_id' => $row['campaign_id'],
@@ -201,7 +201,7 @@ function upsertAdsetMaster(array $config, string $adAccountId, array $row): void
     supabaseRequest(
         $config,
         'POST',
-        'growth_ads_adsets?on_conflict=ad_account_id,adset_id',
+        'growth_ad_adsets?on_conflict=ad_account_id,adset_id',
         [
             'ad_account_id' => $adAccountId,
             'campaign_id' => $row['campaign_id'],
@@ -223,7 +223,7 @@ function upsertAdMaster(array $config, string $adAccountId, array $row): void
     supabaseRequest(
         $config,
         'POST',
-        'growth_ads_ads?on_conflict=ad_account_id,ad_id',
+        'growth_ad_ad?on_conflict=ad_account_id,ad_id',
         [
             'ad_account_id' => $adAccountId,
             'campaign_id' => $row['campaign_id'],
@@ -243,7 +243,7 @@ function upsertAdsetMetric(array $config, string $adAccountId, array $row): void
     supabaseRequest(
         $config,
         'POST',
-        'growth_ads_adset_daily_metrics?on_conflict=ad_account_id,adset_id,metric_date',
+        'growth_ad_adset_daily_metrics?on_conflict=ad_account_id,adset_id,metric_date',
         [
             'ad_account_id' => $adAccountId,
             'campaign_id' => $row['campaign_id'],
@@ -267,7 +267,7 @@ function upsertAdMetric(array $config, string $adAccountId, array $row): void
     supabaseRequest(
         $config,
         'POST',
-        'growth_ads_ad_daily_metrics?on_conflict=ad_account_id,ad_id,metric_date',
+        'growth_ad_daily_metrics?on_conflict=ad_account_id,ad_id,metric_date',
         [
             'ad_account_id' => $adAccountId,
             'campaign_id' => $row['campaign_id'],

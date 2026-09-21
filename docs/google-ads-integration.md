@@ -127,7 +127,7 @@ Sync follows the same Campaign Type Matrix as the UI (`googleCampaignTypeMatrix.
    - Demand Gen / Video → CPM; Video also views, CPV, quartile rates
 3. **Separate resources:** Performance Max → `asset_group` (+ network split); Local/Call → `call_view` (upserted; UI KPIs for calls not wired yet).
 
-Nullable type-specific columns live on `growth_ads_campaign_daily_metrics` (migration **078**). Asset-group and call rows use `growth_ads_asset_group_daily_metrics` / `growth_ads_call_metrics`.
+Nullable type-specific columns live on `growth_ad_campaign_daily_metrics` (migration **078**). Asset-group and call rows use `growth_ad_asset_group_daily_metrics` / `growth_ad_call_metrics`.
 
 **Historical backfill** for Google runs on connect via `sync_google_ad_acc_backfill.php`. Manual:
 

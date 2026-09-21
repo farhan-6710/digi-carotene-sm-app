@@ -57,7 +57,7 @@ export type GoogleCampaignKpiDef = {
   /** true = derive from spend/clicks/impressions/conversions in the app. */
   computed: boolean;
   /**
-   * true = we can render a value from synced growth_ads_* campaign rows
+   * true = we can render a value from synced growth_ad_* campaign rows
    * (or compute it). Call / Quality Score / installs stay false until wired.
    */
   renderableToday: boolean;
