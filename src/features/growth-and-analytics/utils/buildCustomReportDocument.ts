@@ -33,11 +33,12 @@ import type {
   OrganicAccount,
   PastPostMetric,
 } from "../types/types";
+import { buildCampaignStatCards } from "./campaignMetrics";
 import { formatCustomReportPeriodLabel } from "./customReportPeriod";
-
-function inRange(date: string, from: string, to: string): boolean {
-  return date >= from && date <= to;
-}
+import {
+  mapPastPostToPostRow,
+  sumPostInteractionTotals,
+} from "./instagramPostMetrics";
 
 function pushStat(
   stats: CustomReportSectionStat[],
@@ -60,18 +61,21 @@ function topPostsFromMetrics(posts: PastPostMetric[]) {
   return [...posts]
     .sort((a, b) => b.reach + b.likes - (a.reach + a.likes))
     .slice(0, CUSTOM_REPORT_TOP_POSTS)
-    .map((post) => ({
-      caption: (post.caption ?? "").slice(0, 90) || "(No caption)",
-      detail: [
-        `Reach ${formatCompact(post.reach)}`,
-        `Views ${formatCompact(post.impressions)}`,
-        `Likes ${formatCompact(post.likes)}`,
-        `Comments ${formatCompact(post.comments)}`,
-        `Saves ${formatCompact(post.saves)}`,
-        `Shares ${formatCompact(post.shares)}`,
-        `Reposts ${formatCompact(post.reposts)}`,
-      ].join(" · "),
-    }));
+    .map((post) => {
+      const row = mapPastPostToPostRow(post);
+      return {
+        caption: (row.caption ?? "").slice(0, 90) || "(No caption)",
+        detail: [
+          `Reach ${formatCompact(row.reach)}`,
+          `Views ${formatCompact(row.views)}`,
+          `Likes ${formatCompact(row.likes)}`,
+          `Comments ${formatCompact(row.comments)}`,
+          `Saves ${formatCompact(row.saves)}`,
+          `Shares ${formatCompact(row.shares)}`,
+          `Reposts ${formatCompact(row.reposts)}`,
+        ].join(" · "),
+      };
+    });
 }
 
 function sumCampaignRows(rows: CampaignMetricRow[]) {
@@ -124,7 +128,7 @@ async function buildOrganicSection(
   if (account.platform === "facebook") {
     pushStat(stats, "Page followers", formatCompact(account.followers));
     note =
-      "Facebook post history is live Graph only — range totals are not stored yet.";
+      "Facebook post history is live Graph only — use Content Performance for live Facebook posts.";
     return {
       accountId: account.id,
       accountName: account.accountName,
@@ -149,35 +153,36 @@ async function buildOrganicSection(
     };
   }
 
-  const days = await fetchDailyFollowersForProfile(profile.id, { from, to });
+  // Same APIs + date filter as Content Performance / Dashboard.
+  const [days, posts] = await Promise.all([
+    fetchDailyFollowersForProfile(profile.id, { from, to }),
+    fetchPastPostsForProfile(profile.id, { from, to }),
+  ]);
+
   const gained = days.reduce((sum, row) => sum + row.gained, 0);
   pushStat(stats, "Followers gained", formatCompact(gained));
-  pushStat(stats, "Current followers", formatCompact(account.followers));
-
-  const posts = (await fetchPastPostsForProfile(profile.id)).filter((post) =>
-    inRange(post.createdAt.slice(0, 10), from, to),
+  pushStat(
+    stats,
+    "Current followers",
+    formatCompact(profile.followersCount || account.followers),
   );
 
   const reach = posts.reduce((sum, post) => sum + post.reach, 0);
-  const impressions = posts.reduce((sum, post) => sum + post.impressions, 0);
-  const likes = posts.reduce((sum, post) => sum + post.likes, 0);
-  const comments = posts.reduce((sum, post) => sum + post.comments, 0);
-  const saves = posts.reduce((sum, post) => sum + post.saves, 0);
-  const shares = posts.reduce((sum, post) => sum + post.shares, 0);
-  const reposts = posts.reduce((sum, post) => sum + post.reposts, 0);
+  const interactions = sumPostInteractionTotals(posts);
 
   pushStat(stats, "Posts in range", formatCompact(posts.length));
   pushStat(stats, "Reach", formatCompact(reach));
-  pushStat(stats, "Views", formatCompact(impressions));
-  pushStat(stats, "Likes", formatCompact(likes));
-  pushStat(stats, "Comments", formatCompact(comments));
-  pushStat(stats, "Saves", formatCompact(saves));
-  pushStat(stats, "Shares", formatCompact(shares));
-  pushStat(stats, "Reposts", formatCompact(reposts));
+  pushStat(stats, "Views", formatCompact(interactions.views));
+  pushStat(stats, "Likes", formatCompact(interactions.likes));
+  pushStat(stats, "Comments", formatCompact(interactions.comments));
+  pushStat(stats, "Saves", formatCompact(interactions.saves));
+  pushStat(stats, "Shares", formatCompact(interactions.shares));
+  pushStat(stats, "Reposts", formatCompact(interactions.reposts));
 
   topPosts = topPostsFromMetrics(posts);
   if (posts.length === 0) {
-    note = "No posts with metrics in this date range.";
+    note =
+      "No posts published in this date range (same filter as Content Performance). Try This month or Last 3 months.";
   }
 
   return {
@@ -196,11 +201,12 @@ async function buildAdSection(
   from: string,
   to: string,
 ): Promise<CustomReportAccountSection> {
-  const rows = (await fetchAdCampaignMetricsForAccount(account.id)).filter(
-    (row) => inRange(row.date, from, to),
-  );
+  // Same API + date filter as Campaign Analytics.
+  const rows = await fetchAdCampaignMetricsForAccount(account.id, {
+    from,
+    to,
+  });
   const currency = account.currencyCode || "INR";
-  const totals = sumCampaignRows(rows);
   const stats: CustomReportSectionStat[] = [];
 
   if (rows.length === 0) {
@@ -211,10 +217,20 @@ async function buildAdSection(
       kind: "ad",
       stats,
       topPosts: [],
-      note: "No campaign daily metrics in this date range.",
+      note: "No campaign daily metrics in this date range (same filter as Campaign Analytics).",
     };
   }
 
+  // Core KPIs match Campaign Analytics stat cards.
+  for (const card of buildCampaignStatCards(
+    rows,
+    currency,
+    account.platform,
+  )) {
+    pushStat(stats, card.label, card.value);
+  }
+
+  const totals = sumCampaignRows(rows);
   const ctr =
     totals.impressions > 0
       ? (totals.clicks / totals.impressions) * 100
@@ -227,15 +243,13 @@ async function buildAdSection(
   const frequency =
     totals.reach > 0 ? totals.impressions / totals.reach : 0;
 
-  pushStat(stats, "Spend", formatCurrency(totals.spend, currency));
-  pushStat(stats, "Impressions", formatCompact(totals.impressions));
   pushStat(stats, "Reach", formatCompact(totals.reach));
-  pushStat(stats, "Clicks", formatCompact(totals.clicks));
   pushStat(stats, "CTR", formatPercent(ctr));
-  pushStat(stats, "CPC", formatCpm(cpc, currency));
+  if (account.platform !== "google_ads") {
+    pushStat(stats, "CPC", formatCpm(cpc, currency));
+  }
   pushStat(stats, "CPM", formatCpm(cpm, currency));
   pushStat(stats, "Frequency", formatFrequency(frequency));
-  pushStat(stats, "Conversions", formatCompact(totals.conversions));
   pushIfPositive(
     stats,
     "Conversion value",
@@ -250,10 +264,6 @@ async function buildAdSection(
   pushIfPositive(stats, "Orders", totals.localOrders);
   pushIfPositive(stats, "Menu views", totals.localMenuViews);
   pushIfPositive(stats, "Other local actions", totals.localOtherActions);
-
-  const uniqueCampaigns = new Set(rows.map((row) => row.campaignId)).size;
-  pushStat(stats, "Campaigns with data", formatCompact(uniqueCampaigns));
-  pushStat(stats, "Metric days", formatCompact(new Set(rows.map((r) => r.date)).size));
 
   return {
     accountId: account.id,

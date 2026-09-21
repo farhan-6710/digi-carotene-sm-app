@@ -31,7 +31,7 @@ export function GrowthCustomReportBuilderPage() {
     <PageContent>
       <PageHeader
         heading="Custom Report Builder"
-        description="Pick organic or ads accounts and a date range — the PDF includes all synced metrics for that period."
+        description="Pick organic or ads accounts and a date range — numbers match Content Performance / Campaign Analytics for the same period."
       />
 
       {accountsError ? <ErrorBanner message={accountsError} /> : null}

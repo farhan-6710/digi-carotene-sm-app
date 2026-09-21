@@ -179,8 +179,10 @@ export function CustomReportBuilderForm({
         <section>
           <h3 className="text-sm font-semibold">4. Date range</h3>
           <p className="mb-3 text-xs text-muted-foreground">
-            One shared range for all selected accounts (max {CUSTOM_REPORT_MAX_DAYS}{" "}
-            days). The PDF includes every synced metric for that period.
+            Same windows as Content Performance / Campaign Analytics (max{" "}
+            {CUSTOM_REPORT_MAX_DAYS} days). Organic totals are for posts{" "}
+            <span className="text-foreground">published</span> in the range;
+            ads use daily campaign metrics in the range.
           </p>
           <div className="mb-3 inline-flex flex-wrap gap-1 rounded-full border border-border bg-muted/30 p-1">
             {CUSTOM_REPORT_PERIOD_OPTIONS.map((option) => (

@@ -85,7 +85,23 @@ export function useCustomReportBuilder() {
   };
 
   const setPeriodId = (periodId: CustomReportPeriodId) => {
-    setValues((prev) => ({ ...prev, periodId }));
+    setValues((prev) => {
+      if (periodId !== "custom") {
+        return { ...prev, periodId };
+      }
+      // Prefill custom from the period the user was viewing — avoid today→today zeros.
+      const resolved = resolveCustomReportPeriod(
+        prev.periodId === "custom" ? "this_month" : prev.periodId,
+        prev.startDate,
+        prev.endDate,
+      );
+      return {
+        ...prev,
+        periodId,
+        startDate: resolved.from,
+        endDate: resolved.to,
+      };
+    });
     setPdfBlob(null);
   };
 

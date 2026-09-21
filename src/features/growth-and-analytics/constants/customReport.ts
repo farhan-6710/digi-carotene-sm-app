@@ -1,7 +1,7 @@
 import type { AdAccountKind, GrowthPlatform } from "../types/types";
 
-/** Cap date span so reports stay light and readable. */
-export const CUSTOM_REPORT_MAX_DAYS = 31;
+/** Matches Content Performance “Last 3 Months” (~93 days). */
+export const CUSTOM_REPORT_MAX_DAYS = 93;
 
 /** Cap accounts per PDF. */
 export const CUSTOM_REPORT_MAX_ACCOUNTS = 5;
@@ -11,7 +11,12 @@ export const CUSTOM_REPORT_TOP_POSTS = 5;
 
 export type CustomReportKind = "organic" | "ad";
 
-export type CustomReportPeriodId = "this_month" | "last_month" | "custom";
+/** Same presets as Growth Content Performance / Campaign Analytics. */
+export type CustomReportPeriodId =
+  | "this_month"
+  | "last_month"
+  | "last_3_months"
+  | "custom";
 
 export const CUSTOM_REPORT_PERIOD_OPTIONS: {
   id: CustomReportPeriodId;
@@ -19,6 +24,7 @@ export const CUSTOM_REPORT_PERIOD_OPTIONS: {
 }[] = [
   { id: "this_month", label: "This month" },
   { id: "last_month", label: "Last month" },
+  { id: "last_3_months", label: "Last 3 months" },
   { id: "custom", label: "Custom range" },
 ];
 

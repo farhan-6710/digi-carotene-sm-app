@@ -1,10 +1,18 @@
-import { format, parseISO, startOfMonth, endOfMonth, subMonths, differenceInCalendarDays } from "date-fns";
+import {
+  differenceInCalendarDays,
+  endOfMonth,
+  format,
+  parseISO,
+  startOfMonth,
+  subMonths,
+} from "date-fns";
 
 import {
   CUSTOM_REPORT_MAX_DAYS,
   type CustomReportPeriodId,
 } from "../constants/customReport";
 
+/** Same calendar windows as Content Performance / Campaign Analytics date filters. */
 export function resolveCustomReportPeriod(
   periodId: CustomReportPeriodId,
   startDate: string,
@@ -14,7 +22,7 @@ export function resolveCustomReportPeriod(
   if (periodId === "this_month") {
     return {
       from: format(startOfMonth(today), "yyyy-MM-dd"),
-      to: format(today, "yyyy-MM-dd"),
+      to: format(endOfMonth(today), "yyyy-MM-dd"),
     };
   }
 
@@ -23,6 +31,13 @@ export function resolveCustomReportPeriod(
     return {
       from: format(startOfMonth(last), "yyyy-MM-dd"),
       to: format(endOfMonth(last), "yyyy-MM-dd"),
+    };
+  }
+
+  if (periodId === "last_3_months") {
+    return {
+      from: format(startOfMonth(subMonths(today, 2)), "yyyy-MM-dd"),
+      to: format(endOfMonth(today), "yyyy-MM-dd"),
     };
   }
 
