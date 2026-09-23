@@ -1,10 +1,32 @@
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Minus } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 
 import { cn } from "@/shared/lib/utils";
 import type { MultiSelectProps } from "@/shared/types/components";
 import { Button } from "@/shared/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
+
+function SelectionMark({
+  checked,
+  partial,
+}: {
+  checked: boolean;
+  partial?: boolean;
+}) {
+  return (
+    <span
+      className={cn(
+        "flex size-4 shrink-0 items-center justify-center rounded border transition-colors",
+        checked || partial
+          ? "border-primary bg-primary text-primary-foreground"
+          : "border-muted-foreground/40 bg-background",
+      )}
+    >
+      {checked ? <Check className="size-2.5 stroke-[3.5]" /> : null}
+      {partial && !checked ? <Minus className="size-2.5 stroke-[3.5]" /> : null}
+    </span>
+  );
+}
 
 export function MultiSelect({
   id,
@@ -56,6 +78,18 @@ export function MultiSelect({
     onOpenChange?.(nextOpen);
   };
 
+  const availableValues = useMemo(
+    () => availableOptions.map((option) => option.value),
+    [availableOptions],
+  );
+  const selectedAvailableCount = availableValues.filter((optionValue) =>
+    value.includes(optionValue),
+  ).length;
+  const allSelected =
+    availableValues.length > 0 &&
+    selectedAvailableCount === availableValues.length;
+  const someSelected = selectedAvailableCount > 0 && !allSelected;
+
   const toggleValue = (optionValue: string) => {
     if (value.includes(optionValue)) {
       onChange(value.filter((entry) => entry !== optionValue));
@@ -65,65 +99,78 @@ export function MultiSelect({
     onChange([...value, optionValue]);
   };
 
+  const selectAll = () => onChange(availableValues);
+  const deselectAll = () => onChange([]);
+
   const listBody: ReactNode = isLoading ? (
     <p className="px-3 py-2 text-sm text-muted-foreground">Loading...</p>
   ) : availableOptions.length === 0 ? (
     <p className="px-3 py-2 text-sm text-muted-foreground">{emptyMessage}</p>
   ) : (
-    <div
-      className="min-h-0 max-h-72 flex-1 overflow-y-auto overscroll-contain p-2"
-      onWheel={(event) => event.stopPropagation()}
-    >
-      <div className="flex flex-col gap-1">
-        {groupedRows.map((row) => {
-          if (row.type === "group") {
-            return (
-              <p
-                key={`group-${row.label}`}
-                className="px-3 pt-2 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase"
-              >
-                {row.label}
-              </p>
-            );
-          }
-
-          const { option } = row;
-          const isSelected = value.includes(option.value);
-
-          return (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => toggleValue(option.value)}
-              className={cn(
-                "flex w-full min-w-0 items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-muted/60",
-                isSelected
-                  ? "bg-primary/10 text-primary"
-                  : "text-foreground hover:bg-muted",
-              )}
-            >
-              <span className="flex min-w-0 items-center gap-3">
-                <span
-                  className={cn(
-                    "flex size-4 shrink-0 items-center justify-center rounded border transition-colors",
-                    isSelected
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-muted-foreground/40 bg-background",
-                  )}
+    <>
+      {availableOptions.length >= 2 ? (
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border px-2 py-1.5">
+          <button
+            type="button"
+            role="checkbox"
+            aria-checked={allSelected ? true : someSelected ? "mixed" : false}
+            onClick={allSelected ? deselectAll : selectAll}
+            className="flex min-w-0 items-center gap-3 rounded-lg px-3 py-1.5 text-left text-sm transition-colors hover:bg-muted/60"
+          >
+            <SelectionMark checked={allSelected} partial={someSelected} />
+            <span className="font-medium text-foreground">
+              {allSelected ? "Deselect all" : "Select all"}
+            </span>
+          </button>
+          <span className="pr-2 text-xs text-muted-foreground tabular-nums">
+            {selectedAvailableCount} selected
+          </span>
+        </div>
+      ) : null}
+      <div
+        className="min-h-0 max-h-72 flex-1 overflow-y-auto overscroll-contain p-2"
+        onWheel={(event) => event.stopPropagation()}
+      >
+        <div className="flex flex-col gap-1">
+          {groupedRows.map((row) => {
+            if (row.type === "group") {
+              return (
+                <p
+                  key={`group-${row.label}`}
+                  className="px-3 pt-2 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase"
                 >
-                  {isSelected ? (
-                    <Check className="size-2.5 stroke-[3.5]" />
-                  ) : null}
+                  {row.label}
+                </p>
+              );
+            }
+
+            const { option } = row;
+            const isSelected = value.includes(option.value);
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => toggleValue(option.value)}
+                className={cn(
+                  "flex w-full min-w-0 items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-muted/60",
+                  isSelected
+                    ? "bg-primary/10 text-primary"
+                    : "text-foreground hover:bg-muted",
+                )}
+              >
+                <span className="flex min-w-0 items-center gap-3">
+                  <SelectionMark checked={isSelected} />
+                  <span className="truncate font-normal text-foreground">
+                    {option.label}
+                  </span>
                 </span>
-                <span className="truncate font-normal text-foreground">
-                  {option.label}
-                </span>
-              </span>
-            </button>
-          );
-        })}
+              </button>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </>
   );
 
   const selectedLabels = useMemo(
