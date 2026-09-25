@@ -64,6 +64,17 @@ export type LeadAttachment = {
 export type LeadActivityStatus = "pending" | "in_progress" | "completed";
 export type LeadActivityPriority = "low" | "medium" | "high";
 export type LeadMeetingVenue = "client_location" | "in_office" | "online";
+export type CrmSheetActivityKind = "task" | "meeting" | "call";
+
+export type CrmSheetActivity = {
+  id: string;
+  kind: CrmSheetActivityKind;
+  title: string;
+  leadId: string;
+  leadName: string;
+  status: LeadActivityStatus;
+  meta: string;
+};
 
 export type LeadTask = {
   id: string;

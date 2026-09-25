@@ -3,6 +3,7 @@ import type {
   LeadFormValues,
 } from "@/features/crm/utils/leadFormUtils";
 import type {
+  CrmSheetActivity,
   Lead,
   LeadScore,
   LeadSource,
@@ -131,4 +132,23 @@ export type LeadActivitiesSectionProps = {
     input: import("@/features/crm/types/types").CreateLeadCallInput,
   ) => Promise<void>;
   onDeleteCall: (callId: string) => Promise<void>;
+};
+
+export type CrmActivitiesSheetListProps = {
+  onNavigate: () => void;
+};
+
+export type CrmActivitySheetGroupProps = {
+  label: string;
+  count: number;
+  expanded: boolean;
+  onToggle: () => void;
+  items: CrmSheetActivity[];
+  emptyMessage: string;
+  onNavigate: () => void;
+};
+
+export type CrmActivitySheetRowProps = {
+  activity: CrmSheetActivity;
+  onNavigate: () => void;
 };

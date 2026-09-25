@@ -1,4 +1,5 @@
 import type { StatusKey } from "@/features/posts-management/types/types";
+import type { TeamWorkSheetTabId } from "@/features/team-portal/constants/teamWorkSheet";
 import type {
   TeamDashboardPostItem,
   TeamNeedsAttentionItem,
@@ -43,4 +44,10 @@ export type TeamNeedsAttentionProps = {
   items: TeamNeedsAttentionItem[];
   isLoading: boolean;
   error: string | null;
+};
+
+export type TeamWorkSheetTabBarProps = {
+  tabs: TeamWorkSheetTabId[];
+  value: TeamWorkSheetTabId;
+  onChange: (tab: TeamWorkSheetTabId) => void;
 };

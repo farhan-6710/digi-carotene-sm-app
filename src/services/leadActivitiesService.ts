@@ -57,6 +57,16 @@ export async function deleteLeadAttachment(
   if (error) throw new Error(error.message ?? "Failed to delete attachment.");
 }
 
+export async function fetchAllLeadTasks(): Promise<LeadTask[]> {
+  const { data, error } = await supabase
+    .from(DB.LEAD_TASKS.TABLE)
+    .select(DB.LEAD_TASKS.SELECT)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []) as LeadTask[];
+}
+
 export async function fetchLeadTasks(leadId: string): Promise<LeadTask[]> {
   const { data, error } = await supabase
     .from(DB.LEAD_TASKS.TABLE)
@@ -129,6 +139,16 @@ export async function deleteLeadTask(taskId: string): Promise<void> {
     .eq("id", taskId);
 
   if (error) throw new Error(error.message ?? "Failed to delete task.");
+}
+
+export async function fetchAllLeadMeetings(): Promise<LeadMeeting[]> {
+  const { data, error } = await supabase
+    .from(DB.LEAD_MEETINGS.TABLE)
+    .select(DB.LEAD_MEETINGS.SELECT)
+    .order("from_date", { ascending: true });
+
+  if (error) throw error;
+  return (data ?? []) as LeadMeeting[];
 }
 
 export async function fetchLeadMeetings(
@@ -209,6 +229,16 @@ export async function deleteLeadMeeting(meetingId: string): Promise<void> {
     .eq("id", meetingId);
 
   if (error) throw new Error(error.message ?? "Failed to delete meeting.");
+}
+
+export async function fetchAllLeadCalls(): Promise<LeadCall[]> {
+  const { data, error } = await supabase
+    .from(DB.LEAD_CALLS.TABLE)
+    .select(DB.LEAD_CALLS.SELECT)
+    .order("start_date", { ascending: true });
+
+  if (error) throw error;
+  return (data ?? []) as LeadCall[];
 }
 
 export async function fetchLeadCalls(leadId: string): Promise<LeadCall[]> {

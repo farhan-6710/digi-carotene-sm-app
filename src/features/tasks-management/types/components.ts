@@ -223,3 +223,12 @@ export type SubtasksSectionProps = {
   parentTask: Task;
   buildDetailPath?: (subtaskId: string) => string;
 };
+
+export type TasksSheetListProps = {
+  onNavigate: () => void;
+};
+
+export type TasksSheetRowProps = {
+  task: Task;
+  onNavigate: () => void;
+};
