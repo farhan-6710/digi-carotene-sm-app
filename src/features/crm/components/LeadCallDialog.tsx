@@ -53,7 +53,7 @@ export function LeadCallDialog({
   const duration = Number(values.durationMinutes);
   const canSave =
     values.title.trim().length > 0 &&
-    Boolean(values.start?.time.trim() && values.start.day) &&
+    Boolean(values.start) &&
     Number.isFinite(duration) &&
     duration > 0;
 

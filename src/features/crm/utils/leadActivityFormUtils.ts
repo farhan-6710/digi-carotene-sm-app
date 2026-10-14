@@ -1,5 +1,10 @@
 import type { PostDateTimeValue } from "@/features/posts-management/types/types";
-import { toPostDateTimeValue } from "@/features/posts-management/utils/postScheduleUtils";
+import {
+  isValidPostTime,
+  normalizePostTime,
+  parsePostDate,
+  toPostDateString,
+} from "@/features/posts-management/utils/postScheduleUtils";
 import type {
   LeadActivityPriority,
   LeadActivityStatus,
@@ -8,6 +13,36 @@ import type {
   LeadMeetingVenue,
   LeadTask,
 } from "@/features/crm/types/types";
+
+/** CRM activities: date required, time optional. */
+export function toLeadActivityDateTimeValue(
+  dateValue: string | null | undefined,
+  timeValue: string | null | undefined,
+): PostDateTimeValue | null {
+  const dateParts = parsePostDate(dateValue);
+  if (!dateParts) return null;
+
+  const time = timeValue?.trim() ?? "";
+  return {
+    year: dateParts.year,
+    month: dateParts.month,
+    day: dateParts.day,
+    time: time && isValidPostTime(time) ? normalizePostTime(time) : "",
+  };
+}
+
+/** CRM activities: date required, time optional (empty string when unset). */
+export function toLeadActivityRepositoryDateTime(
+  value: PostDateTimeValue | null,
+): { date: string; time: string } | null {
+  if (!value) return null;
+
+  const time = value.time.trim();
+  return {
+    date: toPostDateString(value.year, value.month, value.day),
+    time: time && isValidPostTime(time) ? normalizePostTime(time) : "",
+  };
+}
 
 export type LeadTaskFormValues = {
   title: string;
@@ -75,7 +110,7 @@ export function leadTaskToFormValues(task: LeadTask): LeadTaskFormValues {
     description: task.description ?? "",
     priority: task.priority,
     status: task.status,
-    eta: toPostDateTimeValue(task.eta_date, task.eta_time),
+    eta: toLeadActivityDateTimeValue(task.eta_date, task.eta_time),
   };
 }
 
@@ -86,8 +121,8 @@ export function leadMeetingToFormValues(
     title: meeting.title,
     description: meeting.description ?? "",
     status: meeting.status,
-    from: toPostDateTimeValue(meeting.from_date, meeting.from_time),
-    to: toPostDateTimeValue(meeting.to_date, meeting.to_time),
+    from: toLeadActivityDateTimeValue(meeting.from_date, meeting.from_time),
+    to: toLeadActivityDateTimeValue(meeting.to_date, meeting.to_time),
     venue: meeting.venue,
   };
 }
@@ -97,7 +132,7 @@ export function leadCallToFormValues(call: LeadCall): LeadCallFormValues {
     title: call.title,
     description: call.description ?? "",
     status: call.status,
-    start: toPostDateTimeValue(call.start_date, call.start_time),
+    start: toLeadActivityDateTimeValue(call.start_date, call.start_time),
     durationMinutes: String(call.duration_minutes),
   };
 }

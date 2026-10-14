@@ -18,11 +18,11 @@ import {
   leadCallToFormValues,
   leadMeetingToFormValues,
   leadTaskToFormValues,
+  toLeadActivityRepositoryDateTime,
   type LeadCallFormValues,
   type LeadMeetingFormValues,
   type LeadTaskFormValues,
 } from "@/features/crm/utils/leadActivityFormUtils";
-import { toRepositoryDateTime } from "@/features/posts-management/utils/postScheduleUtils";
 import { Button } from "@/shared/ui/button";
 import {
   DropdownMenu,
@@ -156,7 +156,7 @@ export function LeadActivitiesPanel({
         }
         onSave={() => {
           void (async () => {
-            const eta = toRepositoryDateTime(taskValues.eta);
+            const eta = toLeadActivityRepositoryDateTime(taskValues.eta);
             if (!eta) return;
             try {
               await onSaveTask(editingTask?.id ?? null, {
@@ -196,8 +196,8 @@ export function LeadActivitiesPanel({
         }
         onSave={() => {
           void (async () => {
-            const from = toRepositoryDateTime(meetingValues.from);
-            const to = toRepositoryDateTime(meetingValues.to);
+            const from = toLeadActivityRepositoryDateTime(meetingValues.from);
+            const to = toLeadActivityRepositoryDateTime(meetingValues.to);
             if (!from || !to) return;
             try {
               await onSaveMeeting(editingMeeting?.id ?? null, {
@@ -239,7 +239,7 @@ export function LeadActivitiesPanel({
         }
         onSave={() => {
           void (async () => {
-            const start = toRepositoryDateTime(callValues.start);
+            const start = toLeadActivityRepositoryDateTime(callValues.start);
             if (!start) return;
             try {
               await onSaveCall(editingCall?.id ?? null, {

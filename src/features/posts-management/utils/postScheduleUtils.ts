@@ -26,7 +26,8 @@ export function formatPostScheduleLabel(
   time: string,
 ): string {
   const dateLabel = format(new Date(year, month - 1, date), "MMMM do yyyy");
-  return `${dateLabel} · ${time}`;
+  const trimmedTime = time.trim();
+  return trimmedTime ? `${dateLabel} · ${trimmedTime}` : dateLabel;
 }
 
 export function isValidPostTime(time: string): boolean {

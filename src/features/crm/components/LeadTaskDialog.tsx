@@ -51,9 +51,7 @@ export function LeadTaskDialog({
     }
   }, [open]);
 
-  const canSave =
-    values.title.trim().length > 0 &&
-    Boolean(values.eta?.time.trim() && values.eta.day);
+  const canSave = values.title.trim().length > 0 && Boolean(values.eta);
 
   return (
     <>

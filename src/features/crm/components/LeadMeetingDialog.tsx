@@ -53,8 +53,8 @@ export function LeadMeetingDialog({
 
   const canSave =
     values.title.trim().length > 0 &&
-    Boolean(values.from?.time.trim() && values.from.day) &&
-    Boolean(values.to?.time.trim() && values.to.day);
+    Boolean(values.from) &&
+    Boolean(values.to);
 
   return (
     <>

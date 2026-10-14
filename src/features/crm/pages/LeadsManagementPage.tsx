@@ -3,11 +3,18 @@ import { useMemo, useState } from "react";
 
 import { LeadDialog } from "@/features/crm/components/LeadDialog";
 import { LeadsTable } from "@/features/crm/components/LeadsTable";
+import {
+  DEFAULT_LEAD_SORT,
+  LEAD_MONTH_FILTER_ALL,
+  type LeadSortId,
+} from "@/features/crm/constants/leadSort";
 import { LEAD_SOURCE_LABELS } from "@/features/crm/constants/leadSources";
 import { LEAD_STATUS_LABELS } from "@/features/crm/constants/leadStatuses";
-import { formatLeadTags } from "@/features/crm/utils/leadTagUtils";
 import { useLeadDialog } from "@/features/crm/hooks/useLeadDialog";
 import { useLeadsQuery } from "@/features/crm/hooks/useLeadsQuery";
+import { filterLeadsByCreatedMonth } from "@/features/crm/utils/leadMonthFilterUtils";
+import { sortLeads } from "@/features/crm/utils/leadSortUtils";
+import { formatLeadTags } from "@/features/crm/utils/leadTagUtils";
 import { PageShell } from "@/shared/components/PageShell";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { Button } from "@/shared/ui/button";
@@ -21,9 +28,11 @@ export function LeadsManagementPage() {
     setError,
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const [sort, setSort] = useState<LeadSortId>(DEFAULT_LEAD_SORT);
+  const [monthFilter, setMonthFilter] = useState(LEAD_MONTH_FILTER_ALL);
 
   const filteredLeads = useMemo(() => {
-    return leads.filter((lead) =>
+    const searched = leads.filter((lead) =>
       matchesListingSearch(searchQuery, [
         lead.name,
         lead.company,
@@ -36,7 +45,8 @@ export function LeadsManagementPage() {
         formatLeadTags(lead.tags ?? []),
       ]),
     );
-  }, [leads, searchQuery]);
+    return sortLeads(filterLeadsByCreatedMonth(searched, monthFilter), sort);
+  }, [leads, searchQuery, monthFilter, sort]);
 
   return (
     <PageShell
@@ -64,6 +74,10 @@ export function LeadsManagementPage() {
         onEditLead={openEditDialog}
         searchQuery={searchQuery}
         onSearchQueryChange={setSearchQuery}
+        sort={sort}
+        onSortChange={setSort}
+        monthFilter={monthFilter}
+        onMonthFilterChange={setMonthFilter}
       />
     </PageShell>
   );

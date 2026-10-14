@@ -2,6 +2,7 @@ import type {
   LeadFormField,
   LeadFormValues,
 } from "@/features/crm/utils/leadFormUtils";
+import type { LeadSortId } from "@/features/crm/constants/leadSort";
 import type {
   CrmSheetActivity,
   Lead,
@@ -16,6 +17,18 @@ export type LeadsTableRowProps = {
   onEditLead: (lead: Lead) => void;
 };
 
+export type LeadSortSelectProps = {
+  value: LeadSortId;
+  onChange: (sort: LeadSortId) => void;
+  disabled?: boolean;
+};
+
+export type LeadMonthFilterProps = {
+  value: string;
+  onChange: (monthKey: string) => void;
+  disabled?: boolean;
+};
+
 export type LeadsTableProps = {
   leads: Lead[];
   isLoading: boolean;
@@ -23,6 +36,10 @@ export type LeadsTableProps = {
   onEditLead: (lead: Lead) => void;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
+  sort: LeadSortId;
+  onSortChange: (sort: LeadSortId) => void;
+  monthFilter: string;
+  onMonthFilterChange: (monthKey: string) => void;
 };
 
 export type ContactTableRowProps = {
