@@ -6,6 +6,7 @@ import { LeadAddressCard } from "@/features/crm/components/LeadAddressCard";
 import { LeadAttachmentsSection } from "@/features/crm/components/LeadAttachmentsSection";
 import { LeadClosedActivitiesSection } from "@/features/crm/components/LeadClosedActivitiesSection";
 import { LeadDialog } from "@/features/crm/components/LeadDialog";
+import { LeadFollowUpsSection } from "@/features/crm/components/LeadFollowUpsSection";
 import { LeadNotesSection } from "@/features/crm/components/LeadNotesSection";
 import { LeadOpenActivitiesSection } from "@/features/crm/components/LeadOpenActivitiesSection";
 import { LeadProfileCard } from "@/features/crm/components/LeadProfileCard";
@@ -13,6 +14,7 @@ import { LEADS_MANAGEMENT_PATH } from "@/features/crm/constants/routes";
 import { useLeadDetailActions } from "@/features/crm/hooks/useLeadDetailActions";
 import { useLeadDetailQuery } from "@/features/crm/hooks/useLeadDetailQuery";
 import { useLeadDialog } from "@/features/crm/hooks/useLeadDialog";
+import { useLeadFollowUpActions } from "@/features/crm/hooks/useLeadFollowUpActions";
 import { isLeadActivityOpen } from "@/features/crm/utils/leadActivityFormUtils";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
@@ -41,6 +43,7 @@ export function LeadDetailPage() {
     lead,
     notes,
     attachments,
+    followUps,
     tasks,
     meetings,
     calls,
@@ -54,6 +57,11 @@ export function LeadDetailPage() {
     setError,
   });
   const actions = useLeadDetailActions({
+    leadId,
+    reload,
+    setError,
+  });
+  const followUpActions = useLeadFollowUpActions({
     leadId,
     reload,
     setError,
@@ -154,12 +162,21 @@ export function LeadDetailPage() {
 
       <div className="grid items-start gap-4 lg:grid-cols-2">
         <LeadProfileCard lead={lead} />
-        <LeadAddressCard
-          address={lead.address}
-          canEdit={canUpdate}
-          isSaving={actions.isSavingAddress}
-          onSave={actions.saveAddress}
-        />
+        <div className="space-y-4">
+          <LeadAddressCard
+            address={lead.address}
+            canEdit={canUpdate}
+            isSaving={actions.isSavingAddress}
+            onSave={actions.saveAddress}
+          />
+          <LeadFollowUpsSection
+            followUps={followUps}
+            canEdit={canUpdate}
+            isSaving={followUpActions.isSaving}
+            onSave={followUpActions.saveFollowUp}
+            onDelete={followUpActions.removeFollowUp}
+          />
+        </div>
       </div>
 
       <LeadNotesSection

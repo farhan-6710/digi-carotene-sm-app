@@ -4,6 +4,7 @@ import type {
   Lead,
   LeadAttachment,
   LeadCall,
+  LeadFollowUp,
   LeadMeeting,
   LeadNote,
   LeadTask,
@@ -14,6 +15,7 @@ import {
   fetchLeadMeetings,
   fetchLeadTasks,
 } from "@/services/leadActivitiesService";
+import { fetchLeadFollowUps } from "@/services/leadFollowUpsService";
 import { fetchLeadById, fetchLeadNotes } from "@/services/leadsService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
@@ -21,6 +23,7 @@ type LeadDetail = {
   lead: Lead | null;
   notes: LeadNote[];
   attachments: LeadAttachment[];
+  followUps: LeadFollowUp[];
   tasks: LeadTask[];
   meetings: LeadMeeting[];
   calls: LeadCall[];
@@ -30,6 +33,7 @@ const EMPTY: LeadDetail = {
   lead: null,
   notes: [],
   attachments: [],
+  followUps: [],
   tasks: [],
   meetings: [],
   calls: [],
@@ -41,15 +45,17 @@ export function useLeadDetailQuery(leadId: string) {
     const lead = await fetchLeadById(leadId);
     if (!lead) return EMPTY;
 
-    const [notes, attachments, tasks, meetings, calls] = await Promise.all([
-      fetchLeadNotes(leadId),
-      fetchLeadAttachments(leadId),
-      fetchLeadTasks(leadId),
-      fetchLeadMeetings(leadId),
-      fetchLeadCalls(leadId),
-    ]);
+    const [notes, attachments, followUps, tasks, meetings, calls] =
+      await Promise.all([
+        fetchLeadNotes(leadId),
+        fetchLeadAttachments(leadId),
+        fetchLeadFollowUps(leadId),
+        fetchLeadTasks(leadId),
+        fetchLeadMeetings(leadId),
+        fetchLeadCalls(leadId),
+      ]);
 
-    return { lead, notes, attachments, tasks, meetings, calls };
+    return { lead, notes, attachments, followUps, tasks, meetings, calls };
   }, [leadId]);
 
   const { data, isLoading, error, setError, reload } = useFetch(load, EMPTY);
@@ -58,6 +64,7 @@ export function useLeadDetailQuery(leadId: string) {
     lead: data.lead,
     notes: data.notes,
     attachments: data.attachments,
+    followUps: data.followUps,
     tasks: data.tasks,
     meetings: data.meetings,
     calls: data.calls,

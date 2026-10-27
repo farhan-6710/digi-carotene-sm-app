@@ -75,7 +75,7 @@ Content approvals on a plan item:
 | Postings calendar | `/team-portal/posts-management` | Month grid; client/project filters in the URL; day page reuses them |
 | Task Management | `/team-portal/tasks-management` | Project-scoped tasks; assign + dependencies; tabs All · Raised by me · Raised for me; filters: client, status, sort, search; detail + chat |
 | Production planner | `/team-portal/production-planner` | Plans per client (`?client=` filter); detail = shoot date, context, content pillar, script, reference link, approvals; shoot completed (admin / manager / plan manager / shoot incharge, after all approvals) |
-| CRM | `/team-portal/crm` | Leads management; Contact (leads with score 5); lead detail notes, link attachments, open/closed activities (tasks, meetings, calls) |
+| CRM | `/team-portal/crm` | Leads management (sort, month filter, follow-ups filter); Contact (score 5); lead detail notes, follow-ups (date + optional time, pending / no response / done), link attachments, open/closed activities (tasks, meetings, calls) |
 | Notifications | `/team-portal/notifications` | Inbox + SM executive **approval queue** |
 | Analytics | `/team-portal/analytics` | Agency activity |
 | Growth | `/team-portal/growth-and-analytics` | Meta organic + ads; page-level account dropdown (Instagram live; Facebook coming soon); Manage Accounts (token) |

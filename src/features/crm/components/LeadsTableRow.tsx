@@ -1,5 +1,6 @@
 import { Pencil } from "lucide-react";
 
+import { LeadFollowUpCell } from "@/features/crm/components/LeadFollowUpCell";
 import { LEAD_SOURCE_LABELS } from "@/features/crm/constants/leadSources";
 import { LEAD_STATUS_LABELS } from "@/features/crm/constants/leadStatuses";
 import { LEADS_ROW_GRID_CLASS } from "@/features/crm/constants/leadsDirectory";
@@ -12,8 +13,12 @@ import { cn } from "@/shared/lib/utils";
 
 export function LeadsTableRow({
   lead,
+  nextFollowUp,
   canEdit,
+  isSavingFollowUp = false,
   onEditLead,
+  onUpdateFollowUpStatus,
+  onRescheduleFollowUp,
 }: LeadsTableRowProps) {
   return (
     <DirectoryTableRow
@@ -79,6 +84,19 @@ export function LeadsTableRow({
           SOURCE
         </span>
         {LEAD_SOURCE_LABELS[lead.lead_source]}
+      </div>
+
+      <div className="min-w-0">
+        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
+          FOLLOW-UP
+        </span>
+        <LeadFollowUpCell
+          followUp={nextFollowUp}
+          canEdit={canEdit}
+          isSaving={isSavingFollowUp}
+          onUpdateStatus={onUpdateFollowUpStatus}
+          onReschedule={onRescheduleFollowUp}
+        />
       </div>
 
       <div className="flex justify-end gap-2 text-right">

@@ -477,6 +477,11 @@ export const DB = {
     SELECT:
       "id, lead_id, title, description, status, start_date, start_time, duration_minutes, created_at, updated_at",
   },
+  LEAD_FOLLOW_UPS: {
+    TABLE: "lead_follow_ups",
+    SELECT:
+      "id, lead_id, follow_up_date, follow_up_time, status, created_at, updated_at",
+  },
   TEAM_TODOS: {
     TABLE: "team_todos",
     SELECT:

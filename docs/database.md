@@ -43,6 +43,7 @@ clients
 leads   (flat CRM table — not tied to a client in V1)
   ├── lead_notes
   ├── lead_attachments   (URL links)
+  ├── lead_follow_ups    (date required, time optional; pending | didnt_respond | done)
   ├── lead_tasks
   ├── lead_meetings
   └── lead_calls
@@ -77,6 +78,7 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 | `leads` | CRM leads: name, company, email, phone, industry, lead score (1–5), status, lead source, tags (`text[]`), address |
 | `lead_notes` | Free-text notes on a lead |
 | `lead_attachments` | URL links stored on a lead (optional label) |
+| `lead_follow_ups` | Call-back schedule on a lead: date (required), time (optional), status (`pending` / `didnt_respond` / `done`) |
 | `lead_tasks` | Lead follow-up task: title, description, priority, status, ETA date + time |
 | `lead_meetings` | Lead meeting: from/to date+time, venue (`client_location` / `in_office` / `online`), status |
 | `lead_calls` | Lead call: start date+time, duration minutes, status |

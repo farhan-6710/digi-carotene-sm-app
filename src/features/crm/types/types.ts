@@ -156,3 +156,23 @@ export type CreateLeadCallInput = {
 };
 
 export type UpdateLeadCallInput = Partial<CreateLeadCallInput>;
+
+export type LeadFollowUpStatus = "pending" | "didnt_respond" | "done";
+
+export type LeadFollowUp = {
+  id: string;
+  lead_id: string;
+  follow_up_date: string;
+  follow_up_time: string;
+  status: LeadFollowUpStatus;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CreateLeadFollowUpInput = {
+  followUpDate: string;
+  followUpTime: string;
+  status: LeadFollowUpStatus;
+};
+
+export type UpdateLeadFollowUpInput = Partial<CreateLeadFollowUpInput>;
