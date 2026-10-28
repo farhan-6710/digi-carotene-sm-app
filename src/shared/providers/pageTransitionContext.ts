@@ -17,5 +17,6 @@ export function usePageTransition() {
       "usePageTransition must be used within PageTransitionProvider",
     );
   }
+  
   return context;
 }
