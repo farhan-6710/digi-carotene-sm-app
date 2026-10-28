@@ -165,6 +165,7 @@ export type LeadFollowUp = {
   follow_up_date: string;
   follow_up_time: string;
   status: LeadFollowUpStatus;
+  note: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -173,6 +174,7 @@ export type CreateLeadFollowUpInput = {
   followUpDate: string;
   followUpTime: string;
   status: LeadFollowUpStatus;
+  note?: string | null;
 };
 
 export type UpdateLeadFollowUpInput = Partial<CreateLeadFollowUpInput>;

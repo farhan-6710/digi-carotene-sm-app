@@ -102,6 +102,11 @@ export function LeadFollowUpsSection({
                       <p className="text-xs text-muted-foreground">
                         {LEAD_FOLLOW_UP_STATUS_LABELS[row.status]}
                       </p>
+                      {row.note?.trim() ? (
+                        <p className="line-clamp-2 text-xs text-muted-foreground">
+                          {row.note.trim()}
+                        </p>
+                      ) : null}
                     </div>
                     <div className="shrink-0">
                       {overdue ? (

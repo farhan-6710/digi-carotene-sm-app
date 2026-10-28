@@ -143,12 +143,35 @@ export async function fetchTeamNeedsAttentionItems(
           }),
   ]);
 
+  // Drop subtasks whose parent task no longer exists (deleted parent).
+  const parentIds = uniqueIds(
+    subtasksResult.map((subtask) => subtask.parent_task_id),
+  );
+  const existingParentIds =
+    parentIds.length === 0
+      ? new Set<string>()
+      : await supabase
+          .from(DB.TASKS.TABLE)
+          .select("id")
+          .in("id", parentIds)
+          .then(({ data, error }) => {
+            if (error) throw error;
+            return new Set((data ?? []).map((row) => row.id as string));
+          });
+
+  const liveSubtasks = subtasksResult.filter((subtask) =>
+    existingParentIds.has(subtask.parent_task_id),
+  );
+
   const rawItems: Array<
     | { kind: "task"; task: Task }
     | { kind: "subtask"; subtask: Subtask }
   > = [
     ...tasksResult.map((task) => ({ kind: "task" as const, task })),
-    ...subtasksResult.map((subtask) => ({ kind: "subtask" as const, subtask })),
+    ...liveSubtasks.map((subtask) => ({
+      kind: "subtask" as const,
+      subtask,
+    })),
   ];
 
   rawItems.sort((a, b) => {

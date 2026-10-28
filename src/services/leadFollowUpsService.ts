@@ -42,6 +42,7 @@ export async function createLeadFollowUp(
       follow_up_date: input.followUpDate,
       follow_up_time: input.followUpTime ?? "",
       status: input.status,
+      note: input.note?.trim() || null,
     })
     .select(DB.LEAD_FOLLOW_UPS.SELECT)
     .single();
@@ -63,6 +64,7 @@ export async function updateLeadFollowUp(
     cols.follow_up_time = input.followUpTime ?? "";
   }
   if (input.status !== undefined) cols.status = input.status;
+  if (input.note !== undefined) cols.note = input.note?.trim() || null;
 
   const { data, error } = await supabase
     .from(DB.LEAD_FOLLOW_UPS.TABLE)

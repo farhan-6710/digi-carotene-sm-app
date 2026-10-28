@@ -480,7 +480,7 @@ export const DB = {
   LEAD_FOLLOW_UPS: {
     TABLE: "lead_follow_ups",
     SELECT:
-      "id, lead_id, follow_up_date, follow_up_time, status, created_at, updated_at",
+      "id, lead_id, follow_up_date, follow_up_time, status, note, created_at, updated_at",
   },
   TEAM_TODOS: {
     TABLE: "team_todos",

@@ -4,6 +4,7 @@ import { LeadFollowUpStatusSelect } from "@/features/crm/components/LeadFollowUp
 import type { LeadFollowUpDialogProps } from "@/features/crm/types/components";
 import { PostDateTimePicker } from "@/features/posts-management/components/PostDateTimePicker";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
+import { formFieldClassName } from "@/shared/constants/formStyles";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -14,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/ui/dialog";
+import { cn } from "@/shared/lib/utils";
 
 export function LeadFollowUpDialog({
   open,
@@ -57,6 +59,16 @@ export function LeadFollowUpDialog({
               required
               disabled={isSaving}
             />
+            <label className="block text-xs font-semibold text-muted-foreground">
+              Note
+              <textarea
+                value={values.note}
+                onChange={(event) => onFieldChange("note", event.target.value)}
+                disabled={isSaving}
+                placeholder="Optional note…"
+                className={cn(formFieldClassName, "mt-2 min-h-20 resize-none")}
+              />
+            </label>
             <label className="block text-xs font-semibold text-muted-foreground">
               Status
               <div className="mt-2">

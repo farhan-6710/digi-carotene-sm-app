@@ -11,11 +11,13 @@ import {
 export type LeadFollowUpFormValues = {
   when: PostDateTimeValue | null;
   status: LeadFollowUpStatus;
+  note: string;
 };
 
 export const EMPTY_LEAD_FOLLOW_UP_FORM: LeadFollowUpFormValues = {
   when: null,
   status: "pending",
+  note: "",
 };
 
 export function leadFollowUpToFormValues(
@@ -27,6 +29,7 @@ export function leadFollowUpToFormValues(
       followUp.follow_up_time,
     ),
     status: followUp.status,
+    note: followUp.note ?? "",
   };
 }
 
@@ -37,5 +40,6 @@ export function leadFollowUpFormToInput(values: LeadFollowUpFormValues) {
     followUpDate: when.date,
     followUpTime: when.time,
     status: values.status,
+    note: values.note.trim() || null,
   };
 }

@@ -74,6 +74,33 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
     void reload();
   }, [reload]);
 
+  // Needs Attention can look "stale" after a task is deleted elsewhere
+  // (other tab, back-navigation). Refresh when the page is shown again.
+  useEffect(() => {
+    if (!teamMemberId) return;
+
+    const refreshAttention = () => {
+      void fetchTeamNeedsAttentionItems(teamMemberId)
+        .then((items) =>
+          setNeedsAttentionItems(items.slice(0, TEAM_NEEDS_ATTENTION_LIMIT)),
+        )
+        .catch(() => {
+          // Keep the last good list; full reload surfaces errors.
+        });
+    };
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") refreshAttention();
+    };
+
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", refreshAttention);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", refreshAttention);
+    };
+  }, [teamMemberId]);
+
   const updateTodayPostStatus = useCallback(
     (postId: string, status: StatusKey) => {
       const now = new Date();
