@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { ArrowLeft, Pencil, Plus } from "lucide-react";
 
 import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
@@ -30,6 +30,7 @@ import { usePermissions } from "@/shared/hooks/usePermissions";
 import type { DateFiltersTwoProps } from "@/shared/types/components";
 import { Button } from "@/shared/ui/button";
 import { resolveDateFiltersTwoRange } from "@/shared/utils/dateFiltersTwoUtils";
+import { navigateBackOrFallback } from "@/shared/utils/navigateBackOrFallback";
 
 function ProjectDetailBackButton() {
   return (
@@ -106,6 +107,7 @@ function ProjectDetailHeaderActions({
 export function ProjectDetailPage() {
   const { projectId = "" } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { can, canFullyEditProject, canEditProjectSocials } = usePermissions();
   const { teamRole, teamMemberId } = useAuth();
   const [dialogError, setDialogError] = useState<string | null>(null);
@@ -209,7 +211,11 @@ export function ProjectDetailPage() {
             projectDialog.onDelete
               ? async () => {
                   await projectDialog.onDelete?.();
-                  void navigate(PROJECTS_MANAGEMENT_PATH);
+                  navigateBackOrFallback(
+                    navigate,
+                    location,
+                    PROJECTS_MANAGEMENT_PATH,
+                  );
                 }
               : undefined
           }

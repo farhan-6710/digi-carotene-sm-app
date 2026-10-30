@@ -1,6 +1,6 @@
 import { ArrowLeft, Pencil } from "lucide-react";
 import { useMemo } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { SubtasksSection } from "@/features/tasks-management/components/SubtasksSection";
@@ -21,6 +21,7 @@ import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
+import { navigateBackOrFallback } from "@/shared/utils/navigateBackOrFallback";
 import { Button } from "@/shared/ui/button";
 
 function TaskDetailBackButton() {
@@ -37,6 +38,7 @@ function TaskDetailBackButton() {
 export function TaskDetailPage() {
   const { taskId = "" } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { teamMemberId, teamRole } = useAuth();
   const { task, messages, adminMembers, isLoading, error, setError, reload } =
     useTaskDetailQuery(taskId);
@@ -152,7 +154,11 @@ export function TaskDetailPage() {
             dialog.onDelete
               ? async () => {
                   await dialog.onDelete?.();
-                  void navigate(TASKS_MANAGEMENT_PATH);
+                  navigateBackOrFallback(
+                    navigate,
+                    location,
+                    TASKS_MANAGEMENT_PATH,
+                  );
                 }
               : undefined
           }

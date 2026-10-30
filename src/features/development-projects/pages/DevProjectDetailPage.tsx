@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { ArrowLeft, Pencil } from "lucide-react";
 
 import { DevProjectDialog } from "@/features/development-projects/components/DevProjectDialog";
@@ -12,6 +12,7 @@ import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { usePermissions } from "@/shared/hooks/usePermissions";
+import { navigateBackOrFallback } from "@/shared/utils/navigateBackOrFallback";
 import { Button } from "@/shared/ui/button";
 
 function DevProjectBackButton() {
@@ -28,6 +29,7 @@ function DevProjectBackButton() {
 export function DevProjectDetailPage() {
   const { projectId = "" } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { can } = usePermissions();
   const { project, isLoading, error, setError, reload } =
     useDevProjectDetailQuery(projectId);
@@ -88,7 +90,11 @@ export function DevProjectDetailPage() {
             dialog.onDelete
               ? async () => {
                   await dialog.onDelete?.();
-                  void navigate(DEV_PROJECTS_MANAGEMENT_PATH);
+                  navigateBackOrFallback(
+                    navigate,
+                    location,
+                    DEV_PROJECTS_MANAGEMENT_PATH,
+                  );
                 }
               : undefined
           }

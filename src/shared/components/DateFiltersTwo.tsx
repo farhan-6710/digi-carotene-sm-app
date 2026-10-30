@@ -25,22 +25,6 @@ export function DateFiltersTwo({
 
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
-      <button
-        type="button"
-        onClick={() => {
-          setIsOpen(false);
-          onClearFilters();
-        }}
-        className={cn(
-          "inline-flex h-7 cursor-pointer items-center rounded-full border px-2.5 text-[11px] font-medium transition-colors",
-          isAll
-            ? "border-primary bg-primary/10 text-primary"
-            : "border-border bg-card text-muted-foreground hover:text-foreground",
-        )}
-      >
-        All
-      </button>
-
       {DATE_FILTERS_TWO_PERIODS.map((period) => {
         const isActive = activeQuickPeriod === period.id;
 
@@ -63,6 +47,22 @@ export function DateFiltersTwo({
           </button>
         );
       })}
+
+      <button
+        type="button"
+        onClick={() => {
+          setIsOpen(false);
+          onClearFilters();
+        }}
+        className={cn(
+          "inline-flex h-7 cursor-pointer items-center rounded-full border px-2.5 text-[11px] font-medium transition-colors",
+          isAll
+            ? "border-primary bg-primary/10 text-primary"
+            : "border-border bg-card text-muted-foreground hover:text-foreground",
+        )}
+      >
+        All
+      </button>
 
       <DateRangePicker
         open={isOpen}

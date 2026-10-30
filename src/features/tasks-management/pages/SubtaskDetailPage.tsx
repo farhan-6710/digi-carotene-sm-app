@@ -1,5 +1,5 @@
 import { ArrowLeft, Pencil } from "lucide-react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { SubtaskDetailSummary } from "@/features/tasks-management/components/SubtaskDetailSummary";
@@ -13,11 +13,13 @@ import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
+import { navigateBackOrFallback } from "@/shared/utils/navigateBackOrFallback";
 import { Button } from "@/shared/ui/button";
 
 export function SubtaskDetailPage() {
   const { taskId = "", subtaskId = "" } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { teamRole, teamMemberId, clientId } = useAuth();
   const { parentTask, subtask, isLoading, error, setError, reload } =
     useSubtaskDetailQuery(taskId, subtaskId);
@@ -107,7 +109,7 @@ export function SubtaskDetailPage() {
             dialog.onDelete
               ? async () => {
                   await dialog.onDelete?.();
-                  void navigate(parentPath);
+                  navigateBackOrFallback(navigate, location, parentPath);
                 }
               : undefined
           }

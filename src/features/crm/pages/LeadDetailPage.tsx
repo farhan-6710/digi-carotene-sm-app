@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { ArrowLeft, Pencil } from "lucide-react";
 
 import { LeadAddressCard } from "@/features/crm/components/LeadAddressCard";
@@ -21,6 +21,7 @@ import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { usePermissions } from "@/shared/hooks/usePermissions";
+import { navigateBackOrFallback } from "@/shared/utils/navigateBackOrFallback";
 import { Button } from "@/shared/ui/button";
 
 function LeadDetailBackButton() {
@@ -37,6 +38,7 @@ function LeadDetailBackButton() {
 export function LeadDetailPage() {
   const { leadId = "" } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { can } = usePermissions();
   const canUpdate = can("leads.update");
   const {
@@ -219,7 +221,11 @@ export function LeadDetailPage() {
             dialog.onDelete
               ? async () => {
                   await dialog.onDelete?.();
-                  void navigate(LEADS_MANAGEMENT_PATH);
+                  navigateBackOrFallback(
+                    navigate,
+                    location,
+                    LEADS_MANAGEMENT_PATH,
+                  );
                 }
               : undefined
           }

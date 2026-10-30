@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { ArrowLeft, Pencil } from "lucide-react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 
 import { PostContentDetails } from "@/features/posts-management/components/PostContentDetails";
 import { PostDetailSummary } from "@/features/posts-management/components/PostDetailSummary";
@@ -17,22 +17,29 @@ import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { usePermissions } from "@/shared/hooks/usePermissions";
+import { navigateBackOrFallback } from "@/shared/utils/navigateBackOrFallback";
 import { parseUrlDateParam } from "@/shared/utils/urlDateParams";
 import { Button } from "@/shared/ui/button";
 
 function PostDetailBackButton({
-  to,
+  fallbackTo,
   label,
 }: {
-  to: string;
+  fallbackTo: string;
   label: string;
 }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   return (
-    <Button asChild variant="outline" className="rounded-full">
-      <Link to={to}>
-        <ArrowLeft className="mr-2 size-4" />
-        {label}
-      </Link>
+    <Button
+      type="button"
+      variant="outline"
+      className="rounded-full"
+      onClick={() => navigateBackOrFallback(navigate, location, fallbackTo)}
+    >
+      <ArrowLeft className="mr-2 size-4" />
+      {label}
     </Button>
   );
 }
@@ -40,6 +47,7 @@ function PostDetailBackButton({
 export function PostDetailPage() {
   const { postId = "" } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { can } = usePermissions();
   const { post, contentView, isLoading, error, setError, reload } =
     usePostDetailQuery(postId);
@@ -47,10 +55,10 @@ export function PostDetailPage() {
   const scheduleDate = post
     ? parseUrlDateParam(post.to_be_posted_date)
     : null;
-  const backTo = scheduleDate
+  const fallbackTo = scheduleDate
     ? buildPostsDayPath(scheduleDate)
     : POSTS_MANAGEMENT_PATH;
-  const backLabel = scheduleDate ? "Back to day" : "Back to calendar";
+  const backLabel = scheduleDate ? "Back" : "Back to calendar";
 
   const { openEditDialogFromPost, dialog } = usePostDialog({
     slots: [],
@@ -61,7 +69,7 @@ export function PostDetailPage() {
   });
 
   const backButton = (
-    <PostDetailBackButton to={backTo} label={backLabel} />
+    <PostDetailBackButton fallbackTo={fallbackTo} label={backLabel} />
   );
 
   if (isLoading && !post) {
@@ -76,7 +84,7 @@ export function PostDetailPage() {
           description="Post details and schedule."
           backButton={
             <PostDetailBackButton
-              to={POSTS_MANAGEMENT_PATH}
+              fallbackTo={POSTS_MANAGEMENT_PATH}
               label="Back to calendar"
             />
           }
@@ -139,7 +147,7 @@ export function PostDetailPage() {
             ? () => {
                 void (async () => {
                   await dialog.onDelete?.();
-                  navigate(backTo, { replace: true });
+                  navigateBackOrFallback(navigate, location, fallbackTo);
                 })();
               }
             : undefined

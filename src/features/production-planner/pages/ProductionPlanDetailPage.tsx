@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { ArrowLeft, Pencil, Plus } from "lucide-react";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -32,6 +32,7 @@ import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { Button } from "@/shared/ui/button";
+import { navigateBackOrFallback } from "@/shared/utils/navigateBackOrFallback";
 import { showToast } from "@/shared/utils/showToast";
 
 function PlanDetailBackButton() {
@@ -48,6 +49,7 @@ function PlanDetailBackButton() {
 export function ProductionPlanDetailPage() {
   const { planId = "" } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { can } = usePermissions();
   const { teamRole, teamMemberId } = useAuth();
   const { plan, contents, canEditContent, isLoading, error, setError, reload } =
@@ -253,7 +255,11 @@ export function ProductionPlanDetailPage() {
             dialog.onDelete
               ? async () => {
                   await dialog.onDelete?.();
-                  void navigate(PRODUCTION_PLANNER_PATH);
+                  navigateBackOrFallback(
+                    navigate,
+                    location,
+                    PRODUCTION_PLANNER_PATH,
+                  );
                 }
               : undefined
           }
