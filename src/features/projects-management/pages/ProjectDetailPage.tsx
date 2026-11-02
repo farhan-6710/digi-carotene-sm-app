@@ -195,6 +195,8 @@ export function ProjectDetailPage() {
       <ProjectPostsTable
         posts={dateFilteredPosts}
         isLoading={isLoading}
+        canDelete={can("posts.delete")}
+        reload={reload}
         onOpenPost={(post) => navigate(buildPostDetailPath(post.id))}
         onEditPost={openEditDialogFromPost}
       />

@@ -566,3 +566,15 @@ export async function deleteTask(taskId: string): Promise<void> {
 
   if (error) throw error;
 }
+
+export async function deleteTasksByIds(ids: string[]): Promise<void> {
+  const unique = [...new Set(ids.filter(Boolean))];
+  if (unique.length === 0) return;
+
+  const { error } = await supabase
+    .from(DB.TASKS.TABLE)
+    .delete()
+    .in("id", unique);
+
+  if (error) throw error;
+}

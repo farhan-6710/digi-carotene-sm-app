@@ -3,7 +3,11 @@ import { Pencil } from "lucide-react";
 import { LeadFollowUpCell } from "@/features/crm/components/LeadFollowUpCell";
 import { LEAD_SOURCE_LABELS } from "@/features/crm/constants/leadSources";
 import { LEAD_STATUS_LABELS } from "@/features/crm/constants/leadStatuses";
-import { LEADS_ROW_GRID_CLASS } from "@/features/crm/constants/leadsDirectory";
+import {
+  LEADS_BULK_ROW_GRID_CLASS,
+  LEADS_ROW_GRID_CLASS,
+} from "@/features/crm/constants/leadsDirectory";
+import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import { buildLeadDetailPath } from "@/features/crm/constants/routes";
 import type { LeadsTableRowProps } from "@/features/crm/types/components";
 import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
@@ -15,6 +19,9 @@ export function LeadsTableRow({
   lead,
   nextFollowUp,
   canEdit,
+  canDelete = false,
+  selected = false,
+  onToggleSelect,
   isSavingFollowUp = false,
   onEditLead,
   onUpdateFollowUpStatus,
@@ -25,9 +32,16 @@ export function LeadsTableRow({
       to={buildLeadDetailPath(lead.id)}
       className={cn(
         "grid items-center gap-2 px-6 py-4 sm:gap-4",
-        LEADS_ROW_GRID_CLASS,
+        canDelete ? LEADS_BULK_ROW_GRID_CLASS : LEADS_ROW_GRID_CLASS,
       )}
     >
+      {canDelete && onToggleSelect ? (
+        <DirectoryBulkCheckbox
+          checked={selected}
+          onCheckedChange={() => onToggleSelect(lead.id)}
+          ariaLabel={`Select ${lead.name}`}
+        />
+      ) : null}
       <div className="text-sm font-medium text-foreground">
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           NAME

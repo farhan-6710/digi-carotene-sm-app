@@ -1,16 +1,19 @@
 import { Plus } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { ClientDialog } from "@/features/clients-management/components/ClientDialog";
 import { ClientsTable } from "@/features/clients-management/components/ClientsTable";
 import { useClientDialog } from "@/features/clients-management/hooks/useClientDialog";
 import { useClientsQuery } from "@/features/clients-management/hooks/useClientsQuery";
 import type { ActiveStatusFilterId } from "@/shared/constants/activeStatusFilter";
+import { useDirectoryBulkDelete } from "@/shared/hooks/useDirectoryBulkDelete";
+import { useDirectoryBulkSelection } from "@/shared/hooks/useDirectoryBulkSelection";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { PageShell } from "@/shared/components/PageShell";
 import { Button } from "@/shared/ui/button";
 import { filterByActiveStatus } from "@/shared/utils/activeStatusFilterUtils";
 import { matchesListingSearch } from "@/shared/utils/listingSearch";
+import { deleteClientsByIds } from "@/services/clientsService";
 
 export function ClientsManagementPage() {
   const { can } = usePermissions();
@@ -21,6 +24,7 @@ export function ClientsManagementPage() {
   });
   const [statusFilter, setStatusFilter] = useState<ActiveStatusFilterId>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const canDelete = can("clients.delete");
 
   const filteredClients = useMemo(() => {
     return filterByActiveStatus(clients, statusFilter).filter((client) =>
@@ -33,6 +37,22 @@ export function ClientsManagementPage() {
       ]),
     );
   }, [clients, searchQuery, statusFilter]);
+
+  const filteredIds = useMemo(
+    () => filteredClients.map((client) => client.id),
+    [filteredClients],
+  );
+  const bulk = useDirectoryBulkSelection(filteredIds);
+  const deleteByIds = useCallback(
+    (ids: string[]) => deleteClientsByIds(ids),
+    [],
+  );
+  const { isDeleting, runBulkDelete } = useDirectoryBulkDelete({
+    deleteByIds,
+    reload,
+    clearSelection: bulk.clear,
+    successMessage: "Selected clients deleted.",
+  });
 
   return (
     <PageShell
@@ -57,6 +77,14 @@ export function ClientsManagementPage() {
         clients={filteredClients}
         isLoading={isLoading}
         canEdit={can("clients.update")}
+        canDelete={canDelete}
+        selectedIds={bulk.selectedIds}
+        allVisibleSelected={bulk.allVisibleSelected}
+        isDeleting={isDeleting}
+        onToggleSelect={bulk.toggle}
+        onToggleAllVisible={bulk.toggleAllVisible}
+        onClearSelection={bulk.clear}
+        onBulkDelete={() => runBulkDelete(bulk.selectedIds)}
         onEditClient={openEditDialog}
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}

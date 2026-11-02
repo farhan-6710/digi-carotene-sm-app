@@ -8,7 +8,11 @@ import { stopDirectoryRowNav } from "@/shared/utils/directoryTableRow";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { buildTeamMemberDetailPath } from "@/features/team-management/constants/routes";
-import { TEAM_DIRECTORY_ROW_GRID_CLASS } from "@/features/team-management/constants/teamDirectory";
+import {
+  TEAM_DIRECTORY_BULK_ROW_GRID_CLASS,
+  TEAM_DIRECTORY_ROW_GRID_CLASS,
+} from "@/features/team-management/constants/teamDirectory";
+import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import type { ReactNode } from "react";
 import { Pencil } from "lucide-react";
 
@@ -23,6 +27,9 @@ function MobileLabel({ children }: { children: ReactNode }) {
 export function TeamMembersTableRow({
   member,
   canEdit,
+  canDelete = false,
+  selected = false,
+  onToggleSelect,
   onEditMember,
 }: TeamMembersTableRowProps) {
   return (
@@ -30,9 +37,18 @@ export function TeamMembersTableRow({
       to={buildTeamMemberDetailPath(member.id)}
       className={cn(
         "grid items-center gap-2 px-6 py-4 sm:gap-4",
-        TEAM_DIRECTORY_ROW_GRID_CLASS,
+        canDelete
+          ? TEAM_DIRECTORY_BULK_ROW_GRID_CLASS
+          : TEAM_DIRECTORY_ROW_GRID_CLASS,
       )}
     >
+      {canDelete && onToggleSelect ? (
+        <DirectoryBulkCheckbox
+          checked={selected}
+          onCheckedChange={() => onToggleSelect(member.id)}
+          ariaLabel={`Select ${member.member_name}`}
+        />
+      ) : null}
       <div className="text-sm font-medium text-foreground">
         <MobileLabel>NAME</MobileLabel>
         {member.member_name}

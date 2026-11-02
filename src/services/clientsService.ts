@@ -125,3 +125,11 @@ export async function deleteClient(clientId: string): Promise<void> {
     throw new Error(error.message ?? "Failed to delete client.");
   }
 }
+
+export async function deleteClientsByIds(ids: string[]): Promise<void> {
+  const unique = [...new Set(ids.filter(Boolean))];
+  if (unique.length === 0) return;
+  for (const id of unique) {
+    await deleteClient(id);
+  }
+}

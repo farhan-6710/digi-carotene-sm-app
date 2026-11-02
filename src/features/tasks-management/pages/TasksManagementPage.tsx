@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { TaskDialog } from "@/features/tasks-management/components/TaskDialog";
@@ -24,9 +24,12 @@ import {
 import { sortTasks } from "@/features/tasks-management/utils/taskSortUtils";
 import { filterTasksByStatus } from "@/features/tasks-management/utils/taskStatusFilterUtils";
 import { PageShell } from "@/shared/components/PageShell";
+import { useDirectoryBulkDelete } from "@/shared/hooks/useDirectoryBulkDelete";
+import { useDirectoryBulkSelection } from "@/shared/hooks/useDirectoryBulkSelection";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { Button } from "@/shared/ui/button";
 import { matchesListingSearch } from "@/shared/utils/listingSearch";
+import { deleteTasksByIds } from "@/services/tasksService";
 
 export function TasksManagementPage() {
   const { can } = usePermissions();
@@ -41,6 +44,7 @@ export function TasksManagementPage() {
   const { statusFilter, setStatusFilter } = useTaskStatusFilter();
   const { clientFilter, setClientFilter } = useTaskClientFilter();
   const { searchQuery, setSearchQuery } = useTaskSearchQuery();
+  const canDelete = can("tasks.delete");
 
   const clientOptions = useMemo(
     () => buildTaskClientFilterOptions(tasks),
@@ -72,6 +76,19 @@ export function TasksManagementPage() {
     return sortTasks(filtered, sort);
   }, [tasks, tab, teamMemberId, sort, searchQuery, statusFilter, clientFilter]);
 
+  const filteredIds = useMemo(
+    () => filteredTasks.map((task) => task.id),
+    [filteredTasks],
+  );
+  const bulk = useDirectoryBulkSelection(filteredIds);
+  const deleteByIds = useCallback((ids: string[]) => deleteTasksByIds(ids), []);
+  const { isDeleting, runBulkDelete } = useDirectoryBulkDelete({
+    deleteByIds,
+    reload,
+    clearSelection: bulk.clear,
+    successMessage: "Selected tasks deleted.",
+  });
+
   return (
     <PageShell
       heading="Task Management"
@@ -98,6 +115,14 @@ export function TasksManagementPage() {
         canEditTask={(task) =>
           canEditTaskAccess({ task, teamRole, teamMemberId })
         }
+        canDelete={canDelete}
+        selectedIds={bulk.selectedIds}
+        allVisibleSelected={bulk.allVisibleSelected}
+        isDeleting={isDeleting}
+        onToggleSelect={bulk.toggle}
+        onToggleAllVisible={bulk.toggleAllVisible}
+        onClearSelection={bulk.clear}
+        onBulkDelete={() => runBulkDelete(bulk.selectedIds)}
         onEditTask={openEditDialog}
         searchQuery={searchQuery}
         onSearchQueryChange={setSearchQuery}

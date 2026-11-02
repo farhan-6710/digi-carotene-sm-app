@@ -19,6 +19,9 @@ export type ProjectFormSeeds = {
 export type ProjectsTableRowProps = {
   project: ProjectListItem;
   canEdit: boolean;
+  canDelete?: boolean;
+  selected?: boolean;
+  onToggleSelect?: (projectId: string) => void;
   onEditProject: (project: ProjectListItem) => void;
 };
 
@@ -57,6 +60,14 @@ export type ProjectsTableProps = {
   projects: ProjectListItem[];
   isLoading: boolean;
   canEdit: boolean;
+  canDelete?: boolean;
+  selectedIds?: string[];
+  allVisibleSelected?: boolean;
+  isDeleting?: boolean;
+  onToggleSelect?: (projectId: string) => void;
+  onToggleAllVisible?: () => void;
+  onClearSelection?: () => void;
+  onBulkDelete?: () => void | Promise<void>;
   onEditProject: (project: ProjectListItem) => void;
   statusFilter: import("@/shared/constants/activeStatusFilter").ActiveStatusFilterId;
   onStatusFilterChange: (
@@ -113,12 +124,17 @@ export type ProjectProfileCardProps = {
 export type ProjectPostsTableProps = {
   posts: Post[];
   isLoading: boolean;
+  canDelete?: boolean;
+  reload?: () => Promise<void>;
   onOpenPost?: (post: Post) => void;
   onEditPost?: (post: Post) => void;
 };
 
 export type ProjectPostsTableRowProps = {
   post: Post;
+  canDelete?: boolean;
+  selected?: boolean;
+  onToggleSelect?: (postId: string) => void;
   onOpenPost?: (post: Post) => void;
   onEditPost?: (post: Post) => void;
 };

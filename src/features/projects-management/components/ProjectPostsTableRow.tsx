@@ -1,6 +1,10 @@
 import { Pencil, ChevronRight } from "lucide-react";
 
-import { PROJECT_POSTS_ROW_GRID_CLASS } from "@/features/projects-management/constants/projectPostsDirectory";
+import {
+  PROJECT_POSTS_BULK_ROW_GRID_CLASS,
+  PROJECT_POSTS_ROW_GRID_CLASS,
+} from "@/features/projects-management/constants/projectPostsDirectory";
+import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import type { ProjectPostsTableRowProps } from "@/features/projects-management/types/components";
 import {
   formatPostedOnLabel,
@@ -11,6 +15,9 @@ import { cn } from "@/shared/lib/utils";
 
 export function ProjectPostsTableRow({
   post,
+  canDelete = false,
+  selected = false,
+  onToggleSelect,
   onOpenPost,
   onEditPost,
 }: ProjectPostsTableRowProps) {
@@ -25,13 +32,20 @@ export function ProjectPostsTableRow({
 
   const rowClassName = cn(
     "grid gap-2 px-6 py-4 sm:items-center sm:gap-4",
-    PROJECT_POSTS_ROW_GRID_CLASS,
+    canDelete ? PROJECT_POSTS_BULK_ROW_GRID_CLASS : PROJECT_POSTS_ROW_GRID_CLASS,
     onOpenPost &&
       "w-full cursor-pointer text-left transition-colors hover:bg-muted/40",
   );
 
   const cells = (
     <>
+      {canDelete && onToggleSelect ? (
+        <DirectoryBulkCheckbox
+          checked={selected}
+          onCheckedChange={() => onToggleSelect(post.id)}
+          ariaLabel={`Select ${post.post_title?.trim() || "post"}`}
+        />
+      ) : null}
       <div>
         <p className="text-sm font-medium text-foreground">
           {post.post_title?.trim() || "Untitled post"}

@@ -1,9 +1,10 @@
 import type { DirectoryTableColumn } from "@/shared/types/components";
 
-export const CLIENTS_DIRECTORY_GRID_CLASS =
-  "grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,0.7fr)_minmax(0,0.5fr)]";
-export const CLIENTS_DIRECTORY_ROW_GRID_CLASS =
-  "sm:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,0.7fr)_minmax(0,0.5fr)]";
+export const CLIENTS_DIRECTORY_GRID_CLASS = "grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,0.7fr)_minmax(0,0.5fr)]";
+export const CLIENTS_DIRECTORY_ROW_GRID_CLASS = "sm:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,0.7fr)_minmax(0,0.5fr)]";
+
+export const CLIENTS_DIRECTORY_BULK_GRID_CLASS = "grid-cols-[minmax(2.5rem,2.5rem)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,0.7fr)_minmax(0,0.5fr)]";
+export const CLIENTS_DIRECTORY_BULK_ROW_GRID_CLASS = "sm:grid-cols-[minmax(2.5rem,2.5rem)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,0.7fr)_minmax(0,0.5fr)]";
 
 export const clientsDirectoryColumns: DirectoryTableColumn[] = [
   { label: "CLIENT NAME" },

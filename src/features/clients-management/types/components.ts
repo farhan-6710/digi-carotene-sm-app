@@ -10,6 +10,9 @@ export type ClientOptionSeed = Pick<Client, "id" | "client_name">;
 export type ClientsTableRowProps = {
   client: Client;
   canEdit: boolean;
+  canDelete?: boolean;
+  selected?: boolean;
+  onToggleSelect?: (clientId: string) => void;
   onEditClient: (client: Client) => void;
 };
 
@@ -29,6 +32,14 @@ export type ClientsTableProps = {
   clients: import("@/features/clients-management/types/types").Client[];
   isLoading: boolean;
   canEdit: boolean;
+  canDelete?: boolean;
+  selectedIds?: string[];
+  allVisibleSelected?: boolean;
+  isDeleting?: boolean;
+  onToggleSelect?: (clientId: string) => void;
+  onToggleAllVisible?: () => void;
+  onClearSelection?: () => void;
+  onBulkDelete?: () => void | Promise<void>;
   onEditClient: (client: import("@/features/clients-management/types/types").Client) => void;
   statusFilter: import("@/shared/constants/activeStatusFilter").ActiveStatusFilterId;
   onStatusFilterChange: (

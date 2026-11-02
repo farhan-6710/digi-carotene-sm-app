@@ -16,6 +16,14 @@ export type TasksTableProps = {
   tasks: Task[];
   isLoading: boolean;
   canEditTask: (task: Task) => boolean;
+  canDelete?: boolean;
+  selectedIds?: string[];
+  allVisibleSelected?: boolean;
+  isDeleting?: boolean;
+  onToggleSelect?: (taskId: string) => void;
+  onToggleAllVisible?: () => void;
+  onClearSelection?: () => void;
+  onBulkDelete?: () => void | Promise<void>;
   onEditTask: (task: Task) => void;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
@@ -33,6 +41,9 @@ export type TasksTableProps = {
 export type TasksTableRowProps = {
   task: Task;
   canEdit: boolean;
+  canDelete?: boolean;
+  selected?: boolean;
+  onToggleSelect?: (taskId: string) => void;
   onEdit: (task: Task) => void;
   /** Override detail link (client portal uses a different path). */
   detailPath?: string;

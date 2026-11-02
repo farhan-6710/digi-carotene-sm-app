@@ -1,7 +1,11 @@
 import { Pencil } from "lucide-react";
 
 import { buildClientDetailPath } from "@/features/clients-management/constants/routes";
-import { CLIENTS_DIRECTORY_ROW_GRID_CLASS } from "@/features/clients-management/constants/clientsDirectory";
+import {
+  CLIENTS_DIRECTORY_BULK_ROW_GRID_CLASS,
+  CLIENTS_DIRECTORY_ROW_GRID_CLASS,
+} from "@/features/clients-management/constants/clientsDirectory";
+import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import type { ClientsTableRowProps } from "@/features/clients-management/types/components";
 import { ActiveStatusLabel } from "@/shared/components/ActiveStatusSwitchField";
 import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
@@ -12,6 +16,9 @@ import { cn } from "@/shared/lib/utils";
 export function ClientsTableRow({
   client,
   canEdit,
+  canDelete = false,
+  selected = false,
+  onToggleSelect,
   onEditClient,
 }: ClientsTableRowProps) {
   const website = client.website_name?.trim();
@@ -21,9 +28,18 @@ export function ClientsTableRow({
       to={buildClientDetailPath(client.id)}
       className={cn(
         "grid items-center gap-2 px-6 py-4 sm:gap-4",
-        CLIENTS_DIRECTORY_ROW_GRID_CLASS,
+        canDelete
+          ? CLIENTS_DIRECTORY_BULK_ROW_GRID_CLASS
+          : CLIENTS_DIRECTORY_ROW_GRID_CLASS,
       )}
     >
+      {canDelete && onToggleSelect ? (
+        <DirectoryBulkCheckbox
+          checked={selected}
+          onCheckedChange={() => onToggleSelect(client.id)}
+          ariaLabel={`Select ${client.client_name}`}
+        />
+      ) : null}
       <div className="text-sm font-medium text-foreground">
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           CLIENT NAME

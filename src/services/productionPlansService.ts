@@ -253,6 +253,18 @@ export async function deleteProductionPlan(id: string): Promise<void> {
   }
 }
 
+export async function deleteProductionPlansByIds(ids: string[]): Promise<void> {
+  const unique = [...new Set(ids.filter(Boolean))];
+  if (unique.length === 0) return;
+
+  const { error } = await supabase
+    .from(DB.PRODUCTION_PLANS.TABLE)
+    .delete()
+    .in("id", unique);
+
+  if (error) throw error;
+}
+
 /** Plan ids where the member is manager, shoot incharge, or an active assignee. */
 export async function fetchAssignedProductionPlanIds(
   teamMemberId: string,

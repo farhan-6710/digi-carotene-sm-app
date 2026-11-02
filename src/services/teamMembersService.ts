@@ -154,12 +154,38 @@ export async function updateTeamMember(
 export async function deleteTeamMember(memberId: string): Promise<void> {
   await resetProfilesForTeamMember(memberId).catch(() => {});
 
+  // Approval requests used ON DELETE RESTRICT; remove this member's rows first
+  // (migration 085 also cascades for future deletes).
+  const { error: approvalsError } = await supabase
+    .from(DB.POST_APPROVAL_REQUESTS.TABLE)
+    .delete()
+    .eq("requested_by_team_member_id", memberId);
+
+  if (approvalsError) {
+    throw new Error(
+      approvalsError.message ?? "Failed to clear post approval requests.",
+    );
+  }
+
   const { error } = await supabase
     .from(DB.TEAM_MEMBERS.TABLE)
     .delete()
     .eq("id", memberId);
 
   if (error) {
+    if (error.code === "23503") {
+      throw new Error(
+        "This team member is still linked to projects, tasks, or plans. Reassign or remove those first.",
+      );
+    }
     throw new Error(error.message ?? "Failed to delete team member.");
+  }
+}
+
+export async function deleteTeamMembersByIds(ids: string[]): Promise<void> {
+  const unique = [...new Set(ids.filter(Boolean))];
+  if (unique.length === 0) return;
+  for (const id of unique) {
+    await deleteTeamMember(id);
   }
 }

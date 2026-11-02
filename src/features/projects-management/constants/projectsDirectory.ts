@@ -1,9 +1,10 @@
 import type { DirectoryTableColumn } from "@/shared/types/components";
 
-export const PROJECTS_DIRECTORY_GRID_CLASS =
-  "grid-cols-[minmax(0,1.2fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(9.75rem,1.2fr)_minmax(0,0.55fr)_minmax(0,4.5rem)_minmax(0,2.75rem)]";
-export const PROJECTS_DIRECTORY_ROW_GRID_CLASS =
-  "sm:grid-cols-[minmax(0,1.2fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(9.75rem,1.2fr)_minmax(0,0.55fr)_minmax(0,4.5rem)_minmax(0,2.75rem)]";
+export const PROJECTS_DIRECTORY_GRID_CLASS = "grid-cols-[minmax(0,1.2fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(9.75rem,1.2fr)_minmax(0,0.55fr)_minmax(0,4.5rem)_minmax(0,2.75rem)]";
+export const PROJECTS_DIRECTORY_ROW_GRID_CLASS = "sm:grid-cols-[minmax(0,1.2fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(9.75rem,1.2fr)_minmax(0,0.55fr)_minmax(0,4.5rem)_minmax(0,2.75rem)]";
+
+export const PROJECTS_DIRECTORY_BULK_GRID_CLASS = "grid-cols-[minmax(2.5rem,2.5rem)_minmax(0,1.2fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(9.75rem,1.2fr)_minmax(0,0.55fr)_minmax(0,4.5rem)_minmax(0,2.75rem)]";
+export const PROJECTS_DIRECTORY_BULK_ROW_GRID_CLASS = "sm:grid-cols-[minmax(2.5rem,2.5rem)_minmax(0,1.2fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(9.75rem,1.2fr)_minmax(0,0.55fr)_minmax(0,4.5rem)_minmax(0,2.75rem)]";
 
 export const projectsDirectoryColumns: DirectoryTableColumn[] = [
   { label: "PROJECT" },

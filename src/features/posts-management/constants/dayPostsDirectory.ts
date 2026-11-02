@@ -1,9 +1,10 @@
 import type { DirectoryTableColumn } from "@/shared/types/components";
 
-export const DAY_POSTS_GRID_CLASS =
-  "grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.7fr)_minmax(0,0.5fr)]";
-export const DAY_POSTS_ROW_GRID_CLASS =
-  "sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.7fr)_minmax(0,0.5fr)]";
+export const DAY_POSTS_GRID_CLASS = "grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.7fr)_minmax(0,0.5fr)]";
+export const DAY_POSTS_ROW_GRID_CLASS = "sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.7fr)_minmax(0,0.5fr)]";
+
+export const DAY_POSTS_BULK_GRID_CLASS = "grid-cols-[minmax(2.5rem,2.5rem)_minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.7fr)_minmax(0,0.5fr)]";
+export const DAY_POSTS_BULK_ROW_GRID_CLASS = "sm:grid-cols-[minmax(2.5rem,2.5rem)_minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.7fr)_minmax(0,0.5fr)]";
 
 export const dayPostsColumns: DirectoryTableColumn[] = [
   { label: "PROJECT" },

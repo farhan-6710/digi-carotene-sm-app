@@ -1,16 +1,19 @@
 import { Plus } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { ProjectDialog } from "@/features/projects-management/components/ProjectDialog";
 import { ProjectsTable } from "@/features/projects-management/components/ProjectsTable";
 import { useProjectDialog } from "@/features/projects-management/hooks/useProjectDialog";
 import { useProjectsQuery } from "@/features/projects-management/hooks/useProjectsQuery";
 import type { ActiveStatusFilterId } from "@/shared/constants/activeStatusFilter";
+import { useDirectoryBulkDelete } from "@/shared/hooks/useDirectoryBulkDelete";
+import { useDirectoryBulkSelection } from "@/shared/hooks/useDirectoryBulkSelection";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { PageShell } from "@/shared/components/PageShell";
 import { Button } from "@/shared/ui/button";
 import { filterByActiveStatus } from "@/shared/utils/activeStatusFilterUtils";
 import { matchesListingSearch } from "@/shared/utils/listingSearch";
+import { deleteProjectsByIds } from "@/services/projectsService";
 
 export function ProjectsManagementPage() {
   const { can } = usePermissions();
@@ -21,6 +24,7 @@ export function ProjectsManagementPage() {
   });
   const [statusFilter, setStatusFilter] = useState<ActiveStatusFilterId>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const canDelete = can("projects.delete");
 
   const filteredProjects = useMemo(() => {
     return filterByActiveStatus(projects, statusFilter).filter((project) =>
@@ -31,6 +35,22 @@ export function ProjectsManagementPage() {
       ]),
     );
   }, [projects, searchQuery, statusFilter]);
+
+  const filteredIds = useMemo(
+    () => filteredProjects.map((project) => project.id),
+    [filteredProjects],
+  );
+  const bulk = useDirectoryBulkSelection(filteredIds);
+  const deleteByIds = useCallback(
+    (ids: string[]) => deleteProjectsByIds(ids),
+    [],
+  );
+  const { isDeleting, runBulkDelete } = useDirectoryBulkDelete({
+    deleteByIds,
+    reload,
+    clearSelection: bulk.clear,
+    successMessage: "Selected projects deleted.",
+  });
 
   return (
     <PageShell
@@ -55,6 +75,14 @@ export function ProjectsManagementPage() {
         projects={filteredProjects}
         isLoading={isLoading}
         canEdit={can("projects.update")}
+        canDelete={canDelete}
+        selectedIds={bulk.selectedIds}
+        allVisibleSelected={bulk.allVisibleSelected}
+        isDeleting={isDeleting}
+        onToggleSelect={bulk.toggle}
+        onToggleAllVisible={bulk.toggleAllVisible}
+        onClearSelection={bulk.clear}
+        onBulkDelete={() => runBulkDelete(bulk.selectedIds)}
         onEditProject={openEditDialog}
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}

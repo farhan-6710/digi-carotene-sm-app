@@ -10,6 +10,14 @@ export type DevProjectsTableProps = {
   projects: DevProjectListItem[];
   isLoading: boolean;
   canEdit: boolean;
+  canDelete?: boolean;
+  selectedIds?: string[];
+  allVisibleSelected?: boolean;
+  isDeleting?: boolean;
+  onToggleSelect?: (projectId: string) => void;
+  onToggleAllVisible?: () => void;
+  onClearSelection?: () => void;
+  onBulkDelete?: () => void | Promise<void>;
   onEditProject: (project: DevProjectListItem) => void;
   statusFilter: ActiveStatusFilterId;
   onStatusFilterChange: (value: ActiveStatusFilterId) => void;
@@ -20,6 +28,9 @@ export type DevProjectsTableProps = {
 export type DevProjectsTableRowProps = {
   project: DevProjectListItem;
   canEdit: boolean;
+  canDelete?: boolean;
+  selected?: boolean;
+  onToggleSelect?: (projectId: string) => void;
   onEditProject: (project: DevProjectListItem) => void;
 };
 

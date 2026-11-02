@@ -49,7 +49,7 @@ export function PostsDayPage() {
     setSelectedProjectIds,
   } = usePostsFilterParams();
 
-  const { posts, projects, isLoading, error } = usePostsDayQuery(day);
+  const { posts, projects, isLoading, error, reload } = usePostsDayQuery(day);
 
   const projectClientMap = useMemo(
     () => new Map(projects.map((p) => [p.id, p.client_id])),
@@ -129,6 +129,8 @@ export function PostsDayPage() {
         posts={filteredPosts}
         projects={projects}
         isLoading={isLoading}
+        canDelete={can("posts.delete")}
+        reload={reload}
         selectedClientIds={selectedClientIds}
         selectedProjectIds={selectedProjectIds}
         onClientChange={setSelectedClientIds}

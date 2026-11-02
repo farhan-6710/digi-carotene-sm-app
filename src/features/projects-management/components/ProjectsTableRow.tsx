@@ -1,9 +1,13 @@
 import { Pencil } from "lucide-react";
 
 import { buildProjectDetailPath } from "@/features/projects-management/constants/routes";
-import { PROJECTS_DIRECTORY_ROW_GRID_CLASS } from "@/features/projects-management/constants/projectsDirectory";
+import {
+  PROJECTS_DIRECTORY_BULK_ROW_GRID_CLASS,
+  PROJECTS_DIRECTORY_ROW_GRID_CLASS,
+} from "@/features/projects-management/constants/projectsDirectory";
 import type { ProjectsTableRowProps } from "@/features/projects-management/types/components";
 import { ActiveStatusLabel } from "@/shared/components/ActiveStatusSwitchField";
+import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
 import { stopDirectoryRowNav } from "@/shared/utils/directoryTableRow";
 import { SocialPlatformButtons } from "@/shared/components/SocialPlatformButtons";
@@ -12,6 +16,9 @@ import { cn } from "@/shared/lib/utils";
 export function ProjectsTableRow({
   project,
   canEdit,
+  canDelete = false,
+  selected = false,
+  onToggleSelect,
   onEditProject,
 }: ProjectsTableRowProps) {
   return (
@@ -19,9 +26,18 @@ export function ProjectsTableRow({
       to={buildProjectDetailPath(project.id)}
       className={cn(
         "grid items-center gap-2 px-6 py-4 sm:gap-4",
-        PROJECTS_DIRECTORY_ROW_GRID_CLASS,
+        canDelete
+          ? PROJECTS_DIRECTORY_BULK_ROW_GRID_CLASS
+          : PROJECTS_DIRECTORY_ROW_GRID_CLASS,
       )}
     >
+      {canDelete && onToggleSelect ? (
+        <DirectoryBulkCheckbox
+          checked={selected}
+          onCheckedChange={() => onToggleSelect(project.id)}
+          ariaLabel={`Select ${project.project_name}`}
+        />
+      ) : null}
       <div className="text-sm font-medium text-foreground">
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           PROJECT

@@ -143,6 +143,20 @@ export async function deleteLead(leadId: string): Promise<void> {
   }
 }
 
+export async function deleteLeadsByIds(ids: string[]): Promise<void> {
+  const unique = [...new Set(ids.filter(Boolean))];
+  if (unique.length === 0) return;
+
+  const { error } = await supabase
+    .from(DB.LEADS.TABLE)
+    .delete()
+    .in("id", unique);
+
+  if (error) {
+    throw new Error(error.message ?? "Failed to delete leads.");
+  }
+}
+
 export async function fetchLeadNotes(leadId: string): Promise<LeadNote[]> {
   const { data, error } = await supabase
     .from(DB.LEAD_NOTES.TABLE)

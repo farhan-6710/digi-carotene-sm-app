@@ -60,6 +60,10 @@ export function DirectoryTableHeaderCell({
     setMenuOpen(true);
   };
 
+  if (column.header) {
+    return <div className={cellClass}>{column.header}</div>;
+  }
+
   if (!canReorder) {
     return (
       <div className={cellClass}>

@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { LeadDialog } from "@/features/crm/components/LeadDialog";
 import { LeadsTable } from "@/features/crm/components/LeadsTable";
@@ -26,9 +26,12 @@ import { filterLeadsByCreatedMonth } from "@/features/crm/utils/leadMonthFilterU
 import { sortLeads } from "@/features/crm/utils/leadSortUtils";
 import { formatLeadTags } from "@/features/crm/utils/leadTagUtils";
 import { PageShell } from "@/shared/components/PageShell";
+import { useDirectoryBulkDelete } from "@/shared/hooks/useDirectoryBulkDelete";
+import { useDirectoryBulkSelection } from "@/shared/hooks/useDirectoryBulkSelection";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { Button } from "@/shared/ui/button";
 import { matchesListingSearch } from "@/shared/utils/listingSearch";
+import { deleteLeadsByIds } from "@/services/leadsService";
 
 export function LeadsManagementPage() {
   const { can } = usePermissions();
@@ -57,6 +60,7 @@ export function LeadsManagementPage() {
   const [followUpFilter, setFollowUpFilter] = useState<LeadFollowUpFilterId>(
     DEFAULT_LEAD_FOLLOW_UP_FILTER,
   );
+  const canDelete = can("leads.delete");
 
   const followUpsByLeadId = useMemo(
     () => groupFollowUpsByLeadId(followUps),
@@ -90,6 +94,22 @@ export function LeadsManagementPage() {
     return sortLeads(byFollowUp, sort);
   }, [leads, searchQuery, monthFilter, followUps, followUpFilter, sort]);
 
+  const filteredIds = useMemo(
+    () => filteredLeads.map((lead) => lead.id),
+    [filteredLeads],
+  );
+  const bulk = useDirectoryBulkSelection(filteredIds);
+  const deleteByIds = useCallback(
+    (ids: string[]) => deleteLeadsByIds(ids),
+    [],
+  );
+  const { isDeleting, runBulkDelete } = useDirectoryBulkDelete({
+    deleteByIds,
+    reload,
+    clearSelection: bulk.clear,
+    successMessage: "Selected leads deleted.",
+  });
+
   return (
     <PageShell
       heading="Leads Management"
@@ -114,6 +134,14 @@ export function LeadsManagementPage() {
         followUpsByLeadId={followUpsByLeadId}
         isLoading={isLoading || followUpsLoading}
         canEdit={can("leads.update")}
+        canDelete={canDelete}
+        selectedIds={bulk.selectedIds}
+        allVisibleSelected={bulk.allVisibleSelected}
+        isDeleting={isDeleting}
+        onToggleSelect={bulk.toggle}
+        onToggleAllVisible={bulk.toggleAllVisible}
+        onClearSelection={bulk.clear}
+        onBulkDelete={() => runBulkDelete(bulk.selectedIds)}
         isSavingFollowUp={followUpActions.isSaving}
         onEditLead={openEditDialog}
         onUpdateFollowUpStatus={followUpActions.updateStatus}

@@ -68,6 +68,24 @@ export type DirectoryTableColumn = {
   id?: string;
   /** Opt-in: column menu (click / keyboard / context menu) to Move left/right. */
   reorderable?: boolean;
+  /** When set, renders instead of the text label (e.g. bulk select-all checkbox). */
+  header?: ReactNode;
+};
+
+export type DirectoryBulkCheckboxProps = {
+  checked: boolean;
+  onCheckedChange: () => void;
+  ariaLabel: string;
+  disabled?: boolean;
+};
+
+export type DirectoryBulkDeleteBarProps = {
+  selectedCount: number;
+  singularLabel: string;
+  pluralLabel: string;
+  isDeleting?: boolean;
+  onClear: () => void;
+  onConfirmDelete: () => void | Promise<void>;
 };
 
 export type DirectoryTableProps = {

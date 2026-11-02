@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Plus } from "lucide-react";
 
 import { ProductionPlanDialog } from "@/features/production-planner/components/ProductionPlanDialog";
@@ -8,14 +8,18 @@ import { useProductionPlanDialog } from "@/features/production-planner/hooks/use
 import { useProductionPlannerClientFilter } from "@/features/production-planner/hooks/useProductionPlannerClientFilter";
 import { useProductionPlansQuery } from "@/features/production-planner/hooks/useProductionPlansQuery";
 import { PageShell } from "@/shared/components/PageShell";
+import { useDirectoryBulkDelete } from "@/shared/hooks/useDirectoryBulkDelete";
+import { useDirectoryBulkSelection } from "@/shared/hooks/useDirectoryBulkSelection";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { Button } from "@/shared/ui/button";
+import { deleteProductionPlansByIds } from "@/services/productionPlansService";
 
 export function ProductionPlannerPage() {
   const { can } = usePermissions();
   const canCreate = can("productionPlans.create");
   const canUpdate = can("productionPlans.update");
   const canManage = canCreate || canUpdate;
+  const canDelete = can("productionPlans.delete");
 
   const { plans, clients, isLoading, error, setError, reload } =
     useProductionPlansQuery();
@@ -41,6 +45,22 @@ export function ProductionPlannerPage() {
     return plans.filter((plan) => plan.client_id === selectedClientId);
   }, [plans, selectedClientId]);
 
+  const filteredIds = useMemo(
+    () => filteredPlans.map((plan) => plan.id),
+    [filteredPlans],
+  );
+  const bulk = useDirectoryBulkSelection(filteredIds);
+  const deleteByIds = useCallback(
+    (ids: string[]) => deleteProductionPlansByIds(ids),
+    [],
+  );
+  const { isDeleting, runBulkDelete } = useDirectoryBulkDelete({
+    deleteByIds,
+    reload,
+    clearSelection: bulk.clear,
+    successMessage: "Selected production plans deleted.",
+  });
+
   return (
     <PageShell
       heading="Production Planner"
@@ -63,6 +83,14 @@ export function ProductionPlannerPage() {
         plans={filteredPlans}
         isLoading={isLoading}
         canEdit={canUpdate}
+        canDelete={canDelete}
+        selectedIds={bulk.selectedIds}
+        allVisibleSelected={bulk.allVisibleSelected}
+        isDeleting={isDeleting}
+        onToggleSelect={bulk.toggle}
+        onToggleAllVisible={bulk.toggleAllVisible}
+        onClearSelection={bulk.clear}
+        onBulkDelete={() => runBulkDelete(bulk.selectedIds)}
         onEdit={openEditDialog}
         clientFilter={selectedClientId}
         onClientFilterChange={setSelectedClientId}

@@ -69,6 +69,8 @@ export type DayPostsTableProps = {
   posts: import("@/features/posts-management/types/types").Post[];
   projects: import("@/features/projects-management/types/types").ProjectListItem[];
   isLoading: boolean;
+  canDelete?: boolean;
+  reload?: () => Promise<void>;
   selectedClientIds: string[];
   selectedProjectIds: string[];
   onClientChange: (clientIds: string[]) => void;
@@ -80,6 +82,9 @@ export type DayPostsTableProps = {
 
 export type DayPostsTableRowProps = {
   post: import("@/features/posts-management/types/types").Post;
+  canDelete?: boolean;
+  selected?: boolean;
+  onToggleSelect?: (postId: string) => void;
   onOpenPost: (
     post: import("@/features/posts-management/types/types").Post,
   ) => void;

@@ -25,6 +25,14 @@ export type TeamMembersTableProps = {
   members: TeamMember[];
   isLoading: boolean;
   canEdit: boolean;
+  canDelete?: boolean;
+  selectedIds?: string[];
+  allVisibleSelected?: boolean;
+  isDeleting?: boolean;
+  onToggleSelect?: (memberId: string) => void;
+  onToggleAllVisible?: () => void;
+  onClearSelection?: () => void;
+  onBulkDelete?: () => void | Promise<void>;
   onEditMember: (member: TeamMember) => void;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
@@ -45,6 +53,9 @@ export type TeamMemberRoleSelectProps = {
 export type TeamMembersTableRowProps = {
   member: TeamMember;
   canEdit: boolean;
+  canDelete?: boolean;
+  selected?: boolean;
+  onToggleSelect?: (memberId: string) => void;
   onEditMember: (member: TeamMember) => void;
 };
 

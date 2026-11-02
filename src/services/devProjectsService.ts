@@ -299,3 +299,11 @@ export async function deleteDevProject(projectId: string): Promise<void> {
 
   if (error) throw error;
 }
+
+export async function deleteDevProjectsByIds(ids: string[]): Promise<void> {
+  const unique = [...new Set(ids.filter(Boolean))];
+  if (unique.length === 0) return;
+  for (const id of unique) {
+    await deleteDevProject(id);
+  }
+}

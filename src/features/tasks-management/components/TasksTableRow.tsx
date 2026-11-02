@@ -2,7 +2,11 @@ import { Pencil } from "lucide-react";
 
 import { TASK_PRIORITY_LABELS } from "@/features/tasks-management/constants/taskPriorities";
 import { TASK_STATUS_LABELS } from "@/features/tasks-management/constants/taskStatuses";
-import { TASKS_ROW_GRID_CLASS } from "@/features/tasks-management/constants/tasksDirectory";
+import {
+  TASKS_BULK_ROW_GRID_CLASS,
+  TASKS_ROW_GRID_CLASS,
+} from "@/features/tasks-management/constants/tasksDirectory";
+import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import { buildTaskDetailPath } from "@/features/tasks-management/constants/routes";
 import type { TasksTableRowProps } from "@/features/tasks-management/types/components";
 import { formatAssigneeLabels } from "@/features/tasks-management/utils/taskAssigneeListUtils";
@@ -17,6 +21,9 @@ import { cn } from "@/shared/lib/utils";
 export function TasksTableRow({
   task,
   canEdit,
+  canDelete = false,
+  selected = false,
+  onToggleSelect,
   onEdit,
   detailPath,
 }: TasksTableRowProps) {
@@ -45,9 +52,16 @@ export function TasksTableRow({
       to={href}
       className={cn(
         "relative grid grid-cols-1 items-center gap-0 px-4 py-3 sm:items-center sm:gap-4 sm:px-6 sm:py-4",
-        TASKS_ROW_GRID_CLASS,
+        canDelete ? TASKS_BULK_ROW_GRID_CLASS : TASKS_ROW_GRID_CLASS,
       )}
     >
+      {canDelete && onToggleSelect ? (
+        <DirectoryBulkCheckbox
+          checked={selected}
+          onCheckedChange={() => onToggleSelect(task.id)}
+          ariaLabel={`Select ${task.title}`}
+        />
+      ) : null}
       {/* Mobile: title + project stacked, ETA centered on the right */}
       <div className="relative flex min-w-0 items-center gap-3 pr-27 sm:hidden">
         <div className="min-w-0 flex-1">

@@ -1,11 +1,21 @@
 import { ChevronRight } from "lucide-react";
 
-import { DAY_POSTS_ROW_GRID_CLASS } from "@/features/posts-management/constants/dayPostsDirectory";
+import {
+  DAY_POSTS_BULK_ROW_GRID_CLASS,
+  DAY_POSTS_ROW_GRID_CLASS,
+} from "@/features/posts-management/constants/dayPostsDirectory";
+import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import { statusBadgeStyles } from "@/features/posts-management/constants/postsManagement";
 import type { DayPostsTableRowProps } from "@/features/posts-management/types/components";
 import { cn } from "@/shared/lib/utils";
 
-export function DayPostsTableRow({ post, onOpenPost }: DayPostsTableRowProps) {
+export function DayPostsTableRow({
+  post,
+  canDelete = false,
+  selected = false,
+  onToggleSelect,
+  onOpenPost,
+}: DayPostsTableRowProps) {
   const projectName = post.project_name?.trim() || "Unknown project";
   const projectLabel = post.client_name?.trim()
     ? `${projectName} (${post.client_name.trim()})`
@@ -17,9 +27,16 @@ export function DayPostsTableRow({ post, onOpenPost }: DayPostsTableRowProps) {
       onClick={() => onOpenPost(post)}
       className={cn(
         "grid w-full gap-2 px-6 py-4 text-left transition-colors hover:bg-muted/40 sm:items-center sm:gap-4",
-        DAY_POSTS_ROW_GRID_CLASS,
+        canDelete ? DAY_POSTS_BULK_ROW_GRID_CLASS : DAY_POSTS_ROW_GRID_CLASS,
       )}
     >
+      {canDelete && onToggleSelect ? (
+        <DirectoryBulkCheckbox
+          checked={selected}
+          onCheckedChange={() => onToggleSelect(post.id)}
+          ariaLabel={`Select ${post.post_title?.trim() || "post"}`}
+        />
+      ) : null}
       <div className="min-w-0">
         <p className="truncate text-sm font-medium text-foreground">
           {projectLabel}

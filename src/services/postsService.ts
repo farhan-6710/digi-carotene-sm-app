@@ -370,3 +370,15 @@ export async function deletePost(postId: string): Promise<void> {
     throw error;
   }
 }
+
+export async function deletePostsByIds(ids: string[]): Promise<void> {
+  const unique = [...new Set(ids.filter(Boolean))];
+  if (unique.length === 0) return;
+
+  const { error } = await supabase
+    .from(DB.POSTS.TABLE)
+    .delete()
+    .in("id", unique);
+
+  if (error) throw error;
+}

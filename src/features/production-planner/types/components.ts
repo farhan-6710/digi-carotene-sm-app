@@ -10,6 +10,14 @@ export type ProductionPlansTableProps = {
   plans: ProductionPlan[];
   isLoading: boolean;
   canEdit: boolean;
+  canDelete?: boolean;
+  selectedIds?: string[];
+  allVisibleSelected?: boolean;
+  isDeleting?: boolean;
+  onToggleSelect?: (planId: string) => void;
+  onToggleAllVisible?: () => void;
+  onClearSelection?: () => void;
+  onBulkDelete?: () => void | Promise<void>;
   onEdit: (plan: ProductionPlan) => void;
   clientFilter: string;
   onClientFilterChange: (clientId: string) => void;

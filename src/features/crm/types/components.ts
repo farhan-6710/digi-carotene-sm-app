@@ -20,6 +20,9 @@ export type LeadsTableRowProps = {
   lead: Lead;
   nextFollowUp: LeadFollowUp | null;
   canEdit: boolean;
+  canDelete?: boolean;
+  selected?: boolean;
+  onToggleSelect?: (leadId: string) => void;
   isSavingFollowUp?: boolean;
   onEditLead: (lead: Lead) => void;
   onUpdateFollowUpStatus: (
@@ -104,6 +107,14 @@ export type LeadsTableProps = {
   followUpsByLeadId: Map<string, LeadFollowUp[]>;
   isLoading: boolean;
   canEdit: boolean;
+  canDelete?: boolean;
+  selectedIds?: string[];
+  allVisibleSelected?: boolean;
+  isDeleting?: boolean;
+  onToggleSelect?: (leadId: string) => void;
+  onToggleAllVisible?: () => void;
+  onClearSelection?: () => void;
+  onBulkDelete?: () => void | Promise<void>;
   isSavingFollowUp?: boolean;
   onEditLead: (lead: Lead) => void;
   onUpdateFollowUpStatus: (
