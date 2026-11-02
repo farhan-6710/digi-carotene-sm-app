@@ -132,6 +132,9 @@ export function ProjectDetailPage() {
     setError: setDialogError,
   });
   const canCreatePosts = can("posts.create");
+  const canReadPosts = can("posts.read");
+  const canUpdatePosts = can("posts.update");
+  const canReadTasks = can("tasks.read");
   const showProjectEdit = canEditProjectSocials;
   const socialsOnlyEdit = canEditProjectSocials && !canFullyEditProject;
   const canShare = canGenerateShareLink(
@@ -192,20 +195,24 @@ export function ProjectDetailPage() {
         teamMembers={teamMembers}
       />
 
-      <ProjectPostsTable
-        posts={dateFilteredPosts}
-        isLoading={isLoading}
-        canDelete={can("posts.delete")}
-        reload={reload}
-        onOpenPost={(post) => navigate(buildPostDetailPath(post.id))}
-        onEditPost={openEditDialogFromPost}
-      />
+      {canReadPosts ? (
+        <ProjectPostsTable
+          posts={dateFilteredPosts}
+          isLoading={isLoading}
+          canDelete={can("posts.delete")}
+          reload={reload}
+          onOpenPost={(post) => navigate(buildPostDetailPath(post.id))}
+          onEditPost={canUpdatePosts ? openEditDialogFromPost : undefined}
+        />
+      ) : null}
 
-      <ProjectTasksSection projectId={project.id} projectKind="sm" />
+      {canReadTasks ? (
+        <ProjectTasksSection projectId={project.id} projectKind="sm" />
+      ) : null}
 
       <ProjectChatSection project={project} teamMembers={teamMembers} />
 
-      <PostDialog {...postDialog} />
+      {canUpdatePosts || canCreatePosts ? <PostDialog {...postDialog} /> : null}
       {showProjectEdit ? (
         <ProjectDialog
           {...projectDialog}

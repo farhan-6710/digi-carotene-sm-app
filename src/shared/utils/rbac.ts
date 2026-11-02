@@ -24,22 +24,37 @@ export type RbacResource =
 export type RbacAction = "create" | "read" | "update" | "delete";
 export type Permission = `${RbacResource}.${RbacAction}`;
 
-// Resources each role has full CRUD on. Extend with finer-grained
-// `Permission[]` lists if a role ever needs partial access to a resource.
-const ROLE_RESOURCES: Record<TeamMemberRole, RbacResource[]> = {
+function crud(resource: RbacResource): Permission[] {
+  return [
+    `${resource}.create`,
+    `${resource}.read`,
+    `${resource}.update`,
+    `${resource}.delete`,
+  ];
+}
+
+/** Exact permissions per role. Prefer this over role === checks in UI. */
+const ROLE_PERMISSIONS: Record<TeamMemberRole, Permission[]> = {
   admin: [
-    "team",
-    "clients",
-    "projects",
-    "posts",
-    "productionPlans",
-    "tasks",
-    "leads",
-    "crm",
+    ...crud("team"),
+    ...crud("clients"),
+    ...crud("projects"),
+    ...crud("posts"),
+    ...crud("productionPlans"),
+    ...crud("tasks"),
+    ...crud("leads"),
+    ...crud("crm"),
   ],
-  manager: ["clients", "projects", "posts", "tasks"],
-  sm_executive: ["posts", "tasks"],
-  editor: ["posts", "productionPlans"],
+  manager: [
+    ...crud("clients"),
+    ...crud("projects"),
+    ...crud("posts"),
+    ...crud("tasks"),
+    "productionPlans.read",
+  ],
+  sm_executive: [...crud("posts"), ...crud("tasks")],
+  /** Assigned projects only — view, no edits, no posts. */
+  editor: ["projects.read"],
 };
 
 function resolveRole(role: TeamMemberRole | string | null): TeamMemberRole | null {
@@ -63,9 +78,7 @@ export function can(
     return false;
   }
 
-  const resource = permission.split(".")[0] as RbacResource;
-  const resources = ROLE_RESOURCES[resolved];
-  return resources?.includes(resource) ?? false;
+  return ROLE_PERMISSIONS[resolved]?.includes(permission) ?? false;
 }
 
 /**
