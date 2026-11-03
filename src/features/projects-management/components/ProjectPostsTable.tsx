@@ -1,4 +1,6 @@
 import { useCallback, useMemo } from "react";
+import { Link } from "react-router";
+import { Plus } from "lucide-react";
 
 import { ProjectPostsTableRow } from "@/features/projects-management/components/ProjectPostsTableRow";
 import {
@@ -15,12 +17,14 @@ import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { useDirectoryBulkDelete } from "@/shared/hooks/useDirectoryBulkDelete";
 import { useDirectoryBulkSelection } from "@/shared/hooks/useDirectoryBulkSelection";
 import type { DirectoryTableColumn } from "@/shared/types/components";
+import { Button } from "@/shared/ui/button";
 import { deletePostsByIds } from "@/services/postsService";
 
 export function ProjectPostsTable({
   posts,
   isLoading,
   canDelete = false,
+  addPostHref,
   reload,
   onOpenPost,
   onEditPost,
@@ -96,6 +100,14 @@ export function ProjectPostsTable({
               onClear={bulk.clear}
               onConfirmDelete={() => runBulkDelete(bulk.selectedIds)}
             />
+          ) : null}
+          {addPostHref ? (
+            <Button asChild className="rounded-full shadow-sm">
+              <Link to={addPostHref}>
+                <Plus className="mr-2 size-4" />
+                Add Post
+              </Link>
+            </Button>
           ) : null}
           <PostStatusSelect value={statusFilter} onChange={setStatusFilter} />
         </div>

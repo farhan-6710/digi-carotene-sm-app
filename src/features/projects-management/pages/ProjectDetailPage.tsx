@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
-import { ArrowLeft, Pencil, Plus } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 
 import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -45,8 +45,6 @@ function ProjectDetailBackButton() {
 
 function ProjectDetailHeaderActions({
   projectId,
-  projectName,
-  canCreatePosts,
   canEditProject,
   editProjectLabel = "Edit Project",
   canShare,
@@ -54,8 +52,6 @@ function ProjectDetailHeaderActions({
   onEditProject,
 }: {
   projectId?: string;
-  projectName?: string;
-  canCreatePosts: boolean;
   canEditProject: boolean;
   editProjectLabel?: string;
   canShare: boolean;
@@ -75,21 +71,6 @@ function ProjectDetailHeaderActions({
           >
             <Pencil className="mr-2 size-4" />
             {editProjectLabel}
-          </Button>
-        ) : null}
-        {canCreatePosts && projectId && projectName ? (
-          <Button asChild className="rounded-full shadow-sm">
-            <Link
-              to={buildAddPostsPath({
-                date: new Date(),
-                projectId,
-                projectName,
-                returnToProject: true,
-              })}
-            >
-              <Plus className="mr-2 size-4" />
-              Add Post
-            </Link>
           </Button>
         ) : null}
         {projectId ? (
@@ -165,7 +146,6 @@ export function ProjectDetailPage() {
         <PageHeader
           actions={
             <ProjectDetailHeaderActions
-              canCreatePosts={false}
               canEditProject={false}
               canShare={false}
               dateFilterProps={dateFilterProps}
@@ -183,8 +163,6 @@ export function ProjectDetailPage() {
         actions={
           <ProjectDetailHeaderActions
             projectId={project.id}
-            projectName={getProjectDisplayLabel(project)}
-            canCreatePosts={canCreatePosts}
             canEditProject={showProjectEdit}
             editProjectLabel={
               socialsOnlyEdit ? "Edit social links" : "Edit Project"
@@ -212,6 +190,16 @@ export function ProjectDetailPage() {
           posts={dateFilteredPosts}
           isLoading={isLoading}
           canDelete={can("posts.delete")}
+          addPostHref={
+            canCreatePosts
+              ? buildAddPostsPath({
+                  date: new Date(),
+                  projectId: project.id,
+                  projectName: getProjectDisplayLabel(project),
+                  returnToProject: true,
+                })
+              : undefined
+          }
           reload={reload}
           onOpenPost={(post) => navigate(buildPostDetailPath(post.id))}
           onEditPost={canUpdatePosts ? openEditDialogFromPost : undefined}

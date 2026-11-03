@@ -125,6 +125,8 @@ export type ProjectPostsTableProps = {
   posts: Post[];
   isLoading: boolean;
   canDelete?: boolean;
+  /** When set, shows Add Post in the section header (same pattern as project tasks). */
+  addPostHref?: string;
   reload?: () => Promise<void>;
   onOpenPost?: (post: Post) => void;
   onEditPost?: (post: Post) => void;
