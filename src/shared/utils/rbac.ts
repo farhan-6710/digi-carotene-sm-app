@@ -3,14 +3,20 @@ import {
   type TeamMemberRole,
 } from "@/features/team-management/constants/teamMemberRoles";
 
-// Centralized, frontend-only RBAC. Permissions are derived from the
-// logged-in user's `team_members.team_role`. Add a new role or resource here and
-// the whole app stays in sync — never sprinkle `role === "admin"` checks
-// around components.
-//
-// Override rule: wherever an SM executive (or an executive-typical assignee such as
-// shoot incharge) can perform an action, `admin` and `manager` must be able to
-// as well. Use `isAdminOrManagerRole` for that inheritance.
+/**
+ * Team portal RBAC — frontend only (from `team_members.team_role`).
+ *
+ * HOW TO CHANGE ACCESS
+ * 1. Find the role in ROLE_ACCESS below.
+ * 2. Set each area to "none" | "read" | "full".
+ * 3. Flip seeAll* / socialsOnly if needed.
+ *
+ * "none" = no access
+ * "read" = view only
+ * "full" = create + read + update + delete
+ *
+ * UI should call `can(role, "posts.update")` (via usePermissions) — not `role === "admin"`.
+ */
 
 export type RbacResource =
   | "team"
@@ -21,137 +27,138 @@ export type RbacResource =
   | "tasks"
   | "leads"
   | "crm";
+
 export type RbacAction = "create" | "read" | "update" | "delete";
 export type Permission = `${RbacResource}.${RbacAction}`;
+export type AccessLevel = "none" | "read" | "full";
+export type ProjectDataScope = "all" | "assigned";
+export type ProductionPlanDataScope = "all" | "assigned";
 
-function crud(resource: RbacResource): Permission[] {
-  return [
-    `${resource}.create`,
-    `${resource}.read`,
-    `${resource}.update`,
-    `${resource}.delete`,
-  ];
-}
-
-/** Exact permissions per role. Prefer this over role === checks in UI. */
-const ROLE_PERMISSIONS: Record<TeamMemberRole, Permission[]> = {
-  admin: [
-    ...crud("team"),
-    ...crud("clients"),
-    ...crud("projects"),
-    ...crud("posts"),
-    ...crud("productionPlans"),
-    ...crud("tasks"),
-    ...crud("leads"),
-    ...crud("crm"),
-  ],
-  manager: [
-    ...crud("clients"),
-    ...crud("projects"),
-    ...crud("posts"),
-    ...crud("tasks"),
-    "productionPlans.read",
-  ],
-  sm_executive: [...crud("posts"), ...crud("tasks")],
-  /** Assigned projects only — view, no edits, no posts. */
-  editor: ["projects.read"],
+type RoleAccess = Record<RbacResource, AccessLevel> & {
+  /** true = whole agency list; false = only assigned rows */
+  seeAllProjects: boolean;
+  seeAllProductionPlans: boolean;
+  /** SM executive: edit project social URLs without full project edit */
+  socialsOnly: boolean;
 };
 
-function resolveRole(role: TeamMemberRole | string | null): TeamMemberRole | null {
-  return normalizeTeamMemberRole(role);
+/** ─── Edit role access here (single source of truth) ─── */
+const ROLE_ACCESS: Record<TeamMemberRole, RoleAccess> = {
+  admin: {
+    team: "full",
+    clients: "full",
+    projects: "full",
+    posts: "full",
+    productionPlans: "full",
+    tasks: "full",
+    leads: "full",
+    crm: "full",
+    seeAllProjects: true,
+    seeAllProductionPlans: true,
+    socialsOnly: false,
+  },
+  manager: {
+    team: "none",
+    clients: "full",
+    projects: "full",
+    posts: "full",
+    productionPlans: "read",
+    tasks: "full",
+    leads: "none",
+    crm: "none",
+    seeAllProjects: false,
+    seeAllProductionPlans: false,
+    socialsOnly: false,
+  },
+  sm_executive: {
+    team: "none",
+    clients: "none",
+    projects: "none",
+    posts: "full",
+    productionPlans: "none",
+    tasks: "full",
+    leads: "none",
+    crm: "none",
+    seeAllProjects: false,
+    seeAllProductionPlans: false,
+    socialsOnly: true,
+  },
+  editor: {
+    team: "none",
+    clients: "none",
+    projects: "read",
+    posts: "read",
+    productionPlans: "none",
+    tasks: "none",
+    leads: "none",
+    crm: "none",
+    seeAllProjects: false,
+    seeAllProductionPlans: false,
+    socialsOnly: false,
+  },
+};
+
+function accessFor(role: TeamMemberRole | string | null): RoleAccess | null {
+  const resolved = normalizeTeamMemberRole(role);
+  return resolved ? ROLE_ACCESS[resolved] : null;
 }
 
-/** Admin/manager inherit control of SM-executive-controlled actions. */
+function levelAllows(level: AccessLevel, action: RbacAction): boolean {
+  if (level === "full") return true;
+  if (level === "read") return action === "read";
+  return false;
+}
+
+/** Admin or manager (shared override for SM-executive-style actions). */
 export function isAdminOrManagerRole(
   role: TeamMemberRole | string | null,
 ): boolean {
-  const resolved = resolveRole(role);
+  const resolved = normalizeTeamMemberRole(role);
   return resolved === "admin" || resolved === "manager";
 }
 
+/** Example: can(role, "posts.update") */
 export function can(
   role: TeamMemberRole | string | null,
   permission: Permission,
 ): boolean {
-  const resolved = resolveRole(role);
-  if (!resolved) {
-    return false;
-  }
+  const access = accessFor(role);
+  if (!access) return false;
 
-  return ROLE_PERMISSIONS[resolved]?.includes(permission) ?? false;
+  const [resource, action] = permission.split(".") as [RbacResource, RbacAction];
+  return levelAllows(access[resource], action);
 }
 
-/**
- * Full SM project create/update/delete.
- * SM executives do not get this — they may only edit social links.
- */
+/** Full project edit (not socials-only). */
 export function canFullyEditProject(
   role: TeamMemberRole | string | null,
 ): boolean {
   return can(role, "projects.update");
 }
 
-/**
- * Update social profile URLs on an SM project.
- * Admin/manager via full projects access; SM executive socials-only.
- */
+/** Full project edit, or SM executive socials-only. */
 export function canEditProjectSocials(
   role: TeamMemberRole | string | null,
 ): boolean {
-  if (canFullyEditProject(role)) return true;
-  return resolveRole(role) === "sm_executive";
+  const access = accessFor(role);
+  if (!access) return false;
+  return levelAllows(access.projects, "update") || access.socialsOnly;
 }
-
-// ─── Project / post list scoping ─────────────────────────────────────────────
-// Controls which projects (and thus which posts) a role sees in team portal
-// lists. Flip a role to "all" here to restore unfiltered lists — one-line change.
-
-/** `all` = every project; `assigned` = manager_id OR active project_team_members. */
-export type ProjectDataScope = "all" | "assigned";
-
-export const PROJECT_DATA_SCOPE_BY_ROLE: Record<TeamMemberRole, ProjectDataScope> =
-  {
-    admin: "all",
-    manager: "assigned",
-    sm_executive: "assigned",
-    editor: "assigned",
-  };
 
 export function projectDataScopeForRole(
   role: TeamMemberRole | string | null,
 ): ProjectDataScope {
-  const resolved = resolveRole(role);
-  if (!resolved) {
-    return "assigned";
-  }
-  return PROJECT_DATA_SCOPE_BY_ROLE[resolved] ?? "assigned";
+  return accessFor(role)?.seeAllProjects ? "all" : "assigned";
 }
 
 export function seesAllProjects(role: TeamMemberRole | string | null): boolean {
   return projectDataScopeForRole(role) === "all";
 }
 
-/** `all` = every plan; `assigned` = manager, shoot incharge, or active plan team row. */
-export type ProductionPlanDataScope = "all" | "assigned";
-
-export const PRODUCTION_PLAN_DATA_SCOPE_BY_ROLE: Record<
-  TeamMemberRole,
-  ProductionPlanDataScope
-> = {
-  admin: "all",
-  manager: "assigned",
-  sm_executive: "assigned",
-  editor: "assigned",
-};
-
 export function productionPlanDataScopeForRole(
   role: TeamMemberRole | string | null,
 ): ProductionPlanDataScope {
-  const resolved = resolveRole(role);
-  if (!resolved) {
-    return "assigned";
-  }
-  return PRODUCTION_PLAN_DATA_SCOPE_BY_ROLE[resolved] ?? "assigned";
+  return accessFor(role)?.seeAllProductionPlans ? "all" : "assigned";
 }
 
 export function seesAllProductionPlans(
@@ -159,3 +166,22 @@ export function seesAllProductionPlans(
 ): boolean {
   return productionPlanDataScopeForRole(role) === "all";
 }
+
+/** Kept for docs / callers that map role → scope directly. */
+export const PROJECT_DATA_SCOPE_BY_ROLE: Record<TeamMemberRole, ProjectDataScope> =
+  {
+    admin: projectDataScopeForRole("admin"),
+    manager: projectDataScopeForRole("manager"),
+    sm_executive: projectDataScopeForRole("sm_executive"),
+    editor: projectDataScopeForRole("editor"),
+  };
+
+export const PRODUCTION_PLAN_DATA_SCOPE_BY_ROLE: Record<
+  TeamMemberRole,
+  ProductionPlanDataScope
+> = {
+  admin: productionPlanDataScopeForRole("admin"),
+  manager: productionPlanDataScopeForRole("manager"),
+  sm_executive: productionPlanDataScopeForRole("sm_executive"),
+  editor: productionPlanDataScopeForRole("editor"),
+};
