@@ -73,6 +73,7 @@ const ROLE_ACCESS: Record<TeamMemberRole, RoleAccess> = {
   sm_executive: {
     team: "none",
     clients: "none",
+    // View assigned projects only (manager or active team seat) — not agency-wide.
     projects: "read",
     posts: "full",
     productionPlans: "none",

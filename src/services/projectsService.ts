@@ -165,13 +165,14 @@ async function fetchProjectsByIds(
 
 /**
  * Projects visible to the current team user.
- * Scope comes from `PROJECT_DATA_SCOPE_BY_ROLE` in rbac.ts (`all` | `assigned`).
- * Returns `null` project-id filter for "all"; empty list means no assignments.
+ * Scope comes from ROLE_ACCESS.seeAllProjects in rbac.ts.
+ * Returns `null` = agency-wide; string[] = only those ids (may be empty).
  */
 export async function resolveScopedProjectIds(
   teamRole: TeamMemberRole | null,
   teamMemberId: string | null,
 ): Promise<string[] | null> {
+  // Admin (seeAllProjects) → unfiltered. Everyone else → assigned only.
   if (seesAllProjects(teamRole)) {
     return null;
   }

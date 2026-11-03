@@ -1,14 +1,15 @@
 import { FolderKanban } from "lucide-react";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { getProjectDisplayLabel } from "@/features/projects-management/utils/projectFormUtils";
 import {
   encodeProjectKey,
   parseProjectKey,
 } from "@/features/projects-management/utils/projectKindUtils";
-import { fetchDevProjects } from "@/services/devProjectsService";
-import { fetchOtherProjects } from "@/services/otherProjectsService";
-import { fetchProjects } from "@/services/projectsService";
+import { fetchDevProjectsScoped } from "@/services/devProjectsService";
+import { fetchOtherProjectsScoped } from "@/services/otherProjectsService";
+import { fetchProjectsScoped } from "@/services/projectsService";
 import { useLazyEntityList } from "@/shared/hooks/useLazyEntityList";
 import { ComboBox } from "@/shared/ui/ComboBox";
 
@@ -29,21 +30,36 @@ export function TaskProjectSelect({
   disabled = false,
   preload = false,
 }: TaskProjectSelectProps) {
+  const { teamRole, teamMemberId } = useAuth();
+
+  const loadSm = useCallback(
+    () => fetchProjectsScoped(teamRole, teamMemberId),
+    [teamMemberId, teamRole],
+  );
+  const loadDev = useCallback(
+    () => fetchDevProjectsScoped(teamRole, teamMemberId),
+    [teamMemberId, teamRole],
+  );
+  const loadOther = useCallback(
+    () => fetchOtherProjectsScoped(teamRole, teamMemberId),
+    [teamMemberId, teamRole],
+  );
+
   const {
     items: smProjects,
     isLoading: smLoading,
     handleOpenChange: onSmOpen,
-  } = useLazyEntityList(fetchProjects, { preload });
+  } = useLazyEntityList(loadSm, { preload });
   const {
     items: devProjects,
     isLoading: devLoading,
     handleOpenChange: onDevOpen,
-  } = useLazyEntityList(fetchDevProjects, { preload });
+  } = useLazyEntityList(loadDev, { preload });
   const {
     items: otherProjects,
     isLoading: otherLoading,
     handleOpenChange: onOtherOpen,
-  } = useLazyEntityList(fetchOtherProjects, { preload });
+  } = useLazyEntityList(loadOther, { preload });
 
   const options = useMemo(() => {
     const smOptions = smProjects

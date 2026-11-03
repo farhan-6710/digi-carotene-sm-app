@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { PostDateTimePicker } from "@/features/posts-management/components/PostDateTimePicker";
 import {
   TaskAssigneesSelect,
@@ -16,9 +17,9 @@ import {
   toTaskProjectPeopleSource,
 } from "@/features/tasks-management/utils/taskProjectPeopleUtils";
 import { parseProjectKey } from "@/features/projects-management/utils/projectKindUtils";
-import { fetchDevProjects } from "@/services/devProjectsService";
-import { fetchOtherProjects } from "@/services/otherProjectsService";
-import { fetchProjects } from "@/services/projectsService";
+import { fetchDevProjectsScoped } from "@/services/devProjectsService";
+import { fetchOtherProjectsScoped } from "@/services/otherProjectsService";
+import { fetchProjectsScoped } from "@/services/projectsService";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { formFieldClassName } from "@/shared/constants/formStyles";
 import { useLazyEntityList } from "@/shared/hooks/useLazyEntityList";
@@ -46,13 +47,24 @@ export function TaskDialog({
   onDelete,
 }: TaskDialogProps) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const { items: smProjects } = useLazyEntityList(fetchProjects, {
-    preload: open,
-  });
-  const { items: devProjects } = useLazyEntityList(fetchDevProjects, {
-    preload: open,
-  });
-  const { items: otherProjects } = useLazyEntityList(fetchOtherProjects, {
+  const { teamRole, teamMemberId } = useAuth();
+
+  const loadSm = useCallback(
+    () => fetchProjectsScoped(teamRole, teamMemberId),
+    [teamMemberId, teamRole],
+  );
+  const loadDev = useCallback(
+    () => fetchDevProjectsScoped(teamRole, teamMemberId),
+    [teamMemberId, teamRole],
+  );
+  const loadOther = useCallback(
+    () => fetchOtherProjectsScoped(teamRole, teamMemberId),
+    [teamMemberId, teamRole],
+  );
+
+  const { items: smProjects } = useLazyEntityList(loadSm, { preload: open });
+  const { items: devProjects } = useLazyEntityList(loadDev, { preload: open });
+  const { items: otherProjects } = useLazyEntityList(loadOther, {
     preload: open,
   });
 

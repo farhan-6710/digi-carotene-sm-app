@@ -108,7 +108,12 @@ export function ProjectDetailPage() {
   const { projectId = "" } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { can, canFullyEditProject, canEditProjectSocials } = usePermissions();
+  const {
+    can,
+    canFullyEditProject,
+    canEditProjectSocials,
+    seesAllProjects,
+  } = usePermissions();
   const { teamRole, teamMemberId } = useAuth();
   const [dialogError, setDialogError] = useState<string | null>(null);
   const { project, posts, teamMembers, isLoading, error, reload } =
@@ -143,11 +148,18 @@ export function ProjectDetailPage() {
     project?.manager_id,
   );
 
+  const canViewProject =
+    !project ||
+    seesAllProjects ||
+    (teamMemberId != null &&
+      (project.manager_id === teamMemberId ||
+        (project.team_member_ids ?? []).includes(teamMemberId)));
+
   if (isLoading) {
     return <DetailPageLoading backButton={<ProjectDetailBackButton />} />;
   }
 
-  if (!project) {
+  if (!project || !canViewProject) {
     return (
       <section className="space-y-4">
         <PageHeader
