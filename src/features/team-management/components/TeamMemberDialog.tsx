@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { TeamMemberDialogFormFields } from "@/features/team-management/components/TeamMemberDialogFormFields";
 import type { TeamMemberDialogProps } from "@/features/team-management/types/components";
 import { validateTeamMemberForm } from "@/features/team-management/utils/teamMemberFormUtils";
+import { isTeamMemberStillLinkedError } from "@/services/teamMembersService";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
 import { Button } from "@/shared/ui/button";
 import {
@@ -26,15 +27,18 @@ export function TeamMemberDialog({
   onDelete,
 }: TeamMemberDialogProps) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isForceConfirmOpen, setIsForceConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (!open) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsConfirmOpen(false);
+      setIsForceConfirmOpen(false);
     }
   }, [open]);
 
   const canSave = validateTeamMemberForm(values) === null;
+  const memberName = values.memberName.trim() || "this team member";
 
   return (
     <>
@@ -79,7 +83,11 @@ export function TeamMemberDialog({
               disabled={!canSave || isSaving}
               className="rounded-full"
             >
-              {isSaving ? "Saving..." : isEditing ? "Save Changes" : "Add Team Member"}
+              {isSaving
+                ? "Saving..."
+                : isEditing
+                  ? "Save Changes"
+                  : "Add Team Member"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -89,18 +97,44 @@ export function TeamMemberDialog({
         open={isConfirmOpen}
         onOpenChange={setIsConfirmOpen}
         title="Remove Team Member?"
-        description={`Remove "${values.memberName.trim()}" permanently? This action cannot be undone.`}
+        description={`Remove "${memberName}" permanently? This action cannot be undone.`}
         confirmLabel="Remove"
         confirmVariant="destructive"
         loading={isSaving}
         onConfirm={async () => {
-          if (!onDelete) {
-            return;
+          if (!onDelete) return;
+          try {
+            await onDelete();
+            setIsConfirmOpen(false);
+          } catch (error) {
+            if (isTeamMemberStillLinkedError(error)) {
+              setIsConfirmOpen(false);
+              setIsForceConfirmOpen(true);
+            }
           }
-          await onDelete();
-          setIsConfirmOpen(false);
         }}
       />
+
+      <ConfirmationModal
+        open={isForceConfirmOpen}
+        onOpenChange={setIsForceConfirmOpen}
+        title="End work and remove?"
+        description={`"${memberName}" is still linked to projects, tasks, or plans. End those assignments, hand off ownership, and remove this team member?`}
+        confirmLabel="End work and remove"
+        cancelLabel="Cancel"
+        confirmVariant="destructive"
+        loading={isSaving}
+        onConfirm={async () => {
+          if (!onDelete) return;
+          await onDelete({ force: true });
+          setIsForceConfirmOpen(false);
+        }}
+      >
+        <p className="text-sm font-medium text-destructive">
+          Active projects they manage will be deactivated. Their tasks will be
+          marked completed. Plans and seats will be ended or reassigned.
+        </p>
+      </ConfirmationModal>
     </>
   );
 }

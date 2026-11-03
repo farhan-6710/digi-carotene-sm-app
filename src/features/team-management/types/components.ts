@@ -18,7 +18,8 @@ export type TeamMemberDialogProps = {
   values: TeamMemberFormValues;
   onFieldChange: (field: TeamMemberFormField, value: string) => void;
   onSave: () => void;
-  onDelete?: () => void | Promise<void>;
+  /** Soft delete first; pass `{ force: true }` after the linked-work confirm. */
+  onDelete?: (options?: { force?: boolean }) => void | Promise<void>;
 };
 
 export type TeamMembersTableProps = {

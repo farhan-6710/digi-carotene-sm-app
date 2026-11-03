@@ -13,6 +13,7 @@ import {
 import {
   createTeamMember,
   deleteTeamMember,
+  isTeamMemberStillLinkedError,
   updateTeamMember,
 } from "@/services/teamMembersService";
 import { showToast } from "@/shared/utils/showToast";
@@ -22,20 +23,28 @@ type UseTeamMemberDialogOptions = {
   setError: (message: string | null) => void;
 };
 
-export function useTeamMemberDialog({ reload, setError }: UseTeamMemberDialogOptions) {
+export function useTeamMemberDialog({
+  reload,
+  setError,
+}: UseTeamMemberDialogOptions) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [values, setValues] = useState<TeamMemberFormValues>(emptyTeamMemberFormValues);
+  const [values, setValues] = useState<TeamMemberFormValues>(
+    emptyTeamMemberFormValues,
+  );
 
   const resetForm = useCallback(() => {
     setValues(emptyTeamMemberFormValues());
     setEditingMemberId(null);
   }, []);
 
-  const onFieldChange = useCallback((field: TeamMemberFormField, value: string) => {
-    setValues((current) => ({ ...current, [field]: value }));
-  }, []);
+  const onFieldChange = useCallback(
+    (field: TeamMemberFormField, value: string) => {
+      setValues((current) => ({ ...current, [field]: value }));
+    },
+    [],
+  );
 
   const handleDialogOpenChange = useCallback(
     (open: boolean) => {
@@ -100,31 +109,51 @@ export function useTeamMemberDialog({ reload, setError }: UseTeamMemberDialogOpt
     } finally {
       setIsSaving(false);
     }
-  }, [editingMemberId, handleDialogOpenChange, isSaving, reload, setError, values]);
+  }, [
+    editingMemberId,
+    handleDialogOpenChange,
+    isSaving,
+    reload,
+    setError,
+    values,
+  ]);
 
-  const removeMember = useCallback(async () => {
-    if (!editingMemberId || isSaving) {
-      return;
-    }
+  const removeMember = useCallback(
+    async (options?: { force?: boolean }) => {
+      if (!editingMemberId || isSaving) {
+        return;
+      }
 
-    setIsSaving(true);
-    setError(null);
+      setIsSaving(true);
+      setError(null);
 
-    try {
-      const memberName = values.memberName.trim();
-      await deleteTeamMember(editingMemberId);
-      await reload();
-      handleDialogOpenChange(false);
-      showToast("success", `"${memberName}" removed successfully.`);
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to delete team member.";
-      setError(message);
-      showToast("error", message);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [editingMemberId, handleDialogOpenChange, isSaving, reload, setError, values.memberName]);
+      try {
+        const memberName = values.memberName.trim();
+        await deleteTeamMember(editingMemberId, options);
+        await reload();
+        handleDialogOpenChange(false);
+        showToast("success", `"${memberName}" removed successfully.`);
+      } catch (err) {
+        if (!options?.force && isTeamMemberStillLinkedError(err)) {
+          throw err;
+        }
+        const message =
+          err instanceof Error ? err.message : "Failed to delete team member.";
+        setError(message);
+        showToast("error", message);
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [
+      editingMemberId,
+      handleDialogOpenChange,
+      isSaving,
+      reload,
+      setError,
+      values.memberName,
+    ],
+  );
 
   return {
     openAddDialog,

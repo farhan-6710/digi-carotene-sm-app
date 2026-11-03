@@ -3,6 +3,8 @@ export function formatBulkDeleteMessage(
   singular: string,
   plural: string,
 ): string {
-  const label = count === 1 ? singular : plural;
-  return `All these ${count} ${label} will be deleted.`;
+  if (count === 1) {
+    return `This ${singular} will be deleted.`;
+  }
+  return `All these ${count} ${plural} will be deleted.`;
 }

@@ -151,19 +151,178 @@ export async function updateTeamMember(
   return mapDbRowToTeamMember(data);
 }
 
-export async function deleteTeamMember(memberId: string): Promise<void> {
+/** Thrown when delete is blocked by project / task / plan links. */
+export class TeamMemberStillLinkedError extends Error {
+  readonly code = "TEAM_MEMBER_STILL_LINKED";
+
+  constructor() {
+    super(
+      "This team member is still linked to projects, tasks, or plans. Reassign or remove those first.",
+    );
+    this.name = "TeamMemberStillLinkedError";
+  }
+}
+
+export function isTeamMemberStillLinkedError(
+  error: unknown,
+): error is TeamMemberStillLinkedError {
+  return error instanceof TeamMemberStillLinkedError;
+}
+
+type DeleteTeamMemberOptions = {
+  /** End assignments, hand off ownership, then delete. */
+  force?: boolean;
+};
+
+async function fetchFallbackTeamMemberId(excludeId: string): Promise<string> {
+  const admins = await fetchAdminTeamMembers();
+  const otherAdmin = admins.find((admin) => admin.id !== excludeId);
+  if (otherAdmin) return otherAdmin.id;
+
+  const { data, error } = await supabase
+    .from(DB.TEAM_MEMBERS.TABLE)
+    .select("id")
+    .neq("id", excludeId)
+    .order("member_name", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message ?? "Failed to find a replacement team member.");
+  }
+  if (!data?.id) {
+    throw new Error(
+      "Add another team member first so ownership can be reassigned.",
+    );
+  }
+  return data.id;
+}
+
+async function runUpdate(
+  table: string,
+  values: Record<string, unknown>,
+  column: string,
+  memberId: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from(table)
+    .update(values)
+    .eq(column, memberId);
+  if (error) {
+    throw new Error(error.message ?? `Failed to update ${table}.`);
+  }
+}
+
+async function runDelete(
+  table: string,
+  column: string,
+  memberId: string,
+): Promise<void> {
+  const { error } = await supabase.from(table).delete().eq(column, memberId);
+  if (error) {
+    throw new Error(error.message ?? `Failed to clear ${table}.`);
+  }
+}
+
+/** End seats, deactivate managed work, reassign required FKs to another member. */
+async function endTeamMemberAssignments(memberId: string): Promise<void> {
+  const fallbackId = await fetchFallbackTeamMemberId(memberId);
+  const endedAt = new Date().toISOString();
+
+  for (const table of [
+    DB.PROJECT_TEAM_MEMBERS.TABLE,
+    DB.DEV_PROJECT_TEAM_MEMBERS.TABLE,
+    DB.OTHER_PROJECT_TEAM_MEMBERS.TABLE,
+    DB.PRODUCTION_PLAN_TEAM_MEMBERS.TABLE,
+  ]) {
+    const { error } = await supabase
+      .from(table)
+      .update({ ended_at: endedAt })
+      .eq("member_id", memberId)
+      .is("ended_at", null);
+    if (error) {
+      throw new Error(error.message ?? `Failed to end assignments on ${table}.`);
+    }
+  }
+
+  for (const table of [
+    DB.PROJECTS.TABLE,
+    DB.DEV_PROJECTS.TABLE,
+    DB.OTHER_PROJECTS.TABLE,
+  ]) {
+    await runUpdate(
+      table,
+      { is_active: false, manager_id: fallbackId },
+      "manager_id",
+      memberId,
+    );
+  }
+
+  await runUpdate(
+    DB.PRODUCTION_PLANS.TABLE,
+    { manager_id: fallbackId },
+    "manager_id",
+    memberId,
+  );
+  await runUpdate(
+    DB.PRODUCTION_PLANS.TABLE,
+    { shoot_incharge_id: null },
+    "shoot_incharge_id",
+    memberId,
+  );
+
+  await runUpdate(
+    DB.TASKS.TABLE,
+    { status: "completed", assigned_to_team_member_id: fallbackId },
+    "assigned_to_team_member_id",
+    memberId,
+  );
+  await runUpdate(
+    DB.TASKS.TABLE,
+    { created_by_team_member_id: fallbackId },
+    "created_by_team_member_id",
+    memberId,
+  );
+
+  await runUpdate(
+    DB.SUBTASKS.TABLE,
+    { status: "completed", assigned_to_team_member_id: fallbackId },
+    "assigned_to_team_member_id",
+    memberId,
+  );
+  await runUpdate(
+    DB.SUBTASKS.TABLE,
+    { created_by_team_member_id: fallbackId },
+    "created_by_team_member_id",
+    memberId,
+  );
+
+  await runDelete(DB.TASK_ASSIGNEES.TABLE, "team_member_id", memberId);
+  await runDelete(DB.SUBTASK_ASSIGNEES.TABLE, "team_member_id", memberId);
+  await runDelete(DB.TASK_MESSAGES.TABLE, "author_team_member_id", memberId);
+  await runDelete(DB.PROJECT_MESSAGES.TABLE, "author_team_member_id", memberId);
+  await runDelete(
+    DB.POST_APPROVAL_REQUESTS.TABLE,
+    "requested_by_team_member_id",
+    memberId,
+  );
+}
+
+export async function deleteTeamMember(
+  memberId: string,
+  options: DeleteTeamMemberOptions = {},
+): Promise<void> {
   await resetProfilesForTeamMember(memberId).catch(() => {});
 
-  // Approval requests used ON DELETE RESTRICT; remove this member's rows first
-  // (migration 085 also cascades for future deletes).
-  const { error: approvalsError } = await supabase
-    .from(DB.POST_APPROVAL_REQUESTS.TABLE)
-    .delete()
-    .eq("requested_by_team_member_id", memberId);
-
-  if (approvalsError) {
-    throw new Error(
-      approvalsError.message ?? "Failed to clear post approval requests.",
+  if (options.force) {
+    await endTeamMemberAssignments(memberId);
+  } else {
+    // Approval requests used ON DELETE RESTRICT; remove this member's rows first
+    // (migration 085 also cascades for future deletes).
+    await runDelete(
+      DB.POST_APPROVAL_REQUESTS.TABLE,
+      "requested_by_team_member_id",
+      memberId,
     );
   }
 
@@ -174,9 +333,7 @@ export async function deleteTeamMember(memberId: string): Promise<void> {
 
   if (error) {
     if (error.code === "23503") {
-      throw new Error(
-        "This team member is still linked to projects, tasks, or plans. Reassign or remove those first.",
-      );
+      throw new TeamMemberStillLinkedError();
     }
     throw new Error(error.message ?? "Failed to delete team member.");
   }

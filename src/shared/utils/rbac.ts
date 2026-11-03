@@ -73,7 +73,7 @@ const ROLE_ACCESS: Record<TeamMemberRole, RoleAccess> = {
   sm_executive: {
     team: "none",
     clients: "none",
-    projects: "none",
+    projects: "read",
     posts: "full",
     productionPlans: "none",
     tasks: "full",
