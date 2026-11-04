@@ -1,4 +1,4 @@
-import { Users, UserRound, Layers, XCircle } from "lucide-react";
+import { Users, UserRound, Layers, ClockAlert } from "lucide-react";
 
 import {
   clientsSparklineData,
@@ -16,8 +16,8 @@ type TeamStatCounts = {
   teamMembersCount: number | null;
   /** Posts in the selected period (or all-time when filter is All). */
   totalPostsCount: number | null;
-  /** Not-posted posts in the selected period (or all-time when filter is All). */
-  notPostedPostsCount: number | null;
+  /** Past-due, still unpublished posts in the selected period (or all-time). */
+  duePostsCount: number | null;
   periodLabel: string;
 };
 
@@ -25,7 +25,7 @@ export function buildTeamStatCards({
   clientsCount,
   teamMembersCount,
   totalPostsCount,
-  notPostedPostsCount,
+  duePostsCount,
   periodLabel,
 }: TeamStatCounts): StatCardItem[] {
   const isAll = periodLabel === "All";
@@ -65,13 +65,13 @@ export function buildTeamStatCards({
       href: "/team-portal/posts-management",
     },
     {
-      id: "not-posted-posts",
-      label: isAll ? "Not Posted" : "Not Posted",
-      value: String(notPostedPostsCount ?? 0),
+      id: "due-posts",
+      label: "Due Posts",
+      value: String(duePostsCount ?? 0),
       description: isAll
-        ? "Unpublished or missed slots"
-        : `Unpublished slots in ${period}`,
-      icon: XCircle,
+        ? "Past due and still unpublished"
+        : `Past due in ${period}, still unpublished`,
+      icon: ClockAlert,
       sparklineData: missedPostsSparklineData,
       sparklineColor: "var(--accent)",
       href: "/team-portal/posts-management",

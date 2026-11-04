@@ -15,7 +15,10 @@ import type {
   TeamNeedsAttentionItem,
   TeamTodaysPostItem,
 } from "@/features/team-portal/types/types";
-import { buildTodaysPostScheduleLabel } from "@/features/team-portal/utils/teamDashboardPostUtils";
+import {
+  buildTodaysPostScheduleLabel,
+  isPostOverdue,
+} from "@/features/team-portal/utils/teamDashboardPostUtils";
 import { mapPostsToTodaysPosts } from "@/features/team-portal/utils/teamTodaysPostsUtils";
 import { buildTeamStatCards } from "@/features/team-portal/utils/teamStatsUtils";
 import { fetchTeamDashboardPostsBundle } from "@/services/dashboardService";
@@ -159,8 +162,8 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
       clientsCount,
       teamMembersCount,
       totalPostsCount: scopedPosts.length,
-      notPostedPostsCount: scopedPosts.filter(
-        (post) => post.status === "Not posted",
+      duePostsCount: scopedPosts.filter(
+        (post) => post.status !== "Posted" && isPostOverdue(post),
       ).length,
       periodLabel,
     });
