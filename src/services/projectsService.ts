@@ -16,6 +16,10 @@ export type CreateProjectInput = {
   teamMemberIds?: string[];
   startDate?: string | null;
   etaDate?: string | null;
+  committedPosts?: number;
+  committedImages?: number;
+  committedCarousels?: number;
+  committedReels?: number;
 };
 
 export type UpdateProjectInput = CreateProjectInput & {
@@ -31,6 +35,10 @@ type ProjectRow = {
   start_date: string | null;
   eta_date: string | null;
   is_active: boolean;
+  committed_posts: number | null;
+  committed_images: number | null;
+  committed_carousels: number | null;
+  committed_reels: number | null;
   created_at: string;
   updated_at: string;
   clients: ProjectListItem["clients"] | ProjectListItem["clients"][];
@@ -55,6 +63,10 @@ function normalizeProjectRow(
     start_date: row.start_date,
     eta_date: row.eta_date,
     is_active: row.is_active ?? true,
+    committed_posts: row.committed_posts ?? 0,
+    committed_images: row.committed_images ?? 0,
+    committed_carousels: row.committed_carousels ?? 0,
+    committed_reels: row.committed_reels ?? 0,
     created_at: row.created_at,
     updated_at: row.updated_at,
     clients: client,
@@ -302,6 +314,10 @@ export async function createProject(
       socials: input.socials || {},
       start_date: input.startDate || null,
       eta_date: input.etaDate || null,
+      committed_posts: input.committedPosts ?? 0,
+      committed_images: input.committedImages ?? 0,
+      committed_carousels: input.committedCarousels ?? 0,
+      committed_reels: input.committedReels ?? 0,
     })
     .select("id")
     .single();
@@ -332,6 +348,10 @@ export async function updateProject(
       socials: input.socials || {},
       start_date: input.startDate || null,
       eta_date: input.etaDate || null,
+      committed_posts: input.committedPosts ?? 0,
+      committed_images: input.committedImages ?? 0,
+      committed_carousels: input.committedCarousels ?? 0,
+      committed_reels: input.committedReels ?? 0,
       ...(input.isActive !== undefined ? { is_active: input.isActive } : {}),
     })
     .eq("id", projectId);

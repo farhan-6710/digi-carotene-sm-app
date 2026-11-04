@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { ClientCombobox } from "@/features/clients-management/components/ClientCombobox";
 import { ProjectDialogBasicFields } from "@/features/projects-management/components/ProjectDialogBasicFields";
+import { ProjectDialogCommitFields } from "@/features/projects-management/components/ProjectDialogCommitFields";
 import { ProjectDialogSocialFields } from "@/features/projects-management/components/ProjectDialogSocialFields";
 import { ProjectManagerSelect } from "@/features/projects-management/components/ProjectManagerSelect";
 import { ProjectTeamMembersSelect } from "@/features/projects-management/components/ProjectTeamMembersSelect";
@@ -147,6 +148,12 @@ export function ProjectDialog({
                     placeholder="Select ETA date"
                   />
                 </div>
+
+                <ProjectDialogCommitFields
+                  values={values}
+                  onFieldChange={onFieldChange}
+                  disabled={isSaving}
+                />
 
                 {isEditing ? (
                   <ActiveStatusSwitchField

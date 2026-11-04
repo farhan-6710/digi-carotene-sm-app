@@ -11,8 +11,9 @@ import {
 import { fetchTeamMembersByIds } from "@/services/teamMembersService";
 import {
   emptyProjectFormValues,
-  projectToFormValues,
   formValuesToSocials,
+  parseProjectCommittedCounts,
+  projectToFormValues,
   validateProjectForm,
   type ProjectFormField,
   type ProjectFormValues,
@@ -144,6 +145,12 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
         await updateProjectSocials(editingProjectId, socials);
         showToast("success", `Social links for "${projectName}" updated.`);
       } else if (editingProjectId) {
+        const counts = parseProjectCommittedCounts(values);
+        if (typeof counts === "string") {
+          setError(counts);
+          showToast("error", counts);
+          return;
+        }
         await updateProject(editingProjectId, {
           projectName,
           clientId: values.clientId,
@@ -153,9 +160,16 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
           startDate: values.startDate || null,
           etaDate: values.etaDate || null,
           isActive: values.isActive,
+          ...counts,
         });
         showToast("success", `"${projectName}" updated successfully.`);
       } else {
+        const counts = parseProjectCommittedCounts(values);
+        if (typeof counts === "string") {
+          setError(counts);
+          showToast("error", counts);
+          return;
+        }
         await createProject({
           projectName,
           clientId: values.clientId,
@@ -164,6 +178,7 @@ export function useProjectDialog({ reload, setError }: UseProjectDialogOptions) 
           teamMemberIds: values.teamMemberIds,
           startDate: values.startDate || null,
           etaDate: values.etaDate || null,
+          ...counts,
         });
         showToast("success", `"${projectName}" added successfully.`);
       }

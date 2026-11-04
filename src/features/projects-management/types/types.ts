@@ -26,6 +26,10 @@ export type Project = {
   start_date: string | null;
   eta_date: string | null;
   is_active: boolean;
+  committed_posts: number;
+  committed_images: number;
+  committed_carousels: number;
+  committed_reels: number;
   created_at: string;
   updated_at: string;
   clients?: ProjectClient | null;
