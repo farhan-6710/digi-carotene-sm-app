@@ -58,7 +58,7 @@ const DEV_PROJECT_SELECT = `
   production_url,
   start_date,
   eta_date,
-  is_active,
+  status,
   created_at,
   updated_at,
   clients ( id, client_name ),

@@ -245,11 +245,7 @@ async function endTeamMemberAssignments(memberId: string): Promise<void> {
     }
   }
 
-  for (const table of [
-    DB.PROJECTS.TABLE,
-    DB.DEV_PROJECTS.TABLE,
-    DB.OTHER_PROJECTS.TABLE,
-  ]) {
+  for (const table of [DB.PROJECTS.TABLE, DB.OTHER_PROJECTS.TABLE]) {
     await runUpdate(
       table,
       { is_active: false, manager_id: fallbackId },
@@ -257,6 +253,13 @@ async function endTeamMemberAssignments(memberId: string): Promise<void> {
       memberId,
     );
   }
+
+  await runUpdate(
+    DB.DEV_PROJECTS.TABLE,
+    { status: "inactive", manager_id: fallbackId },
+    "manager_id",
+    memberId,
+  );
 
   await runUpdate(
     DB.PRODUCTION_PLANS.TABLE,

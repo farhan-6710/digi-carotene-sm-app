@@ -11,7 +11,7 @@ import { ActiveStatusFilter } from "@/shared/components/ActiveStatusFilter";
 import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import { DirectoryBulkDeleteBar } from "@/shared/components/DirectoryBulkDeleteBar";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
-import { PROJECT_STATUS_FILTER_LABELS } from "@/shared/constants/activeStatusFilter";
+import { PROJECT_STATUS_FILTER_OPTIONS } from "@/shared/constants/activeStatusFilter";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import type { DirectoryTableColumn } from "@/shared/types/components";
 
@@ -99,8 +99,10 @@ export function OtherProjectsTable({
           />
           <ActiveStatusFilter
             value={statusFilter}
-            onChange={onStatusFilterChange}
-            labels={PROJECT_STATUS_FILTER_LABELS}
+            onChange={(value) =>
+              onStatusFilterChange(value as typeof statusFilter)
+            }
+            options={PROJECT_STATUS_FILTER_OPTIONS}
             disabled={isLoading}
             placeholder="Filter projects"
           />

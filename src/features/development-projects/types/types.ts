@@ -1,3 +1,5 @@
+import type { DevProjectStatus } from "@/features/development-projects/constants/devProjectStatus";
+
 export type DevProjectClient = {
   id: string;
   client_name: string;
@@ -20,6 +22,8 @@ export type DevProject = {
   production_url: string | null;
   start_date: string | null;
   eta_date: string | null;
+  status: DevProjectStatus;
+  /** Derived: status === "active". Used by shared active-project pickers. */
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -44,8 +48,7 @@ export type CreateDevProjectInput = {
   productionUrl?: string | null;
   startDate?: string | null;
   etaDate?: string | null;
+  status?: DevProjectStatus;
 };
 
-export type UpdateDevProjectInput = CreateDevProjectInput & {
-  isActive?: boolean;
-};
+export type UpdateDevProjectInput = CreateDevProjectInput;

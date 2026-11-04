@@ -7,6 +7,7 @@ export type ClientPortalProjectRow = {
   project_kind: ProjectKind;
   manager_name: string | null;
   is_active: boolean;
+  status_label: string;
   socials: ProjectSocials | null;
   detailPath: string;
 };

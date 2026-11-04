@@ -4,6 +4,7 @@ import { Link } from "react-router";
 
 import { buildClientDetailPath } from "@/features/clients-management/constants/routes";
 import type { DevProjectProfileCardProps } from "@/features/development-projects/types/components";
+import { DEV_PROJECT_STATUS_LABELS } from "@/features/development-projects/constants/devProjectStatus";
 import { ActiveStatusLabel } from "@/shared/components/ActiveStatusSwitchField";
 
 function ExternalLink({ href, label }: { href: string | null; label: string }) {
@@ -51,7 +52,9 @@ export function DevProjectProfileCard({
     },
     {
       label: "Status",
-      value: <ActiveStatusLabel isActive={project.is_active} />,
+      value: (
+        <ActiveStatusLabel label={DEV_PROJECT_STATUS_LABELS[project.status]} />
+      ),
     },
     {
       label: "Start date",

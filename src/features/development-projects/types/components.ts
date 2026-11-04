@@ -1,4 +1,4 @@
-import type { ActiveStatusFilterId } from "@/shared/constants/activeStatusFilter";
+import type { DevProjectStatusFilterId } from "@/features/development-projects/constants/devProjectStatus";
 import type {
   CreateDevProjectInput,
   DevProjectListItem,
@@ -19,8 +19,8 @@ export type DevProjectsTableProps = {
   onClearSelection?: () => void;
   onBulkDelete?: () => void | Promise<void>;
   onEditProject: (project: DevProjectListItem) => void;
-  statusFilter: ActiveStatusFilterId;
-  onStatusFilterChange: (value: ActiveStatusFilterId) => void;
+  statusFilter: DevProjectStatusFilterId;
+  onStatusFilterChange: (value: DevProjectStatusFilterId) => void;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
 };

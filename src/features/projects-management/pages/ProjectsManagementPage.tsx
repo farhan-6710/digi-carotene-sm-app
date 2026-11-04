@@ -22,7 +22,8 @@ export function ProjectsManagementPage() {
     reload,
     setError,
   });
-  const [statusFilter, setStatusFilter] = useState<ActiveStatusFilterId>("all");
+  const [statusFilter, setStatusFilter] =
+    useState<ActiveStatusFilterId>("active");
   const [searchQuery, setSearchQuery] = useState("");
   const canDelete = can("projects.delete");
 

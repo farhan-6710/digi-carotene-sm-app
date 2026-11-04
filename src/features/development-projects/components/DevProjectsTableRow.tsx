@@ -7,6 +7,7 @@ import {
 import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import { buildDevProjectDetailPath } from "@/features/development-projects/constants/routes";
 import type { DevProjectsTableRowProps } from "@/features/development-projects/types/components";
+import { DEV_PROJECT_STATUS_LABELS } from "@/features/development-projects/constants/devProjectStatus";
 import { ActiveStatusLabel } from "@/shared/components/ActiveStatusSwitchField";
 import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
 import { stopDirectoryRowNav } from "@/shared/utils/directoryTableRow";
@@ -100,7 +101,9 @@ export function DevProjectsTableRow({
         <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
           STATUS
         </span>
-        <ActiveStatusLabel isActive={project.is_active} />
+        <ActiveStatusLabel
+          label={DEV_PROJECT_STATUS_LABELS[project.status]}
+        />
       </div>
 
       <div className="flex justify-end">

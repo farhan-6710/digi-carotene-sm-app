@@ -4,11 +4,16 @@ import { ClientCombobox } from "@/features/clients-management/components/ClientC
 import { ProjectManagerSelect } from "@/features/projects-management/components/ProjectManagerSelect";
 import { ProjectTeamMembersSelect } from "@/features/projects-management/components/ProjectTeamMembersSelect";
 import type { DevProjectDialogProps } from "@/features/development-projects/types/components";
+import {
+  DEV_PROJECT_STATUSES,
+  DEV_PROJECT_STATUS_OPTIONS,
+  type DevProjectStatus,
+} from "@/features/development-projects/constants/devProjectStatus";
 import { ConfirmationModal } from "@/shared/ConfirmationModal";
-import { ActiveStatusSwitchField } from "@/shared/components/ActiveStatusSwitchField";
 import { DatePicker } from "@/shared/components/DatePicker";
 import { formFieldClassName } from "@/shared/constants/formStyles";
 import { Button } from "@/shared/ui/button";
+import { ComboBox } from "@/shared/ui/ComboBox";
 import {
   Dialog,
   DialogClose,
@@ -174,16 +179,26 @@ export function DevProjectDialog({
               />
             </div>
 
-            {isEditing ? (
-              <ActiveStatusSwitchField
-                entityLabel="project"
-                checked={values.isActive}
-                onCheckedChange={(isActive) =>
-                  onFieldChange("isActive", isActive)
-                }
-                disabled={isSaving}
-              />
-            ) : null}
+            <label className="block text-xs font-semibold text-muted-foreground">
+              Status
+              <div className="mt-2">
+                <ComboBox
+                  value={values.status}
+                  onChange={(next) => {
+                    if (
+                      (DEV_PROJECT_STATUSES as readonly string[]).includes(next)
+                    ) {
+                      onFieldChange("status", next as DevProjectStatus);
+                    }
+                  }}
+                  options={DEV_PROJECT_STATUS_OPTIONS}
+                  disabled={isSaving}
+                  placeholder="Select status"
+                  listTitle="Project status"
+                  mode="value"
+                />
+              </div>
+            </label>
           </div>
 
           <DialogFooter className="shrink-0 gap-2 sm:justify-between">

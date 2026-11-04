@@ -1,6 +1,5 @@
-import type {
-  DevProjectListItem,
-} from "@/features/development-projects/types/types";
+import type { DevProjectStatus } from "@/features/development-projects/constants/devProjectStatus";
+import type { DevProjectListItem } from "@/features/development-projects/types/types";
 
 export type DevProjectFormValues = {
   projectName: string;
@@ -13,7 +12,7 @@ export type DevProjectFormValues = {
   productionUrl: string;
   startDate: string;
   etaDate: string;
-  isActive: boolean;
+  status: DevProjectStatus;
 };
 
 export const emptyDevProjectFormValues = (): DevProjectFormValues => ({
@@ -27,7 +26,7 @@ export const emptyDevProjectFormValues = (): DevProjectFormValues => ({
   productionUrl: "",
   startDate: "",
   etaDate: "",
-  isActive: true,
+  status: "active",
 });
 
 export function devProjectToFormValues(
@@ -44,7 +43,7 @@ export function devProjectToFormValues(
     productionUrl: project.production_url ?? "",
     startDate: project.start_date ?? "",
     etaDate: project.eta_date ?? "",
-    isActive: project.is_active ?? true,
+    status: project.status ?? "active",
   };
 }
 

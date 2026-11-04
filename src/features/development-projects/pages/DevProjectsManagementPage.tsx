@@ -5,13 +5,13 @@ import { DevProjectDialog } from "@/features/development-projects/components/Dev
 import { DevProjectsTable } from "@/features/development-projects/components/DevProjectsTable";
 import { useDevProjectDialog } from "@/features/development-projects/hooks/useDevProjectDialog";
 import { useDevProjectsQuery } from "@/features/development-projects/hooks/useDevProjectsQuery";
-import type { ActiveStatusFilterId } from "@/shared/constants/activeStatusFilter";
+import type { DevProjectStatusFilterId } from "@/features/development-projects/constants/devProjectStatus";
+import { filterByDevProjectStatus } from "@/features/development-projects/utils/devProjectStatusFilterUtils";
 import { PageShell } from "@/shared/components/PageShell";
 import { useDirectoryBulkDelete } from "@/shared/hooks/useDirectoryBulkDelete";
 import { useDirectoryBulkSelection } from "@/shared/hooks/useDirectoryBulkSelection";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { Button } from "@/shared/ui/button";
-import { filterByActiveStatus } from "@/shared/utils/activeStatusFilterUtils";
 import { matchesListingSearch } from "@/shared/utils/listingSearch";
 import { deleteDevProjectsByIds } from "@/services/devProjectsService";
 
@@ -22,12 +22,13 @@ export function DevProjectsManagementPage() {
     reload,
     setError,
   });
-  const [statusFilter, setStatusFilter] = useState<ActiveStatusFilterId>("all");
+  const [statusFilter, setStatusFilter] =
+    useState<DevProjectStatusFilterId>("active");
   const [searchQuery, setSearchQuery] = useState("");
   const canDelete = can("projects.delete");
 
   const filteredProjects = useMemo(() => {
-    return filterByActiveStatus(projects, statusFilter).filter((project) =>
+    return filterByDevProjectStatus(projects, statusFilter).filter((project) =>
       matchesListingSearch(searchQuery, [
         project.project_name,
         project.clients?.client_name,

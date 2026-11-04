@@ -13,3 +13,17 @@ export const PROJECT_STATUS_FILTER_LABELS: Record<ActiveStatusFilterId, string> 
   active: "Active",
   inactive: "Inactive",
 };
+
+export const ACTIVE_STATUS_FILTER_OPTIONS = ACTIVE_STATUS_FILTERS.map(
+  (filter) => ({
+    value: filter,
+    label: ACTIVE_STATUS_FILTER_LABELS[filter],
+  }),
+);
+
+export const PROJECT_STATUS_FILTER_OPTIONS = ACTIVE_STATUS_FILTERS.map(
+  (filter) => ({
+    value: filter,
+    label: PROJECT_STATUS_FILTER_LABELS[filter],
+  }),
+);

@@ -1,5 +1,9 @@
 import { DB } from "@/services/db";
 import { supabase } from "@/services/supabaseClient";
+import {
+  DEV_PROJECT_STATUSES,
+  type DevProjectStatus,
+} from "@/features/development-projects/constants/devProjectStatus";
 import type {
   CreateDevProjectInput,
   DevProjectListItem,
@@ -20,7 +24,7 @@ type DevProjectRow = {
   production_url: string | null;
   start_date: string | null;
   eta_date: string | null;
-  is_active: boolean;
+  status: string | null;
   created_at: string;
   updated_at: string;
   clients: DevProjectListItem["clients"] | DevProjectListItem["clients"][];
@@ -28,6 +32,16 @@ type DevProjectRow = {
     | DevProjectListItem["team_members"]
     | DevProjectListItem["team_members"][];
 };
+
+function normalizeDevProjectStatus(value: string | null): DevProjectStatus {
+  if (
+    value &&
+    (DEV_PROJECT_STATUSES as readonly string[]).includes(value)
+  ) {
+    return value as DevProjectStatus;
+  }
+  return "active";
+}
 
 function normalizeDevProjectRow(
   row: DevProjectRow,
@@ -39,6 +53,7 @@ function normalizeDevProjectRow(
   const manager = Array.isArray(row.team_members)
     ? (row.team_members[0] ?? null)
     : row.team_members;
+  const status = normalizeDevProjectStatus(row.status);
 
   return {
     id: row.id,
@@ -51,7 +66,8 @@ function normalizeDevProjectRow(
     production_url: row.production_url,
     start_date: row.start_date,
     eta_date: row.eta_date,
-    is_active: row.is_active ?? true,
+    status,
+    is_active: status === "active",
     created_at: row.created_at,
     updated_at: row.updated_at,
     clients: client,
@@ -93,6 +109,7 @@ function toColumns(input: CreateDevProjectInput) {
     production_url: input.productionUrl ?? null,
     start_date: input.startDate || null,
     eta_date: input.etaDate || null,
+    status: input.status ?? "active",
   };
 }
 
@@ -274,12 +291,7 @@ export async function updateDevProject(
 ): Promise<DevProjectListItem> {
   const { error } = await supabase
     .from(DB.DEV_PROJECTS.TABLE)
-    .update({
-      ...toColumns(input),
-      ...(typeof input.isActive === "boolean"
-        ? { is_active: input.isActive }
-        : {}),
-    })
+    .update(toColumns(input))
     .eq("id", projectId);
 
   if (error) throw error;

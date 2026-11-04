@@ -129,14 +129,12 @@ export function useDevProjectDialog({
         productionUrl: trimOrNull(values.productionUrl),
         startDate: values.startDate || null,
         etaDate: values.etaDate || null,
+        status: values.status,
       };
       const projectName = values.projectName.trim();
 
       if (editingProjectId) {
-        await updateDevProject(editingProjectId, {
-          ...payload,
-          isActive: values.isActive,
-        });
+        await updateDevProject(editingProjectId, payload);
         showToast("success", `"${projectName}" updated successfully.`);
       } else {
         await createDevProject(payload);

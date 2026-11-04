@@ -68,7 +68,7 @@ export function ClientProjectsTable({
           ) : (
             <p className="text-sm text-muted-foreground">—</p>
           )}
-          <ActiveStatusLabel isActive={project.is_active} />
+          <ActiveStatusLabel label={project.status_label} />
         </DirectoryTableRow>
       ))}
     </DirectoryTable>

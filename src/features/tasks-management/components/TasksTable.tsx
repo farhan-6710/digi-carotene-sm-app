@@ -1,11 +1,13 @@
 import { useMemo } from "react";
 
 import { TaskClientFilter } from "@/features/tasks-management/components/TaskClientFilter";
+import { TaskProjectFilter } from "@/features/tasks-management/components/TaskProjectFilter";
 import { TasksTableRow } from "@/features/tasks-management/components/TasksTableRow";
 import { TaskSortSelect } from "@/features/tasks-management/components/TaskSortSelect";
 import { TaskStatusFilter } from "@/features/tasks-management/components/TaskStatusFilter";
 import { TaskTabFilter } from "@/features/tasks-management/components/TaskTabFilter";
 import { TASKS_ALL_CLIENTS } from "@/features/tasks-management/constants/taskClientFilter";
+import { TASKS_ALL_PROJECTS } from "@/features/tasks-management/constants/taskProjectFilter";
 import { DEFAULT_TASK_STATUS_FILTER } from "@/features/tasks-management/constants/taskStatusFilter";
 import {
   TASKS_BULK_GRID_CLASS,
@@ -41,6 +43,9 @@ export function TasksTable({
   clientFilter,
   onClientFilterChange,
   clientOptions,
+  projectFilter,
+  onProjectFilterChange,
+  projectOptions,
   tab,
   onTabChange,
 }: TasksTableProps) {
@@ -49,7 +54,8 @@ export function TasksTable({
   const hasFilters =
     Boolean(searchQuery.trim()) ||
     statusFilter !== DEFAULT_TASK_STATUS_FILTER ||
-    clientFilter !== TASKS_ALL_CLIENTS;
+    clientFilter !== TASKS_ALL_CLIENTS ||
+    projectFilter !== TASKS_ALL_PROJECTS;
 
   const columns = useMemo((): DirectoryTableColumn[] => {
     if (!canDelete || !onToggleAllVisible) {
@@ -114,6 +120,12 @@ export function TasksTable({
             value={clientFilter}
             onChange={onClientFilterChange}
             clients={clientOptions}
+            disabled={isLoading}
+          />
+          <TaskProjectFilter
+            value={projectFilter}
+            onChange={onProjectFilterChange}
+            projects={projectOptions}
             disabled={isLoading}
           />
           <TaskStatusFilter

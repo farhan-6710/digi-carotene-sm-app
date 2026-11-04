@@ -7,11 +7,11 @@ import {
   devProjectsDirectoryConfig,
 } from "@/features/development-projects/constants/devProjectsDirectory";
 import type { DevProjectsTableProps } from "@/features/development-projects/types/components";
+import { DEV_PROJECT_STATUS_FILTER_OPTIONS } from "@/features/development-projects/constants/devProjectStatus";
 import { ActiveStatusFilter } from "@/shared/components/ActiveStatusFilter";
 import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import { DirectoryBulkDeleteBar } from "@/shared/components/DirectoryBulkDeleteBar";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
-import { PROJECT_STATUS_FILTER_LABELS } from "@/shared/constants/activeStatusFilter";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import type { DirectoryTableColumn } from "@/shared/types/components";
 
@@ -99,8 +99,10 @@ export function DevProjectsTable({
           />
           <ActiveStatusFilter
             value={statusFilter}
-            onChange={onStatusFilterChange}
-            labels={PROJECT_STATUS_FILTER_LABELS}
+            onChange={(value) =>
+              onStatusFilterChange(value as typeof statusFilter)
+            }
+            options={DEV_PROJECT_STATUS_FILTER_OPTIONS}
             disabled={isLoading}
             placeholder="Filter projects"
           />

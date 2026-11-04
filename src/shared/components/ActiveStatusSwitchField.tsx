@@ -55,15 +55,26 @@ export function ActiveStatusSwitchField({
   );
 }
 
-export function ActiveStatusLabel({ isActive }: { isActive: boolean }) {
+export function ActiveStatusLabel({
+  isActive,
+  label,
+}: {
+  isActive?: boolean;
+  label?: string;
+}) {
+  const text = label ?? (isActive ? "Active" : "Inactive");
+  const emphasize = label
+    ? label === "Active"
+    : Boolean(isActive);
+
   return (
     <span
       className={cn(
         "text-sm font-medium",
-        isActive ? "text-primary" : "text-muted-foreground",
+        emphasize ? "text-primary" : "text-muted-foreground",
       )}
     >
-      {isActive ? "Active" : "Inactive"}
+      {text}
     </span>
   );
 }

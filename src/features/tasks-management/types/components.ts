@@ -34,6 +34,9 @@ export type TasksTableProps = {
   clientFilter: string;
   onClientFilterChange: (clientId: string) => void;
   clientOptions: { value: string; label: string }[];
+  projectFilter: string;
+  onProjectFilterChange: (projectKey: string) => void;
+  projectOptions: { value: string; label: string }[];
   tab: TaskTabId;
   onTabChange: (tab: TaskTabId) => void;
 };
@@ -200,6 +203,13 @@ export type TaskClientFilterProps = {
   value: string;
   onChange: (clientId: string) => void;
   clients: { value: string; label: string }[];
+  disabled?: boolean;
+};
+
+export type TaskProjectFilterProps = {
+  value: string;
+  onChange: (projectKey: string) => void;
+  projects: { value: string; label: string }[];
   disabled?: boolean;
 };
 

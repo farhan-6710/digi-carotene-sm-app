@@ -1,11 +1,13 @@
 import { Plus } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { TaskDialog } from "@/features/tasks-management/components/TaskDialog";
 import { TasksTable } from "@/features/tasks-management/components/TasksTable";
 import { useTaskClientFilter } from "@/features/tasks-management/hooks/useTaskClientFilter";
 import { useTaskDialog } from "@/features/tasks-management/hooks/useTaskDialog";
+import { useTaskProjectFilter } from "@/features/tasks-management/hooks/useTaskProjectFilter";
+import { TASKS_ALL_PROJECTS } from "@/features/tasks-management/constants/taskProjectFilter";
 import {
   useTaskSearchQuery,
   useTaskSort,
@@ -21,6 +23,10 @@ import {
   buildTaskClientFilterOptions,
   filterTasksByClient,
 } from "@/features/tasks-management/utils/taskClientFilterUtils";
+import {
+  buildTaskProjectFilterOptions,
+  filterTasksByProject,
+} from "@/features/tasks-management/utils/taskProjectFilterUtils";
 import { sortTasks } from "@/features/tasks-management/utils/taskSortUtils";
 import { filterTasksByStatus } from "@/features/tasks-management/utils/taskStatusFilterUtils";
 import { PageShell } from "@/shared/components/PageShell";
@@ -43,6 +49,7 @@ export function TasksManagementPage() {
   const { sort, setSort } = useTaskSort();
   const { statusFilter, setStatusFilter } = useTaskStatusFilter();
   const { clientFilter, setClientFilter } = useTaskClientFilter();
+  const { projectFilter, setProjectFilter } = useTaskProjectFilter();
   const { searchQuery, setSearchQuery } = useTaskSearchQuery();
   const canDelete = can("tasks.delete");
 
@@ -51,11 +58,27 @@ export function TasksManagementPage() {
     [tasks],
   );
 
+  const projectOptions = useMemo(
+    () =>
+      buildTaskProjectFilterOptions(filterTasksByClient(tasks, clientFilter)),
+    [tasks, clientFilter],
+  );
+
+  useEffect(() => {
+    if (projectFilter === TASKS_ALL_PROJECTS) return;
+    if (!projectOptions.some((option) => option.value === projectFilter)) {
+      setProjectFilter(TASKS_ALL_PROJECTS);
+    }
+  }, [projectFilter, projectOptions, setProjectFilter]);
+
   const filteredTasks = useMemo(() => {
     const filtered = filterTasksByStatus(
-      filterTasksByClient(
-        filterTasksByTab(tasks, tab, teamMemberId),
-        clientFilter,
+      filterTasksByProject(
+        filterTasksByClient(
+          filterTasksByTab(tasks, tab, teamMemberId),
+          clientFilter,
+        ),
+        projectFilter,
       ),
       statusFilter,
     ).filter((task) =>
@@ -74,7 +97,16 @@ export function TasksManagementPage() {
       ]),
     );
     return sortTasks(filtered, sort);
-  }, [tasks, tab, teamMemberId, sort, searchQuery, statusFilter, clientFilter]);
+  }, [
+    tasks,
+    tab,
+    teamMemberId,
+    sort,
+    searchQuery,
+    statusFilter,
+    clientFilter,
+    projectFilter,
+  ]);
 
   const filteredIds = useMemo(
     () => filteredTasks.map((task) => task.id),
@@ -133,6 +165,9 @@ export function TasksManagementPage() {
         clientFilter={clientFilter}
         onClientFilterChange={setClientFilter}
         clientOptions={clientOptions}
+        projectFilter={projectFilter}
+        onProjectFilterChange={setProjectFilter}
+        projectOptions={projectOptions}
         tab={tab}
         onTabChange={setTab}
       />

@@ -1,4 +1,8 @@
 import type { ClientPortalProjectRow } from "@/features/client-portal/types/types";
+import {
+  DEV_PROJECT_STATUS_LABELS,
+  type DevProjectStatus,
+} from "@/features/development-projects/constants/devProjectStatus";
 import type { ProjectKind } from "@/features/projects-management/utils/projectKindUtils";
 import type { DirectoryTableColumn } from "@/shared/types/components";
 
@@ -31,12 +35,16 @@ type PortalProjectSource = {
   team_members: { member_name: string } | null;
 };
 
+type PortalDevProjectSource = PortalProjectSource & {
+  status: DevProjectStatus;
+};
+
 export function buildClientPortalProjectRows(
   smProjects: Array<
     PortalProjectSource & { socials: ClientPortalProjectRow["socials"] }
   >,
   smDetailPath: (id: string) => string,
-  devProjects: PortalProjectSource[],
+  devProjects: PortalDevProjectSource[],
   devDetailPath: (id: string) => string,
   otherProjects: PortalProjectSource[],
   otherDetailPath: (id: string) => string,
@@ -46,25 +54,45 @@ export function buildClientPortalProjectRows(
     kind: ProjectKind,
     detailPath: string,
     socials: ClientPortalProjectRow["socials"],
+    statusLabel: string,
   ): ClientPortalProjectRow => ({
     id: project.id,
     project_name: project.project_name,
     project_kind: kind,
     manager_name: project.team_members?.member_name ?? null,
     is_active: project.is_active,
+    status_label: statusLabel,
     socials,
     detailPath,
   });
 
   return [
     ...smProjects.map((project) =>
-      toRow(project, "sm", smDetailPath(project.id), project.socials),
+      toRow(
+        project,
+        "sm",
+        smDetailPath(project.id),
+        project.socials,
+        project.is_active ? "Active" : "Inactive",
+      ),
     ),
     ...devProjects.map((project) =>
-      toRow(project, "dev", devDetailPath(project.id), null),
+      toRow(
+        project,
+        "dev",
+        devDetailPath(project.id),
+        null,
+        DEV_PROJECT_STATUS_LABELS[project.status],
+      ),
     ),
     ...otherProjects.map((project) =>
-      toRow(project, "other", otherDetailPath(project.id), null),
+      toRow(
+        project,
+        "other",
+        otherDetailPath(project.id),
+        null,
+        project.is_active ? "Active" : "Inactive",
+      ),
     ),
   ];
 }
