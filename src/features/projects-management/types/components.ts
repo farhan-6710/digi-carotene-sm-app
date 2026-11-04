@@ -45,10 +45,11 @@ export type ProjectDialogProps = {
       | "google"
       | "startDate"
       | "etaDate"
-      | "committedPosts"
-      | "committedImages"
+      | "committedSinglePosts"
       | "committedCarousels"
       | "committedReels"
+      | "committedStories"
+      | "committedVideos"
     >,
     value: string,
   ) => void;

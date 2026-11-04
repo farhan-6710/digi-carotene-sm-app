@@ -91,10 +91,11 @@ export async function fetchSharedProject(
       : null,
     eta_date: projectRow.eta_date ? String(projectRow.eta_date) : null,
     is_active: Boolean(projectRow.is_active ?? true),
-    committed_posts: Number(projectRow.committed_posts ?? 0),
-    committed_images: Number(projectRow.committed_images ?? 0),
+    committed_single_posts: Number(projectRow.committed_single_posts ?? 0),
     committed_carousels: Number(projectRow.committed_carousels ?? 0),
     committed_reels: Number(projectRow.committed_reels ?? 0),
+    committed_stories: Number(projectRow.committed_stories ?? 0),
+    committed_videos: Number(projectRow.committed_videos ?? 0),
     created_at: String(projectRow.created_at ?? ""),
     updated_at: String(projectRow.updated_at ?? ""),
     clients: client?.id

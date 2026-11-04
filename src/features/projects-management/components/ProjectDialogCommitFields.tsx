@@ -2,10 +2,11 @@ import { formFieldClassName } from "@/shared/constants/formStyles";
 import type { ProjectDialogProps } from "@/features/projects-management/types/components";
 
 const COMMIT_FIELDS = [
-  { field: "committedPosts", label: "Committed posts" },
-  { field: "committedImages", label: "Committed images" },
+  { field: "committedSinglePosts", label: "Committed single posts" },
   { field: "committedCarousels", label: "Committed carousels" },
   { field: "committedReels", label: "Committed reels" },
+  { field: "committedStories", label: "Committed stories" },
+  { field: "committedVideos", label: "Committed videos" },
 ] as const;
 
 export function ProjectDialogCommitFields({

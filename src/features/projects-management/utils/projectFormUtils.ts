@@ -16,10 +16,11 @@ export type ProjectFormValues = {
   google: string;
   startDate: string;
   etaDate: string;
-  committedPosts: string;
-  committedImages: string;
+  committedSinglePosts: string;
   committedCarousels: string;
   committedReels: string;
+  committedStories: string;
+  committedVideos: string;
   isActive: boolean;
 };
 
@@ -33,10 +34,11 @@ export type ProjectFormField = keyof Pick<
   | "google"
   | "startDate"
   | "etaDate"
-  | "committedPosts"
-  | "committedImages"
+  | "committedSinglePosts"
   | "committedCarousels"
   | "committedReels"
+  | "committedStories"
+  | "committedVideos"
 >;
 
 export const emptyProjectFormValues = (): ProjectFormValues => ({
@@ -51,10 +53,11 @@ export const emptyProjectFormValues = (): ProjectFormValues => ({
   google: "",
   startDate: "",
   etaDate: "",
-  committedPosts: "0",
-  committedImages: "0",
+  committedSinglePosts: "0",
   committedCarousels: "0",
   committedReels: "0",
+  committedStories: "0",
+  committedVideos: "0",
   isActive: true,
 });
 
@@ -71,10 +74,11 @@ export function projectToFormValues(project: ProjectListItem): ProjectFormValues
     google: project.socials?.google ?? "",
     startDate: project.start_date ?? "",
     etaDate: project.eta_date ?? "",
-    committedPosts: String(project.committed_posts ?? 0),
-    committedImages: String(project.committed_images ?? 0),
+    committedSinglePosts: String(project.committed_single_posts ?? 0),
     committedCarousels: String(project.committed_carousels ?? 0),
     committedReels: String(project.committed_reels ?? 0),
+    committedStories: String(project.committed_stories ?? 0),
+    committedVideos: String(project.committed_videos ?? 0),
     isActive: project.is_active ?? true,
   };
 }
@@ -101,20 +105,18 @@ function parseCommittedCount(value: string, label: string): number | string {
 
 export function parseProjectCommittedCounts(values: ProjectFormValues):
   | {
-      committedPosts: number;
-      committedImages: number;
+      committedSinglePosts: number;
       committedCarousels: number;
       committedReels: number;
+      committedStories: number;
+      committedVideos: number;
     }
   | string {
-  const committedPosts = parseCommittedCount(values.committedPosts, "Committed posts");
-  if (typeof committedPosts === "string") return committedPosts;
-
-  const committedImages = parseCommittedCount(
-    values.committedImages,
-    "Committed images",
+  const committedSinglePosts = parseCommittedCount(
+    values.committedSinglePosts,
+    "Committed single posts",
   );
-  if (typeof committedImages === "string") return committedImages;
+  if (typeof committedSinglePosts === "string") return committedSinglePosts;
 
   const committedCarousels = parseCommittedCount(
     values.committedCarousels,
@@ -128,11 +130,24 @@ export function parseProjectCommittedCounts(values: ProjectFormValues):
   );
   if (typeof committedReels === "string") return committedReels;
 
+  const committedStories = parseCommittedCount(
+    values.committedStories,
+    "Committed stories",
+  );
+  if (typeof committedStories === "string") return committedStories;
+
+  const committedVideos = parseCommittedCount(
+    values.committedVideos,
+    "Committed videos",
+  );
+  if (typeof committedVideos === "string") return committedVideos;
+
   return {
-    committedPosts,
-    committedImages,
+    committedSinglePosts,
     committedCarousels,
     committedReels,
+    committedStories,
+    committedVideos,
   };
 }
 

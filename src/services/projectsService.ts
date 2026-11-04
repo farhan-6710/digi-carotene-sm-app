@@ -16,10 +16,11 @@ export type CreateProjectInput = {
   teamMemberIds?: string[];
   startDate?: string | null;
   etaDate?: string | null;
-  committedPosts?: number;
-  committedImages?: number;
+  committedSinglePosts?: number;
   committedCarousels?: number;
   committedReels?: number;
+  committedStories?: number;
+  committedVideos?: number;
 };
 
 export type UpdateProjectInput = CreateProjectInput & {
@@ -35,10 +36,11 @@ type ProjectRow = {
   start_date: string | null;
   eta_date: string | null;
   is_active: boolean;
-  committed_posts: number | null;
-  committed_images: number | null;
+  committed_single_posts: number | null;
   committed_carousels: number | null;
   committed_reels: number | null;
+  committed_stories: number | null;
+  committed_videos: number | null;
   created_at: string;
   updated_at: string;
   clients: ProjectListItem["clients"] | ProjectListItem["clients"][];
@@ -63,10 +65,11 @@ function normalizeProjectRow(
     start_date: row.start_date,
     eta_date: row.eta_date,
     is_active: row.is_active ?? true,
-    committed_posts: row.committed_posts ?? 0,
-    committed_images: row.committed_images ?? 0,
+    committed_single_posts: row.committed_single_posts ?? 0,
     committed_carousels: row.committed_carousels ?? 0,
     committed_reels: row.committed_reels ?? 0,
+    committed_stories: row.committed_stories ?? 0,
+    committed_videos: row.committed_videos ?? 0,
     created_at: row.created_at,
     updated_at: row.updated_at,
     clients: client,
@@ -314,10 +317,11 @@ export async function createProject(
       socials: input.socials || {},
       start_date: input.startDate || null,
       eta_date: input.etaDate || null,
-      committed_posts: input.committedPosts ?? 0,
-      committed_images: input.committedImages ?? 0,
+      committed_single_posts: input.committedSinglePosts ?? 0,
       committed_carousels: input.committedCarousels ?? 0,
       committed_reels: input.committedReels ?? 0,
+      committed_stories: input.committedStories ?? 0,
+      committed_videos: input.committedVideos ?? 0,
     })
     .select("id")
     .single();
@@ -348,10 +352,11 @@ export async function updateProject(
       socials: input.socials || {},
       start_date: input.startDate || null,
       eta_date: input.etaDate || null,
-      committed_posts: input.committedPosts ?? 0,
-      committed_images: input.committedImages ?? 0,
+      committed_single_posts: input.committedSinglePosts ?? 0,
       committed_carousels: input.committedCarousels ?? 0,
       committed_reels: input.committedReels ?? 0,
+      committed_stories: input.committedStories ?? 0,
+      committed_videos: input.committedVideos ?? 0,
       ...(input.isActive !== undefined ? { is_active: input.isActive } : {}),
     })
     .eq("id", projectId);

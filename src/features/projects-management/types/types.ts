@@ -26,10 +26,11 @@ export type Project = {
   start_date: string | null;
   eta_date: string | null;
   is_active: boolean;
-  committed_posts: number;
-  committed_images: number;
+  committed_single_posts: number;
   committed_carousels: number;
   committed_reels: number;
+  committed_stories: number;
+  committed_videos: number;
   created_at: string;
   updated_at: string;
   clients?: ProjectClient | null;
