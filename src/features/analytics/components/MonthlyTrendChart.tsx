@@ -14,7 +14,7 @@ import {
 const chartConfig: ChartConfig = {
   posted: { label: "Posted", color: "var(--status-posted)" },
   scheduled: { label: "Scheduled", color: "var(--status-scheduled)" },
-  notPosted: { label: "Not posted", color: "var(--status-not-posted)" },
+  notPosted: { label: "Editing", color: "var(--status-editing)" },
 };
 
 export function MonthlyTrendChart({

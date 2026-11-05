@@ -95,11 +95,11 @@ export function buildEditFormValues(
 export function validatePostForm(values: PostFormValues): string | null {
   const toBePostedOn = toRepositoryDateTime(values.toBePostedOn);
   const posted =
-    values.clientStatus === "Posted"
+    values.clientStatus === "posted"
       ? toRepositoryDateTime(values.postedOn)
       : null;
   const hasPostedInput = Boolean(
-    values.clientStatus === "Posted" &&
+    values.clientStatus === "posted" &&
       values.postedOn &&
       (values.postedOn.time.trim() ||
         values.postedOn.day ||
@@ -125,7 +125,7 @@ export function validatePostForm(values: PostFormValues): string | null {
 export function postFormToPayload(values: PostFormValues) {
   const toBePostedOn = toRepositoryDateTime(values.toBePostedOn)!;
   const posted =
-    values.clientStatus === "Posted"
+    values.clientStatus === "posted"
       ? toRepositoryDateTime(values.postedOn)
       : null;
 

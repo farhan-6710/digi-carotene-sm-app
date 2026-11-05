@@ -1,5 +1,6 @@
 import {
   statusColors,
+  statusLabels,
 } from "@/features/posts-management/constants/postsManagement";
 import type { StatusKey } from "@/features/posts-management/types/types";
 import {
@@ -79,7 +80,7 @@ export function PostStatusFilter({
                   isActive ? "size-1.5 " + statusColors[status] : "size-1 bg-muted-foreground/35",
                 )}
               />
-              <span>{status}</span>
+              <span>{statusLabels[status]}</span>
             </button>
           );
         })}

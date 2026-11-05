@@ -1,6 +1,7 @@
 import { POSTS_DAYS_LIST_ROW_GRID_CLASS } from "@/features/posts-management/constants/postsDaysListDirectory";
 import {
   statusColors,
+  statusLabels,
   statusText,
 } from "@/features/posts-management/constants/postsManagement";
 import type { PostsDaysListTableRowProps } from "@/features/posts-management/types/components";
@@ -69,7 +70,7 @@ export function PostsDaysListTableRow({
                     aria-hidden
                   />
                   <span className={statusText[item.status]}>
-                    {item.count} {item.status}
+                    {item.count} {statusLabels[item.status]}
                   </span>
                 </span>
               </span>

@@ -5,7 +5,10 @@ import {
   DAY_POSTS_ROW_GRID_CLASS,
 } from "@/features/posts-management/constants/dayPostsDirectory";
 import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
-import { statusBadgeStyles } from "@/features/posts-management/constants/postsManagement";
+import {
+  statusBadgeStyles,
+  statusLabels,
+} from "@/features/posts-management/constants/postsManagement";
 import type { DayPostsTableRowProps } from "@/features/posts-management/types/components";
 import { cn } from "@/shared/lib/utils";
 
@@ -60,7 +63,7 @@ export function DayPostsTableRow({
           statusBadgeStyles[post.status],
         ].join(" ")}
       >
-        {post.status}
+        {statusLabels[post.status]}
       </span>
       <div className="flex justify-end">
         <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />

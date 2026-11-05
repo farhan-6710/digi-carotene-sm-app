@@ -49,27 +49,49 @@ export const postTypeLabels: Record<PostType, string> = {
   video: "Video",
 };
 
-export const statusOptions: StatusKey[] = ["Not posted", "Scheduled", "Posted"];
+export const statusOptions: StatusKey[] = [
+  "editing",
+  "sent_for_approval",
+  "approved",
+  "scheduled",
+  "posted",
+];
 
-export const DEFAULT_POST_STATUS: StatusKey = "Not posted";
+export const DEFAULT_POST_STATUS: StatusKey = "editing";
+
+export const statusLabels: Record<StatusKey, string> = {
+  editing: "Editing",
+  sent_for_approval: "Sent for approval",
+  approved: "Approved",
+  scheduled: "Scheduled",
+  posted: "Posted",
+};
 
 export const statusColors: Record<StatusKey, string> = {
-  "Not posted": "bg-status-not-posted",
-  Scheduled: "bg-status-scheduled",
-  Posted: "bg-status-posted",
+  editing: "bg-status-editing",
+  sent_for_approval: "bg-status-sent-for-approval",
+  approved: "bg-status-approved",
+  scheduled: "bg-status-scheduled",
+  posted: "bg-status-posted",
 };
 
 export const statusText: Record<StatusKey, string> = {
-  "Not posted": "text-status-not-posted",
-  Scheduled: "text-status-scheduled",
-  Posted: "text-status-posted",
+  editing: "text-status-editing",
+  sent_for_approval: "text-status-sent-for-approval",
+  approved: "text-status-approved",
+  scheduled: "text-status-scheduled",
+  posted: "text-status-posted",
 };
 
 export const statusBadgeStyles: Record<StatusKey, string> = {
-  "Not posted":
-    "border border-status-not-posted/50 bg-status-not-posted/15 text-status-not-posted ring-1 ring-status-not-posted/20",
-  Scheduled:
+  editing:
+    "border border-status-editing/50 bg-status-editing/15 text-status-editing ring-1 ring-status-editing/20",
+  sent_for_approval:
+    "border border-status-sent-for-approval/50 bg-status-sent-for-approval/15 text-status-sent-for-approval ring-1 ring-status-sent-for-approval/20",
+  approved:
+    "border border-status-approved/50 bg-status-approved/15 text-status-approved ring-1 ring-status-approved/20",
+  scheduled:
     "border border-status-scheduled/50 bg-status-scheduled/15 text-status-scheduled ring-1 ring-status-scheduled/20",
-  Posted:
+  posted:
     "border border-status-posted/50 bg-status-posted/15 text-status-posted ring-1 ring-status-posted/20",
 };

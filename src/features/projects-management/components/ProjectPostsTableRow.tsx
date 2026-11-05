@@ -10,7 +10,10 @@ import {
   formatPostedOnLabel,
   formatToBePostedOnLabel,
 } from "@/features/projects-management/utils/projectPostDisplayUtils";
-import { statusBadgeStyles } from "@/features/posts-management/constants/postsManagement";
+import {
+  statusBadgeStyles,
+  statusLabels,
+} from "@/features/posts-management/constants/postsManagement";
 import { cn } from "@/shared/lib/utils";
 
 export function ProjectPostsTableRow({
@@ -26,7 +29,7 @@ export function ProjectPostsTableRow({
     post.to_be_posted_time,
   );
   const postedLabel =
-    post.status === "Posted"
+    post.status === "posted"
       ? formatPostedOnLabel(post.posted_date, post.posted_time)
       : "—";
 
@@ -67,7 +70,7 @@ export function ProjectPostsTableRow({
           statusBadgeStyles[post.status],
         ].join(" ")}
       >
-        {post.status}
+        {statusLabels[post.status]}
       </span>
       <div className="flex items-center justify-end gap-1">
         {onEditPost ? (

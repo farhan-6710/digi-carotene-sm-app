@@ -127,7 +127,7 @@ export function useMoveContentsToPosts({
               time: DEFAULT_POST_TIME,
             },
             posted: null,
-            status: "Not posted",
+            status: "editing",
             contentPillar: content.content_pillar,
             contextDescription: content.context_description,
             script: content.script,

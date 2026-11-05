@@ -4,6 +4,7 @@ import { CLIENT_POSTS_ROW_GRID_CLASS } from "@/features/client-portal/constants/
 import type { ClientPostsTableRowProps } from "@/features/client-portal/types/components";
 import {
   statusBadgeStyles,
+  statusLabels,
 } from "@/features/posts-management/constants/postsManagement";
 import { cn } from "@/shared/lib/utils";
 
@@ -46,7 +47,7 @@ export function ClientPostsTableRow({ post }: ClientPostsTableRowProps) {
           statusBadgeStyles[post.status],
         ].join(" ")}
       >
-        {post.status}
+        {statusLabels[post.status]}
       </span>
     </div>
   );

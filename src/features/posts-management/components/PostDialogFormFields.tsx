@@ -17,7 +17,7 @@ export function PostDialogFormFields({
   patchValues,
 }: PostDialogFormFieldsProps) {
   const showPostedOn =
-    values.clientStatus === "Scheduled" || values.clientStatus === "Posted";
+    values.clientStatus === "scheduled" || values.clientStatus === "posted";
 
   return (
     <div className="flex-1 space-y-4 overflow-y-auto py-1 pr-1">
@@ -78,7 +78,7 @@ export function PostDialogFormFields({
         onChange={(clientStatus) =>
           patchValues({
             clientStatus,
-            postedOn: clientStatus === "Posted" ? values.postedOn : null,
+            postedOn: clientStatus === "posted" ? values.postedOn : null,
           })
         }
         options={statusOptions}

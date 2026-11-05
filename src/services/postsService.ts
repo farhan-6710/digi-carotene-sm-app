@@ -153,7 +153,7 @@ export async function fetchPostedPostsForMonth(
   const { data, error } = await supabase
     .from(DB.POSTS.TABLE)
     .select(DB.POSTS.SELECT)
-    .eq("status", "Posted")
+    .eq("status", "posted")
     .gte("to_be_posted_date", start)
     .lte("to_be_posted_date", end)
     .order("to_be_posted_date", { ascending: true })
@@ -247,7 +247,7 @@ export async function fetchNotPostedPosts(limit?: number): Promise<Post[]> {
   let query = supabase
     .from(DB.POSTS.TABLE)
     .select(DB.POSTS.SELECT)
-    .eq("status", "Not posted")
+    .eq("status", "editing")
     .order("to_be_posted_date", { ascending: true })
     .order("to_be_posted_time", { ascending: true });
 

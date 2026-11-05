@@ -1,5 +1,8 @@
 import type { StatusKey } from "@/features/posts-management/types/types";
-import { statusOptions } from "@/features/posts-management/constants/postsManagement";
+import {
+  statusLabels,
+  statusOptions,
+} from "@/features/posts-management/constants/postsManagement";
 
 export const POST_STATUS_SELECT_ALL = "all" as const;
 
@@ -12,7 +15,5 @@ export const POST_STATUS_SELECT_OPTIONS: PostStatusSelectId[] = [
 
 export const POST_STATUS_SELECT_LABELS: Record<PostStatusSelectId, string> = {
   all: "All Posts",
-  "Not posted": "Not posted",
-  Scheduled: "Scheduled",
-  Posted: "Posted",
+  ...statusLabels,
 };

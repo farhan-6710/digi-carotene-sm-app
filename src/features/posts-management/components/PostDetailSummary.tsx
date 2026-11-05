@@ -5,6 +5,7 @@ import { Link } from "react-router";
 import {
   postTypeLabels,
   statusBadgeStyles,
+  statusLabels,
   type SocialPlatform,
   platformColors,
 } from "@/features/posts-management/constants/postsManagement";
@@ -78,7 +79,7 @@ export function PostDetailSummary({ post }: PostDetailSummaryProps) {
               statusBadgeStyles[post.status],
             )}
           >
-            {post.status}
+            {statusLabels[post.status]}
           </span>
           <span className="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">
             {postTypeLabels[post.post_type]}

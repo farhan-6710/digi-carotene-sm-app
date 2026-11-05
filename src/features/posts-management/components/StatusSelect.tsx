@@ -9,6 +9,7 @@ import {
 } from "@/shared/ui/popover";
 import {
   statusColors,
+  statusLabels,
   statusText,
 } from "@/features/posts-management/constants/postsManagement";
 import { cn } from "@/shared/lib/utils";
@@ -42,7 +43,7 @@ export function StatusSelect({
                   statusColors[value],
                 )}
               />
-              <span className={statusText[value]}>{value}</span>
+              <span className={statusText[value]}>{statusLabels[value]}</span>
             </span>
             <ChevronDown
               className={cn(
@@ -83,7 +84,9 @@ export function StatusSelect({
                         statusColors[option],
                       )}
                     />
-                    <span className={statusText[option]}>{option}</span>
+                    <span className={statusText[option]}>
+                      {statusLabels[option]}
+                    </span>
                   </span>
                   {isSelected ? (
                     <Check className="size-4 text-primary" />

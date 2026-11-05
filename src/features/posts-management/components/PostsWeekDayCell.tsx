@@ -1,3 +1,4 @@
+import { statusLabels } from "@/features/posts-management/constants/postsManagement";
 import type { PostsWeekDayCellProps } from "@/features/posts-management/types/components";
 import {
   formatMonthDayLabel,
@@ -59,7 +60,7 @@ export function PostsWeekDayCell({
             .sort((a, b) => comparePostTimes(a.toBePostedTime, b.toBePostedTime))
             .map((client) => {
               const delay =
-                client.status === "Posted"
+                client.status === "posted"
                   ? calculateDelay(
                       client.toBePostedDate,
                       client.toBePostedTime,
@@ -114,7 +115,7 @@ export function PostsWeekDayCell({
                             statusText[client.status],
                           )}
                         >
-                          {client.status}
+                          {statusLabels[client.status]}
                         </span>
                       </div>
                     </button>

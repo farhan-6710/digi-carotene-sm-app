@@ -30,8 +30,8 @@ export function buildClientBreakdowns(
     };
 
     row.total += 1;
-    if (post.status === "Posted") row.posted += 1;
-    else if (post.status === "Scheduled") row.scheduled += 1;
+    if (post.status === "posted") row.posted += 1;
+    else if (post.status === "scheduled") row.scheduled += 1;
     else row.notPosted += 1;
 
     rows.set(name, row);
@@ -64,7 +64,7 @@ export function buildClientStatCards(
 
   const clientsNeedingFollowUp = new Set(
     posts
-      .filter((post) => post.status === "Not posted")
+      .filter((post) => post.status === "editing")
       .map((post) => post.client_name ?? UNKNOWN_CLIENT),
   ).size;
 

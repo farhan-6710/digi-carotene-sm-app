@@ -9,21 +9,25 @@ import {
   getMonthsInRange,
   getRecentMonths,
 } from "@/features/analytics/utils/analyticsDateUtils";
-import { SOCIAL_PLATFORMS } from "@/features/posts-management/constants/postsManagement";
+import {
+  SOCIAL_PLATFORMS,
+  statusLabels,
+  statusOptions,
+} from "@/features/posts-management/constants/postsManagement";
 import type { Post, StatusKey } from "@/features/posts-management/types/types";
 
 const STATUS_COLORS: Record<StatusKey, string> = {
-  Posted: "var(--status-posted)",
-  Scheduled: "var(--status-scheduled)",
-  "Not posted": "var(--status-not-posted)",
+  editing: "var(--status-editing)",
+  sent_for_approval: "var(--status-sent-for-approval)",
+  approved: "var(--status-approved)",
+  scheduled: "var(--status-scheduled)",
+  posted: "var(--status-posted)",
 };
 
 export function buildStatusBreakdown(posts: Post[]): CategoryDatum[] {
-  const order: StatusKey[] = ["Posted", "Scheduled", "Not posted"];
-
-  return order.map((status) => ({
+  return statusOptions.map((status) => ({
     key: status,
-    label: status,
+    label: statusLabels[status],
     value: posts.filter((post) => post.status === status).length,
     color: STATUS_COLORS[status],
   }));
@@ -71,9 +75,9 @@ function buildMonthlyTrendForMonths(
       continue;
     }
 
-    if (post.status === "Posted") {
+    if (post.status === "posted") {
       bucket.posted += 1;
-    } else if (post.status === "Scheduled") {
+    } else if (post.status === "scheduled") {
       bucket.scheduled += 1;
     } else {
       bucket.notPosted += 1;

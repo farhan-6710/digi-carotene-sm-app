@@ -19,8 +19,8 @@ export const projectProfileStatItems: ProjectProfileStatItem[] = [
     valueClassName: "text-status-scheduled",
   },
   {
-    label: "Not posted",
+    label: "Editing",
     getValue: (stats) => stats.notPosted,
-    valueClassName: "text-status-not-posted",
+    valueClassName: "text-status-editing",
   },
 ];

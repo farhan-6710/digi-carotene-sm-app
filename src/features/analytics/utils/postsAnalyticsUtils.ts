@@ -21,7 +21,7 @@ export function buildPostsTopClients(
     };
 
     entry.posts += 1;
-    if (post.status === "Posted") {
+    if (post.status === "posted") {
       entry.posted += 1;
     } else {
       entry.backlogs += 1;

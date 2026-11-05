@@ -45,7 +45,7 @@ export function buildTodaysPostScheduleLabel(
 ): string {
   const timeLabel = toBePostedTime.trim() || "Time not set";
 
-  if (postStatus === "Posted") {
+  if (postStatus === "posted") {
     return `To be posted at ${timeLabel}`;
   }
 

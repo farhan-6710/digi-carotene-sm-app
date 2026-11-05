@@ -35,7 +35,7 @@ export function buildClientStatCards(
     {
       id: "client-scheduled",
       label: "Scheduled",
-      value: String(posts.filter((post) => post.status === "Scheduled").length),
+      value: String(posts.filter((post) => post.status === "scheduled").length),
       description: "Waiting to go live",
       icon: CalendarClock,
       href: "/client-portal/posts",
@@ -43,16 +43,16 @@ export function buildClientStatCards(
     {
       id: "client-posted",
       label: "Posted",
-      value: String(posts.filter((post) => post.status === "Posted").length),
+      value: String(posts.filter((post) => post.status === "posted").length),
       description: "Published successfully",
       icon: CheckCircle2,
       href: "/client-portal/posts",
     },
     {
-      id: "client-not-posted",
-      label: "Not posted",
-      value: String(posts.filter((post) => post.status === "Not posted").length),
-      description: "Awaiting publish or follow-up",
+      id: "client-editing",
+      label: "Editing",
+      value: String(posts.filter((post) => post.status === "editing").length),
+      description: "Still in draft or review",
       icon: XCircle,
       href: "/client-portal/posts",
     },
@@ -80,7 +80,7 @@ export function getUpcomingPosts(posts: Post[], limit = 5): Post[] {
 
   return posts
     .filter(
-      (post) => post.status !== "Posted" && post.to_be_posted_date >= today,
+      (post) => post.status !== "posted" && post.to_be_posted_date >= today,
     )
     .sort((a, b) => {
       const dateCompare = a.to_be_posted_date.localeCompare(b.to_be_posted_date);

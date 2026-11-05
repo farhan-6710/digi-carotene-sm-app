@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router";
 import { PostStatusFilter } from "@/shared/ui/PostStatusFilter";
 import {
   statusColors,
+  statusLabels,
   statusText,
 } from "@/features/posts-management/constants/postsManagement";
 import {
@@ -73,7 +74,7 @@ export function ReportsTable({
               <span>{summary.totalPosts} posts</span>
               <span>{summary.postedCount} posted</span>
               <span>{summary.scheduledCount} scheduled</span>
-              <span>{summary.notPostedCount} not posted</span>
+              <span>{summary.notPostedCount} editing</span>
             </div>
           </div>
 
@@ -110,7 +111,7 @@ export function ReportsTable({
                   <span
                     className={`size-2 rounded-full ${statusColors[row.status]}`}
                   />
-                  {row.status}
+                  {statusLabels[row.status]}
                 </span>
               </div>
 

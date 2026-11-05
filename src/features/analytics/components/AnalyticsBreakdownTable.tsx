@@ -61,7 +61,7 @@ export function AnalyticsBreakdownTable({
           <div className="text-right font-mono text-sm text-status-scheduled">
             {row.scheduled}
           </div>
-          <div className="text-right font-mono text-sm text-status-not-posted">
+          <div className="text-right font-mono text-sm text-status-editing">
             {row.notPosted}
           </div>
         </div>

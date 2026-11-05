@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 
 import {
   statusColors,
+  statusLabels,
   statusText,
 } from "@/features/posts-management/constants/postsManagement";
 import { buildDummyClientReport } from "@/features/reports/utils/clientReportUtils";
@@ -40,7 +41,7 @@ export function ClientReportPage() {
           { label: "Total posts", value: report.totalPosts },
           { label: "Posted", value: report.postedCount },
           { label: "Scheduled", value: report.scheduledCount },
-          { label: "Not posted", value: report.notPostedCount },
+          { label: "Editing", value: report.notPostedCount },
         ].map((item, idx) => (
           <div
             key={item.label}
@@ -95,7 +96,7 @@ export function ClientReportPage() {
                   <span
                     className={`size-2 rounded-full ${statusColors[post.status]}`}
                   />
-                  {post.status}
+                  {statusLabels[post.status]}
                 </span>
               </div>
             ))}

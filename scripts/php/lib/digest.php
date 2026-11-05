@@ -70,13 +70,15 @@ function buildDigestSectionsForMember(
                 $config,
                 $yesterday,
                 fetchManagedProjectIds($config, $memberId),
-                'Not posted',
+                null,
+                'posted',
             ),
             'yesterday_not_posted_all' => fetchPostsForDigest(
                 $config,
                 $yesterday,
                 null,
-                'Not posted',
+                null,
+                'posted',
             ),
             default => [],
         };

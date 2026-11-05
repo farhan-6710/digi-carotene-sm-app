@@ -68,7 +68,7 @@ export function PostsTopClientsTable({
           <div className="text-right font-mono text-sm text-status-posted">
             {client.posted}
           </div>
-          <div className="text-right font-mono text-sm text-status-not-posted">
+          <div className="text-right font-mono text-sm text-status-editing">
             {client.backlogs}
           </div>
         </div>

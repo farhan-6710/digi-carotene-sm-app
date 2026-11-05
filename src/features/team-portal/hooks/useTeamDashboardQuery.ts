@@ -136,7 +136,7 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
           return {
             ...item,
             postStatus: status,
-            isOverdue: status === "Posted" ? false : item.isOverdue,
+            isOverdue: status === "posted" ? false : item.isOverdue,
             scheduleLabel: buildTodaysPostScheduleLabel(
               item.toBePostedTime,
               now,
@@ -180,7 +180,7 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
       teamMembersCount,
       totalPostsCount: scopedPosts.length,
       duePostsCount: scopedPosts.filter(
-        (post) => post.status !== "Posted" && isPostOverdue(post),
+        (post) => post.status !== "posted" && isPostOverdue(post),
       ).length,
       periodLabel,
     });

@@ -14,8 +14,8 @@ function countByStatus(posts: Post[], status: StatusKey): number {
 export function buildProjectPostStats(posts: Post[]): ProjectPostStats {
   return {
     total: posts.length,
-    posted: countByStatus(posts, "Posted"),
-    scheduled: countByStatus(posts, "Scheduled"),
-    notPosted: countByStatus(posts, "Not posted"),
+    posted: countByStatus(posts, "posted"),
+    scheduled: countByStatus(posts, "scheduled"),
+    notPosted: countByStatus(posts, "editing"),
   };
 }

@@ -8,7 +8,8 @@ import type { StatusKey } from "@/features/posts-management/types/types";
  * active project_team_members (ended_at IS NULL). See docs-2026-08-27/auth-and-features.md.
  *
  * - Schedule day  → `posts.to_be_posted_date` (“To be posted on”)
- * - Status        → `posts.status` (`StatusKey`: "Not posted" | "Scheduled" | "Posted")
+ * - Status        → `posts.status` (`StatusKey`: editing | sent_for_approval |
+ *                   approved | scheduled | posted)
  * - Managed       → `projects.manager_id` = recipient’s `team_members.id`
  * - On team       → active `project_team_members` row (`ended_at IS NULL`);
  *                   manager is NOT duplicated there
@@ -21,8 +22,11 @@ import type { StatusKey } from "@/features/posts-management/types/types";
  * Keep PHP lib/digest.php postDigestSectionsByRole() in sync with this map.
  */
 
-/** Status filter for overdue / missed digests — exact DB CHECK value. */
-export const POST_DIGEST_NOT_POSTED_STATUS: StatusKey = "Not posted";
+/**
+ * Missed digests exclude this status (`status=neq.posted` in PHP).
+ * Anything not yet posted still counts as missed for yesterday’s schedule day.
+ */
+export const POST_DIGEST_EXCLUDE_STATUS: StatusKey = "posted";
 
 /**
  * Digest sections a role can include.
@@ -33,9 +37,9 @@ export const POST_DIGEST_SECTIONS = [
   "today_to_be_posted_on_team",
   /** Today’s `to_be_posted_date`, recipient is projects.manager_id. */
   "today_to_be_posted_managed",
-  /** Yesterday’s `to_be_posted_date` + status Not posted, recipient is manager_id. */
+  /** Yesterday’s `to_be_posted_date` + status ≠ posted, recipient is manager_id. */
   "yesterday_not_posted_managed",
-  /** Yesterday’s `to_be_posted_date` + status Not posted, every project (admin). */
+  /** Yesterday’s `to_be_posted_date` + status ≠ posted, every project (admin). */
   "yesterday_not_posted_all",
 ] as const;
 

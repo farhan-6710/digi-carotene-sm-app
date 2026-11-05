@@ -1,4 +1,9 @@
-export type StatusKey = "Not posted" | "Scheduled" | "Posted";
+export type StatusKey =
+  | "editing"
+  | "sent_for_approval"
+  | "approved"
+  | "scheduled"
+  | "posted";
 
 export type PostType =
   | "single_post"

@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { buildPostDetailPath } from "@/features/posts-management/constants/routes";
 import {
   statusColors,
+  statusLabels,
   statusText,
 } from "@/features/posts-management/constants/postsManagement";
 import { TEAM_DASHBOARD_POST_STATUS_OPTIONS } from "@/features/team-portal/constants/teamDashboardPostStatus";
@@ -47,7 +48,7 @@ function TeamDashboardPostRow({
                 statusText[row.postStatus],
               )}
             >
-              {row.postStatus}
+              {statusLabels[row.postStatus]}
             </div>
           </div>
           <div className="mt-1 font-mono text-xs text-muted-foreground">
@@ -92,7 +93,7 @@ function TeamDashboardPostRow({
                   }
                 }}
               >
-                <span className="flex-1">{status}</span>
+                <span className="flex-1">{statusLabels[status]}</span>
                 {isSelected ? <Check className="size-3.5 opacity-70" /> : null}
               </DropdownMenuItem>
             );

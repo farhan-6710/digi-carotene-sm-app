@@ -47,9 +47,13 @@
   --chart-5: #0f5c67;
 
   /* Harmonized Status Colors (Standardized Lightness & Chroma) */
-  --status-not-posted: oklch(0.65 0.02 199.63);
+  --status-editing: oklch(0.65 0.02 199.63);
+  --status-sent-for-approval: oklch(0.68 0.12 55);
+  --status-approved: oklch(0.62 0.1 195);
   --status-scheduled: oklch(0.65 0.12 245);
   --status-posted: oklch(0.65 0.12 145);
+  /* Legacy aliases used outside posts (todos, etc.) */
+  --status-not-posted: var(--status-editing);
   --status-missed: oklch(0.65 0.15 27);
   --status-done: oklch(0.65 0.12 145);
   --status-muted: oklch(0.88 0.01 199.63);
@@ -185,6 +189,9 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-status-editing: var(--status-editing);
+  --color-status-sent-for-approval: var(--status-sent-for-approval);
+  --color-status-approved: var(--status-approved);
   --color-status-not-posted: var(--status-not-posted);
   --color-status-scheduled: var(--status-scheduled);
   --color-status-posted: var(--status-posted);

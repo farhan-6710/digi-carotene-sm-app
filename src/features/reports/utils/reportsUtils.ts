@@ -21,9 +21,9 @@ export function buildClientReportSummaries(posts: Post[]): ClientReportSummary[]
 
   const summaries = Array.from(postsByClient.entries()).map(
     ([clientName, clientPosts]) => {
-      const postedCount = countByStatus(clientPosts, "Posted");
-      const scheduledCount = countByStatus(clientPosts, "Scheduled");
-      const notPostedCount = countByStatus(clientPosts, "Not posted");
+      const postedCount = countByStatus(clientPosts, "posted");
+      const scheduledCount = countByStatus(clientPosts, "scheduled");
+      const notPostedCount = countByStatus(clientPosts, "editing");
       const clientTotalPosts = clientPosts.length;
 
       const rows: ReportPostRow[] = clientPosts
@@ -188,7 +188,7 @@ export function buildReportStatCards(
     {
       label: "Posted",
       value: String(totals.posted),
-      delta: `${totals.notPosted} not posted`,
+      delta: `${totals.notPosted} editing`,
       deltaLabel: "remaining",
       trend: totals.posted >= totals.notPosted ? "positive" : "negative",
     },

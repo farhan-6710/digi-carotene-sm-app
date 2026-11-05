@@ -28,7 +28,7 @@ export function PostStatusSelect({
   );
 
   return (
-    <div className="w-full min-w-0 space-y-2 sm:w-[160px]">
+    <div className="w-full min-w-0 space-y-2 sm:w-[200px]">
       <span className="block text-xs font-semibold text-muted-foreground">
         Status
       </span>

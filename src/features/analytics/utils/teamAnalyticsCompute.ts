@@ -68,8 +68,8 @@ export function buildManagerWorkload(
     };
 
     row.total += 1;
-    if (post.status === "Posted") row.posted += 1;
-    else if (post.status === "Scheduled") row.scheduled += 1;
+    if (post.status === "posted") row.posted += 1;
+    else if (post.status === "scheduled") row.scheduled += 1;
     else row.notPosted += 1;
 
     rows.set(managerId, row);

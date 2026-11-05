@@ -1,5 +1,6 @@
 import {
   statusColors,
+  statusLabels,
   statusOptions,
   statusText,
 } from "@/features/posts-management/constants/postsManagement";
@@ -7,17 +8,17 @@ import {
 export function PostsManagementStatusLegend() {
   return (
     <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-      {statusOptions.map((label) => (
+      {statusOptions.map((status) => (
         <div
-          key={label}
+          key={status}
           className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1"
         >
           <span
-            className={`size-2 shrink-0 rounded-full ${statusColors[label]}`}
+            className={`size-2 shrink-0 rounded-full ${statusColors[status]}`}
             aria-hidden
           />
-          <span className={`text-xs font-semibold ${statusText[label]}`}>
-            {label}
+          <span className={`text-xs font-semibold ${statusText[status]}`}>
+            {statusLabels[status]}
           </span>
         </div>
       ))}

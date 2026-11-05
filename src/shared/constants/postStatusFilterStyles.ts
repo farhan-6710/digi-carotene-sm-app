@@ -7,16 +7,22 @@ export const postStatusFilterAllInactiveStyle =
   "border-border/60 bg-muted/30 text-muted-foreground/55";
 
 export const postStatusFilterActiveStyles: Record<StatusKey, string> = {
-  "Not posted":
-    "border-status-not-posted/50 bg-status-not-posted/20 text-status-not-posted ring-1 ring-status-not-posted/25",
-  Scheduled:
+  editing:
+    "border-status-editing/50 bg-status-editing/20 text-status-editing ring-1 ring-status-editing/25",
+  sent_for_approval:
+    "border-status-sent-for-approval/50 bg-status-sent-for-approval/20 text-status-sent-for-approval ring-1 ring-status-sent-for-approval/25",
+  approved:
+    "border-status-approved/50 bg-status-approved/20 text-status-approved ring-1 ring-status-approved/25",
+  scheduled:
     "border-status-scheduled/50 bg-status-scheduled/20 text-status-scheduled ring-1 ring-status-scheduled/25",
-  Posted:
+  posted:
     "border-status-posted/50 bg-status-posted/20 text-status-posted ring-1 ring-status-posted/25",
 };
 
 export const postStatusFilterInactiveStyles: Record<StatusKey, string> = {
-  "Not posted": "border-border/60 bg-muted/30 text-muted-foreground/55",
-  Scheduled: "border-border/60 bg-muted/30 text-muted-foreground/55",
-  Posted: "border-border/60 bg-muted/30 text-muted-foreground/55",
+  editing: "border-border/60 bg-muted/30 text-muted-foreground/55",
+  sent_for_approval: "border-border/60 bg-muted/30 text-muted-foreground/55",
+  approved: "border-border/60 bg-muted/30 text-muted-foreground/55",
+  scheduled: "border-border/60 bg-muted/30 text-muted-foreground/55",
+  posted: "border-border/60 bg-muted/30 text-muted-foreground/55",
 };

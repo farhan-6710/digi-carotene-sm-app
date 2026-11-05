@@ -372,6 +372,7 @@ function fetchPostsForDigest(
     string $date,
     ?array $projectIds,
     ?string $status = null,
+    ?string $excludeStatus = null,
 ): array {
     if (is_array($projectIds) && $projectIds === []) {
         return [];
@@ -384,6 +385,10 @@ function fetchPostsForDigest(
 
     if ($status !== null) {
         $query .= '&status=eq.' . rawurlencode($status);
+    }
+
+    if ($excludeStatus !== null) {
+        $query .= '&status=neq.' . rawurlencode($excludeStatus);
     }
 
     if (is_array($projectIds)) {

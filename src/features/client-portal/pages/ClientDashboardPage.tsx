@@ -9,6 +9,7 @@ import {
 } from "@/features/client-portal/utils/clientStats";
 import {
   statusBadgeStyles,
+  statusLabels,
 } from "@/features/posts-management/constants/postsManagement";
 import { PageShell } from "@/shared/components/PageShell";
 import { LoadingSpinner, TableLoadingState } from "@/shared/components/LoadingSpinner";
@@ -87,7 +88,7 @@ export function ClientDashboardPage() {
                         statusBadgeStyles[post.status],
                       ].join(" ")}
                     >
-                      {post.status}
+                      {statusLabels[post.status]}
                     </span>
                   </li>
                 ))}
