@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import {
-  DIRECTORY_LOAD_MORE_DELAY_MS,
-  DIRECTORY_PAGE_SIZE,
-} from "@/shared/constants/directoryPagination";
+import { DIRECTORY_PAGE_SIZE } from "@/shared/constants/directoryPagination";
 
 type UseWindowedListOptions = {
   /** Total rows available (usually `Children.count` / filtered length). */
@@ -15,8 +12,8 @@ type UseWindowedListOptions = {
 };
 
 /**
- * Client-side Instagram-style windowing: data is already loaded; only the first
- * `pageSize` rows render, then `loadMore` reveals the next chunk.
+ * @deprecated Prefer `useDirectoryPagination` + shadcn Pagination.
+ * Kept for any remaining call sites that still append chunks on demand.
  */
 export function useWindowedList({
   total,
@@ -50,7 +47,7 @@ export function useWindowedList({
       }
       setVisibleCount((current) => Math.min(current + pageSize, total));
       setIsLoadingMore(false);
-    }, DIRECTORY_LOAD_MORE_DELAY_MS);
+    }, 0);
   }, [enabled, hasMore, isLoadingMore, pageSize, total]);
 
   return {

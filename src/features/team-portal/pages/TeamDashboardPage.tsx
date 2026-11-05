@@ -1,4 +1,5 @@
-import { PostsTopClientsTable } from "@/features/analytics/components/PostsTopClientsTable";
+import { ProjectCommitmentsTable } from "@/features/projects-management/components/ProjectCommitmentsTable";
+import { PROJECT_COMMITMENTS_PATH } from "@/features/projects-management/constants/projectCommitments";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { useDateFiltersTwo } from "@/shared/hooks/useDateFiltersTwo";
 import { TeamMyTodosCard } from "@/features/team-portal/components/TeamMyTodosCard";
@@ -16,7 +17,7 @@ export function TeamDashboardPage() {
   const { filter, dateFilterProps } = useDateFiltersTwo();
   const {
     statCards,
-    topClients,
+    projectCommitments,
     todaysPosts,
     needsAttentionItems,
     isStatsLoading,
@@ -42,10 +43,14 @@ export function TeamDashboardPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <PageContent className="space-y-6 lg:col-span-2">
           <TeamPostingChart />
-          <PostsTopClientsTable
-            clients={topClients}
+          <ProjectCommitmentsTable
+            rows={projectCommitments}
             isLoading={isPostsLoading}
             dateFilterProps={dateFilterProps}
+            viewAllPath={PROJECT_COMMITMENTS_PATH}
+            paginated={false}
+            title="Project commitments"
+            description="Top projects by committed content volume."
           />
         </PageContent>
 

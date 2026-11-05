@@ -103,10 +103,10 @@ export type DirectoryTableProps = {
   divided?: boolean;
   gridStyle?: import("react").CSSProperties;
   /**
-   * Client-side windowing (default true): render first N rows, then load more
-   * on scroll. Keep fetch-all + browser filters; only UI is chunked.
+   * Client-side pagination (default true): render one page of rows with
+   * shadcn Pagination controls. Keep fetch-all + browser filters.
    */
-  windowed?: boolean;
+  paginated?: boolean;
   /**
    * Forces a wider track so many columns scroll horizontally.
    * Existing pages omit this and keep the default min width.

@@ -1,10 +1,18 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
-import { buildPostsTopClients } from "@/features/analytics/utils/postsAnalyticsUtils";
 import type { Client } from "@/features/clients-management/types/types";
 import type { Post, StatusKey } from "@/features/posts-management/types/types";
 import { parseDateTime } from "@/features/posts-management/utils/postScheduleUtils";
+import {
+  PROJECT_COMMITMENTS_DASHBOARD_LIMIT,
+} from "@/features/projects-management/constants/projectCommitments";
+import { buildProjectDetailPath } from "@/features/projects-management/constants/routes";
+import type { ProjectListItem } from "@/features/projects-management/types/types";
+import {
+  buildProjectCommitmentRows,
+  type ProjectCommitmentRow,
+} from "@/features/projects-management/utils/projectCommitmentsUtils";
 import type { TeamMember } from "@/features/team-management/types/types";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import {
@@ -22,6 +30,7 @@ import {
 import { mapPostsToTodaysPosts } from "@/features/team-portal/utils/teamTodaysPostsUtils";
 import { buildTeamStatCards } from "@/features/team-portal/utils/teamStatsUtils";
 import { fetchTeamDashboardPostsBundle } from "@/services/dashboardService";
+import { fetchProjects } from "@/services/projectsService";
 import { fetchTeamNeedsAttentionItems } from "@/services/teamNeedsAttentionService";
 import type { DateFiltersTwoFilterState } from "@/shared/types/components";
 import {
@@ -37,6 +46,7 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
   >([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
+  const [projects, setProjects] = useState<ProjectListItem[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,13 +56,17 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
     setError(null);
 
     try {
-      const bundle = await fetchTeamDashboardPostsBundle();
+      const [bundle, projectRows] = await Promise.all([
+        fetchTeamDashboardPostsBundle(),
+        fetchProjects(),
+      ]);
       const attentionItems = teamMemberId
         ? await fetchTeamNeedsAttentionItems(teamMemberId)
         : [];
 
       setClients(bundle.clients);
       setTeamMembers(bundle.teamMembers);
+      setProjects(projectRows);
       setTodaysPosts(
         mapPostsToTodaysPosts(bundle.todayPosts).slice(
           0,
@@ -149,10 +163,13 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
     [posts, range],
   );
 
-  const topClients = useMemo(
-    () => buildPostsTopClients(scopedPosts),
-    [scopedPosts],
-  );
+  const projectCommitments: ProjectCommitmentRow[] = useMemo(() => {
+    const activeProjects = projects.filter((project) => project.is_active);
+    return buildProjectCommitmentRows(
+      activeProjects,
+      buildProjectDetailPath,
+    ).slice(0, PROJECT_COMMITMENTS_DASHBOARD_LIMIT);
+  }, [projects]);
 
   const statCards = useMemo(() => {
     const clientsCount = clients.filter((client) => client.is_active).length;
@@ -171,7 +188,7 @@ export function useTeamDashboardQuery(filter: DateFiltersTwoFilterState) {
 
   return {
     statCards,
-    topClients,
+    projectCommitments,
     todaysPosts,
     needsAttentionItems,
     isStatsLoading: isLoading,

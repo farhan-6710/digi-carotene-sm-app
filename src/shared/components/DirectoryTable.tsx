@@ -5,16 +5,16 @@ import {
 } from "react";
 
 import { cn } from "@/shared/lib/utils";
+import { DirectoryPagination } from "@/shared/components/DirectoryPagination";
 import { DirectoryTableHeaderCell } from "@/shared/components/DirectoryTableHeaderCell";
-import { LoadingSpinner, TableLoadingState } from "@/shared/components/LoadingSpinner";
+import { TableLoadingState } from "@/shared/components/LoadingSpinner";
 import {
   DIRECTORY_TABLE_MIN_WIDTH_CLASS,
   DIRECTORY_TABLE_SCROLL_TRACK_CLASS,
   DIRECTORY_TABLE_TRACK_ALIGN_CLASS,
   TABLE_HORIZONTAL_SCROLL_CLASS,
 } from "@/shared/constants/directoryTable";
-import { useLoadMoreSentinel } from "@/shared/hooks/useLoadMoreSentinel";
-import { useWindowedList } from "@/shared/hooks/useWindowedList";
+import { useDirectoryPagination } from "@/shared/hooks/useDirectoryPagination";
 import type { DirectoryTableProps } from "@/shared/types/components";
 import { TooltipProvider } from "@/shared/ui/tooltip";
 
@@ -23,8 +23,8 @@ import { TooltipProvider } from "@/shared/ui/tooltip";
  * Track align class keeps header + body column widths in sync when cell
  * content length differs (default grid min-width:auto otherwise blows tracks).
  *
- * By default rows are windowed (30 at a time): full lists still load in the
- * page/hook, but only a chunk renders until the user scrolls to the bottom.
+ * By default rows are paginated (30 per page): full lists still load in the
+ * page/hook, but only the current page renders with shadcn Pagination.
  *
  * Optional: `contentMinWidthPx` for wide/scrollable columns; `onColumnMove`
  * + `column.reorderable` for accessible column reorder menu.
@@ -42,7 +42,7 @@ export function DirectoryTable({
   children,
   divided = false,
   gridStyle,
-  windowed = true,
+  paginated = true,
   contentMinWidthPx,
   onColumnMove,
 }: DirectoryTableProps) {
@@ -56,20 +56,16 @@ export function DirectoryTable({
     [childArray],
   );
 
-  const windowingEnabled = windowed && !isLoading && !isEmpty;
-  const { visibleCount, hasMore, isLoadingMore, loadMore } = useWindowedList({
-    total: childArray.length,
-    resetKey,
-    enabled: windowingEnabled,
-  });
+  const paginationEnabled = paginated && !isLoading && !isEmpty;
+  const { page, pageCount, setPage, start, end, showPagination } =
+    useDirectoryPagination({
+      total: childArray.length,
+      resetKey,
+      enabled: paginationEnabled,
+    });
 
-  const sentinelRef = useLoadMoreSentinel({
-    enabled: windowingEnabled && hasMore && !isLoadingMore,
-    onLoadMore: loadMore,
-  });
-
-  const visibleChildren = windowingEnabled
-    ? childArray.slice(0, visibleCount)
+  const visibleChildren = paginationEnabled
+    ? childArray.slice(start, end)
     : childArray;
 
   const reorderableIds = useMemo(
@@ -174,31 +170,20 @@ export function DirectoryTable({
               {emptyMessage}
             </div>
           ) : (
-            <>
-              <div className="divide-y divide-border">{visibleChildren}</div>
-
-              {windowingEnabled && (hasMore || isLoadingMore) ? (
-                <div
-                  ref={sentinelRef}
-                  className="flex items-center justify-center gap-2 px-6 py-4"
-                  aria-hidden={!isLoadingMore}
-                >
-                  {isLoadingMore ? (
-                    <>
-                      <LoadingSpinner size="sm" />
-                      <span className="text-xs text-muted-foreground">
-                        Loading more…
-                      </span>
-                    </>
-                  ) : (
-                    <span className="h-4" />
-                  )}
-                </div>
-              ) : null}
-            </>
+            <div className="divide-y divide-border">{visibleChildren}</div>
           )}
         </div>
       </div>
+
+      {showPagination ? (
+        <div className="border-t border-border px-6 py-3">
+          <DirectoryPagination
+            page={page}
+            pageCount={pageCount}
+            onPageChange={setPage}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }
