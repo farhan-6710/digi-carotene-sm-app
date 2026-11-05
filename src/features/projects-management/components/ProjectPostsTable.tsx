@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Link } from "react-router";
 import { Plus } from "lucide-react";
 
@@ -31,6 +31,24 @@ export function ProjectPostsTable({
 }: ProjectPostsTableProps) {
   const { filteredPosts, statusFilter, setStatusFilter } =
     useProjectPostsFilters(posts);
+
+  useEffect(() => {
+    console.log("[ProjectPostsTable] posts statuses", {
+      total: posts.length,
+      filtered: filteredPosts.length,
+      statusFilter,
+      byStatus: posts.reduce<Record<string, number>>((acc, post) => {
+        acc[post.status] = (acc[post.status] ?? 0) + 1;
+        return acc;
+      }, {}),
+      rows: posts.map((post) => ({
+        id: post.id,
+        title: post.post_title,
+        type: post.post_type,
+        status: post.status,
+      })),
+    });
+  }, [filteredPosts.length, posts, statusFilter]);
 
   const showBulk = canDelete && Boolean(reload);
   const visibleIds = useMemo(
