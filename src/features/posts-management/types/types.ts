@@ -1,6 +1,7 @@
 export type StatusKey =
   | "editing"
   | "sent_for_approval"
+  | "changes_suggested"
   | "approved"
   | "scheduled"
   | "posted";

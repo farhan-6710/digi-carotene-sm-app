@@ -11,6 +11,8 @@ export const postStatusFilterActiveStyles: Record<StatusKey, string> = {
     "border-status-editing/50 bg-status-editing/20 text-status-editing ring-1 ring-status-editing/25",
   sent_for_approval:
     "border-status-sent-for-approval/50 bg-status-sent-for-approval/20 text-status-sent-for-approval ring-1 ring-status-sent-for-approval/25",
+  changes_suggested:
+    "border-status-changes-suggested/50 bg-status-changes-suggested/20 text-status-changes-suggested ring-1 ring-status-changes-suggested/25",
   approved:
     "border-status-approved/50 bg-status-approved/20 text-status-approved ring-1 ring-status-approved/25",
   scheduled:
@@ -22,6 +24,7 @@ export const postStatusFilterActiveStyles: Record<StatusKey, string> = {
 export const postStatusFilterInactiveStyles: Record<StatusKey, string> = {
   editing: "border-border/60 bg-muted/30 text-muted-foreground/55",
   sent_for_approval: "border-border/60 bg-muted/30 text-muted-foreground/55",
+  changes_suggested: "border-border/60 bg-muted/30 text-muted-foreground/55",
   approved: "border-border/60 bg-muted/30 text-muted-foreground/55",
   scheduled: "border-border/60 bg-muted/30 text-muted-foreground/55",
   posted: "border-border/60 bg-muted/30 text-muted-foreground/55",

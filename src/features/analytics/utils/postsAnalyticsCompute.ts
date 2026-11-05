@@ -19,6 +19,7 @@ import type { Post, StatusKey } from "@/features/posts-management/types/types";
 const STATUS_COLORS: Record<StatusKey, string> = {
   editing: "var(--status-editing)",
   sent_for_approval: "var(--status-sent-for-approval)",
+  changes_suggested: "var(--status-changes-suggested)",
   approved: "var(--status-approved)",
   scheduled: "var(--status-scheduled)",
   posted: "var(--status-posted)",

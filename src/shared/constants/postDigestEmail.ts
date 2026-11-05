@@ -9,7 +9,7 @@ import type { StatusKey } from "@/features/posts-management/types/types";
  *
  * - Schedule day  → `posts.to_be_posted_date` (“To be posted on”)
  * - Status        → `posts.status` (`StatusKey`: editing | sent_for_approval |
- *                   approved | scheduled | posted)
+ *                   changes_suggested | approved | scheduled | posted)
  * - Managed       → `projects.manager_id` = recipient’s `team_members.id`
  * - On team       → active `project_team_members` row (`ended_at IS NULL`);
  *                   manager is NOT duplicated there
