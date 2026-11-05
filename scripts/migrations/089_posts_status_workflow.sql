@@ -3,7 +3,10 @@
 -- editing | sent_for_approval | approved | scheduled | posted
 -- Run in Supabase SQL editor.
 
--- Map existing rows first (constraint still allows old values).
+-- Drop old CHECK first so remapped values are allowed.
+alter table public.posts
+  drop constraint if exists posts_status_check;
+
 update public.posts
 set status = case status
   when 'Not posted' then 'editing'
@@ -12,9 +15,6 @@ set status = case status
   else status
 end
 where status in ('Not posted', 'Scheduled', 'Posted');
-
-alter table public.posts
-  drop constraint if exists posts_status_check;
 
 alter table public.posts
   add constraint posts_status_check
