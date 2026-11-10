@@ -26,6 +26,11 @@ function runOrganicRollingSync(array $config): void
 
     $followerWindow = syncWindowDates($timezone, ORGANIC_FOLLOWER_ROLLING_DAYS);
 
+    $jobRunId = startGrowthJobRun($config, 'organic_rolling_60d', [
+        'from' => $fromDate,
+        'to' => $toDate,
+    ]);
+
     logLine(
         'Starting organic sync. window=' . $fromDate . '..' . $toDate
         . ' (' . ORGANIC_ROLLING_DAYS . 'd posts, includes yesterday=' . $yesterdayDate . ')'
@@ -35,8 +40,14 @@ function runOrganicRollingSync(array $config): void
     $profiles = fetchInstagramProfiles($config);
     if ($profiles === []) {
         logLine('No growth_organic_profiles rows found.');
+        finishGrowthJobRun($config, $jobRunId, 'error', 'No growth_organic_profiles rows found.');
         return;
     }
+
+    $ok = 0;
+    $failed = 0;
+    $skipped = 0;
+    $errors = [];
 
     foreach ($profiles as $profile) {
         $profileId = (string) ($profile['id'] ?? '');
@@ -45,7 +56,8 @@ function runOrganicRollingSync(array $config): void
         $username = (string) ($profile['username'] ?? '');
 
         if ($profileId === '' || $instagramId === '' || $accessToken === '') {
-            logLine('Skipping profile with missing credentials: ' . $username);
+            logLine('SKIP ' . $username . ': missing credentials (reconnect in Manage Accounts)');
+            $skipped++;
             continue;
         }
 
@@ -125,14 +137,28 @@ function runOrganicRollingSync(array $config): void
                 'Done ' . $username . ': posts=' . $syncedPosts
                 . ', follower_days=' . $followerDays,
             );
+            $ok++;
         } catch (Throwable $error) {
-            logLine('Error for ' . $username . ': ' . $error->getMessage());
+            $failed++;
+            $msg = $username . ': ' . $error->getMessage();
+            $errors[] = $msg;
+            logLine('ERROR ' . $msg);
         }
     }
 
-    logLine(
-        'Organic sync complete. window=' . $fromDate . '..' . $toDate
-        . ' (' . ORGANIC_ROLLING_DAYS . 'd posts, includes yesterday=' . $yesterdayDate . ')'
-        . '; follower_days=' . ORGANIC_FOLLOWER_ROLLING_DAYS,
-    );
+    $summary =
+        'window=' . $fromDate . '..' . $toDate
+        . ' ok=' . $ok . ' failed=' . $failed . ' skipped=' . $skipped
+        . ' (yesterday=' . $yesterdayDate . ')';
+    logLine('Organic sync complete. ' . $summary);
+
+    $status = $failed > 0 && $ok === 0 ? 'error' : 'success';
+    $errorText = $errors === [] ? null : implode(' | ', array_slice($errors, 0, 5));
+    finishGrowthJobRun($config, $jobRunId, $status, $errorText, [
+        'from' => $fromDate,
+        'to' => $toDate,
+        'ok' => $ok,
+        'failed' => $failed,
+        'skipped' => $skipped,
+    ]);
 }

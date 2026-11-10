@@ -20,6 +20,71 @@ function supabaseRequest(
     return httpJson($method, $url, $body, $headers);
 }
 
+/**
+ * Start a row in growth_job_runs (migration 092). Returns id or '' on failure.
+ *
+ * @param array<string, mixed> $meta
+ */
+function startGrowthJobRun(array $config, string $job, array $meta = []): string
+{
+    try {
+        $rows = supabaseRequest(
+            $config,
+            'POST',
+            'growth_job_runs',
+            [
+                'job' => $job,
+                'started_at' => nowIsoUtc(),
+                'status' => 'running',
+                'meta' => $meta,
+            ],
+            ['Prefer: return=representation'],
+        );
+        if (is_array($rows) && isset($rows[0]) && is_array($rows[0])) {
+            return (string) ($rows[0]['id'] ?? '');
+        }
+    } catch (Throwable $error) {
+        logLine('WARN growth_job_runs start failed: ' . $error->getMessage());
+    }
+
+    return '';
+}
+
+/**
+ * @param array<string, mixed> $meta
+ */
+function finishGrowthJobRun(
+    array $config,
+    string $jobRunId,
+    string $status,
+    ?string $error = null,
+    array $meta = [],
+): void {
+    if ($jobRunId === '') {
+        return;
+    }
+
+    try {
+        $payload = [
+            'finished_at' => nowIsoUtc(),
+            'status' => $status,
+            'error' => $error,
+        ];
+        if ($meta !== []) {
+            $payload['meta'] = $meta;
+        }
+        supabaseRequest(
+            $config,
+            'PATCH',
+            'growth_job_runs?id=eq.' . rawurlencode($jobRunId),
+            $payload,
+            ['Prefer: return=minimal'],
+        );
+    } catch (Throwable $e) {
+        logLine('WARN growth_job_runs finish failed: ' . $e->getMessage());
+    }
+}
+
 // ─── Growth: organic ─────────────────────────────────────────────────────────
 
 /** @return list<array{id: string, instagram_id: string, username: string, access_token: string}> */
@@ -105,6 +170,30 @@ function fetchAdAccounts(array $config): array
     return is_array($rows) ? $rows : [];
 }
 
+function nowIsoUtc(): string
+{
+    return gmdate('c');
+}
+
+/**
+ * Stamp account after a successful Meta/Google ads sync (existing midnight cron).
+ * Not a separate job — called from runAdsRollingSync.
+ */
+function touchAdAccountLastSynced(array $config, string $adAccountId): void
+{
+    $now = nowIsoUtc();
+    supabaseRequest(
+        $config,
+        'PATCH',
+        'growth_ad_accounts?id=eq.' . rawurlencode($adAccountId),
+        [
+            'last_synced_at' => $now,
+            'updated_at' => $now,
+        ],
+        ['Prefer: return=minimal'],
+    );
+}
+
 function upsertAdCampaignMetric(array $config, string $adAccountId, array $row): void
 {
     $payload = [
@@ -139,6 +228,8 @@ function upsertAdCampaignMetric(array $config, string $adAccountId, array $row):
         'local_orders' => $row['local_orders'] ?? 0,
         'local_menu_views' => $row['local_menu_views'] ?? 0,
         'local_other_actions' => $row['local_other_actions'] ?? 0,
+        // Explicit so merge-duplicates always bumps freshness (Learning stale banner).
+        'updated_at' => nowIsoUtc(),
     ];
 
     supabaseRequest(
@@ -168,6 +259,7 @@ function upsertGoogleAssetGroupMetric(array $config, string $adAccountId, array 
             'clicks' => $row['clicks'],
             'conversions' => $row['conversions'],
             'conversion_value' => $row['conversion_value'] ?? 0,
+            'updated_at' => nowIsoUtc(),
         ],
         ['Prefer: resolution=merge-duplicates,return=minimal'],
     );
@@ -191,6 +283,7 @@ function upsertGoogleCallMetric(array $config, string $adAccountId, array $row):
             'caller_country_code' => $row['caller_country_code'] ?? null,
             'call_tracking_display_location' => $row['call_tracking_display_location'] ?? null,
             'metric_date' => $row['metric_date'] ?? null,
+            'updated_at' => nowIsoUtc(),
         ],
         ['Prefer: resolution=merge-duplicates,return=minimal'],
     );
@@ -257,6 +350,7 @@ function upsertAdsetMetric(array $config, string $adAccountId, array $row): void
             'cpm' => $row['cpm'],
             'frequency' => $row['frequency'],
             'conversions' => $row['conversions'],
+            'updated_at' => nowIsoUtc(),
         ],
         ['Prefer: resolution=merge-duplicates,return=minimal'],
     );
@@ -282,6 +376,7 @@ function upsertAdMetric(array $config, string $adAccountId, array $row): void
             'cpm' => $row['cpm'],
             'frequency' => $row['frequency'],
             'conversions' => $row['conversions'],
+            'updated_at' => nowIsoUtc(),
         ],
         ['Prefer: resolution=merge-duplicates,return=minimal'],
     );

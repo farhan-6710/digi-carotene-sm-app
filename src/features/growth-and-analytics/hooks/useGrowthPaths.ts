@@ -25,6 +25,11 @@ export function useGrowthPaths() {
         if (!adAccountId) return path;
         return `${path}?${GROWTH_AD_ACCOUNT_PARAM}=${adAccountId}`;
       },
+      buildCampaignLearningPath: (campaignId: string, adAccountId?: string) => {
+        const path = `${basePath}/campaigns/${campaignId}/learning`;
+        if (!adAccountId) return path;
+        return `${path}?${GROWTH_AD_ACCOUNT_PARAM}=${adAccountId}`;
+      },
       buildAdsetDetailPath: (
         campaignId: string,
         adsetId: string,

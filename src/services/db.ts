@@ -514,7 +514,26 @@ export const DB = {
   GROWTH_AD_ACCOUNTS: {
     TABLE: "growth_ad_accounts",
     SELECT:
-      "id, client_id, client_name, account_name, ad_account_id, currency_code, platform, manager_id, created_at",
+      "id, client_id, client_name, account_name, ad_account_id, currency_code, platform, manager_id, last_synced_at, created_at",
+  },
+  GROWTH_JOB_RUNS: {
+    TABLE: "growth_job_runs",
+    SELECT: "id, job, started_at, finished_at, status, error, meta, created_at",
+  },
+  CAMPAIGN_SETTINGS_SNAPSHOTS: {
+    TABLE: "campaign_settings_snapshots",
+    SELECT:
+      "id, ad_account_id, campaign_id, snapshot_date, settings, created_at, updated_at",
+  },
+  CAMPAIGN_KPI_CONFIG: {
+    TABLE: "campaign_kpi_config",
+    SELECT:
+      "id, ad_account_id, campaign_id, primary_kpi, primary_direction, secondary_kpis, min_results, qualified_call_seconds, last_goal_change_at, created_at, updated_at",
+  },
+  CAMPAIGN_BENCHMARKS: {
+    TABLE: "campaign_benchmarks",
+    SELECT:
+      "id, ad_account_id, campaign_id, platform, mode, method, window_days, lookback_days, min_results, values, locked_kpis, edited_kpis, best_windows, eligible_windows, excluded, attribution_setting, currency, reason, agreed_with, agreed_on, status, auto_advance, suggest_updates, needs_review, created_by, approved_by, approved_at, superseded_at, new_best_dismissed_until, created_at, updated_at",
   },
   CURRENCIES: {
     TABLE: "currencies",

@@ -23,6 +23,7 @@ import {
   replaceAdCampaignMetricsForAccount,
   type AdCampaignMetricInsert,
 } from "@/services/adCampaignMetricsService";
+import { touchAdAccountLastSynced } from "@/services/campaignLearningService";
 import {
   replaceAdsetMetricsForAccount,
   type AdsetMetricInsert,
@@ -207,6 +208,8 @@ export async function runAdBackfill(
     replaceAdsetMetricsForAccount(adAccountId, range.from, range.to, adsetRows),
     replaceAdMetricsForAccount(adAccountId, range.from, range.to, adRows),
   ]);
+
+  await touchAdAccountLastSynced(adAccountId);
 
   return campaignRows.length + adsetRows.length + adRows.length;
 }

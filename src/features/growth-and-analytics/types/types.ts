@@ -3,6 +3,13 @@ export type GrowthPlatform = "instagram" | "facebook";
 /** Paid ads platforms on `growth_ad_accounts.platform`. */
 export type AdAccountKind = "meta_ads" | "google_ads";
 
+export type LearningModeState = "collecting" | "tracking";
+export type GapStatus =
+  | "on_track"
+  | "below"
+  | "off_track"
+  | "not_enough_data";
+
 // `from`/`to` are `yyyy-MM-dd`; omit both for "all time".
 export type GrowthDateRange = { from?: string; to?: string };
 
@@ -188,6 +195,13 @@ export type CampaignRow = {
   clicks: number;
   ctr: number;
   conversions: number;
+  /** Learning list columns (optional until benchmarks loaded). */
+  primaryKpiCurrent?: number | null;
+  primaryKpiLabel?: string | null;
+  benchmarkValue?: number | null;
+  gap?: number | null;
+  gapStatus?: GapStatus | null;
+  learningMode?: LearningModeState | null;
 };
 
 export type Adset = {
@@ -422,6 +436,8 @@ export type AdAccount = {
   platform: AdAccountKind;
   /** Google Ads MCC / manager id (no hyphens). Empty for Meta. */
   managerId: string;
+  /** Last successful ads metrics sync (ISO). Null until first sync after migration. */
+  lastSyncedAt: string | null;
 };
 
 export type Currency = {
@@ -456,4 +472,148 @@ export type AdAccountForm = {
   oauthClientId: string;
   oauthClientSecret: string;
   oauthRefreshToken: string;
+};
+
+/** Campaign Learning Tab types (PDF §2, §7, §9). */
+
+export type KpiDirection = "lower" | "higher";
+export type BenchmarkMode = "auto" | "manual" | "client_target";
+export type BenchmarkMethod = "top3" | "best" | "p80";
+export type BenchmarkStatus =
+  | "active"
+  | "pending"
+  | "suggested"
+  | "superseded"
+  | "rejected";
+
+export type CampaignKpiKey =
+  | "cost_per_result"
+  | "results_per_day"
+  | "ctr"
+  | "cpm"
+  | "frequency"
+  | "roas"
+  | "conversion_rate"
+  | "search_impression_share";
+
+export type CampaignKpiConfig = {
+  id: string;
+  adAccountId: string;
+  campaignId: string;
+  primaryKpi: CampaignKpiKey;
+  primaryDirection: KpiDirection;
+  secondaryKpis: CampaignKpiKey[];
+  minResults: number;
+  qualifiedCallSeconds: number;
+  lastGoalChangeAt: string | null;
+};
+
+export type BenchmarkValues = Partial<Record<CampaignKpiKey, number>>;
+
+export type DateWindow = { start: string; end: string };
+
+export type CampaignBenchmark = {
+  id: string;
+  adAccountId: string;
+  campaignId: string;
+  platform: AdAccountKind;
+  mode: BenchmarkMode;
+  method: BenchmarkMethod | null;
+  windowDays: number | null;
+  lookbackDays: number | null;
+  minResults: number | null;
+  values: BenchmarkValues;
+  lockedKpis: CampaignKpiKey[];
+  editedKpis: CampaignKpiKey[];
+  bestWindows: DateWindow[];
+  eligibleWindows: number;
+  excluded: Record<string, number>;
+  attributionSetting: string | null;
+  currency: string;
+  reason: string | null;
+  agreedWith: string | null;
+  agreedOn: string | null;
+  status: BenchmarkStatus;
+  autoAdvance: boolean;
+  suggestUpdates: boolean;
+  needsReview: boolean;
+  createdBy: string | null;
+  approvedBy: string | null;
+  approvedAt: string | null;
+  supersededAt: string | null;
+  newBestDismissedUntil: string | null;
+  createdAt: string;
+};
+
+export type LearningModeView = {
+  state: LearningModeState;
+  newBest: boolean;
+  daysOfData: number;
+  resultsInLookback: number;
+};
+
+export type KpiCardView = {
+  key: CampaignKpiKey;
+  label: string;
+  primary: boolean;
+  direction: KpiDirection;
+  current: number | null;
+  benchmark: number | null;
+  gap: number | null;
+  status: GapStatus;
+  volumeOk: boolean;
+  sparkline: number[];
+};
+
+export type CampaignLearningView = {
+  campaignId: string;
+  campaignName: string;
+  platform: AdAccountKind;
+  status: CampaignRow["status"];
+  objective: string | null;
+  clientName: string;
+  currencyCode: string;
+  lastSyncedAt: string | null;
+  isStale: boolean;
+  learningMode: LearningModeView;
+  kpiConfig: CampaignKpiConfig;
+  benchmark: CampaignBenchmark | null;
+  pendingBenchmark: CampaignBenchmark | null;
+  kpis: KpiCardView[];
+  chartPoints: Array<{ date: string; value: number | null }>;
+  chartKpi: CampaignKpiKey;
+};
+
+export type SaveBenchmarkInput = {
+  adAccountId: string;
+  campaignId: string;
+  platform: AdAccountKind;
+  mode: BenchmarkMode;
+  method?: BenchmarkMethod | null;
+  windowDays?: number | null;
+  lookbackDays?: number | null;
+  minResults?: number | null;
+  values: BenchmarkValues;
+  lockedKpis?: CampaignKpiKey[];
+  editedKpis?: CampaignKpiKey[];
+  bestWindows?: DateWindow[];
+  eligibleWindows?: number;
+  excluded?: Record<string, number>;
+  currency: string;
+  reason?: string | null;
+  agreedWith?: string | null;
+  agreedOn?: string | null;
+  autoAdvance?: boolean;
+  suggestUpdates?: boolean;
+  requireApproval: boolean;
+  createdBy?: string | null;
+};
+
+export type AutoBenchmarkPreview = {
+  status: "ok" | "insufficient_data";
+  values: BenchmarkValues;
+  windows: DateWindow[];
+  eligible: number;
+  excluded: Record<string, number>;
+  method: BenchmarkMethod;
 };

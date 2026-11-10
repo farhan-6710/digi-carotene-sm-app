@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { fetchAdCampaignMetricsForAccount } from "@/services/adCampaignMetricsService";
+import { fetchActiveBenchmarksForAccount } from "@/services/campaignLearningService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
 import { isAdAnalyticsReady } from "../constants/growthPlatformConfig";
@@ -11,6 +12,7 @@ import {
   spendTrendChartTitle,
 } from "../utils/campaignMetrics";
 import { filterCampaignMetricsByRange } from "../utils/dashboardDataFilters";
+import { enrichCampaignRowsWithLearning } from "../utils/enrichCampaignRowsWithLearning";
 import { saveGrowthReport } from "../utils/generateReport";
 import { resolveGrowthReportPeriod } from "../utils/reportPeriod";
 import { useGrowthDateRange } from "./useGrowthDateRange";
@@ -44,6 +46,15 @@ export function useGrowthCampaigns() {
     error: metricsError,
   } = useFetch(loadMetrics, []);
 
+  const loadBenchmarks = useCallback(
+    () =>
+      adAccountId && analyticsReady
+        ? fetchActiveBenchmarksForAccount(adAccountId)
+        : Promise.resolve([]),
+    [adAccountId, analyticsReady],
+  );
+  const { data: benchmarks } = useFetch(loadBenchmarks, []);
+
   const filteredMetrics = useMemo(
     () => filterCampaignMetricsByRange(metrics, range),
     [metrics, range],
@@ -64,10 +75,16 @@ export function useGrowthCampaigns() {
     [analyticsReady, filteredMetrics],
   );
   const spendTrendTitle = spendTrendChartTitle(spendTrend.granularity);
-  const campaignRows = useMemo(
-    () => (analyticsReady ? buildCampaignRows(filteredMetrics) : []),
-    [analyticsReady, filteredMetrics],
-  );
+  const campaignRows = useMemo(() => {
+    if (!analyticsReady) return [];
+    const base = buildCampaignRows(filteredMetrics);
+    return enrichCampaignRowsWithLearning(
+      base,
+      filteredMetrics,
+      benchmarks,
+      adsPlatform,
+    );
+  }, [analyticsReady, filteredMetrics, benchmarks, adsPlatform]);
 
   const generateReport = async () => {
     if (!activeAccount || !analyticsReady) return;

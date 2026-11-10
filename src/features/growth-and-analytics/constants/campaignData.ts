@@ -12,6 +12,7 @@ export const DUMMY_AD_ACCOUNTS: AdAccount[] = [
     currencyCode: "INR",
     platform: "meta_ads",
     managerId: "",
+    lastSyncedAt: new Date().toISOString(),
   },
   {
     id: "ad-acc-veda",
@@ -22,6 +23,7 @@ export const DUMMY_AD_ACCOUNTS: AdAccount[] = [
     currencyCode: "INR",
     platform: "meta_ads",
     managerId: "",
+    lastSyncedAt: new Date().toISOString(),
   },
 ];
 

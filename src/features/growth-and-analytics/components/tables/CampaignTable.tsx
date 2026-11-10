@@ -9,13 +9,16 @@ import type { CampaignTableProps } from "../../types/components";
 import {
   formatCampaignObjective,
   formatCompact,
+  formatCpm,
   formatCurrency,
   formatPercent,
 } from "../../utils/formatters";
+import { formatGapPercent, gapStatusLabel } from "../../utils/gapStatus";
 import { GOOGLE_CAMPAIGN_TYPE_LABEL } from "../../constants/googleCampaignTypeMatrix";
 import { resolveGoogleCampaignType } from "../../utils/resolveGoogleCampaignType";
 
-const GRID_CLASS = "grid-cols-[1.5fr_1fr_0.7fr_0.8fr_0.7fr_0.8fr]";
+const GRID_CLASS =
+  "grid-cols-[1.4fr_0.9fr_0.6fr_0.7fr_0.8fr_0.7fr_0.7fr]";
 
 function campaignTypeLabel(
   isGoogle: boolean,
@@ -30,22 +33,23 @@ export function CampaignTable({
   adAccountId,
   platform = "meta_ads",
 }: CampaignTableProps) {
-  const { buildCampaignDetailPath } = useGrowthPaths();
+  const { buildCampaignDetailPath, buildCampaignLearningPath } = useGrowthPaths();
   const isGoogle = platform === "google_ads";
   const objectiveLabel = isGoogle ? "CAMPAIGN TYPE" : "OBJECTIVE";
 
   return (
     <DirectoryTable
       title="Campaign Breakdown"
-      description="Spend and performance across active and recent campaigns."
+      description="Spend, gap to benchmark, and learning mode."
       gridClass={GRID_CLASS}
       columns={[
         { label: "CAMPAIGN" },
         { label: objectiveLabel },
         { label: "STATUS" },
         { label: "SPEND", align: "right" },
-        { label: "CTR", align: "right" },
-        { label: "CONVERSIONS", align: "right" },
+        { label: "PRIMARY KPI", align: "right" },
+        { label: "GAP", align: "right" },
+        { label: "LEARNING" },
       ]}
       isLoading={false}
       isEmpty={rows.length === 0}
@@ -81,12 +85,43 @@ export function CampaignTable({
             {formatCurrency(row.spend)}
           </div>
           <div className="text-right font-mono text-sm text-foreground">
-            <MobileLabel>CTR</MobileLabel>
-            {formatPercent(row.ctr)}
+            <MobileLabel>PRIMARY KPI</MobileLabel>
+            {row.primaryKpiCurrent == null
+              ? "—"
+              : formatCpm(row.primaryKpiCurrent)}
+            {row.benchmarkValue != null ? (
+              <span className="block text-[11px] text-muted-foreground">
+                vs {formatCpm(row.benchmarkValue)}
+              </span>
+            ) : null}
           </div>
-          <div className="text-right font-mono text-sm text-primary">
-            <MobileLabel>CONVERSIONS</MobileLabel>
-            {formatCompact(row.conversions)}
+          <div className="text-right text-sm">
+            <MobileLabel>GAP</MobileLabel>
+            {row.gapStatus ? (
+              <>
+                <span className="font-mono tabular-nums">
+                  {formatGapPercent(row.gap ?? null)}
+                </span>
+                <span className="mt-0.5 block text-[11px] text-muted-foreground">
+                  {gapStatusLabel(row.gapStatus)}
+                </span>
+              </>
+            ) : (
+              <span className="text-muted-foreground">—</span>
+            )}
+          </div>
+          <div className="text-sm">
+            <MobileLabel>LEARNING</MobileLabel>
+            <Link
+              to={buildCampaignLearningPath(row.id, adAccountId)}
+              className="capitalize text-primary hover:underline"
+            >
+              {row.learningMode ?? "open"}
+            </Link>
+            <span className="mt-0.5 block text-[11px] text-muted-foreground">
+              CTR {formatPercent(row.ctr)} · {formatCompact(row.conversions)}{" "}
+              conv.
+            </span>
           </div>
         </div>
       ))}

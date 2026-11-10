@@ -3,12 +3,15 @@ import { Link, useParams } from "react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { GrowthCampaignProfileCard } from "../components/GrowthCampaignProfileCard";
+import { CampaignDetailTabs } from "../components/learning/CampaignDetailTabs";
+import { LearningStaleDataBanner } from "../components/learning/LearningStaleDataBanner";
 import type { DemographicBreakdown } from "../types/types";
 import { GROWTH_AD_ACCOUNT_PARAM } from "../constants/growthUrlParams";
 import { useGrowthCampaignDetailQuery } from "../hooks/useGrowthCampaignDetailQuery";
 import { useGrowthCampaignDemographicBreakdown } from "../hooks/useGrowthCampaignDemographicBreakdown";
 import { useGrowthPaths } from "../hooks/useGrowthPaths";
 import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
+import { isSyncStale } from "../utils/isSyncStale";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
@@ -132,6 +135,17 @@ export function GrowthCampaignDetailPage() {
             <DateFiltersTwo {...dateFilterProps} />
           </div>
         }
+      />
+
+      <CampaignDetailTabs
+        campaignId={campaignId}
+        adAccountId={accountId}
+        active="overview"
+      />
+
+      <LearningStaleDataBanner
+        lastSyncedAt={activeAccount?.lastSyncedAt ?? null}
+        isStale={isSyncStale(activeAccount?.lastSyncedAt)}
       />
 
       {error ? <ErrorBanner message={error} /> : null}

@@ -24,6 +24,9 @@ function logLine(string $message): void
         return;
     }
     echo $line;
+    if (function_exists('flush')) {
+        flush();
+    }
 }
 
 function isCronCli(): bool

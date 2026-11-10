@@ -54,6 +54,7 @@ type AdRow = {
   currency_code: string;
   platform?: AdAccountKind | null;
   manager_id?: string | null;
+  last_synced_at?: string | null;
 };
 
 function mapOrganic(row: OrganicRow): OrganicAccount {
@@ -78,6 +79,7 @@ function mapAd(row: AdRow): AdAccount {
     currencyCode: row.currency_code || "INR",
     platform: row.platform === "google_ads" ? "google_ads" : "meta_ads",
     managerId: row.manager_id?.trim() || "",
+    lastSyncedAt: row.last_synced_at ?? null,
   };
 }
 
