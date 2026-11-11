@@ -1,3 +1,4 @@
+import type { BackfillProgressOptions } from "@/features/growth-and-analytics/utils/backfillProgress";
 import {
   rerunAdBackfillForAccount,
   runAdBackfill,
@@ -239,6 +240,7 @@ export async function fetchOrganicAccessToken(
 
 export async function connectOrganicAccount(
   form: OrganicAccountForm,
+  options?: BackfillProgressOptions,
 ): Promise<OrganicAccount> {
   const token = form.accessToken.trim();
   if (!token) {
@@ -299,7 +301,13 @@ export async function connectOrganicAccount(
       followersCount: account.followers,
       organicAccountId: account.id,
     });
-    await runInstagramBackfill(profile.id, metaAccountId, token, account.id);
+    await runInstagramBackfill(
+      profile.id,
+      metaAccountId,
+      token,
+      account.id,
+      options,
+    );
   }
 
   return account;
@@ -308,6 +316,7 @@ export async function connectOrganicAccount(
 export async function updateOrganicAccount(
   id: string,
   form: OrganicAccountForm,
+  options?: BackfillProgressOptions,
 ): Promise<OrganicAccount> {
   const token = form.accessToken.trim();
   const metaAccountId = form.accountId.trim();
@@ -348,7 +357,7 @@ export async function updateOrganicAccount(
     const existingProfile = await fetchInstagramProfileByOrganicAccountId(id);
     if (existingProfile) {
       await clearOrganicCachedMetrics(id);
-      await rerunInstagramBackfillForOrganicAccount(id, token);
+      await rerunInstagramBackfillForOrganicAccount(id, token, options);
     }
   }
 
@@ -366,14 +375,18 @@ export async function deleteOrganicAccount(id: string): Promise<void> {
 
 export async function connectAdAccount(
   form: AdAccountForm,
+  options?: BackfillProgressOptions,
 ): Promise<AdAccount> {
   if (form.platform === "google_ads") {
-    return connectGoogleAdAccount(form);
+    return connectGoogleAdAccount(form, options);
   }
-  return connectMetaAdAccount(form);
+  return connectMetaAdAccount(form, options);
 }
 
-async function connectMetaAdAccount(form: AdAccountForm): Promise<AdAccount> {
+async function connectMetaAdAccount(
+  form: AdAccountForm,
+  options?: BackfillProgressOptions,
+): Promise<AdAccount> {
   const token = form.accessToken.trim();
   if (!token) {
     throw new Error(
@@ -416,12 +429,15 @@ async function connectMetaAdAccount(form: AdAccountForm): Promise<AdAccount> {
   }
 
   const account = mapAd(data as AdRow);
-  await runAdBackfill(account.id, metaAdAccountId, token);
+  await runAdBackfill(account.id, metaAdAccountId, token, options);
 
   return account;
 }
 
-async function connectGoogleAdAccount(form: AdAccountForm): Promise<AdAccount> {
+async function connectGoogleAdAccount(
+  form: AdAccountForm,
+  options?: BackfillProgressOptions,
+): Promise<AdAccount> {
   const customerId = normalizeGoogleCustomerId(form.adAccountId);
   const managerId = normalizeGoogleCustomerId(form.managerId);
   const developerToken = form.developerToken.trim();
@@ -497,23 +513,25 @@ async function connectGoogleAdAccount(form: AdAccountForm): Promise<AdAccount> {
   }
 
   const account = mapAd(data as AdRow);
-  await triggerGoogleAdAccountBackfill(account.id);
+  await triggerGoogleAdAccountBackfill(account.id, undefined, options);
   return account;
 }
 
 export async function updateAdAccount(
   id: string,
   form: AdAccountForm,
+  options?: BackfillProgressOptions,
 ): Promise<AdAccount> {
   if (form.platform === "google_ads") {
-    return updateGoogleAdAccount(id, form);
+    return updateGoogleAdAccount(id, form, options);
   }
-  return updateMetaAdAccount(id, form);
+  return updateMetaAdAccount(id, form, options);
 }
 
 async function updateMetaAdAccount(
   id: string,
   form: AdAccountForm,
+  options?: BackfillProgressOptions,
 ): Promise<AdAccount> {
   const token = form.accessToken.trim();
   const metaAdAccountId = normalizeMetaAdAccountId(form.adAccountId);
@@ -544,7 +562,7 @@ async function updateMetaAdAccount(
   const account = mapAd(data as AdRow);
   if (token) {
     await clearAdCachedMetrics(id);
-    await rerunAdBackfillForAccount(id, metaAdAccountId, token);
+    await rerunAdBackfillForAccount(id, metaAdAccountId, token, options);
   }
 
   return account;
@@ -553,6 +571,7 @@ async function updateMetaAdAccount(
 async function updateGoogleAdAccount(
   id: string,
   form: AdAccountForm,
+  options?: BackfillProgressOptions,
 ): Promise<AdAccount> {
   const customerId = normalizeGoogleCustomerId(form.adAccountId);
   const managerId = normalizeGoogleCustomerId(form.managerId);
@@ -610,7 +629,7 @@ async function updateGoogleAdAccount(
   const account = mapAd(data as AdRow);
   if (refreshingCreds) {
     await clearAdCachedMetrics(id);
-    await triggerGoogleAdAccountBackfill(account.id);
+    await triggerGoogleAdAccountBackfill(account.id, undefined, options);
   }
 
   return account;

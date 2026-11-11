@@ -37,9 +37,18 @@ async function graphGet(
     throw new Error("Could not reach Meta. Check your connection and try again.");
   }
 
-  const error = json.error as { message?: string } | undefined;
+  const error = json.error as
+    | {
+        message?: string;
+        type?: string;
+        code?: number;
+        error_subcode?: number;
+        error_user_title?: string;
+        error_user_msg?: string;
+      }
+    | undefined;
   if (error) {
-    throw new Error(formatMetaApiError(error.message ?? "Meta rejected the request."));
+    throw new Error(formatMetaApiError(error));
   }
 
   return json;

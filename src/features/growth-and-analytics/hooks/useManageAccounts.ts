@@ -1,6 +1,7 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { notifyGrowthAccountsUpdated } from "../constants/growthAccountsEvents";
+import type { BackfillProgress } from "../types/types";
 import {
   connectAdAccount,
   connectOrganicAccount,
@@ -29,6 +30,15 @@ function errorMessage(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback;
 }
 
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === "AbortError";
+}
+
+function percentFromProgress(progress: BackfillProgress): number {
+  if (progress.total <= 0) return 0;
+  return Math.min(100, Math.round((progress.completed / progress.total) * 100));
+}
+
 export function useManageAccounts() {
   const loadOrganic = useCallback(() => fetchOrganicAccounts(), []);
   const loadAds = useCallback(() => fetchAdAccounts(), []);
@@ -53,6 +63,35 @@ export function useManageAccounts() {
   const [adEditId, setAdEditId] = useState<string | null>(null);
   const [adForm, setAdForm] = useState<AdAccountForm>(emptyAdForm);
   const [isAdSaving, setIsAdSaving] = useState(false);
+
+  const [backfillOpen, setBackfillOpen] = useState(false);
+  const [backfillPercent, setBackfillPercent] = useState(0);
+  const [backfillLabel, setBackfillLabel] = useState("Starting…");
+  const [backfillFootnote, setBackfillFootnote] = useState<string | undefined>();
+  const abortRef = useRef<AbortController | null>(null);
+
+  function beginBackfillModal(footnote?: string) {
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
+    setBackfillPercent(0);
+    setBackfillLabel("Starting…");
+    setBackfillFootnote(footnote);
+    setBackfillOpen(true);
+  }
+
+  function handleBackfillProgress(progress: BackfillProgress) {
+    setBackfillPercent(percentFromProgress(progress));
+    setBackfillLabel(progress.label);
+  }
+
+  function cancelBackfill() {
+    abortRef.current?.abort();
+  }
+
+  const backfillOptions = () => ({
+    signal: abortRef.current?.signal,
+    onProgress: handleBackfillProgress,
+  });
 
   const openOrganicCreate = useCallback(() => {
     setOrganicForm(emptyOrganicForm);
@@ -84,25 +123,54 @@ export function useManageAccounts() {
   );
 
   const saveOrganic = useCallback(async () => {
+    const willBackfill =
+      organicForm.platform === "instagram" &&
+      (!organicEditId || Boolean(organicForm.accessToken.trim()));
+
     setIsOrganicSaving(true);
     try {
+      if (willBackfill) {
+        setIsOrganicOpen(false);
+        beginBackfillModal(
+          "Follower history covers about the last 30 days (Meta limit).",
+        );
+      }
+
       if (organicEditId) {
-        await updateOrganicAccount(organicEditId, organicForm);
+        await updateOrganicAccount(
+          organicEditId,
+          organicForm,
+          willBackfill ? backfillOptions() : undefined,
+        );
         showToast(
           "success",
           organicForm.accessToken.trim()
-            ? "Account updated. Cached metrics cleared — open Growth pages to reload."
+            ? "Account updated and data synced."
             : "Organic account updated.",
         );
       } else {
-        showToast("info", "Validating account with Meta…");
-        await connectOrganicAccount(organicForm);
-        showToast("success", "Account connected. Open Dashboard or Content to load metrics.");
+        await connectOrganicAccount(
+          organicForm,
+          willBackfill ? backfillOptions() : undefined,
+        );
+        showToast("success", "Account connected and data synced.");
       }
+
+      setBackfillOpen(false);
       setIsOrganicOpen(false);
       await reloadOrganic();
       notifyGrowthAccountsUpdated();
     } catch (error) {
+      setBackfillOpen(false);
+      if (isAbortError(error)) {
+        showToast(
+          "info",
+          "Sync cancelled. The account may still be saved — use Refetch to finish later.",
+        );
+        await reloadOrganic();
+        notifyGrowthAccountsUpdated();
+        return;
+      }
       showToast("error", errorMessage(error, "Failed to save organic account."));
     } finally {
       setIsOrganicSaving(false);
@@ -158,39 +226,51 @@ export function useManageAccounts() {
   );
 
   const saveAd = useCallback(async () => {
+    const refreshingCreds =
+      adForm.platform === "google_ads"
+        ? Boolean(adForm.oauthRefreshToken.trim())
+        : Boolean(adForm.accessToken.trim());
+    const willBackfill = !adEditId || refreshingCreds;
+
     setIsAdSaving(true);
     try {
+      if (willBackfill) {
+        setIsAdOpen(false);
+        beginBackfillModal();
+      }
+
       if (adEditId) {
-        await updateAdAccount(adEditId, adForm);
-        const refreshedCreds =
-          adForm.platform === "google_ads"
-            ? Boolean(adForm.oauthRefreshToken.trim())
-            : Boolean(adForm.accessToken.trim());
+        await updateAdAccount(
+          adEditId,
+          adForm,
+          willBackfill ? backfillOptions() : undefined,
+        );
         showToast(
           "success",
-          refreshedCreds
-            ? adForm.platform === "google_ads"
-              ? "Google ad account updated. Re-synced 90 days of campaign data."
-              : "Ad account updated. Cached metrics cleared — open Campaign Analytics to reload."
+          refreshingCreds
+            ? "Ad account updated and data synced."
             : "Ad account updated.",
         );
       } else {
-        showToast(
-          "info",
-          adForm.platform === "google_ads"
-            ? "Connecting Google ad account and syncing 90 days of campaign data…"
-            : "Validating ad account and syncing 90 days of campaign data…",
-        );
-        await connectAdAccount(adForm);
-        showToast(
-          "success",
-          "Ad account connected. Open Campaign Analytics to view metrics.",
-        );
+        await connectAdAccount(adForm, backfillOptions());
+        showToast("success", "Ad account connected and data synced.");
       }
+
+      setBackfillOpen(false);
       setIsAdOpen(false);
       await reloadAds();
       notifyGrowthAccountsUpdated();
     } catch (error) {
+      setBackfillOpen(false);
+      if (isAbortError(error)) {
+        showToast(
+          "info",
+          "Sync cancelled. The account may still be saved — use Refetch to finish later.",
+        );
+        await reloadAds();
+        notifyGrowthAccountsUpdated();
+        return;
+      }
       showToast("error", errorMessage(error, "Failed to save ad account."));
     } finally {
       setIsAdSaving(false);
@@ -222,7 +302,7 @@ export function useManageAccounts() {
       open: isOrganicOpen,
       onOpenChange: setIsOrganicOpen,
       isEditing: organicEditId !== null,
-      isSaving: isOrganicSaving,
+      isSaving: isOrganicSaving || backfillOpen,
       values: organicForm,
       onFieldChange: changeOrganicField,
       onSave: saveOrganic,
@@ -232,7 +312,7 @@ export function useManageAccounts() {
       open: isAdOpen,
       onOpenChange: setIsAdOpen,
       isEditing: adEditId !== null,
-      isSaving: isAdSaving,
+      isSaving: isAdSaving || backfillOpen,
       values: adForm,
       onFieldChange: changeAdField,
       onSave: saveAd,
@@ -242,5 +322,16 @@ export function useManageAccounts() {
     openOrganicEdit,
     openAdCreate,
     openAdEdit,
+    backfillModal: {
+      open: backfillOpen,
+      percent: backfillPercent,
+      label: backfillLabel,
+      onCancel: cancelBackfill,
+      footnote: backfillFootnote,
+      title: "Connecting account data",
+      description:
+        "Pulling the last 90 days and saving this account. This can take a few minutes — please keep this tab open.",
+      cancelLabel: "Cancel sync",
+    },
   };
 }

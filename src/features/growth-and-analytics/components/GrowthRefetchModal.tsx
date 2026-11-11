@@ -19,6 +19,9 @@ export function GrowthRefetchModal({
   label,
   onCancel,
   footnote,
+  title = "Refreshing account data",
+  description = "Pulling the last 90 days and updating this account. This can take a few minutes — please keep this tab open.",
+  cancelLabel = "Cancel refetch",
 }: GrowthRefetchModalProps) {
   return (
     <Dialog open={open} onOpenChange={() => undefined}>
@@ -30,11 +33,8 @@ export function GrowthRefetchModal({
         onInteractOutside={(event) => event.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>Refreshing account data</DialogTitle>
-          <DialogDescription>
-            Pulling the last 90 days and updating this account. This can take a
-            few minutes — please keep this tab open.
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col items-center gap-4 py-2">
@@ -56,7 +56,7 @@ export function GrowthRefetchModal({
 
         <DialogFooter className="sm:justify-center">
           <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel refetch
+            {cancelLabel}
           </Button>
         </DialogFooter>
       </DialogContent>

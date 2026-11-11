@@ -32,6 +32,9 @@ export type GrowthRefetchModalProps = {
   onCancel: () => void;
   /** Extra soft note under the progress bar (e.g. Meta follower cap). */
   footnote?: string;
+  title?: string;
+  description?: string;
+  cancelLabel?: string;
 };
 
 export type GrowthChartCardProps = {
