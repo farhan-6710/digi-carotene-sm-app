@@ -495,7 +495,7 @@ export const DB = {
   GROWTH_ORGANIC_ACCOUNTS: {
     TABLE: "growth_organic_accounts",
     SELECT:
-      "id, platform, account_name, account_id, followers, profile_picture, is_active, client_id, created_at",
+      "id, platform, account_name, account_id, followers, profile_picture, is_active, client_id, last_synced_at, created_at",
   },
   GROWTH_ORGANIC_PROFILES: {
     TABLE: "growth_organic_profiles",

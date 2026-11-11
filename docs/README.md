@@ -16,7 +16,8 @@ The team runs clients, projects, scheduled posts, production shoots, and Meta (F
 | [database.md](./database.md) | Tables, relationships, migrations, RLS |
 | [auth-and-features.md](./auth-and-features.md) | Auth, roles, portals, every feature |
 | [deploy.md](./deploy.md) | Hostinger / GitHub Actions deploy |
-| [meta-integration-growth-and-analytics.md](./meta-integration-growth-and-analytics.md) | New-client Meta connect flow + midnight Growth sync |
+| [meta-integration-growth-and-analytics.md](./meta-integration-growth-and-analytics.md) | New-client Meta connect flow + on-demand Growth refetch |
+| [GROWTH_ON_DEMAND_REFETCH.md](./GROWTH_ON_DEMAND_REFETCH.md) | Temporary working plan for on-demand refetch (delete when done) |
 | [google-ads-integration.md](./google-ads-integration.md) | Google Ads MCC / OAuth / connect fields (Growth) |
 | [meta-business-structure.md](./meta-business-structure.md) | Meta terminology and setup (Ravi's example) |
 
@@ -50,7 +51,7 @@ There is **no `.env` in the repo**. Local Vite still needs values at **build/dev
 
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_PUBLISHABLE_KEY` (anon / publishable key)
-- `VITE_GROWTH_PHP_BASE_URL` / `VITE_GROWTH_PHP_CRON_SECRET` — required for **Google Ads** connect to auto-run the 90-day Hostinger backfill (same `cron_secret` as `php/config.php`)
+- `VITE_GROWTH_PHP_BASE_URL` / `VITE_GROWTH_PHP_CRON_SECRET` — required for **custom report email** via Hostinger PHP + Resend (same `cron_secret` as `php/config.php`)
 
 Put them in a local `.env` that you do not commit, or export them in the shell before `bun run dev` / `bun run build`. PHP secrets live in `public_html/php/config.php` (copied from `scripts/php/config.example.php`), not only in env vars.
 

@@ -4,7 +4,8 @@
 export const META_GRAPH_BASE_URL = "https://graph.facebook.com";
 
 // Instagram organic uses v19.0 in sm-report; pages/ads use v18.0.
-export const INSTAGRAM_BACKFILL_DAYS = 29;
+/** Completed days of posts to backfill/refetch (follower_count stays Meta-capped at 30). */
+export const INSTAGRAM_BACKFILL_DAYS = 90;
 export const AD_BACKFILL_DAYS = 90;
 
 export const META_API_VERSION = {

@@ -93,15 +93,20 @@ Go to:
 
 ---
 
-## Midnight cron data sync
+## Data sync (connect + on-demand refetch)
 
-After an account is connected, Digi Carotene stores the token and runs an initial backfill. Going forward, Hostinger PHP crons run a **rolling re-sync** every night (around midnight IST) so recent days stay fresh as Meta/Google revise metrics.
+After an account is connected, Digi Carotene stores the token and runs an **initial ~90-day backfill** into Supabase in the browser (Meta Graph + Google Ads REST TypeScript).
 
-| Cron | What it syncs |
-| --- | --- |
-| `sync_last_60_days_org_acc.php` | Instagram posts posted in the last **60** completed days (lifetime insights upsert) + follower gains for the last **30** days (Meta API cap) |
-| `sync_last_7_days_ad_acc.php` | Meta **and** Google campaign / ad set / ad daily metrics for the last **7** completed days (`platform` on `growth_ad_accounts`) |
+Going forward there is **no Growth midnight cron**. On Dashboard / Content Performance / Campaign Analytics (and campaign detail), the team sees how stale the selected account is and clicks **Refetch data**. That pulls ~**90 days** again for that account only, shows a non-dismissible progress modal (Cancel only), and stamps `last_synced_at` only after a **full** success. Cancel or failure keeps the previous stamp so the stale banner stays honest.
 
-Each cron reads connected accounts from Supabase, calls Meta Graph / Google Ads with stored credentials, and **upserts** the rolling window (through yesterday). Older cached rows stay as-is. Dashboards read this cached data — they do not pull full history every page load.
+| Source | Window | Notes |
+| --- | --- | --- |
+| Instagram posts | **90** completed days | Lifetime post insights |
+| Instagram followers | **30** days | Meta `follower_count` API cap |
+| Meta / Google ads daily metrics | **90** completed days | Chunked ≤28 days per Meta insights call |
 
-**Hostinger:** after deploy, point cron Commands at these filenames (not the old `sync_yesterday_*` scripts).
+Dashboards still read **cached** Supabase rows — they do not pull full history on every page load.
+
+Working plan (temporary): [`GROWTH_ON_DEMAND_REFETCH.md`](./GROWTH_ON_DEMAND_REFETCH.md).
+
+**Hostinger:** keep digest email crons only. Meta + Google Growth sync is browser TypeScript (connect + Refetch). PHP is Resend email only.

@@ -23,7 +23,7 @@ export function isWithinOrganicAccBackfillWindow(timestamp?: string): boolean {
   return postedAt >= from && postedAt < toExclusive;
 }
 
-/** Meta insights range for the 29 completed days (excludes today). */
+/** Meta insights range for the organic post backfill window (excludes today). */
 export function getOrganicAccBackfillMetaRange(): MetaSyncRange {
   const { from, toExclusive } = getOrganicAccBackfillWindow();
   const to = subDays(toExclusive, 1);

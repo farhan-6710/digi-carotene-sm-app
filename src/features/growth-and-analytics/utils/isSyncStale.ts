@@ -22,3 +22,15 @@ export function formatLastSyncedLabel(lastSyncedAt: string | null): string {
   const days = Math.floor(diffHours / 24);
   return `Last synced ${days} day${days === 1 ? "" : "s"} ago`;
 }
+
+/** Age only — for stale banners (“stale from 2 days ago”). */
+export function formatStaleAgeLabel(lastSyncedAt: string | null): string {
+  if (!lastSyncedAt) return "never synced";
+  const syncedMs = Date.parse(lastSyncedAt);
+  if (Number.isNaN(syncedMs)) return "never synced";
+  const diffHours = Math.floor((Date.now() - syncedMs) / (60 * 60 * 1000));
+  if (diffHours < 1) return "just now";
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const days = Math.floor(diffHours / 24);
+  return `${days} day${days === 1 ? "" : "s"} ago`;
+}

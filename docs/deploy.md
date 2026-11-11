@@ -37,26 +37,24 @@ Repo **Settings → Secrets and variables → Actions** must include:
 | `FTP_HOST` / `FTP_USERNAME` / `FTP_PASSWORD` | Hostinger FTP |
 | `VITE_SUPABASE_URL` | Baked into JS at build time |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Baked into JS at build time (anon key) |
-| `VITE_GROWTH_PHP_BASE_URL` | Hostinger PHP base URL, e.g. `https://digicarotene.in/php` (Google Ads connect backfill) |
-| `VITE_GROWTH_PHP_CRON_SECRET` | Same as `php/config.php` `cron_secret` (Google Ads connect backfill) |
+| `VITE_GROWTH_PHP_BASE_URL` | Hostinger PHP base URL, e.g. `https://digicarotene.in/php` (custom report email) |
+| `VITE_GROWTH_PHP_CRON_SECRET` | Same as `php/config.php` `cron_secret` (custom report email) |
 
-Without the two Supabase `VITE_*` secrets, CI builds a blank app — `supabaseClient` throws and `#root` stays empty. Google Ads connect also needs the two Growth PHP secrets or the 90-day backfill step fails after insert.
+Without the two Supabase `VITE_*` secrets, CI builds a blank app — `supabaseClient` throws and `#root` stays empty. Custom report email needs the two Growth PHP secrets (Meta/Google sync is browser TypeScript — no PHP).
 
 ## After deploy
 
 Supabase dashboard: add the live site URL and `/auth?form-type=reset-password` to Auth URL allow-list. Google OAuth: authorized redirect `https://<project-ref>.supabase.co/auth/v1/callback`.
 
-Meta client connect + midnight Growth sync: [meta-integration-growth-and-analytics.md](./meta-integration-growth-and-analytics.md).
+Meta client connect + on-demand Growth refetch: [meta-integration-growth-and-analytics.md](./meta-integration-growth-and-analytics.md).
 
 Google Ads connect (MCC / OAuth fields): [google-ads-integration.md](./google-ads-integration.md).
 
-### Hostinger Growth cron Commands
-
-Point midnight sync crons at the rolling refresh scripts (update paths after deploy if still on the old names):
+### Hostinger cron Commands
 
 | Job | Command script |
 | --- | --- |
-| Organic (60d posts / 30d followers) | `public_html/php/sync_last_60_days_org_acc.php` |
-| Ads Meta + Google (7d) | `public_html/php/sync_last_7_days_ad_acc.php` |
+| Post digest | `public_html/php/send_midnight_post_digest.php` |
+| Task digest | `public_html/php/send_midnight_task_digest.php` |
 
-Remove any schedule still pointing at `sync_yesterday_organic_acc.php` / `sync_yesterday_ad_acc.php` (removed from the repo).
+Growth Meta/Google sync is **browser TypeScript** (connect + Refetch). PHP is email-only (`send_custom_report.php` is app-triggered).

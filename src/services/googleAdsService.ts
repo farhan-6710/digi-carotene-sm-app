@@ -1,5 +1,5 @@
 /**
- * Google Ads API helpers for Digi Carotene Growth connect flow.
+ * Google Ads API helpers for Digi Carotene Growth (browser TypeScript).
  * Docs: https://developers.google.com/google-ads/api/rest/auth
  */
 
@@ -23,12 +23,19 @@ export type GoogleAdsConnectCredentials = {
   oauthRefreshToken: string;
 };
 
+export type GoogleAdsApiSession = {
+  customerId: string;
+  managerId: string;
+  developerToken: string;
+  accessToken: string;
+};
+
 /** Strip hyphens/spaces — Google Ads IDs are 10 digits with no punctuation. */
 export function normalizeGoogleCustomerId(raw: string): string {
   return raw.trim().replace(/[-\s]/g, "");
 }
 
-async function exchangeRefreshToken(creds: {
+export async function exchangeGoogleRefreshToken(creds: {
   oauthClientId: string;
   oauthClientSecret: string;
   oauthRefreshToken: string;
@@ -69,6 +76,13 @@ type GoogleAdsSearchRow = {
     descriptiveName?: string;
     currencyCode?: string;
   };
+  campaign?: Record<string, unknown>;
+  adGroup?: Record<string, unknown>;
+  ad_group?: Record<string, unknown>;
+  adGroupAd?: { ad?: Record<string, unknown> };
+  ad_group_ad?: { ad?: Record<string, unknown> };
+  segments?: Record<string, unknown>;
+  metrics?: Record<string, unknown>;
 };
 
 /**
@@ -97,45 +111,23 @@ export async function fetchGoogleAdsCustomerInfo(
     throw new Error("Paste the Google Ads API developer token.");
   }
 
-  const accessToken = await exchangeRefreshToken({
+  const accessToken = await exchangeGoogleRefreshToken({
     oauthClientId: creds.oauthClientId,
     oauthClientSecret: creds.oauthClientSecret,
     oauthRefreshToken: creds.oauthRefreshToken,
   });
 
-  const response = await fetch(
-    `${GOOGLE_ADS_BASE}/customers/${customerId}/googleAds:search`,
+  const rows = await searchGoogleAds(
     {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "developer-token": developerToken,
-        // Google Ads API header name (our DB/UI field is manager_id).
-        "login-customer-id": managerId,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query:
-          "SELECT customer.id, customer.descriptive_name, customer.currency_code FROM customer LIMIT 1",
-      }),
+      customerId,
+      managerId,
+      developerToken,
+      accessToken,
     },
+    "SELECT customer.id, customer.descriptive_name, customer.currency_code FROM customer LIMIT 1",
   );
 
-  const json = (await response.json()) as {
-    results?: GoogleAdsSearchRow[];
-    error?: { message?: string; status?: string };
-    message?: string;
-  };
-
-  if (!response.ok) {
-    throw new Error(
-      json.error?.message ||
-        json.message ||
-        `Google Ads API error (${response.status}). Check developer token, MCC link, and customer ID.`,
-    );
-  }
-
-  const customer = json.results?.[0]?.customer;
+  const customer = (rows[0] as GoogleAdsSearchRow | undefined)?.customer;
   if (!customer?.id) {
     throw new Error(
       "Google Ads returned no customer. Confirm the account is linked under Digi Carotene’s manager account.",
@@ -146,5 +138,78 @@ export async function fetchGoogleAdsCustomerInfo(
     customerId: String(customer.id),
     accountName: customer.descriptiveName?.trim() || "",
     currency: customer.currencyCode?.trim() || "",
+  };
+}
+
+/** GAQL search with pageToken pagination. */
+export async function searchGoogleAds(
+  session: GoogleAdsApiSession,
+  query: string,
+): Promise<Record<string, unknown>[]> {
+  const customerId = normalizeGoogleCustomerId(session.customerId);
+  const managerId = normalizeGoogleCustomerId(session.managerId);
+  const url = `${GOOGLE_ADS_BASE}/customers/${encodeURIComponent(customerId)}/googleAds:search`;
+
+  const results: Record<string, unknown>[] = [];
+  let pageToken: string | undefined;
+
+  do {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        "developer-token": session.developerToken,
+        "login-customer-id": managerId,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query,
+        ...(pageToken ? { pageToken } : {}),
+      }),
+    });
+
+    const json = (await response.json()) as {
+      results?: Record<string, unknown>[];
+      nextPageToken?: string;
+      error?: { message?: string };
+      message?: string;
+    };
+
+    if (!response.ok) {
+      throw new Error(
+        json.error?.message ||
+          json.message ||
+          `Google Ads API error (${response.status}).`,
+      );
+    }
+
+    for (const row of json.results ?? []) {
+      results.push(row);
+    }
+    pageToken = json.nextPageToken || undefined;
+  } while (pageToken);
+
+  return results;
+}
+
+export async function openGoogleAdsSession(creds: {
+  customerId: string;
+  managerId: string;
+  developerToken: string;
+  oauthClientId: string;
+  oauthClientSecret: string;
+  oauthRefreshToken: string;
+}): Promise<GoogleAdsApiSession> {
+  const accessToken = await exchangeGoogleRefreshToken({
+    oauthClientId: creds.oauthClientId,
+    oauthClientSecret: creds.oauthClientSecret,
+    oauthRefreshToken: creds.oauthRefreshToken,
+  });
+
+  return {
+    customerId: normalizeGoogleCustomerId(creds.customerId),
+    managerId: normalizeGoogleCustomerId(creds.managerId),
+    developerToken: creds.developerToken.trim() || "UNUSED",
+    accessToken,
   };
 }

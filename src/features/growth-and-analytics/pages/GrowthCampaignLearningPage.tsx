@@ -12,9 +12,11 @@ import { CampaignDetailTabs } from "../components/learning/CampaignDetailTabs";
 import { LearningBenchmarkStrip } from "../components/learning/LearningBenchmarkStrip";
 import { LearningKpiCards } from "../components/learning/LearningKpiCards";
 import { LearningPerformanceChart } from "../components/learning/LearningPerformanceChart";
+import { GrowthRefetchModal } from "../components/GrowthRefetchModal";
 import { LearningStaleDataBanner } from "../components/learning/LearningStaleDataBanner";
 import { SetBenchmarkDrawer } from "../components/learning/SetBenchmarkDrawer";
 import { GROWTH_AD_ACCOUNT_PARAM } from "../constants/growthUrlParams";
+import { useAccountRefetch } from "../hooks/useAccountRefetch";
 import { useCampaignLearning } from "../hooks/useCampaignLearning";
 import { useGrowthPaths } from "../hooks/useGrowthPaths";
 import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
@@ -27,8 +29,9 @@ const RANGE_OPTIONS = [
 
 export function GrowthCampaignLearningPage() {
   const { campaignId = "" } = useParams();
-  const { accountId } = useGrowthSelectedAdAccount();
+  const { accountId, activeAccount } = useGrowthSelectedAdAccount();
   const { campaignAnalyticsPath } = useGrowthPaths();
+  const { refetchAd, modalProps } = useAccountRefetch();
   const learning = useCampaignLearning(campaignId);
 
   const backPath = accountId
@@ -94,7 +97,13 @@ export function GrowthCampaignLearningPage() {
       <LearningStaleDataBanner
         lastSyncedAt={view.lastSyncedAt}
         isStale={view.isStale}
+        onRefetch={
+          activeAccount ? () => void refetchAd(activeAccount) : undefined
+        }
+        refetchDisabled={modalProps.open}
       />
+
+      <GrowthRefetchModal {...modalProps} />
 
       <div className="flex flex-wrap gap-2">
         {RANGE_OPTIONS.map((opt) => (

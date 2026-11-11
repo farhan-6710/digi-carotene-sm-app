@@ -3,10 +3,14 @@ import { GrowthDonutChart } from "../components/charts/GrowthDonutChart";
 import { GrowthNoAccountsEmpty } from "../components/GrowthNoAccountsEmpty";
 import { GrowthOrganicAccountSelect } from "../components/GrowthOrganicAccountSelect";
 import { GrowthPlatformComingSoon } from "../components/GrowthPlatformComingSoon";
+import { GrowthRefetchModal } from "../components/GrowthRefetchModal";
+import { GrowthStaleDataBanner } from "../components/GrowthStaleDataBanner";
 import { ContentPostsTable } from "../components/tables/ContentPostsTable";
 import { getOrganicDashboardMode } from "../constants/growthPlatformConfig";
+import { useAccountRefetch } from "../hooks/useAccountRefetch";
 import { useGrowthContentPerformance } from "../hooks/useGrowthContentPerformance";
 import { useGrowthSelectedAccount } from "../hooks/useGrowthSelectedAccount";
+import { isSyncStale } from "../utils/isSyncStale";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -29,10 +33,12 @@ export function GrowthContentPerformancePage() {
     hasAccounts,
   } = useGrowthContentPerformance();
   const { activeAccount } = useGrowthSelectedAccount();
+  const { refetchOrganic, modalProps } = useAccountRefetch();
   const dashboardMode = getOrganicDashboardMode(activeAccount?.platform);
   const showNoAccounts = !hasAccounts && !isLoading;
   const showComingSoon = hasAccounts && dashboardMode === "coming_soon";
   const showLiveContent = hasAccounts && dashboardMode === "live";
+  const canRefetch = showLiveContent && activeAccount?.platform === "instagram";
 
   return (
     <PageContent>
@@ -50,9 +56,20 @@ export function GrowthContentPerformancePage() {
               {showLiveContent ? (
                 <div className="flex flex-wrap items-center justify-end gap-2">
                   <DateFiltersTwo {...dateFilterProps} />
+                  {canRefetch && activeAccount ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="rounded-full"
+                      disabled={modalProps.open}
+                      onClick={() => void refetchOrganic(activeAccount)}
+                    >
+                      Refetch data
+                    </Button>
+                  ) : null}
                   <Button
                     onClick={() => void generateReport()}
-                    disabled={isGeneratingReport}
+                    disabled={isGeneratingReport || modalProps.open}
                     className="rounded-full"
                   >
                     {isGeneratingReport ? "Saving..." : "Generate Report"}
@@ -62,6 +79,20 @@ export function GrowthContentPerformancePage() {
             </div>
           ) : null
         }
+      />
+
+      {canRefetch && activeAccount ? (
+        <GrowthStaleDataBanner
+          lastSyncedAt={activeAccount.lastSyncedAt}
+          isStale={isSyncStale(activeAccount.lastSyncedAt)}
+          onRefetch={() => void refetchOrganic(activeAccount)}
+          refetchDisabled={modalProps.open}
+        />
+      ) : null}
+
+      <GrowthRefetchModal
+        {...modalProps}
+        footnote="Follower history covers about the last 30 days (Meta limit)."
       />
 
       {error ? <ErrorBanner message={error} /> : null}

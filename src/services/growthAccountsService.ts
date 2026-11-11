@@ -11,7 +11,7 @@ import {
 import { triggerGoogleAdAccountBackfill } from "@/services/googleAdBackfillService";
 import {
   rerunInstagramBackfillForOrganicAccount,
-  runInstagram29DayBackfill,
+  runInstagramBackfill,
 } from "@/services/instagramBackfillService";
 import {
   createInstagramProfile,
@@ -43,6 +43,7 @@ type OrganicRow = {
   followers: number;
   is_active: boolean;
   client_id: string | null;
+  last_synced_at?: string | null;
 };
 
 type AdRow = {
@@ -66,6 +67,7 @@ function mapOrganic(row: OrganicRow): OrganicAccount {
     followers: row.followers,
     isActive: row.is_active,
     clientId: row.client_id,
+    lastSyncedAt: row.last_synced_at ?? null,
   };
 }
 
@@ -297,7 +299,7 @@ export async function connectOrganicAccount(
       followersCount: account.followers,
       organicAccountId: account.id,
     });
-    await runInstagram29DayBackfill(profile.id, metaAccountId, token);
+    await runInstagramBackfill(profile.id, metaAccountId, token, account.id);
   }
 
   return account;
@@ -451,8 +453,8 @@ async function connectGoogleAdAccount(form: AdAccountForm): Promise<AdAccount> {
       oauthRefreshToken,
     });
   } catch (error) {
-    // Google Ads REST is not browser-CORS friendly (unlike Meta Graph).
-    // Still save credentials so Manage Accounts works; PHP sync will verify later.
+    // Google Ads REST may fail CORS in some browsers (unlike Meta Graph).
+    // Still save credentials so Manage Accounts works; Refetch retries from TS.
     const message = error instanceof Error ? error.message : "";
     const isNetwork =
       /failed to fetch|networkerror|load failed|cors/i.test(message) ||

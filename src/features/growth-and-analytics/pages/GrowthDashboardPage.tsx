@@ -3,14 +3,19 @@ import { GrowthPostsDataChart } from "../components/charts/GrowthPostsDataChart"
 import { GrowthNoAccountsEmpty } from "../components/GrowthNoAccountsEmpty";
 import { GrowthOrganicAccountSelect } from "../components/GrowthOrganicAccountSelect";
 import { GrowthPlatformComingSoon } from "../components/GrowthPlatformComingSoon";
+import { GrowthRefetchModal } from "../components/GrowthRefetchModal";
+import { GrowthStaleDataBanner } from "../components/GrowthStaleDataBanner";
 import { getOrganicDashboardMode } from "../constants/growthPlatformConfig";
+import { useAccountRefetch } from "../hooks/useAccountRefetch";
 import { useGrowthDashboard } from "../hooks/useGrowthDashboard";
 import { useGrowthSelectedAccount } from "../hooks/useGrowthSelectedAccount";
+import { isSyncStale } from "../utils/isSyncStale";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { StatsCards } from "@/shared/components/StatsCards";
+import { Button } from "@/shared/ui/button";
 
 export function GrowthDashboardPage() {
   const {
@@ -24,10 +29,13 @@ export function GrowthDashboardPage() {
     hasAccounts,
   } = useGrowthDashboard();
   const { activeAccount } = useGrowthSelectedAccount();
+  const { refetchOrganic, modalProps } = useAccountRefetch();
   const dashboardMode = getOrganicDashboardMode(activeAccount?.platform);
   const showNoAccounts = !hasAccounts && !isLoading;
   const showComingSoon = hasAccounts && dashboardMode === "coming_soon";
   const showLiveDashboard = hasAccounts && dashboardMode === "live";
+  const canRefetch =
+    showLiveDashboard && activeAccount?.platform === "instagram";
 
   return (
     <PageContent>
@@ -42,10 +50,39 @@ export function GrowthDashboardPage() {
           hasAccounts ? (
             <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
               <GrowthOrganicAccountSelect />
-              {showLiveDashboard ? <DateFiltersTwo {...dateFilterProps} /> : null}
+              {showLiveDashboard ? (
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  <DateFiltersTwo {...dateFilterProps} />
+                  {canRefetch && activeAccount ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="rounded-full"
+                      disabled={modalProps.open}
+                      onClick={() => void refetchOrganic(activeAccount)}
+                    >
+                      Refetch data
+                    </Button>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           ) : null
         }
+      />
+
+      {canRefetch && activeAccount ? (
+        <GrowthStaleDataBanner
+          lastSyncedAt={activeAccount.lastSyncedAt}
+          isStale={isSyncStale(activeAccount.lastSyncedAt)}
+          onRefetch={() => void refetchOrganic(activeAccount)}
+          refetchDisabled={modalProps.open}
+        />
+      ) : null}
+
+      <GrowthRefetchModal
+        {...modalProps}
+        footnote="Follower history covers about the last 30 days (Meta limit)."
       />
 
       {error ? <ErrorBanner message={error} /> : null}

@@ -13,6 +13,14 @@ export type GapStatus =
 // `from`/`to` are `yyyy-MM-dd`; omit both for "all time".
 export type GrowthDateRange = { from?: string; to?: string };
 
+/** Progress payload for organic + ads on-demand backfill/refetch. */
+export type BackfillProgress = {
+  completed: number;
+  total: number;
+  /** Short human label for the modal (not a dev log). */
+  label: string;
+};
+
 export type MetaOrganicInfo = {
   accountName: string;
   followers: number;
@@ -424,6 +432,8 @@ export type OrganicAccount = {
   followers: number;
   isActive: boolean;
   clientId: string | null;
+  /** Last successful organic metrics sync (ISO). Null until first full sync. */
+  lastSyncedAt: string | null;
 };
 
 export type AdAccount = {

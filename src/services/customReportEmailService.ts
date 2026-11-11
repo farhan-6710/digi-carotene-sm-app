@@ -1,6 +1,6 @@
 /**
  * Email custom growth report PDF via Hostinger PHP + Resend.
- * Env: VITE_GROWTH_PHP_BASE_URL, VITE_GROWTH_PHP_CRON_SECRET
+ * Env: VITE_GROWTH_PHP_BASE_URL, VITE_GROWTH_PHP_CRON_SECRET (email PHP only).
  */
 export async function sendCustomReportEmail(input: {
   toEmails: string[];

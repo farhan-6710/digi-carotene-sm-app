@@ -25,6 +25,15 @@ import type {
   SpendTrendGranularity,
 } from "./types";
 
+export type GrowthRefetchModalProps = {
+  open: boolean;
+  percent: number;
+  label: string;
+  onCancel: () => void;
+  /** Extra soft note under the progress bar (e.g. Meta follower cap). */
+  footnote?: string;
+};
+
 export type GrowthChartCardProps = {
   title: string;
   description?: string;

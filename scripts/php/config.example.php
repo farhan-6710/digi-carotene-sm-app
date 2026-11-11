@@ -1,10 +1,11 @@
 <?php
 
 /**
- * Shared cron config template (Growth sync + midnight post digest).
+ * Shared PHP config template (email digests + custom report email only).
  * Copy to config.php and fill REQUIRED values before upload.
  * PHP 8.2+ (tested with 8.2.30 on Hostinger/GoDaddy).
  *
+ * Growth Meta/Google sync runs in the browser (TypeScript) — not PHP.
  * Do not commit config.php after adding secrets.
  */
 return [
@@ -15,21 +16,13 @@ return [
     // REQUIRED — Supabase → Project Settings → API → service_role (secret).
     'supabase_service_key' => '',
 
-    // REQUIRED for URL cron — long random string (e.g. openssl rand -hex 32).
+    // REQUIRED for URL-triggered PHP (digests, report email).
     'cron_secret' => '',
 
-    'meta_api_version' => 'v24.0',
-    'meta_graph_base_url' => 'https://graph.facebook.com',
-
-    // Optional — Google Ads REST version used by sync_last_7_days_ad_acc.php.
-    'google_ads_api_version' => 'v25',
-
-    // REQUIRED for post digest — Resend → API Keys (starts with re_).
+    // REQUIRED for digests / report email — Resend → API Keys (starts with re_).
     'resend_api_key' => '',
 
-    // REQUIRED for post digest — must match a verified Resend domain.
-    // Example when updates.digicarotene.in is verified:
-    // 'Digi Carotene <noreply@updates.digicarotene.in>'
+    // REQUIRED — must match a verified Resend domain.
     'resend_from' => 'Digi Carotene <noreply@updates.digicarotene.in>',
 
     // Optional — link in digest email footer.

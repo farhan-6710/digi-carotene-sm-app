@@ -1,5 +1,10 @@
 import { mapMetaAdsetSummaries } from "@/features/growth-and-analytics/utils/adMetaParsing";
 import {
+  assertBackfillNotAborted,
+  reportBackfillProgress,
+  type BackfillProgressOptions,
+} from "@/features/growth-and-analytics/utils/backfillProgress";
+import {
   mapCampaignStatus,
   parseInsightConversions,
   parseMetricDecimal,
@@ -147,9 +152,24 @@ export async function runAdBackfill(
   adAccountId: string,
   metaAdAccountId: string,
   accessToken: string,
+  options?: BackfillProgressOptions,
 ): Promise<number> {
+  assertBackfillNotAborted(options?.signal);
+
   const range = getAdAccBackfillMetaRange();
+  const chunks = getMetaInsightChunksForSpan(range.from, range.to);
+  // 1 step for campaigns/ad sets/ads list + one step per date chunk.
+  const total = chunks.length + 1;
+
+  reportBackfillProgress(options, {
+    completed: 0,
+    total,
+    label: "Loading campaigns and ads…",
+  });
+
   const campaigns = await fetchAdCampaignStatuses(metaAdAccountId, accessToken);
+  assertBackfillNotAborted(options?.signal);
+
   const statusByCampaignId = new Map(
     campaigns.map((campaign) => [campaign.id, campaign.status ?? ""]),
   );
@@ -161,6 +181,7 @@ export async function runAdBackfill(
     fetchAdsetMasters(metaAdAccountId, accessToken),
     fetchAdMasters(metaAdAccountId, accessToken),
   ]);
+  assertBackfillNotAborted(options?.signal);
 
   const adsetMasterRows = adsetMasters
     .map(mapMetaAdsetToInsert)
@@ -169,12 +190,19 @@ export async function runAdBackfill(
     .map(mapMetaAdToInsert)
     .filter((row): row is AdMasterInsert => row != null);
 
+  reportBackfillProgress(options, {
+    completed: 1,
+    total,
+    label: "Pulling the last 90 days of ad results…",
+  });
+
   const campaignRows: AdCampaignMetricInsert[] = [];
   const adsetRows: AdsetMetricInsert[] = [];
   const adRows: AdMetricInsert[] = [];
-  const chunks = getMetaInsightChunksForSpan(range.from, range.to);
 
-  for (const chunk of chunks) {
+  for (let index = 0; index < chunks.length; index += 1) {
+    assertBackfillNotAborted(options?.signal);
+    const chunk = chunks[index];
     const [campaignInsights, adsetInsights, adInsights] = await Promise.all([
       fetchAdDailyInsights(metaAdAccountId, accessToken, chunk, "campaign"),
       fetchAdDailyInsights(metaAdAccountId, accessToken, chunk, "adset"),
@@ -199,7 +227,15 @@ export async function runAdBackfill(
       const row = mapAdInsightToInsert(insight);
       if (row) adRows.push(row);
     }
+
+    reportBackfillProgress(options, {
+      completed: index + 2,
+      total,
+      label: "Pulling the last 90 days of ad results…",
+    });
   }
+
+  assertBackfillNotAborted(options?.signal);
 
   await Promise.all([
     replaceAdsetsForAccount(adAccountId, adsetMasterRows),
@@ -211,6 +247,12 @@ export async function runAdBackfill(
 
   await touchAdAccountLastSynced(adAccountId);
 
+  reportBackfillProgress(options, {
+    completed: total,
+    total,
+    label: "All set — finishing up…",
+  });
+
   return campaignRows.length + adsetRows.length + adRows.length;
 }
 
@@ -218,6 +260,7 @@ export async function rerunAdBackfillForAccount(
   adAccountId: string,
   metaAdAccountId: string,
   accessToken: string,
+  options?: BackfillProgressOptions,
 ): Promise<number> {
-  return runAdBackfill(adAccountId, metaAdAccountId, accessToken);
+  return runAdBackfill(adAccountId, metaAdAccountId, accessToken, options);
 }

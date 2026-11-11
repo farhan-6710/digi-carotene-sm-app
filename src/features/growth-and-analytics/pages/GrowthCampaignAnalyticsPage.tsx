@@ -2,8 +2,13 @@ import { GrowthSpendChart } from "../components/charts/GrowthSpendChart";
 import { GrowthAdAccountSelect } from "../components/GrowthAdAccountSelect";
 import { GrowthAdsAnalyticsComingSoon } from "../components/GrowthAdsAnalyticsComingSoon";
 import { GrowthNoAccountsEmpty } from "../components/GrowthNoAccountsEmpty";
+import { GrowthRefetchModal } from "../components/GrowthRefetchModal";
+import { GrowthStaleDataBanner } from "../components/GrowthStaleDataBanner";
 import { CampaignTable } from "../components/tables/CampaignTable";
+import { useAccountRefetch } from "../hooks/useAccountRefetch";
 import { useGrowthCampaigns } from "../hooks/useGrowthCampaigns";
+import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
+import { isSyncStale } from "../utils/isSyncStale";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -27,6 +32,8 @@ export function GrowthCampaignAnalyticsPage() {
     isGeneratingReport,
     hasAccounts,
   } = useGrowthCampaigns();
+  const { activeAccount } = useGrowthSelectedAdAccount();
+  const { refetchAd, modalProps } = useAccountRefetch();
   const showNoAccounts = !hasAccounts && !isLoading;
 
   return (
@@ -41,9 +48,20 @@ export function GrowthCampaignAnalyticsPage() {
               {analyticsReady ? (
                 <div className="flex flex-wrap items-center justify-end gap-2">
                   <DateFiltersTwo {...dateFilterProps} />
+                  {activeAccount ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="rounded-full"
+                      disabled={modalProps.open}
+                      onClick={() => void refetchAd(activeAccount)}
+                    >
+                      Refetch data
+                    </Button>
+                  ) : null}
                   <Button
                     onClick={() => void generateReport()}
-                    disabled={isGeneratingReport}
+                    disabled={isGeneratingReport || modalProps.open}
                     className="rounded-full"
                   >
                     {isGeneratingReport ? "Saving..." : "Generate Report"}
@@ -54,6 +72,17 @@ export function GrowthCampaignAnalyticsPage() {
           ) : null
         }
       />
+
+      {analyticsReady && activeAccount ? (
+        <GrowthStaleDataBanner
+          lastSyncedAt={activeAccount.lastSyncedAt}
+          isStale={isSyncStale(activeAccount.lastSyncedAt)}
+          onRefetch={() => void refetchAd(activeAccount)}
+          refetchDisabled={modalProps.open}
+        />
+      ) : null}
+
+      <GrowthRefetchModal {...modalProps} />
 
       {error ? <ErrorBanner message={error} /> : null}
 

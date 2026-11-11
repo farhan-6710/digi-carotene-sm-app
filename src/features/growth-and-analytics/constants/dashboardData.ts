@@ -15,6 +15,7 @@ export const DUMMY_DASHBOARD_ACCOUNTS: OrganicAccount[] = [
     followers: 24_580,
     isActive: true,
     clientId: null,
+    lastSyncedAt: null,
   },
   {
     id: "acc-fb-carotene",
@@ -24,6 +25,7 @@ export const DUMMY_DASHBOARD_ACCOUNTS: OrganicAccount[] = [
     followers: 18_240,
     isActive: true,
     clientId: null,
+    lastSyncedAt: null,
   },
 ];
 

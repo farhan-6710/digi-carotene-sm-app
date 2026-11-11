@@ -90,9 +90,7 @@ Go to Growth → Manage Accounts → Connect Ad Account:
 
 On connect, Digi Carotene exchanges the refresh token, calls Google Ads with `developer-token` + `login-customer-id` (from our `manager_id`), and verifies the customer before saving.
 
-**Browser note:** Google Ads API responses are often blocked by CORS in the browser (Meta Graph is not). Digi Carotene still verifies when possible; after saving the account it calls Hostinger `sync_google_ad_acc_backfill.php` (same 90-day window as Meta) using `VITE_GROWTH_PHP_BASE_URL` + `VITE_GROWTH_PHP_CRON_SECRET`. Midnight cron (`sync_last_7_days_ad_acc.php`) re-syncs the last **7** completed days (through yesterday).
-
-Local connect testing: put those two vars in a root `.env` (same `cron_secret` as Hostinger `php/config.php`) and restart `bun run dev`.
+**Browser note:** Connect + **Refetch data** run the **90-day** Google Ads backfill in TypeScript (`googleAdBackfillService.ts`), same pattern as Meta. Some browsers block Google Ads REST with CORS — if that happens, reconnect/refetch from a Chromium session or fix credentials; there is no PHP Google sync anymore.
 
 ## Final client flow
 
@@ -100,19 +98,14 @@ Local connect testing: put those two vars in a root `.env` (same `cron_secret` a
 
 ---
 
-## Midnight cron data sync
+## Data sync (connect + on-demand refetch)
 
-After an account is connected, Digi Carotene stores credentials and runs an initial **90-day** backfill (Meta in-browser; Google via Hostinger PHP). Hostinger PHP crons then run a **rolling re-sync** every night (around midnight IST).
+After an account is connected, Digi Carotene stores credentials and runs an initial **90-day** backfill (Meta in-browser; Google via Hostinger PHP). Later refreshes use the portal **Refetch data** button for the selected account.
 
-| Cron | What it syncs |
+| Platform | How metrics refresh |
 | --- | --- |
-| `sync_last_60_days_org_acc.php` | Instagram posts (last **60** days) + follower gains (last **30** days; Meta API cap) |
-| `sync_last_7_days_ad_acc.php` | **Meta** + **Google** ads: campaign / ad set (ad group) / ad daily metrics for the last **7** completed days |
-
-`sync_last_7_days_ad_acc.php` reads `growth_ad_accounts.platform`:
-
-- `meta_ads` — Meta Marketing API (system user access token), same as before
-- `google_ads` — Google Ads API with OAuth refresh token + developer token + `manager_id` (sent as Google’s `login-customer-id` header)
+| `meta_ads` | Browser Meta Graph backfill (`runAdBackfill`) |
+| `google_ads` | Browser Google Ads REST backfill (`runGoogleAdBackfill` — OAuth refresh + developer token + `manager_id` as `login-customer-id`) |
 
 Google maps **ad group → ad set** and **ad → ad** so Campaign Analytics tables stay shared. Reach/frequency are Meta concepts; Google rows store impressions as reach and `0` frequency until a Google-specific UI lands.
 

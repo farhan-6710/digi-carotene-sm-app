@@ -3,10 +3,12 @@ import { Link, useParams } from "react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { GrowthCampaignProfileCard } from "../components/GrowthCampaignProfileCard";
+import { GrowthRefetchModal } from "../components/GrowthRefetchModal";
 import { CampaignDetailTabs } from "../components/learning/CampaignDetailTabs";
 import { LearningStaleDataBanner } from "../components/learning/LearningStaleDataBanner";
 import type { DemographicBreakdown } from "../types/types";
 import { GROWTH_AD_ACCOUNT_PARAM } from "../constants/growthUrlParams";
+import { useAccountRefetch } from "../hooks/useAccountRefetch";
 import { useGrowthCampaignDetailQuery } from "../hooks/useGrowthCampaignDetailQuery";
 import { useGrowthCampaignDemographicBreakdown } from "../hooks/useGrowthCampaignDemographicBreakdown";
 import { useGrowthPaths } from "../hooks/useGrowthPaths";
@@ -81,6 +83,7 @@ function GrowthCampaignPager({
 export function GrowthCampaignDetailPage() {
   const { campaignId = "" } = useParams();
   const { accountId, activeAccount } = useGrowthSelectedAdAccount();
+  const { refetchAd, modalProps } = useAccountRefetch();
   const platform = activeAccount?.platform ?? "meta_ads";
   const [breakdowns, setBreakdowns] = useState<DemographicBreakdown[]>([]);
   const { view, isLoading, error, dateFilterProps, periodLabel, range } =
@@ -132,7 +135,20 @@ export function GrowthCampaignDetailPage() {
                 adAccountId={accountId}
               />
             </div>
-            <DateFiltersTwo {...dateFilterProps} />
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <DateFiltersTwo {...dateFilterProps} />
+              {activeAccount ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full"
+                  disabled={modalProps.open}
+                  onClick={() => void refetchAd(activeAccount)}
+                >
+                  Refetch data
+                </Button>
+              ) : null}
+            </div>
           </div>
         }
       />
@@ -146,7 +162,13 @@ export function GrowthCampaignDetailPage() {
       <LearningStaleDataBanner
         lastSyncedAt={activeAccount?.lastSyncedAt ?? null}
         isStale={isSyncStale(activeAccount?.lastSyncedAt)}
+        onRefetch={
+          activeAccount ? () => void refetchAd(activeAccount) : undefined
+        }
+        refetchDisabled={modalProps.open}
       />
+
+      <GrowthRefetchModal {...modalProps} />
 
       {error ? <ErrorBanner message={error} /> : null}
       {demographicError ? <ErrorBanner message={demographicError} /> : null}
