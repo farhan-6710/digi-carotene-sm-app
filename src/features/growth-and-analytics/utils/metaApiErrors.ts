@@ -68,6 +68,16 @@ export function formatMetaApiError(
     return `Facebook Page Insights need a Page Access Token${label}. Assign the Page to Digi Carotene’s system user, then reconnect with Digi Carotene’s long-lived token.`;
   }
 
+  // (#10) = app/token cannot act on this object. Almost never “regenerate token
+  // with more scopes” — the asset is usually not assigned to Digi Carotene’s
+  // system user (or partner access was never accepted).
+  if (
+    code === 10 ||
+    normalized.includes("application does not have permission")
+  ) {
+    return `Digi Carotene’s token cannot access this Meta account${label}. In Business Manager: accept partner access, then assign this Page / Instagram / Ad Account to Digi Carotene’s system user (full control). Regenerating the same token will not fix it. Meta said: ${message}`;
+  }
+
   // Real missing-permission cases — do not treat “object not accessible” as insights.
   if (
     (normalized.includes("permission") || code === 200) &&
