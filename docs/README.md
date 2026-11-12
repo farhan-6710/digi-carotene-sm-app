@@ -1,14 +1,14 @@
 # Digi Carotene — docs
 
-*Snapshot: 2026-09-10*
+*Snapshot: 2026-11-12*
 
 Service-management app for **Digi Carotene**, a digital marketing agency.
 
-The team runs clients, projects, scheduled posts, production shoots, and Meta (Facebook/Instagram) analytics in one portal. Each client can sign in to a read-only portal for their brand.
+The team runs clients, projects, scheduled posts, production shoots, and Growth analytics (Meta + Google Ads) in one portal. Each client can sign in to a read-only portal for their brand.
 
 **Read this folder first** if you are new. Then `AGENTS.md` (how to change code) and `DESIGN.md` (layers).
 
-> **Deploy check:** If you can open this file on the live host under `/docs/README.md` and see the snapshot date **2026-09-10**, the GitHub Actions FTP job copied the `docs/` folder correctly.
+> **Deploy check:** If you can open this file on the live host under `/docs/README.md` and see the snapshot date **2026-11-12**, the GitHub Actions FTP job copied the `docs/` folder correctly.
 
 | Doc | What it covers |
 |-----|----------------|
@@ -16,10 +16,7 @@ The team runs clients, projects, scheduled posts, production shoots, and Meta (F
 | [database.md](./database.md) | Tables, relationships, migrations, RLS |
 | [auth-and-features.md](./auth-and-features.md) | Auth, roles, portals, every feature |
 | [deploy.md](./deploy.md) | Hostinger / GitHub Actions deploy |
-| [meta-integration-growth-and-analytics.md](./meta-integration-growth-and-analytics.md) | New-client Meta connect flow + on-demand Growth refetch |
-| [GROWTH_ON_DEMAND_REFETCH.md](./GROWTH_ON_DEMAND_REFETCH.md) | Temporary working plan for on-demand refetch (delete when done) |
-| [google-ads-integration.md](./google-ads-integration.md) | Google Ads MCC / OAuth / connect fields (Growth) |
-| [meta-business-structure.md](./meta-business-structure.md) | Meta terminology and setup (Ravi's example) |
+| [growth-integrations.md](./growth-integrations.md) | Meta + Google Ads setup, connect, on-demand refetch |
 
 ---
 
@@ -27,12 +24,12 @@ The team runs clients, projects, scheduled posts, production shoots, and Meta (F
 
 Digi Carotene plans and publishes social content for client brands, then reports on organic and ads performance.
 
-- **Team portal** (`/team-portal`) — day-to-day work: roster, clients, projects, calendar, production plans, notifications, analytics.
+- **Team portal** (`/team-portal`) — day-to-day work: roster, clients, projects, calendar, production plans, notifications, analytics, Growth.
 - **Client portal** (`/client-portal`) — the brand sees their projects, posts, production plans (client approval), and Growth dashboards.
 - **Public site** — home / about / contact plus `/auth`.
 - **Pending users** (`/user-portal`) — signed up but not yet linked to a team member or client row.
 
-Domain: **client (company) → project (social profiles + team) → posts**. Production plans hang off the **client**. Growth accounts also hang off the **client**.
+Domain: **client (company) → project (social profiles + team) → posts**. Production plans and Growth accounts hang off the **client**.
 
 ---
 
@@ -44,8 +41,8 @@ Domain: **client (company) → project (social profiles + team) → posts**. Pro
 | Language | TypeScript |
 | Build | Vite 8, Bun |
 | Backend | Supabase (Postgres + Auth + RLS). No custom Node API. |
-| Crons / email | PHP 8.2 on Hostinger (`scripts/php/`), Resend for digest mail |
-| Meta | Graph API via a **System User** long-lived token |
+| Crons / email | PHP 8.2 on Hostinger (`scripts/php/`), Resend for digest + custom report mail |
+| Meta / Google Growth | Browser TypeScript (Graph API + Google Ads REST). System user token / MCC OAuth — see [growth-integrations.md](./growth-integrations.md) |
 
 There is **no `.env` in the repo**. Local Vite still needs values at **build/dev time** (they are compiled into the JS; production does not read a server env file):
 
@@ -94,12 +91,12 @@ Query hooks use `useFetch(load, fallback)` (`src/shared/hooks/useFetch.ts`). Ser
 ```
 src/
   app/          Router, lazy pages
-  services/     Supabase + Meta calls
+  services/     Supabase + Meta / Google Ads calls
   features/     One folder per product area
   shared/       Cross-feature UI, hooks, layouts
 scripts/
   migrations/   Numbered SQL
-  php/          Crons (deploy as public_html/php/)
+  php/          Email crons (deploy as public_html/php/)
 ```
 
 ---

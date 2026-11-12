@@ -78,7 +78,7 @@ Content approvals on a plan item:
 | CRM | `/team-portal/crm` | Leads management (sort, month filter, follow-ups filter); Contact (score 5); lead detail notes, follow-ups (date + optional time, pending / no response / done), link attachments, open/closed activities (tasks, meetings, calls) |
 | Notifications | `/team-portal/notifications` | Inbox + SM executive **approval queue** |
 | Analytics | `/team-portal/analytics` | Agency activity |
-| Growth | `/team-portal/growth-and-analytics` | Meta organic + ads; page-level account dropdown (Instagram live; Facebook coming soon); Manage Accounts (token) |
+| Growth | `/team-portal/growth-and-analytics` | Meta organic + Meta/Google ads; account dropdown; Manage Accounts — see [growth-integrations.md](./growth-integrations.md) |
 | Reports | `/team-portal/reports` | Growth reports |
 | Account / Settings | `/team-portal/account`, `/settings` | Password, theme |
 

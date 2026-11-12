@@ -46,9 +46,7 @@ Without the two Supabase `VITE_*` secrets, CI builds a blank app — `supabaseCl
 
 Supabase dashboard: add the live site URL and `/auth?form-type=reset-password` to Auth URL allow-list. Google OAuth: authorized redirect `https://<project-ref>.supabase.co/auth/v1/callback`.
 
-Meta client connect + on-demand Growth refetch: [meta-integration-growth-and-analytics.md](./meta-integration-growth-and-analytics.md).
-
-Google Ads connect (MCC / OAuth fields): [google-ads-integration.md](./google-ads-integration.md).
+Meta + Google Ads connect and on-demand refetch: [growth-integrations.md](./growth-integrations.md).
 
 ### Hostinger cron Commands
 
