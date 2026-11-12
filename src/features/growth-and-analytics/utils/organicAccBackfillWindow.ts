@@ -1,4 +1,4 @@
-import { subDays, startOfDay } from "date-fns";
+import { addDays, subDays, startOfDay } from "date-fns";
 
 import { INSTAGRAM_BACKFILL_DAYS } from "../constants/metaConfig";
 import { serializeUrlDate } from "@/shared/utils/urlDateParams";
@@ -11,8 +11,9 @@ export function getOrganicAccBackfillWindow(): {
 } {
   const todayStart = startOfDay(new Date());
   return {
-    from: startOfDay(subDays(todayStart, INSTAGRAM_BACKFILL_DAYS)),
-    toExclusive: todayStart,
+    // 90 calendar days ending today (inclusive) for posts.
+    from: startOfDay(subDays(todayStart, INSTAGRAM_BACKFILL_DAYS - 1)),
+    toExclusive: startOfDay(addDays(todayStart, 1)),
   };
 }
 
@@ -23,7 +24,7 @@ export function isWithinOrganicAccBackfillWindow(timestamp?: string): boolean {
   return postedAt >= from && postedAt < toExclusive;
 }
 
-/** Meta insights range for the organic post backfill window (excludes today). */
+/** Live connect/refetch post window — includes today. */
 export function getOrganicAccBackfillMetaRange(): MetaSyncRange {
   const { from, toExclusive } = getOrganicAccBackfillWindow();
   const to = subDays(toExclusive, 1);
@@ -37,6 +38,5 @@ export function getOrganicAccBackfillMetaRange(): MetaSyncRange {
 }
 
 export function getOrganicAccYesterdayDateString(): string {
-  const { toExclusive } = getOrganicAccBackfillWindow();
-  return serializeUrlDate(subDays(toExclusive, 1));
+  return serializeUrlDate(startOfDay(subDays(new Date(), 1)));
 }

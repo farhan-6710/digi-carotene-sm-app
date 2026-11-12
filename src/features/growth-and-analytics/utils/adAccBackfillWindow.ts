@@ -1,4 +1,4 @@
-import { subDays, startOfDay } from "date-fns";
+import { addDays, subDays, startOfDay } from "date-fns";
 
 import { AD_BACKFILL_DAYS } from "../constants/metaConfig";
 import { serializeUrlDate } from "@/shared/utils/urlDateParams";
@@ -11,12 +11,13 @@ export function getAdAccBackfillWindow(): {
 } {
   const todayStart = startOfDay(new Date());
   return {
-    from: startOfDay(subDays(todayStart, AD_BACKFILL_DAYS)),
-    toExclusive: todayStart,
+    // 90 calendar days ending today (inclusive).
+    from: startOfDay(subDays(todayStart, AD_BACKFILL_DAYS - 1)),
+    toExclusive: startOfDay(addDays(todayStart, 1)),
   };
 }
 
-/** Meta insights range for the 90 completed days (excludes today). */
+/** Live connect/refetch range — includes today (partial day from Meta is OK). */
 export function getAdAccBackfillMetaRange(): MetaSyncRange {
   const { from, toExclusive } = getAdAccBackfillWindow();
   const to = subDays(toExclusive, 1);
@@ -30,6 +31,5 @@ export function getAdAccBackfillMetaRange(): MetaSyncRange {
 }
 
 export function getAdAccYesterdayDateString(): string {
-  const { toExclusive } = getAdAccBackfillWindow();
-  return serializeUrlDate(subDays(toExclusive, 1));
+  return serializeUrlDate(startOfDay(subDays(new Date(), 1)));
 }

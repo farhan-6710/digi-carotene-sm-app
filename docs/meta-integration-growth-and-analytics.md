@@ -101,9 +101,9 @@ Going forward there is **no Growth midnight cron**. On Dashboard / Content Perfo
 
 | Source | Window | Notes |
 | --- | --- | --- |
-| Instagram posts | **90** completed days | Lifetime post insights |
+| Instagram posts | **90** days through **today** | Lifetime post insights |
 | Instagram followers | **30** days | Meta `follower_count` API cap |
-| Meta / Google ads daily metrics | **90** completed days | Chunked ≤28 days per Meta insights call |
+| Meta / Google ads daily metrics | **90** days through **today** | Live connect/refetch includes today’s partial day; chunked ≤28 days per Meta insights call |
 
 Dashboards still read **cached** Supabase rows — they do not pull full history on every page load.
 
