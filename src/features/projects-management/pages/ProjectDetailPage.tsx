@@ -5,18 +5,25 @@ import { ArrowLeft, Pencil } from "lucide-react";
 import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { ProjectChatSection } from "@/features/chat/components/ProjectChatSection";
+import { useGrowthAccountsByClientId } from "@/features/growth-and-analytics/hooks/useGrowthAccountsByClientId";
 import { PostDialog } from "@/features/posts-management/components/PostDialog";
 import { buildAddPostsPath, buildPostDetailPath } from "@/features/posts-management/constants/routes";
 import { usePostDialog } from "@/features/posts-management/hooks/usePostDialog";
 import { ProjectDialog } from "@/features/projects-management/components/ProjectDialog";
+import { ProjectGrowthNavButtons } from "@/features/projects-management/components/ProjectGrowthNavButtons";
 import { ProjectPostsTable } from "@/features/projects-management/components/ProjectPostsTable";
 import { ProjectProfileCard } from "@/features/projects-management/components/ProjectProfileCard";
 import { PROJECTS_MANAGEMENT_PATH } from "@/features/projects-management/constants/routes";
 import { useProjectDetailQuery } from "@/features/projects-management/hooks/useProjectDetailQuery";
 import { useProjectDialog } from "@/features/projects-management/hooks/useProjectDialog";
-import { buildProjectPostStats } from "@/features/projects-management/utils/projectPostStatsUtils";
+import {
+  buildProjectCampaignAnalyticsPath,
+  buildProjectContentPerformancePath,
+} from "@/features/projects-management/utils/projectGrowthPaths";
 import { getProjectDisplayLabel } from "@/features/projects-management/utils/projectFormUtils";
+import { buildProjectPostStats } from "@/features/projects-management/utils/projectPostStatsUtils";
 import { ShareLinkButton } from "@/features/share/components/ShareLinkButton";
+
 import { canGenerateShareLink } from "@/features/share/utils/shareAccess";
 import { ProjectTasksSection } from "@/features/tasks-management/components/ProjectTasksSection";
 import { copyProjectShareLink } from "@/services/shareService";
@@ -48,6 +55,8 @@ function ProjectDetailHeaderActions({
   canEditProject,
   editProjectLabel = "Edit Project",
   canShare,
+  contentPerformanceHref,
+  campaignAnalyticsHref,
   dateFilterProps,
   onEditProject,
 }: {
@@ -55,6 +64,8 @@ function ProjectDetailHeaderActions({
   canEditProject: boolean;
   editProjectLabel?: string;
   canShare: boolean;
+  contentPerformanceHref?: string;
+  campaignAnalyticsHref?: string;
   dateFilterProps: DateFiltersTwoProps;
   onEditProject?: () => void;
 }) {
@@ -79,6 +90,10 @@ function ProjectDetailHeaderActions({
             onCopy={() => copyProjectShareLink(projectId)}
           />
         ) : null}
+        <ProjectGrowthNavButtons
+          contentPerformanceHref={contentPerformanceHref}
+          campaignAnalyticsHref={campaignAnalyticsHref}
+        />
       </div>
       <DateFiltersTwo {...dateFilterProps} />
     </div>
@@ -99,6 +114,15 @@ export function ProjectDetailPage() {
   const [dialogError, setDialogError] = useState<string | null>(null);
   const { project, posts, teamMembers, isLoading, error, reload } =
     useProjectDetailQuery(projectId);
+  const { organic, ads, hasOrganic, hasAds } = useGrowthAccountsByClientId(
+    project?.client_id,
+  );
+  const contentPerformanceHref = hasOrganic
+    ? buildProjectContentPerformancePath("team", organic[0].id)
+    : undefined;
+  const campaignAnalyticsHref = hasAds
+    ? buildProjectCampaignAnalyticsPath("team", ads[0].id)
+    : undefined;
   const { filter, dateFilterProps } = useDateFiltersTwo();
   const dateFilteredPosts = useMemo(() => {
     const range = resolveDateFiltersTwoRange(filter);
@@ -168,6 +192,8 @@ export function ProjectDetailPage() {
               socialsOnlyEdit ? "Edit social links" : "Edit Project"
             }
             canShare={canShare}
+            contentPerformanceHref={contentPerformanceHref}
+            campaignAnalyticsHref={campaignAnalyticsHref}
             dateFilterProps={dateFilterProps}
             onEditProject={() =>
               openEditDialog(project, { socialsOnly: socialsOnlyEdit })

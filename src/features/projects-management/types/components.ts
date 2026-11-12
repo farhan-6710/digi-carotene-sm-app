@@ -126,6 +126,11 @@ export type ProjectProfileCardProps = {
   hideClientLink?: boolean;
 };
 
+export type ProjectGrowthNavButtonsProps = {
+  contentPerformanceHref?: string;
+  campaignAnalyticsHref?: string;
+};
+
 export type ProjectPostsTableProps = {
   posts: Post[];
   isLoading: boolean;
