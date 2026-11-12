@@ -33,11 +33,17 @@ jobs:
           cp -r docs deployment-bundle/docs
           cp .htaccess deployment-bundle/
 
+      # Hostinger needs explicit FTPS on 21. Plain FTP often hangs with
+      # "Timeout (control socket)". FTP_HOST must be the Hostinger FTP
+      # hostname/IP from hPanel — not a Cloudflare-proxied site domain.
       - name: FTP Deploy Action
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          protocol: ftps
+          timeout: 180000
           local-dir: ./deployment-bundle/
           server-dir: /public_html/

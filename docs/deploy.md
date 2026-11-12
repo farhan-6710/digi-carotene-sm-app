@@ -34,7 +34,7 @@ Repo **Settings → Secrets and variables → Actions** must include:
 
 | Secret | Used for |
 |--------|----------|
-| `FTP_HOST` / `FTP_USERNAME` / `FTP_PASSWORD` | Hostinger FTP |
+| `FTP_HOST` / `FTP_USERNAME` / `FTP_PASSWORD` | Hostinger FTP (use hPanel FTP hostname/IP, not a Cloudflare-proxied domain; CI uses FTPS on port 21) |
 | `VITE_SUPABASE_URL` | Baked into JS at build time |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Baked into JS at build time (anon key) |
 | `VITE_GROWTH_PHP_BASE_URL` | Hostinger PHP base URL, e.g. `https://digicarotene.in/php` (custom report email) |
