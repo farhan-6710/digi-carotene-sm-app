@@ -5,7 +5,7 @@ import {
   type GoogleCampaignKpiDef,
   type GoogleCampaignKpiId,
   type GoogleCampaignTypeId,
-} from "../constants/googleCampaignTypeMatrix";
+} from "../../constants/campaigns/googleCampaignTypeMatrix";
 
 /** Map GAQL `advertisingChannelType` (stored on campaign objective) → UI type. */
 export function resolveGoogleCampaignType(

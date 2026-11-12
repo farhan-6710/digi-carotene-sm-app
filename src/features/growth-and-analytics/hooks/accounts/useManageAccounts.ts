@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 
-import { notifyGrowthAccountsUpdated } from "../constants/growthAccountsEvents";
-import type { BackfillProgress } from "../types/types";
+import { notifyGrowthAccountsUpdated } from "../../constants/shared/growthAccountsEvents";
+import type { BackfillProgress } from "../../types/types";
 import {
   connectAdAccount,
   connectOrganicAccount,
@@ -15,13 +15,13 @@ import {
 import { useFetch } from "@/shared/hooks/useFetch";
 import { showToast } from "@/shared/utils/showToast";
 
-import { emptyAdForm, emptyOrganicForm } from "../constants/accountsData";
+import { emptyAdForm, emptyOrganicForm } from "../../constants/accounts/accountsData";
 import type {
   AdAccount,
   AdAccountForm,
   OrganicAccount,
   OrganicAccountForm,
-} from "../types/types";
+} from "../../types/types";
 
 const NO_ORGANIC: OrganicAccount[] = [];
 const NO_ADS: AdAccount[] = [];

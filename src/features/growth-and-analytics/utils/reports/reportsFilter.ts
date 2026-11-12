@@ -1,5 +1,5 @@
-import { reportTabs } from "../constants/reportsData";
-import type { ReportRow, ReportType } from "../types/types";
+import { reportTabs } from "../../constants/reports/reportsData";
+import type { ReportRow, ReportType } from "../../types/types";
 
 export const REPORT_TYPE_PARAM = "type";
 

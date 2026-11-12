@@ -16,9 +16,9 @@ import { useFetch } from "@/shared/hooks/useFetch";
 import {
   GROWTH_ORGANIC_ACCOUNT_PARAM,
   GROWTH_ORGANIC_ACCOUNT_STORAGE_KEY,
-} from "../constants/growthUrlParams";
+} from "../constants/shared/growthUrlParams";
 import type { InstagramProfile, OrganicAccount } from "../types/types";
-import { useGrowthAccountsUpdated } from "../hooks/useGrowthAccountsUpdated";
+import { useGrowthAccountsUpdated } from "../hooks/shared/useGrowthAccountsUpdated";
 import {
   GrowthSelectedAccountContext,
   type GrowthSelectedAccountContextValue,

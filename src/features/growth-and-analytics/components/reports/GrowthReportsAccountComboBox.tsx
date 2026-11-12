@@ -3,9 +3,9 @@ import { useSearchParams } from "react-router";
 
 import { ComboBox } from "@/shared/ui/ComboBox";
 
-import { GROWTH_REPORT_ACCOUNT_PARAM } from "../constants/growthUrlParams";
-import { useGrowthSelectedAccount } from "../hooks/useGrowthSelectedAccount";
-import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
+import { GROWTH_REPORT_ACCOUNT_PARAM } from "../../constants/shared/growthUrlParams";
+import { useGrowthSelectedAccount } from "../../hooks/shared/useGrowthSelectedAccount";
+import { useGrowthSelectedAdAccount } from "../../hooks/shared/useGrowthSelectedAdAccount";
 
 // Single combobox listing both organic and ad accounts. Selecting one drives the
 // underlying selection so Reports / Custom Report Builder show that account's data.

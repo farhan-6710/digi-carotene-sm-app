@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { GROWTH_ACCOUNTS_UPDATED_EVENT } from "@/features/growth-and-analytics/constants/growthAccountsEvents";
+import { GROWTH_ACCOUNTS_UPDATED_EVENT } from "@/features/growth-and-analytics/constants/shared/growthAccountsEvents";
 
 export function useGrowthAccountsUpdated(reload: () => void | Promise<void>) {
   useEffect(() => {

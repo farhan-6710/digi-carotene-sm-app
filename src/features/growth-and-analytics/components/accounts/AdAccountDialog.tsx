@@ -16,9 +16,9 @@ import {
 import { ClientCombobox } from "@/features/clients-management/components/ClientCombobox";
 import { PasswordInput } from "@/shared/ui/PasswordInput";
 
-import { GrowthAdsPlatformToggle } from "../GrowthAdsPlatformToggle";
-import { GrowthStaticComboBox } from "../GrowthStaticComboBox";
-import { currencyOptions } from "../../constants/accountsData";
+import { GrowthAdsPlatformToggle } from "./GrowthAdsPlatformToggle";
+import { GrowthStaticComboBox } from "../shared/GrowthStaticComboBox";
+import { currencyOptions } from "../../constants/accounts/accountsData";
 import type { AdAccountDialogProps } from "../../types/components";
 
 export function AdAccountDialog({

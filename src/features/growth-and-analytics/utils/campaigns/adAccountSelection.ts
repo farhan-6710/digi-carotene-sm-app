@@ -1,7 +1,7 @@
 import {
   GROWTH_AD_ACCOUNT_BY_PLATFORM_STORAGE_KEY,
-} from "../constants/growthUrlParams";
-import type { AdAccount, AdAccountKind } from "../types/types";
+} from "../../constants/shared/growthUrlParams";
+import type { AdAccount, AdAccountKind } from "../../types/types";
 
 export type AdAccountIdByPlatform = Partial<Record<AdAccountKind, string>>;
 

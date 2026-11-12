@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { cn } from "@/shared/lib/utils";
 
-import { useGrowthPaths } from "../../hooks/useGrowthPaths";
+import { useGrowthPaths } from "../../hooks/shared/useGrowthPaths";
 import { MobileLabel, StatusBadge } from "./tableBits";
 import type { CampaignTableProps } from "../../types/components";
 import {
@@ -12,10 +12,10 @@ import {
   formatCpm,
   formatCurrency,
   formatPercent,
-} from "../../utils/formatters";
-import { formatGapPercent, gapStatusLabel } from "../../utils/gapStatus";
-import { GOOGLE_CAMPAIGN_TYPE_LABEL } from "../../constants/googleCampaignTypeMatrix";
-import { resolveGoogleCampaignType } from "../../utils/resolveGoogleCampaignType";
+} from "../../utils/shared/formatters";
+import { formatGapPercent, gapStatusLabel } from "../../utils/learning/gapStatus";
+import { GOOGLE_CAMPAIGN_TYPE_LABEL } from "../../constants/campaigns/googleCampaignTypeMatrix";
+import { resolveGoogleCampaignType } from "../../utils/campaigns/resolveGoogleCampaignType";
 
 const GRID_CLASS =
   "grid-cols-[1.4fr_0.9fr_0.6fr_0.7fr_0.8fr_0.7fr_0.7fr]";

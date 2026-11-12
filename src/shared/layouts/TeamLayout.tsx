@@ -1,7 +1,7 @@
 import { GrowthPortalProvider } from "@/features/growth-and-analytics/providers/GrowthPortalProvider";
 import { GrowthSelectedAccountProvider } from "@/features/growth-and-analytics/providers/GrowthSelectedAccountProvider";
 import { GrowthSelectedAdAccountProvider } from "@/features/growth-and-analytics/providers/GrowthSelectedAdAccountProvider";
-import { teamGrowthBasePath } from "@/features/growth-and-analytics/constants/navigation";
+import { teamGrowthBasePath } from "@/features/growth-and-analytics/constants/shared/navigation";
 import { ChatPanelProvider } from "@/features/chat/providers/ChatPanelProvider";
 import { TeamHeaderActions } from "@/features/chat/components/TeamHeaderActions";
 import { TeamReviewerAccessProvider } from "@/features/post-approvals/providers/TeamReviewerAccessProvider";

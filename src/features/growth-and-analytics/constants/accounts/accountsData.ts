@@ -3,7 +3,7 @@ import type {
   AdAccountKind,
   GrowthPlatform,
   OrganicAccountForm,
-} from "../types/types";
+} from "../../types/types";
 
 export const platformOptions: { value: GrowthPlatform; label: string }[] = [
   { value: "instagram", label: "Instagram" },

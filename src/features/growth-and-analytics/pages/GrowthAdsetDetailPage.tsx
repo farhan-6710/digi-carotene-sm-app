@@ -2,11 +2,11 @@ import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
-import { GrowthAdsetProfileCard } from "../components/GrowthAdsetProfileCard";
-import { useGrowthAdEntityBreakdown } from "../hooks/useGrowthCampaignDemographicBreakdown";
-import { useGrowthAdsetDetailQuery } from "../hooks/useGrowthAdsetDetailQuery";
-import { useGrowthPaths } from "../hooks/useGrowthPaths";
-import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
+import { GrowthAdsetProfileCard } from "../components/detail/GrowthAdsetProfileCard";
+import { useGrowthAdEntityBreakdown } from "../hooks/campaigns/useGrowthCampaignDemographicBreakdown";
+import { useGrowthAdsetDetailQuery } from "../hooks/campaigns/useGrowthAdsetDetailQuery";
+import { useGrowthPaths } from "../hooks/shared/useGrowthPaths";
+import { useGrowthSelectedAdAccount } from "../hooks/shared/useGrowthSelectedAdAccount";
 import type { DemographicBreakdown } from "../types/types";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";

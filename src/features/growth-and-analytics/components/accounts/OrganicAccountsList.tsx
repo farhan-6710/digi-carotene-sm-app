@@ -6,7 +6,7 @@ import { cn } from "@/shared/lib/utils";
 
 import { MobileLabel, PlatformBadge } from "../tables/tableBits";
 import type { OrganicAccountsListProps } from "../../types/components";
-import { formatCompact } from "../../utils/formatters";
+import { formatCompact } from "../../utils/shared/formatters";
 
 const GRID_CLASS = "grid-cols-[1.4fr_1fr_1fr_0.8fr_0.5fr]";
 

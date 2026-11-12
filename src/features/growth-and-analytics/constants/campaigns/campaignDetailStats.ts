@@ -1,4 +1,4 @@
-import type { GrowthCampaignDetailView } from "../types/types";
+import type { GrowthCampaignDetailView } from "../../types/types";
 
 type GrowthCampaignDetailStatItem = {
   label: string;

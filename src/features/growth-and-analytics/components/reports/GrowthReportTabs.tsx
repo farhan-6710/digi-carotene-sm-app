@@ -1,5 +1,5 @@
-import { reportTabs } from "../constants/reportsData";
-import type { GrowthReportTabsProps } from "../types/components";
+import { reportTabs } from "../../constants/reports/reportsData";
+import type { GrowthReportTabsProps } from "../../types/components";
 import { cn } from "@/shared/lib/utils";
 
 export function GrowthReportTabs({

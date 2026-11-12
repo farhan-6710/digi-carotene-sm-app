@@ -1,7 +1,7 @@
 import { pdf } from "@react-pdf/renderer";
 
-import { CustomReportPdfDocument } from "../components/custom-report/CustomReportPdfDocument";
-import type { CustomReportDocumentData } from "../types/customReport";
+import { CustomReportPdfDocument } from "../../components/custom-report/CustomReportPdfDocument";
+import type { CustomReportDocumentData } from "../../types/customReport";
 
 export async function buildCustomReportPdfBlob(
   data: CustomReportDocumentData,

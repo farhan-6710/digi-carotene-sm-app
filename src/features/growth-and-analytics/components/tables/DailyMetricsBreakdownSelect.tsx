@@ -5,7 +5,7 @@ import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
 
-import { campaignDemographicBreakdownOptions } from "../../constants/campaignDemographicBreakdown";
+import { campaignDemographicBreakdownOptions } from "../../constants/campaigns/campaignDemographicBreakdown";
 import type { DailyMetricsBreakdownSelectProps } from "../../types/components";
 
 export function DailyMetricsBreakdownSelect({

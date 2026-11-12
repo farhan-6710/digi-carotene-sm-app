@@ -6,7 +6,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { ProjectChatSection } from "@/features/chat/components/ProjectChatSection";
 import { CLIENT_PROJECTS_PATH } from "@/features/client-portal/constants/routes";
 import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
-import { useGrowthAccountsByClientId } from "@/features/growth-and-analytics/hooks/useGrowthAccountsByClientId";
+import { useGrowthAccountsByClientId } from "@/features/growth-and-analytics/hooks/shared/useGrowthAccountsByClientId";
 import { ProjectGrowthNavButtons } from "@/features/projects-management/components/ProjectGrowthNavButtons";
 import { ProjectPostsTable } from "@/features/projects-management/components/ProjectPostsTable";
 import { ProjectProfileCard } from "@/features/projects-management/components/ProjectProfileCard";

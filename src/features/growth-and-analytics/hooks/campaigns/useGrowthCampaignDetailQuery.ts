@@ -14,14 +14,14 @@ import type {
   AdsetMetricRow,
   CampaignMetricRow,
   GrowthCampaignDetailView,
-} from "../types/types";
+} from "../../types/types";
 import {
   filterAdsetMetricsByRange,
   filterCampaignMetricsByRange,
-} from "../utils/dashboardDataFilters";
-import { buildGrowthCampaignDetailView } from "../utils/growthCampaignDetail";
-import { useGrowthDateRange } from "./useGrowthDateRange";
-import { useGrowthSelectedAdAccount } from "./useGrowthSelectedAdAccount";
+} from "../../utils/dashboard/dashboardDataFilters";
+import { buildGrowthCampaignDetailView } from "../../utils/campaigns/growthCampaignDetail";
+import { useGrowthDateRange } from "../shared/useGrowthDateRange";
+import { useGrowthSelectedAdAccount } from "../shared/useGrowthSelectedAdAccount";
 
 type CampaignDetailRaw = {
   dailyRows: CampaignMetricRow[];

@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useDateFiltersTwo } from "@/shared/hooks/useDateFiltersTwo";
 import { serializeUrlDate } from "@/shared/utils/urlDateParams";
 
-import type { GrowthDateRange } from "../types/types";
+import type { GrowthDateRange } from "../../types/types";
 
 // Bridges DateFiltersTwo into a `{ from, to }` range growth queries can use.
 export function useGrowthDateRange() {

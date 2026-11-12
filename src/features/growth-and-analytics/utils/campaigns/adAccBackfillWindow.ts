@@ -1,9 +1,9 @@
 import { addDays, subDays, startOfDay } from "date-fns";
 
-import { AD_BACKFILL_DAYS } from "../constants/metaConfig";
+import { AD_BACKFILL_DAYS } from "../../constants/shared/metaConfig";
 import { serializeUrlDate } from "@/shared/utils/urlDateParams";
 
-import type { MetaSyncRange } from "./metaSyncMappers";
+import type { MetaSyncRange } from "../meta/metaSyncMappers";
 
 export function getAdAccBackfillWindow(): {
   from: Date;

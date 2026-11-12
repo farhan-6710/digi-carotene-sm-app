@@ -1,16 +1,16 @@
 import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router";
 
-import { GROWTH_ORGANIC_ACCOUNT_PARAM } from "@/features/growth-and-analytics/constants/growthUrlParams";
+import { GROWTH_ORGANIC_ACCOUNT_PARAM } from "@/features/growth-and-analytics/constants/shared/growthUrlParams";
 import {
   ORGANIC_PLATFORM_BADGE_CLASS,
   ORGANIC_PLATFORM_LIST_ORDER,
   organicPlatformLabel,
-} from "@/features/growth-and-analytics/constants/growthPlatformConfig";
-import { useGrowthSelectedAccount } from "@/features/growth-and-analytics/hooks/useGrowthSelectedAccount";
+} from "@/features/growth-and-analytics/constants/shared/growthPlatformConfig";
+import { useGrowthSelectedAccount } from "@/features/growth-and-analytics/hooks/shared/useGrowthSelectedAccount";
 import { ComboBox } from "@/shared/ui/ComboBox";
 
-import { writeOrganicAccountIdForPlatform } from "../utils/organicAccountSelection";
+import { writeOrganicAccountIdForPlatform } from "../../utils/content/organicAccountSelection";
 
 export function GrowthOrganicAccountSelect() {
   const {

@@ -12,14 +12,14 @@ import { CampaignDetailTabs } from "../components/learning/CampaignDetailTabs";
 import { LearningBenchmarkStrip } from "../components/learning/LearningBenchmarkStrip";
 import { LearningKpiCards } from "../components/learning/LearningKpiCards";
 import { LearningPerformanceChart } from "../components/learning/LearningPerformanceChart";
-import { GrowthRefetchModal } from "../components/GrowthRefetchModal";
+import { GrowthRefetchModal } from "../components/shared/GrowthRefetchModal";
 import { LearningStaleDataBanner } from "../components/learning/LearningStaleDataBanner";
 import { SetBenchmarkDrawer } from "../components/learning/SetBenchmarkDrawer";
-import { GROWTH_AD_ACCOUNT_PARAM } from "../constants/growthUrlParams";
-import { useAccountRefetch } from "../hooks/useAccountRefetch";
-import { useCampaignLearning } from "../hooks/useCampaignLearning";
-import { useGrowthPaths } from "../hooks/useGrowthPaths";
-import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
+import { GROWTH_AD_ACCOUNT_PARAM } from "../constants/shared/growthUrlParams";
+import { useAccountRefetch } from "../hooks/shared/useAccountRefetch";
+import { useCampaignLearning } from "../hooks/learning/useCampaignLearning";
+import { useGrowthPaths } from "../hooks/shared/useGrowthPaths";
+import { useGrowthSelectedAdAccount } from "../hooks/shared/useGrowthSelectedAdAccount";
 
 const RANGE_OPTIONS = [
   { days: 7, label: "Last 7 days" },

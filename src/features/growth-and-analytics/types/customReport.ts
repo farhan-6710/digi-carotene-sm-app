@@ -1,4 +1,4 @@
-import type { CustomReportKind, CustomReportPeriodId } from "../constants/customReport";
+import type { CustomReportKind, CustomReportPeriodId } from "../constants/reports/customReport";
 import type { AdAccountKind, GrowthPlatform } from "../types/types";
 
 export type CustomReportFormState = {

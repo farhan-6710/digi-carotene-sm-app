@@ -7,8 +7,8 @@ import {
 } from "@/services/pastPostsMetricsService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
-import type { GrowthPostDetailView } from "../types/types";
-import { buildGrowthPostDetailView } from "../utils/growthPostDetail";
+import type { GrowthPostDetailView } from "../../types/types";
+import { buildGrowthPostDetailView } from "../../utils/content/growthPostDetail";
 
 const EMPTY: GrowthPostDetailView | null = null;
 

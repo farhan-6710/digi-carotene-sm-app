@@ -12,8 +12,8 @@ import type {
   LabeledValue,
   OrganicAccount,
   PostRow,
-} from "../types/types";
-import { formatCompact } from "./formatters";
+} from "../../types/types";
+import { formatCompact } from "../shared/formatters";
 
 type InsightSeries = {
   name?: string;

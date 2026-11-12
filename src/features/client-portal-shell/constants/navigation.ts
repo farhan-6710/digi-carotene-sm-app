@@ -1,5 +1,5 @@
 import type { ShellNavIconKey } from "@/shared/constants/shellNavIcons";
-import { clientGrowthNav } from "@/features/growth-and-analytics/constants/navigation";
+import { clientGrowthNav } from "@/features/growth-and-analytics/constants/shared/navigation";
 
 export type ClientNavIconKey = Extract<
   ShellNavIconKey,

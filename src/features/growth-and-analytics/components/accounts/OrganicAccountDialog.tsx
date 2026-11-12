@@ -16,8 +16,8 @@ import {
 import { ClientCombobox } from "@/features/clients-management/components/ClientCombobox";
 import { PasswordInput } from "@/shared/ui/PasswordInput";
 
-import { GrowthStaticComboBox } from "../GrowthStaticComboBox";
-import { platformOptions } from "../../constants/accountsData";
+import { GrowthStaticComboBox } from "../shared/GrowthStaticComboBox";
+import { platformOptions } from "../../constants/accounts/accountsData";
 import type { OrganicAccountDialogProps } from "../../types/components";
 import type { GrowthPlatform } from "../../types/types";
 

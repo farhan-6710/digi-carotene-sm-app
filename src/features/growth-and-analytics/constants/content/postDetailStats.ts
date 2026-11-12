@@ -1,4 +1,4 @@
-import type { GrowthPostDetailView } from "../types/types";
+import type { GrowthPostDetailView } from "../../types/types";
 
 type GrowthPostDetailStatItem = {
   label: string;

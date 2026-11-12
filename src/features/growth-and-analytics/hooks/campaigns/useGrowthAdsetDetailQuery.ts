@@ -16,14 +16,14 @@ import type {
   Adset,
   AdsetMetricRow,
   GrowthAdsetDetailView,
-} from "../types/types";
+} from "../../types/types";
 import {
   filterAdMetricsByRange,
   filterAdsetMetricsByRange,
-} from "../utils/dashboardDataFilters";
-import { buildGrowthAdsetDetailView } from "../utils/growthAdsetDetail";
-import { useGrowthDateRange } from "./useGrowthDateRange";
-import { useGrowthSelectedAdAccount } from "./useGrowthSelectedAdAccount";
+} from "../../utils/dashboard/dashboardDataFilters";
+import { buildGrowthAdsetDetailView } from "../../utils/campaigns/growthAdsetDetail";
+import { useGrowthDateRange } from "../shared/useGrowthDateRange";
+import { useGrowthSelectedAdAccount } from "../shared/useGrowthSelectedAdAccount";
 
 type AdsetDetailRaw = {
   adset: Adset;

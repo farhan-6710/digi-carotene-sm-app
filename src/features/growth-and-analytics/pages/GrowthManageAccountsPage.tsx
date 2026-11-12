@@ -2,8 +2,8 @@ import { AdAccountDialog } from "../components/accounts/AdAccountDialog";
 import { AdAccountsList } from "../components/accounts/AdAccountsList";
 import { OrganicAccountDialog } from "../components/accounts/OrganicAccountDialog";
 import { OrganicAccountsList } from "../components/accounts/OrganicAccountsList";
-import { GrowthRefetchModal } from "../components/GrowthRefetchModal";
-import { useManageAccounts } from "../hooks/useManageAccounts";
+import { GrowthRefetchModal } from "../components/shared/GrowthRefetchModal";
+import { useManageAccounts } from "../hooks/accounts/useManageAccounts";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
 

@@ -1,9 +1,9 @@
 import { Link, useParams } from "react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
-import { GrowthPostProfileCard } from "../components/GrowthPostProfileCard";
-import { useGrowthPaths } from "../hooks/useGrowthPaths";
-import { useGrowthPostDetailQuery } from "../hooks/useGrowthPostDetailQuery";
+import { GrowthPostProfileCard } from "../components/detail/GrowthPostProfileCard";
+import { useGrowthPaths } from "../hooks/shared/useGrowthPaths";
+import { useGrowthPostDetailQuery } from "../hooks/content/useGrowthPostDetailQuery";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";

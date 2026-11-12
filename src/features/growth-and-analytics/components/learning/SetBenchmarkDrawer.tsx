@@ -17,7 +17,7 @@ import {
   BENCHMARK_DEFAULT_WINDOW_DAYS,
   BENCHMARK_LOOKBACK_DAYS,
   BENCHMARK_WINDOW_DAYS,
-} from "../../constants/campaignLearning";
+} from "../../constants/learning/campaignLearning";
 import type {
   BenchmarkMethod,
   BenchmarkMode,
@@ -27,8 +27,8 @@ import type {
   CampaignMetricRow,
   SaveBenchmarkInput,
 } from "../../types/types";
-import { computeAutoBenchmark } from "../../utils/autoBenchmark";
-import { kpiLabel } from "../../utils/defaultCampaignKpis";
+import { computeAutoBenchmark } from "../../utils/learning/autoBenchmark";
+import { kpiLabel } from "../../utils/learning/defaultCampaignKpis";
 
 type SetBenchmarkDrawerProps = {
   open: boolean;

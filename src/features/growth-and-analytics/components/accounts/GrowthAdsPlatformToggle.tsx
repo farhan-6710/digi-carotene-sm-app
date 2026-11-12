@@ -5,9 +5,9 @@ import { Button } from "@/shared/ui/button";
 import {
   adAccountKindLabel,
   isAdAccountKindReady,
-} from "../constants/growthPlatformConfig";
-import type { GrowthAdsPlatformToggleProps } from "../types/components";
-import type { AdAccountKind } from "../types/types";
+} from "../../constants/shared/growthPlatformConfig";
+import type { GrowthAdsPlatformToggleProps } from "../../types/components";
+import type { AdAccountKind } from "../../types/types";
 
 const PLATFORM_ORDER: AdAccountKind[] = ["meta_ads", "google_ads"];
 

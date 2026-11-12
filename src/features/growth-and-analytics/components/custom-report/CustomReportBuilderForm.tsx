@@ -11,13 +11,13 @@ import {
   ORGANIC_PLATFORM_ORDER,
   type CustomReportKind,
   type CustomReportPeriodId,
-} from "../../constants/customReport";
+} from "../../constants/reports/customReport";
 import {
   AD_PLATFORM_BADGE_CLASS,
   ORGANIC_PLATFORM_BADGE_CLASS,
   adAccountKindLabel,
   organicPlatformLabel,
-} from "../../constants/growthPlatformConfig";
+} from "../../constants/shared/growthPlatformConfig";
 import type {
   CustomReportAccountOption,
   CustomReportFormState,

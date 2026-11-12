@@ -14,7 +14,7 @@ import {
   formatCurrency,
   formatFrequency,
   formatPercent,
-} from "../../utils/formatters";
+} from "../../utils/shared/formatters";
 
 const GRID_CLASS =
   "grid-cols-[0.85fr_repeat(8,minmax(0,0.72fr))]";

@@ -1,7 +1,7 @@
 import {
   GROWTH_ORGANIC_ACCOUNT_BY_PLATFORM_STORAGE_KEY,
-} from "../constants/growthUrlParams";
-import type { GrowthPlatform, OrganicAccount } from "../types/types";
+} from "../../constants/shared/growthUrlParams";
+import type { GrowthPlatform, OrganicAccount } from "../../types/types";
 
 export type OrganicAccountIdByPlatform = Partial<
   Record<GrowthPlatform, string>

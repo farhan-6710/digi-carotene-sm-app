@@ -1,4 +1,4 @@
-import { GrowthStaleDataBanner } from "../GrowthStaleDataBanner";
+import { GrowthStaleDataBanner } from "../shared/GrowthStaleDataBanner";
 
 type LearningStaleDataBannerProps = {
   lastSyncedAt: string | null;

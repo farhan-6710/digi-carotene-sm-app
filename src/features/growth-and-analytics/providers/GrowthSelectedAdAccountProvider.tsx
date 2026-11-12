@@ -11,9 +11,9 @@ import {
 } from "@/services/growthAccountsService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
-import { GROWTH_AD_ACCOUNT_PARAM } from "../constants/growthUrlParams";
+import { GROWTH_AD_ACCOUNT_PARAM } from "../constants/shared/growthUrlParams";
 import type { AdAccount } from "../types/types";
-import { useGrowthAccountsUpdated } from "../hooks/useGrowthAccountsUpdated";
+import { useGrowthAccountsUpdated } from "../hooks/shared/useGrowthAccountsUpdated";
 import {
   GrowthSelectedAdAccountContext,
   type GrowthSelectedAdAccountContextValue,

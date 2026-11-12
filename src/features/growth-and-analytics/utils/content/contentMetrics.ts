@@ -7,8 +7,8 @@ import type {
   ContentPostRow,
   LabeledValue,
   PostRow,
-} from "../types/types";
-import { formatCompact } from "./formatters";
+} from "../../types/types";
+import { formatCompact } from "../shared/formatters";
 
 const TYPE_ORDER: ContentPostRow["mediaType"][] = [
   "Reel",

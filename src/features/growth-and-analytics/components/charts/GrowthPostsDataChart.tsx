@@ -14,9 +14,9 @@ import type { GrowthPostsDataChartProps } from "../../types/components";
 import {
   DASHBOARD_POSTS_DATA_METRICS,
   type DashboardPostsDataMetric,
-} from "../../constants/dashboardPostsData";
-import { buildPostsDataTrend } from "../../utils/dashboardPostsData";
-import { formatCompact } from "../../utils/formatters";
+} from "../../constants/dashboard/dashboardPostsData";
+import { buildPostsDataTrend } from "../../utils/dashboard/dashboardPostsData";
+import { formatCompact } from "../../utils/shared/formatters";
 
 const metricOptions = DASHBOARD_POSTS_DATA_METRICS.map((metric) => ({
   value: metric.id,

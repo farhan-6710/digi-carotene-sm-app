@@ -1,4 +1,4 @@
-import type { AdAccount, Adset, AdsetMetricRow, CampaignMetricRow, GrowthCampaignDetailView } from "../types/types";
+import type { AdAccount, Adset, AdsetMetricRow, CampaignMetricRow, GrowthCampaignDetailView } from "../../types/types";
 import { buildAdsetRows } from "./adHierarchyMetrics";
 
 type CampaignDetailMetadata = {

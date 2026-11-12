@@ -4,8 +4,8 @@ import { useSearchParams } from "react-router";
 import {
   REPORT_TYPE_PARAM,
   parseReportType,
-} from "../utils/reportsFilter";
-import type { ReportType } from "../types/types";
+} from "../../utils/reports/reportsFilter";
+import type { ReportType } from "../../types/types";
 
 export function useReportsFilter() {
   const [searchParams, setSearchParams] = useSearchParams();

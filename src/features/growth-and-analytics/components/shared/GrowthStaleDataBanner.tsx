@@ -1,7 +1,7 @@
 import {
   formatLastSyncedLabel,
   formatStaleAgeLabel,
-} from "../utils/isSyncStale";
+} from "../../utils/shared/isSyncStale";
 import { Button } from "@/shared/ui/button";
 
 type GrowthStaleDataBannerProps = {

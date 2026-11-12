@@ -5,9 +5,9 @@ import {
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 
-import type { GrowthOrganicPlatformToggleProps } from "../types/components";
-import type { GrowthPlatform } from "../types/types";
-import { organicPlatformLabel } from "../constants/growthPlatformConfig";
+import type { GrowthOrganicPlatformToggleProps } from "../../types/components";
+import type { GrowthPlatform } from "../../types/types";
+import { organicPlatformLabel } from "../../constants/shared/growthPlatformConfig";
 
 const PLATFORM_ORDER: GrowthPlatform[] = ["instagram", "facebook"];
 

@@ -5,7 +5,7 @@ import { ArrowLeft, Pencil } from "lucide-react";
 import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { ProjectChatSection } from "@/features/chat/components/ProjectChatSection";
-import { useGrowthAccountsByClientId } from "@/features/growth-and-analytics/hooks/useGrowthAccountsByClientId";
+import { useGrowthAccountsByClientId } from "@/features/growth-and-analytics/hooks/shared/useGrowthAccountsByClientId";
 import { PostDialog } from "@/features/posts-management/components/PostDialog";
 import { buildAddPostsPath, buildPostDetailPath } from "@/features/posts-management/constants/routes";
 import { usePostDialog } from "@/features/posts-management/hooks/usePostDialog";

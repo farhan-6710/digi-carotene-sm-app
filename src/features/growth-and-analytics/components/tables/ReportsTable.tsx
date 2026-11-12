@@ -5,7 +5,7 @@ import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 import { MobileLabel } from "./tableBits";
-import { reportTabs } from "../../constants/reportsData";
+import { reportTabs } from "../../constants/reports/reportsData";
 import type { ReportsTableProps } from "../../types/components";
 
 const GRID_CLASS = "grid-cols-[2fr_1fr_1.2fr_1fr]";

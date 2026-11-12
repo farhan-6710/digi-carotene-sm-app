@@ -6,10 +6,10 @@ import type {
   CampaignLearningView,
   CampaignMetricRow,
   KpiCardView,
-} from "../types/types";
+} from "../../types/types";
 import { kpiDirection, kpiLabel } from "./defaultCampaignKpis";
 import { computeGap, gapToStatus } from "./gapStatus";
-import { isSyncStale } from "./isSyncStale";
+import { isSyncStale } from "../shared/isSyncStale";
 import { kpisFromMetricRows, readKpiValue } from "./kpiFromMetrics";
 import { resolveLearningMode } from "./learningMode";
 

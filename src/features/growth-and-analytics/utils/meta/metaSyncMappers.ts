@@ -4,7 +4,7 @@ import {
   META_FOLLOWER_COUNT_DAYS,
   META_INSIGHTS_WINDOW_DAYS,
   META_SYNC_DAYS,
-} from "@/features/growth-and-analytics/constants/metaConfig";
+} from "@/features/growth-and-analytics/constants/shared/metaConfig";
 import type { GrowthDateRange } from "@/features/growth-and-analytics/types/types";
 import { parseUrlDateParam, serializeUrlDate } from "@/shared/utils/urlDateParams";
 

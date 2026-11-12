@@ -3,7 +3,7 @@ import {
   BENCHMARK_DEFAULT_METHOD,
   BENCHMARK_DEFAULT_MIN_RESULTS,
   BENCHMARK_DEFAULT_WINDOW_DAYS,
-} from "../constants/campaignLearning";
+} from "../../constants/learning/campaignLearning";
 import type {
   AutoBenchmarkPreview,
   BenchmarkMethod,
@@ -11,7 +11,7 @@ import type {
   CampaignMetricRow,
   DateWindow,
   KpiDirection,
-} from "../types/types";
+} from "../../types/types";
 import { kpisFromMetricRows, totalResults, totalSpend } from "./kpiFromMetrics";
 
 export type AutoBenchmarkConfig = {

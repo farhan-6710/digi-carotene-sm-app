@@ -4,15 +4,15 @@ import type { StatCardItem } from "@/shared/types/statsCards";
 
 import { addDays, differenceInCalendarDays } from "date-fns";
 
-import { SPEND_TREND_DAILY_MAX_DAYS } from "../constants/spendTrend";
+import { SPEND_TREND_DAILY_MAX_DAYS } from "../../constants/shared/spendTrend";
 import type {
   AdAccountKind,
   CampaignMetricRow,
   CampaignRow,
   SpendPoint,
   SpendTrend,
-} from "../types/types";
-import { dayLabel, formatCompact, formatCpm, formatCurrency, formatNumber, monthLabel } from "./formatters";
+} from "../../types/types";
+import { dayLabel, formatCompact, formatCpm, formatCurrency, formatNumber, monthLabel } from "../shared/formatters";
 import { parseUrlDateParam, serializeUrlDate } from "@/shared/utils/urlDateParams";
 import {
   googleCampaignTypeKpis,

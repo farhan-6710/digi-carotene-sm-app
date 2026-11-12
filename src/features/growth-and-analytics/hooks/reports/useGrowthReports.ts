@@ -1,4 +1,4 @@
-import { DUMMY_REPORTS } from "../constants/reportsData";
+import { DUMMY_REPORTS } from "../../constants/reports/reportsData";
 
 export function useGrowthReports() {
   return {

@@ -3,19 +3,19 @@ import {
   META_ACCOUNT_FIELDS,
   META_API_VERSION,
   META_GRAPH_BASE_URL,
-} from "@/features/growth-and-analytics/constants/metaConfig";
+} from "@/features/growth-and-analytics/constants/shared/metaConfig";
 import {
   getFollowerInsightRange,
   getMetaSyncRange,
   mapIgMediaType,
   type MetaSyncRange,
-} from "@/features/growth-and-analytics/utils/metaSyncMappers";
+} from "@/features/growth-and-analytics/utils/meta/metaSyncMappers";
 import type {
   GrowthPlatform,
   MetaAdInfo,
   MetaOrganicInfo,
 } from "@/features/growth-and-analytics/types/types";
-import { formatMetaApiError } from "@/features/growth-and-analytics/utils/metaApiErrors";
+import { formatMetaApiError } from "@/features/growth-and-analytics/utils/meta/metaApiErrors";
 
 type GraphList<T> = { data?: T[]; paging?: { next?: string } };
 

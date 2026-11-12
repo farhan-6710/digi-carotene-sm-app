@@ -8,8 +8,8 @@ import type {
   GrowthPlatform,
   InteractionTotals,
   OrganicAccount,
-} from "../types/types";
-import { formatCompact } from "./formatters";
+} from "../../types/types";
+import { formatCompact } from "../shared/formatters";
 
 const PLATFORM_LABEL: Record<GrowthPlatform, string> = {
   instagram: "Instagram",

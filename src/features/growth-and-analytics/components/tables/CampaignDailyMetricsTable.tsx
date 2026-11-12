@@ -12,7 +12,7 @@ import {
   META_DAILY_METRIC_COLUMNS,
   META_DAILY_METRICS_DEFAULT_COLUMN_IDS,
   type MetaDailyMetricColumnId,
-} from "../../constants/googleCampaignDetailLayout";
+} from "../../constants/campaigns/googleCampaignDetailLayout";
 import type {
   CampaignDailyMetricsTableProps,
   CampaignMetricCellsMetric,
@@ -24,8 +24,8 @@ import {
   formatCurrency,
   formatFrequency,
   formatPercent,
-} from "../../utils/formatters";
-import { dailyMetricsGridLayout } from "../../utils/googleCampaignDailyMetrics";
+} from "../../utils/shared/formatters";
+import { dailyMetricsGridLayout } from "../../utils/campaigns/googleCampaignDailyMetrics";
 
 function formatMetaDailyCell(
   metrics: CampaignMetricCellsMetric,

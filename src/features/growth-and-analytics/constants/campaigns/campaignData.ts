@@ -1,6 +1,6 @@
 import { format, subDays } from "date-fns";
 
-import type { AdAccount, CampaignMetricRow } from "../types/types";
+import type { AdAccount, CampaignMetricRow } from "../../types/types";
 
 export const DUMMY_AD_ACCOUNTS: AdAccount[] = [
   {

@@ -18,16 +18,16 @@ import { showToast } from "@/shared/utils/showToast";
 import {
   EXECUTIVE_BENCHMARK_NEEDS_APPROVAL,
   LEARNING_NEW_BEST_DISMISS_DAYS,
-} from "../constants/campaignLearning";
+} from "../../constants/learning/campaignLearning";
 import type {
   CampaignKpiKey,
   CampaignLearningView,
   CampaignMetricRow,
   SaveBenchmarkInput,
-} from "../types/types";
-import { buildCampaignLearningView } from "../utils/buildCampaignLearningView";
-import { defaultKpisForCampaign } from "../utils/defaultCampaignKpis";
-import { useGrowthSelectedAdAccount } from "./useGrowthSelectedAdAccount";
+} from "../../types/types";
+import { buildCampaignLearningView } from "../../utils/learning/buildCampaignLearningView";
+import { defaultKpisForCampaign } from "../../utils/learning/defaultCampaignKpis";
+import { useGrowthSelectedAdAccount } from "../shared/useGrowthSelectedAdAccount";
 
 type LearningRaw = {
   dailyRows: CampaignMetricRow[];

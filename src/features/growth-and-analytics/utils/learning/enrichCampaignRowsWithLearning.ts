@@ -4,8 +4,8 @@ import type {
   CampaignRow,
   GapStatus,
   LearningModeState,
-} from "../types/types";
-import { LEARNING_MIN_HISTORY_DAYS } from "../constants/campaignLearning";
+} from "../../types/types";
+import { LEARNING_MIN_HISTORY_DAYS } from "../../constants/learning/campaignLearning";
 import { defaultKpisForCampaign, kpiLabel } from "./defaultCampaignKpis";
 import { computeGap, gapToStatus } from "./gapStatus";
 import { countDaysOfData } from "./autoBenchmark";

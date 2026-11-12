@@ -4,7 +4,7 @@ import type {
   DailyMetricRow,
   OrganicAccount,
   PostRow,
-} from "../types/types";
+} from "../../types/types";
 
 export const DUMMY_DASHBOARD_ACCOUNTS: OrganicAccount[] = [
   {

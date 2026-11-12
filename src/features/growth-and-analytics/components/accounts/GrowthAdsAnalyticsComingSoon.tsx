@@ -1,6 +1,6 @@
 import { FolderKanban } from "lucide-react";
 
-import { adAccountKindLabel } from "@/features/growth-and-analytics/constants/growthPlatformConfig";
+import { adAccountKindLabel } from "@/features/growth-and-analytics/constants/shared/growthPlatformConfig";
 import type { AdAccountKind } from "@/features/growth-and-analytics/types/types";
 
 type GrowthAdsAnalyticsComingSoonProps = {

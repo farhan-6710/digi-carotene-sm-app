@@ -6,7 +6,7 @@ import type {
   GrowthDateRange,
   InteractionTotals,
   PostRow,
-} from "../types/types";
+} from "../../types/types";
 
 function isDateInRange(date: string, range: GrowthDateRange): boolean {
   if (!range.from && !range.to) {

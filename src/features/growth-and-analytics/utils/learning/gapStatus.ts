@@ -1,8 +1,8 @@
 import {
   GAP_BELOW_MIN,
   GAP_ON_TRACK_MIN,
-} from "../constants/campaignLearning";
-import type { GapStatus, KpiDirection } from "../types/types";
+} from "../../constants/learning/campaignLearning";
+import type { GapStatus, KpiDirection } from "../../types/types";
 
 /** Direction-aware gap: positive = better than benchmark (PDF §7.5). */
 export function computeGap(

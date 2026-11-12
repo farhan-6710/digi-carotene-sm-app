@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/shared/lib/utils";
 
 import type { AdAccountKind, GrowthPlatform } from "../../types/types";
-import { adAccountKindLabel } from "../../constants/growthPlatformConfig";
+import { adAccountKindLabel } from "../../constants/shared/growthPlatformConfig";
 
 export function MobileLabel({ children }: { children: ReactNode }) {
   return (

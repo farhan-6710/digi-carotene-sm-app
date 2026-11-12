@@ -1,4 +1,4 @@
-import type { AdAccountKind, GrowthPlatform } from "../types/types";
+import type { AdAccountKind, GrowthPlatform } from "../../types/types";
 
 /** Matches Content Performance “Last 3 Months” (~93 days). */
 export const CUSTOM_REPORT_MAX_DAYS = 93;

@@ -1,11 +1,11 @@
-import { growthAdDetailStatItems } from "../constants/adDetailStats";
-import { AdDailyMetricsTable } from "./tables/AdDailyMetricsTable";
-import type { GrowthAdProfileCardProps } from "../types/components";
+import { growthAdDetailStatItems } from "../../constants/campaigns/adDetailStats";
+import { AdDailyMetricsTable } from "../tables/AdDailyMetricsTable";
+import type { GrowthAdProfileCardProps } from "../../types/components";
 import {
   formatCompact,
   formatCurrency,
   formatPercent,
-} from "../utils/formatters";
+} from "../../utils/shared/formatters";
 import { cn } from "@/shared/lib/utils";
 
 function summaryOrDash(value: string | null): string {

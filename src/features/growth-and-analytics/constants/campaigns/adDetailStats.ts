@@ -1,4 +1,4 @@
-import type { GrowthAdDetailView } from "../types/types";
+import type { GrowthAdDetailView } from "../../types/types";
 
 type GrowthAdDetailStatItem = {
   label: string;

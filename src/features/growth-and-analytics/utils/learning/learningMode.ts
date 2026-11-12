@@ -2,14 +2,14 @@ import {
   LEARNING_MIN_HISTORY_DAYS,
   LEARNING_NEW_BEST_DAYS,
   LEARNING_NEW_BEST_GAP,
-} from "../constants/campaignLearning";
+} from "../../constants/learning/campaignLearning";
 import type {
   CampaignBenchmark,
   CampaignKpiKey,
   CampaignMetricRow,
   KpiDirection,
   LearningModeView,
-} from "../types/types";
+} from "../../types/types";
 import { countDaysOfData } from "./autoBenchmark";
 import { computeGap } from "./gapStatus";
 import { kpisFromMetricRows, totalResults } from "./kpiFromMetrics";

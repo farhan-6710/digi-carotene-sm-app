@@ -5,7 +5,7 @@ import type {
   Adset,
   AdsetMetricRow,
   AdsetRow,
-} from "../types/types";
+} from "../../types/types";
 
 type MetricTotals = {
   spend: number;

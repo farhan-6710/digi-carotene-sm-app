@@ -4,11 +4,11 @@ import { fetchAdMetricsByAdId, fetchAdNeighborIds } from "@/services/adMetricsSe
 import { fetchAdById } from "@/services/adsService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
-import type { Ad, AdAccount, AdMetricRow, GrowthAdDetailView } from "../types/types";
-import { filterAdMetricsByRange } from "../utils/dashboardDataFilters";
-import { buildGrowthAdDetailView } from "../utils/growthAdsetDetail";
-import { useGrowthDateRange } from "./useGrowthDateRange";
-import { useGrowthSelectedAdAccount } from "./useGrowthSelectedAdAccount";
+import type { Ad, AdAccount, AdMetricRow, GrowthAdDetailView } from "../../types/types";
+import { filterAdMetricsByRange } from "../../utils/dashboard/dashboardDataFilters";
+import { buildGrowthAdDetailView } from "../../utils/campaigns/growthAdsetDetail";
+import { useGrowthDateRange } from "../shared/useGrowthDateRange";
+import { useGrowthSelectedAdAccount } from "../shared/useGrowthSelectedAdAccount";
 
 type AdDetailRaw = {
   ad: Ad;

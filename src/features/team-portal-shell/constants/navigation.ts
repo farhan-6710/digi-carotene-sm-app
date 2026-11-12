@@ -1,7 +1,7 @@
 import type { ShellNavIconKey } from "@/shared/constants/shellNavIcons";
 import { crmNav } from "@/features/crm/constants/navigation";
 import { LEADS_MANAGEMENT_PATH } from "@/features/crm/constants/routes";
-import { growthNav } from "@/features/growth-and-analytics/constants/navigation";
+import { growthNav } from "@/features/growth-and-analytics/constants/shared/navigation";
 import { projectsNav } from "@/features/projects-management/constants/navigation";
 import { PROJECTS_MANAGEMENT_PATH } from "@/features/projects-management/constants/routes";
 

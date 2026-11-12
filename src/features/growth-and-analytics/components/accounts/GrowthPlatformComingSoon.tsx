@@ -1,6 +1,6 @@
 import { FolderKanban } from "lucide-react";
 
-import { organicPlatformLabel } from "@/features/growth-and-analytics/constants/growthPlatformConfig";
+import { organicPlatformLabel } from "@/features/growth-and-analytics/constants/shared/growthPlatformConfig";
 import type { GrowthPlatform } from "@/features/growth-and-analytics/types/types";
 
 type GrowthPlatformComingSoonProps = {

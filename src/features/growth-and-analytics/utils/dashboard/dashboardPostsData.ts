@@ -1,6 +1,6 @@
-import type { DashboardPostsDataMetric } from "../constants/dashboardPostsData";
-import type { DailyMetricRow, TrendPoint } from "../types/types";
-import { monthLabel } from "./formatters";
+import type { DashboardPostsDataMetric } from "../../constants/dashboard/dashboardPostsData";
+import type { DailyMetricRow, TrendPoint } from "../../types/types";
+import { monthLabel } from "../shared/formatters";
 
 const POSTS_DATA_METRIC_FIELD: Record<
   DashboardPostsDataMetric,

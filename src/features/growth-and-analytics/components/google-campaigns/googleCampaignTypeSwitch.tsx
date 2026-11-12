@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { GoogleCampaignTypeShell } from "./GoogleCampaignTypeShell";
 import type { GoogleCampaignTypePageProps } from "../../types/components";
-import { resolveGoogleCampaignType } from "../../utils/resolveGoogleCampaignType";
+import { resolveGoogleCampaignType } from "../../utils/campaigns/resolveGoogleCampaignType";
 
 /**
  * Switch on Google Ads `advertisingChannelType` (stored as campaign objective)

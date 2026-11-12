@@ -4,19 +4,19 @@ import { fetchAdCampaignMetricsForAccount } from "@/services/adCampaignMetricsSe
 import { fetchActiveBenchmarksForAccount } from "@/services/campaignLearningService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
-import { isAdAnalyticsReady } from "../constants/growthPlatformConfig";
+import { isAdAnalyticsReady } from "../../constants/shared/growthPlatformConfig";
 import {
   buildCampaignRows,
   buildCampaignStatCards,
   buildSpendTrend,
   spendTrendChartTitle,
-} from "../utils/campaignMetrics";
-import { filterCampaignMetricsByRange } from "../utils/dashboardDataFilters";
-import { enrichCampaignRowsWithLearning } from "../utils/enrichCampaignRowsWithLearning";
-import { saveGrowthReport } from "../utils/generateReport";
-import { resolveGrowthReportPeriod } from "../utils/reportPeriod";
-import { useGrowthDateRange } from "./useGrowthDateRange";
-import { useGrowthSelectedAdAccount } from "./useGrowthSelectedAdAccount";
+} from "../../utils/campaigns/campaignMetrics";
+import { filterCampaignMetricsByRange } from "../../utils/dashboard/dashboardDataFilters";
+import { enrichCampaignRowsWithLearning } from "../../utils/learning/enrichCampaignRowsWithLearning";
+import { saveGrowthReport } from "../../utils/reports/generateReport";
+import { resolveGrowthReportPeriod } from "../../utils/shared/reportPeriod";
+import { useGrowthDateRange } from "../shared/useGrowthDateRange";
+import { useGrowthSelectedAdAccount } from "../shared/useGrowthSelectedAdAccount";
 
 export function useGrowthCampaigns() {
   const { range, dateFilterProps, periodLabel } = useGrowthDateRange();

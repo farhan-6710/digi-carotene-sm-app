@@ -1,11 +1,11 @@
 import {
   clientGrowthBasePath,
   teamGrowthBasePath,
-} from "@/features/growth-and-analytics/constants/navigation";
+} from "@/features/growth-and-analytics/constants/shared/navigation";
 import {
   GROWTH_AD_ACCOUNT_PARAM,
   GROWTH_ORGANIC_ACCOUNT_PARAM,
-} from "@/features/growth-and-analytics/constants/growthUrlParams";
+} from "@/features/growth-and-analytics/constants/shared/growthUrlParams";
 
 export function buildProjectContentPerformancePath(
   portal: "team" | "client",

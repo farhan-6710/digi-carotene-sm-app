@@ -2,7 +2,7 @@ import { createContext } from "react";
 
 import {
   teamGrowthBasePath,
-} from "@/features/growth-and-analytics/constants/navigation";
+} from "@/features/growth-and-analytics/constants/shared/navigation";
 
 export type GrowthPortalContextValue = {
   basePath: string;

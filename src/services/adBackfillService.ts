@@ -1,9 +1,9 @@
-import { mapMetaAdsetSummaries } from "@/features/growth-and-analytics/utils/adMetaParsing";
+import { mapMetaAdsetSummaries } from "@/features/growth-and-analytics/utils/campaigns/adMetaParsing";
 import {
   assertBackfillNotAborted,
   reportBackfillProgress,
   type BackfillProgressOptions,
-} from "@/features/growth-and-analytics/utils/backfillProgress";
+} from "@/features/growth-and-analytics/utils/shared/backfillProgress";
 import {
   mapCampaignStatus,
   parseInsightConversions,
@@ -12,8 +12,8 @@ import {
   parseSpend,
   getMetaInsightChunksForSpan,
   hasAdDeliveryMetrics,
-} from "@/features/growth-and-analytics/utils/metaSyncMappers";
-import { getAdAccBackfillMetaRange } from "@/features/growth-and-analytics/utils/adAccBackfillWindow";
+} from "@/features/growth-and-analytics/utils/meta/metaSyncMappers";
+import { getAdAccBackfillMetaRange } from "@/features/growth-and-analytics/utils/campaigns/adAccBackfillWindow";
 import {
   fetchAdCampaignStatuses,
   fetchAdDailyInsights,

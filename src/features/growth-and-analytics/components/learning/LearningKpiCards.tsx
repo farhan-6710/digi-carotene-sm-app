@@ -1,8 +1,8 @@
 import { cn } from "@/shared/lib/utils";
 
 import type { CampaignKpiKey, KpiCardView } from "../../types/types";
-import { formatGapPercent, gapStatusLabel } from "../../utils/gapStatus";
-import { formatCpm, formatPercent } from "../../utils/formatters";
+import { formatGapPercent, gapStatusLabel } from "../../utils/learning/gapStatus";
+import { formatCpm, formatPercent } from "../../utils/shared/formatters";
 
 type LearningKpiCardsProps = {
   kpis: KpiCardView[];

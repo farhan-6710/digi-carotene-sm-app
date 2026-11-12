@@ -12,33 +12,33 @@ import {
   formatCurrency,
   formatFrequency,
   formatPercent,
-} from "./formatters";
+} from "../shared/formatters";
 import {
   CUSTOM_REPORT_TOP_POSTS,
   type CustomReportKind,
-} from "../constants/customReport";
+} from "../../constants/reports/customReport";
 import {
   adAccountKindLabel,
   organicPlatformLabel,
-} from "../constants/growthPlatformConfig";
+} from "../../constants/shared/growthPlatformConfig";
 import type {
   CustomReportAccountOption,
   CustomReportAccountSection,
   CustomReportDocumentData,
   CustomReportSectionStat,
-} from "../types/customReport";
+} from "../../types/customReport";
 import type {
   AdAccount,
   CampaignMetricRow,
   OrganicAccount,
   PastPostMetric,
-} from "../types/types";
-import { buildCampaignStatCards } from "./campaignMetrics";
+} from "../../types/types";
+import { buildCampaignStatCards } from "../campaigns/campaignMetrics";
 import { formatCustomReportPeriodLabel } from "./customReportPeriod";
 import {
   mapPastPostToPostRow,
   sumPostInteractionTotals,
-} from "./instagramPostMetrics";
+} from "../content/instagramPostMetrics";
 
 function pushStat(
   stats: CustomReportSectionStat[],

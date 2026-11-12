@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 import { cn } from "@/shared/lib/utils";
 
-import { useGrowthPaths } from "../../hooks/useGrowthPaths";
+import { useGrowthPaths } from "../../hooks/shared/useGrowthPaths";
 
 type CampaignDetailTabsProps = {
   campaignId: string;

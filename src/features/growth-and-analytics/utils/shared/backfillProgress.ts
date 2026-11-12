@@ -1,4 +1,4 @@
-import type { BackfillProgress } from "../types/types";
+import type { BackfillProgress } from "../../types/types";
 
 export type BackfillProgressOptions = {
   onProgress?: (progress: BackfillProgress) => void;

@@ -1,5 +1,5 @@
-import type { GoogleCampaignKpiId } from "../constants/googleCampaignTypeMatrix";
-import type { GrowthCampaignDetailView } from "../types/types";
+import type { GoogleCampaignKpiId } from "../../constants/campaigns/googleCampaignTypeMatrix";
+import type { GrowthCampaignDetailView } from "../../types/types";
 
 export type GoogleCampaignKpiValues = Record<GoogleCampaignKpiId, number | null>;
 

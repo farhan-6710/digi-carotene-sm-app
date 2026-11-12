@@ -8,18 +8,18 @@ import {
   buildContentTypeSplit,
   buildEngagementByType,
   mapPostRows,
-} from "../utils/contentMetrics";
+} from "../../utils/content/contentMetrics";
 import {
   buildFacebookContentStatCards,
   buildFacebookContentTypeSplit,
   buildFacebookEngagementByType,
-} from "../utils/facebookOrganicMetrics";
-import { mapPastPostToPostRow } from "../utils/instagramPostMetrics";
-import { saveGrowthReport } from "../utils/generateReport";
-import { resolveGrowthReportPeriod } from "../utils/reportPeriod";
+} from "../../utils/content/facebookOrganicMetrics";
+import { mapPastPostToPostRow } from "../../utils/content/instagramPostMetrics";
+import { saveGrowthReport } from "../../utils/reports/generateReport";
+import { resolveGrowthReportPeriod } from "../../utils/shared/reportPeriod";
 import { useFacebookOrganicAnalytics } from "./useFacebookOrganicAnalytics";
-import { useGrowthDateRange } from "./useGrowthDateRange";
-import { useGrowthOrganicAccountPicker } from "./useGrowthOrganicAccountPicker";
+import { useGrowthDateRange } from "../shared/useGrowthDateRange";
+import { useGrowthOrganicAccountPicker } from "../shared/useGrowthOrganicAccountPicker";
 
 export function useGrowthContentPerformance() {
   const { range, dateFilterProps, periodLabel } = useGrowthDateRange();

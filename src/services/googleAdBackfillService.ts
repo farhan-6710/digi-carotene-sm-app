@@ -1,10 +1,10 @@
-import { AD_BACKFILL_DAYS } from "@/features/growth-and-analytics/constants/metaConfig";
-import { getAdAccBackfillMetaRange } from "@/features/growth-and-analytics/utils/adAccBackfillWindow";
+import { AD_BACKFILL_DAYS } from "@/features/growth-and-analytics/constants/shared/metaConfig";
+import { getAdAccBackfillMetaRange } from "@/features/growth-and-analytics/utils/campaigns/adAccBackfillWindow";
 import {
   assertBackfillNotAborted,
   reportBackfillProgress,
   type BackfillProgressOptions,
-} from "@/features/growth-and-analytics/utils/backfillProgress";
+} from "@/features/growth-and-analytics/utils/shared/backfillProgress";
 import {
   googleAdsCpm,
   googleAdsDateFilter,
@@ -13,7 +13,7 @@ import {
   googleAdsParseInt,
   googleAdsRowHasDelivery,
   mapGoogleCampaignStatus,
-} from "@/features/growth-and-analytics/utils/googleAdsMetricMap";
+} from "@/features/growth-and-analytics/utils/campaigns/googleAdsMetricMap";
 import {
   replaceAdCampaignMetricsForAccount,
   type AdCampaignMetricInsert,

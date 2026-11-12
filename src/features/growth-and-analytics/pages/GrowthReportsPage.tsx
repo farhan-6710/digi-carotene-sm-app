@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 
-import { GrowthReportsAccountComboBox } from "../components/GrowthReportsAccountComboBox";
-import { GrowthReportTabs } from "../components/GrowthReportTabs";
+import { GrowthReportsAccountComboBox } from "../components/reports/GrowthReportsAccountComboBox";
+import { GrowthReportTabs } from "../components/reports/GrowthReportTabs";
 import { ReportsTable } from "../components/tables/ReportsTable";
-import { useGrowthReports } from "../hooks/useGrowthReports";
-import { useGrowthSelectedAccount } from "../hooks/useGrowthSelectedAccount";
-import { useGrowthSelectedAdAccount } from "../hooks/useGrowthSelectedAdAccount";
-import { useReportsFilter } from "../hooks/useReportsFilter";
-import { filterReportsByType } from "../utils/reportsFilter";
+import { useGrowthReports } from "../hooks/reports/useGrowthReports";
+import { useGrowthSelectedAccount } from "../hooks/shared/useGrowthSelectedAccount";
+import { useGrowthSelectedAdAccount } from "../hooks/shared/useGrowthSelectedAdAccount";
+import { useReportsFilter } from "../hooks/reports/useReportsFilter";
+import { filterReportsByType } from "../utils/reports/reportsFilter";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";

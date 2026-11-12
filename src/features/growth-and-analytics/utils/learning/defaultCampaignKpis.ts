@@ -1,4 +1,4 @@
-import type { AdAccountKind, CampaignKpiKey, KpiDirection } from "../types/types";
+import type { AdAccountKind, CampaignKpiKey, KpiDirection } from "../../types/types";
 
 export type DefaultKpiSet = {
   primaryKpi: CampaignKpiKey;

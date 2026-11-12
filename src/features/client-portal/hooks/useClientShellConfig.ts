@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useClientGrowthAccounts } from "@/features/client-portal/hooks/useClientGrowthAccounts";
 import { clientNav } from "@/features/client-portal-shell/constants/navigation";
 import { clientShellConfig } from "@/features/client-portal-shell/constants/shellConfig";
-import { buildClientGrowthNav } from "@/features/growth-and-analytics/constants/navigation";
+import { buildClientGrowthNav } from "@/features/growth-and-analytics/constants/shared/navigation";
 import type { ShellSidebarConfig } from "@/shared/types/components";
 
 const CLIENT_GROWTH_BASE = "/client-portal/growth-and-analytics";

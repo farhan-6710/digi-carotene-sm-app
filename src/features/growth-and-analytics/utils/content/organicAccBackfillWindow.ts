@@ -1,9 +1,9 @@
 import { addDays, subDays, startOfDay } from "date-fns";
 
-import { INSTAGRAM_BACKFILL_DAYS } from "../constants/metaConfig";
+import { INSTAGRAM_BACKFILL_DAYS } from "../../constants/shared/metaConfig";
 import { serializeUrlDate } from "@/shared/utils/urlDateParams";
 
-import type { MetaSyncRange } from "./metaSyncMappers";
+import type { MetaSyncRange } from "../meta/metaSyncMappers";
 
 export function getOrganicAccBackfillWindow(): {
   from: Date;

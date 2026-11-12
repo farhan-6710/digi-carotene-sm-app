@@ -3,7 +3,7 @@ import { ChatHeaderButton } from "@/features/chat/components/ChatHeaderButton";
 import { ChatPanelProvider } from "@/features/chat/providers/ChatPanelProvider";
 import { useClientShellConfig } from "@/features/client-portal/hooks/useClientShellConfig";
 import { ClientPortalProvider } from "@/features/client-portal/providers/ClientPortalProvider";
-import { clientGrowthBasePath } from "@/features/growth-and-analytics/constants/navigation";
+import { clientGrowthBasePath } from "@/features/growth-and-analytics/constants/shared/navigation";
 import { GrowthPortalProvider } from "@/features/growth-and-analytics/providers/GrowthPortalProvider";
 import { GrowthSelectedAccountProvider } from "@/features/growth-and-analytics/providers/GrowthSelectedAccountProvider";
 import { GrowthSelectedAdAccountProvider } from "@/features/growth-and-analytics/providers/GrowthSelectedAdAccountProvider";

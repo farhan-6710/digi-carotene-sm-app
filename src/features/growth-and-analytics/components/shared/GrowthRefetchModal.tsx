@@ -11,7 +11,7 @@ import {
 } from "@/shared/ui/dialog";
 import { Progress } from "@/shared/ui/progress";
 
-import type { GrowthRefetchModalProps } from "../types/components";
+import type { GrowthRefetchModalProps } from "../../types/components";
 
 export function GrowthRefetchModal({
   open,

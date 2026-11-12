@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { cn } from "@/shared/lib/utils";
 
-import { useGrowthPaths } from "../../hooks/useGrowthPaths";
+import { useGrowthPaths } from "../../hooks/shared/useGrowthPaths";
 import { DailyMetricsBreakdownSelect } from "./DailyMetricsBreakdownSelect";
 import { MobileLabel } from "./tableBits";
 import type { AdsTableProps, CampaignMetricCellsMetric } from "../../types/components";
@@ -13,7 +13,7 @@ import {
   formatCurrency,
   formatFrequency,
   formatPercent,
-} from "../../utils/formatters";
+} from "../../utils/shared/formatters";
 
 const GRID_CLASS =
   "grid-cols-[1.4fr_repeat(8,minmax(0,0.72fr))]";

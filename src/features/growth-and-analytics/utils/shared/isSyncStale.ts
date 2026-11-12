@@ -1,4 +1,4 @@
-import { LEARNING_STALE_SYNC_HOURS } from "../constants/campaignLearning";
+import { LEARNING_STALE_SYNC_HOURS } from "../../constants/learning/campaignLearning";
 
 /** True when last sync is missing or older than 24 hours (PDF §4 header). */
 export function isSyncStale(

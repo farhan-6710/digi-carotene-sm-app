@@ -1,6 +1,6 @@
 import { CustomReportBuilderForm } from "../components/custom-report/CustomReportBuilderForm";
 import { CustomReportEmailModal } from "../components/custom-report/CustomReportEmailModal";
-import { useCustomReportBuilder } from "../hooks/useCustomReportBuilder";
+import { useCustomReportBuilder } from "../hooks/reports/useCustomReportBuilder";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";

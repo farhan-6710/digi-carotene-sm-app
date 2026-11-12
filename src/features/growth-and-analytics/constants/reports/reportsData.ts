@@ -1,4 +1,4 @@
-import type { ReportRow, ReportType } from "../types/types";
+import type { ReportRow, ReportType } from "../../types/types";
 
 export const DUMMY_REPORTS: ReportRow[] = [
   {

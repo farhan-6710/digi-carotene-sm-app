@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/ui/dialog";
-import { isValidEmail } from "../../utils/customReportPeriod";
+import { isValidEmail } from "../../utils/reports/customReportPeriod";
 
 type CustomReportEmailModalProps = {
   open: boolean;

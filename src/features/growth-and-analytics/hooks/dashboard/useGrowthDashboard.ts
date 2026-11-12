@@ -7,17 +7,17 @@ import {
 import { fetchPastPostsForProfile } from "@/services/pastPostsMetricsService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
-import { buildDashboardStatCards } from "../utils/dashboardMetrics";
-import { buildContentTypeSplit } from "../utils/contentMetrics";
-import { buildFacebookDashboardStatCards } from "../utils/facebookOrganicMetrics";
+import { buildDashboardStatCards } from "../../utils/dashboard/dashboardMetrics";
+import { buildContentTypeSplit } from "../../utils/content/contentMetrics";
+import { buildFacebookDashboardStatCards } from "../../utils/content/facebookOrganicMetrics";
 import {
   aggregatePostsToDailyRows,
   mapPastPostToPostRow,
   sumPostInteractionTotals,
-} from "../utils/instagramPostMetrics";
-import { useFacebookOrganicAnalytics } from "./useFacebookOrganicAnalytics";
-import { useGrowthDateRange } from "./useGrowthDateRange";
-import { useGrowthOrganicAccountPicker } from "./useGrowthOrganicAccountPicker";
+} from "../../utils/content/instagramPostMetrics";
+import { useFacebookOrganicAnalytics } from "../content/useFacebookOrganicAnalytics";
+import { useGrowthDateRange } from "../shared/useGrowthDateRange";
+import { useGrowthOrganicAccountPicker } from "../shared/useGrowthOrganicAccountPicker";
 
 export function useGrowthDashboard() {
   const { range, dateFilterProps, periodLabel } = useGrowthDateRange();

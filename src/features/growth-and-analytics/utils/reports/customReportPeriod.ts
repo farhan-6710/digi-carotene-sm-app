@@ -10,7 +10,7 @@ import {
 import {
   CUSTOM_REPORT_MAX_DAYS,
   type CustomReportPeriodId,
-} from "../constants/customReport";
+} from "../../constants/reports/customReport";
 
 /** Same calendar windows as Content Performance / Campaign Analytics date filters. */
 export function resolveCustomReportPeriod(

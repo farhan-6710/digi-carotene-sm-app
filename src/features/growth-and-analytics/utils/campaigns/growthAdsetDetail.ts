@@ -6,7 +6,7 @@ import type {
   AdsetMetricRow,
   GrowthAdDetailView,
   GrowthAdsetDetailView,
-} from "../types/types";
+} from "../../types/types";
 import { buildAdRows } from "./adHierarchyMetrics";
 
 function aggregateMetricTotals<T extends { spend: number; impressions: number; reach: number; clicks: number; conversions: number; cpm: number; frequency: number }>(

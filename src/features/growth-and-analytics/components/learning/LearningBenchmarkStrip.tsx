@@ -1,8 +1,8 @@
 import { Button } from "@/shared/ui/button";
 
 import type { CampaignLearningView } from "../../types/types";
-import { LEARNING_MIN_HISTORY_DAYS } from "../../constants/campaignLearning";
-import { kpiLabel } from "../../utils/defaultCampaignKpis";
+import { LEARNING_MIN_HISTORY_DAYS } from "../../constants/learning/campaignLearning";
+import { kpiLabel } from "../../utils/learning/defaultCampaignKpis";
 
 type LearningBenchmarkStripProps = {
   view: CampaignLearningView;

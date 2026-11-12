@@ -1,4 +1,4 @@
-import type { GrowthPostDetailView, PastPostMetric } from "../types/types";
+import type { GrowthPostDetailView, PastPostMetric } from "../../types/types";
 import { calcPostEngagementRate, mapDbMediaTypeToUi } from "./instagramPostMetrics";
 
 export function buildGrowthPostDetailView(

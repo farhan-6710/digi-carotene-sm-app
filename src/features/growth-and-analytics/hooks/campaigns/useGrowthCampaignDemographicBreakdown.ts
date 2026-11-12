@@ -12,11 +12,11 @@ import type {
   CampaignDemographicTableView,
   DemographicBreakdown,
   GrowthDateRange,
-} from "../types/types";
-import { CAMPAIGN_BREAKDOWN_META_PARAM } from "../constants/campaignDemographicBreakdown";
-import { buildCampaignDemographicTableView } from "../utils/campaignDemographicBreakdown";
-import { extractResultActionTypes } from "../utils/metaSyncMappers";
-import { useGrowthSelectedAdAccount } from "./useGrowthSelectedAdAccount";
+} from "../../types/types";
+import { CAMPAIGN_BREAKDOWN_META_PARAM } from "../../constants/campaigns/campaignDemographicBreakdown";
+import { buildCampaignDemographicTableView } from "../../utils/campaigns/campaignDemographicBreakdown";
+import { extractResultActionTypes } from "../../utils/meta/metaSyncMappers";
+import { useGrowthSelectedAdAccount } from "../shared/useGrowthSelectedAdAccount";
 
 const EMPTY_VIEW: CampaignDemographicTableView = {
   rows: [],

@@ -1,14 +1,14 @@
 import type { CSSProperties } from "react";
 
-import type { GoogleCampaignKpiId } from "../constants/googleCampaignTypeMatrix";
-import { GOOGLE_CAMPAIGN_KPI_DEFS } from "../constants/googleCampaignTypeMatrix";
-import type { CampaignMetricRow } from "../types/types";
+import type { GoogleCampaignKpiId } from "../../constants/campaigns/googleCampaignTypeMatrix";
+import { GOOGLE_CAMPAIGN_KPI_DEFS } from "../../constants/campaigns/googleCampaignTypeMatrix";
+import type { CampaignMetricRow } from "../../types/types";
 import {
   formatCompact,
   formatCurrency,
   formatNumber,
   formatPercent,
-} from "./formatters";
+} from "../shared/formatters";
 
 /** Format one Google daily-metric cell from a campaign day row. */
 export function formatGoogleDailyMetricCell(

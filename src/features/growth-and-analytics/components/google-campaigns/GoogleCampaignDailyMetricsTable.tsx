@@ -9,19 +9,19 @@ import { MobileLabel } from "../tables/tableBits";
 import {
   DAILY_METRICS_DEFAULT_COLUMN_IDS,
   GOOGLE_DAILY_METRICS_COLUMNS_STORAGE_KEY,
-} from "../../constants/googleCampaignDetailLayout";
+} from "../../constants/campaigns/googleCampaignDetailLayout";
 import {
   GOOGLE_CAMPAIGN_KPI_DEFS,
   type GoogleCampaignKpiId,
   type GoogleCampaignTypeId,
-} from "../../constants/googleCampaignTypeMatrix";
+} from "../../constants/campaigns/googleCampaignTypeMatrix";
 import type { GrowthCampaignDetailView } from "../../types/types";
-import { dayLabel } from "../../utils/formatters";
+import { dayLabel } from "../../utils/shared/formatters";
 import {
   dailyMetricsGridLayout,
   formatGoogleDailyMetricCell,
-} from "../../utils/googleCampaignDailyMetrics";
-import { googleCampaignRenderableKpis } from "../../utils/resolveGoogleCampaignType";
+} from "../../utils/campaigns/googleCampaignDailyMetrics";
+import { googleCampaignRenderableKpis } from "../../utils/campaigns/resolveGoogleCampaignType";
 
 type GoogleCampaignDailyMetricsTableProps = {
   rows: GrowthCampaignDetailView["dailyRows"];

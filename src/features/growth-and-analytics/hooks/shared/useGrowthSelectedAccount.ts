@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import { GrowthSelectedAccountContext } from "../providers/growthSelectedAccountContext";
+import { GrowthSelectedAccountContext } from "../../providers/growthSelectedAccountContext";
 
 export function useGrowthSelectedAccount() {
   const context = useContext(GrowthSelectedAccountContext);

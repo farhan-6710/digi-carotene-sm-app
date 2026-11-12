@@ -4,13 +4,13 @@ import {
   CAMPAIGN_DEMOGRAPHIC_GENDER_ORDER,
   campaignDemographicGenderLabels,
   campaignPlacementLabels,
-} from "../constants/campaignDemographicBreakdown";
+} from "../../constants/campaigns/campaignDemographicBreakdown";
 import type {
   CampaignDemographicMetric,
   CampaignDemographicRow,
   CampaignDemographicTableView,
   DemographicBreakdown,
-} from "../types/types";
+} from "../../types/types";
 import type { AdDemographicInsight } from "@/services/metaService";
 import {
   hasAdDeliveryMetrics,
@@ -19,7 +19,7 @@ import {
   parseMetricDecimal,
   parseMetricInt,
   parseSpend,
-} from "./metaSyncMappers";
+} from "../meta/metaSyncMappers";
 
 type DemographicCell = {
   age: string | null;

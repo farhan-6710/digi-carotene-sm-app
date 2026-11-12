@@ -1,16 +1,16 @@
 import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router";
 
-import { GROWTH_AD_ACCOUNT_PARAM } from "@/features/growth-and-analytics/constants/growthUrlParams";
+import { GROWTH_AD_ACCOUNT_PARAM } from "@/features/growth-and-analytics/constants/shared/growthUrlParams";
 import {
   AD_PLATFORM_BADGE_CLASS,
   AD_PLATFORM_LIST_ORDER,
   adAccountKindLabel,
-} from "@/features/growth-and-analytics/constants/growthPlatformConfig";
-import { useGrowthSelectedAdAccount } from "@/features/growth-and-analytics/hooks/useGrowthSelectedAdAccount";
+} from "@/features/growth-and-analytics/constants/shared/growthPlatformConfig";
+import { useGrowthSelectedAdAccount } from "@/features/growth-and-analytics/hooks/shared/useGrowthSelectedAdAccount";
 import { ComboBox } from "@/shared/ui/ComboBox";
 
-import { writeAdAccountIdForPlatform } from "../utils/adAccountSelection";
+import { writeAdAccountIdForPlatform } from "../../utils/campaigns/adAccountSelection";
 
 export function GrowthAdAccountSelect() {
   const {

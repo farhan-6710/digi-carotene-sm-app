@@ -10,7 +10,7 @@ import {
 
 import { GrowthChartCard } from "./GrowthChartCard";
 import type { GrowthDonutChartProps } from "../../types/components";
-import { formatCompact } from "../../utils/formatters";
+import { formatCompact } from "../../utils/shared/formatters";
 
 export function GrowthDonutChart({
   title,

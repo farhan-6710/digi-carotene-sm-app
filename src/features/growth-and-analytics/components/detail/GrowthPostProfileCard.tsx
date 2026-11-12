@@ -1,9 +1,9 @@
 import { format } from "date-fns";
 import { useState } from "react";
 
-import { growthPostDetailStatItems } from "../constants/postDetailStats";
-import type { GrowthPostProfileCardProps } from "../types/components";
-import { formatCompact, formatPercent } from "../utils/formatters";
+import { growthPostDetailStatItems } from "../../constants/content/postDetailStats";
+import type { GrowthPostProfileCardProps } from "../../types/components";
+import { formatCompact, formatPercent } from "../../utils/shared/formatters";
 import { ImagePreviewModal } from "@/shared/components/ImagePreviewModal";
 import { cn } from "@/shared/lib/utils";
 

@@ -3,9 +3,9 @@ import {
   assertBackfillNotAborted,
   reportBackfillProgress,
   type BackfillProgressOptions,
-} from "@/features/growth-and-analytics/utils/backfillProgress";
-import { isWithinOrganicAccBackfillWindow } from "@/features/growth-and-analytics/utils/organicAccBackfillWindow";
-import { getMetaFollowerCountSyncRange } from "@/features/growth-and-analytics/utils/metaSyncMappers";
+} from "@/features/growth-and-analytics/utils/shared/backfillProgress";
+import { isWithinOrganicAccBackfillWindow } from "@/features/growth-and-analytics/utils/content/organicAccBackfillWindow";
+import { getMetaFollowerCountSyncRange } from "@/features/growth-and-analytics/utils/meta/metaSyncMappers";
 import {
   fetchInstagramBackfillMedia,
   fetchInstagramBackfillPostInsights,

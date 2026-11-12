@@ -1,4 +1,4 @@
-import type { BackfillProgressOptions } from "@/features/growth-and-analytics/utils/backfillProgress";
+import type { BackfillProgressOptions } from "@/features/growth-and-analytics/utils/shared/backfillProgress";
 import {
   rerunAdBackfillForAccount,
   runAdBackfill,

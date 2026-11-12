@@ -7,7 +7,7 @@ import type {
   OrganicAccount,
   PastPostMetric,
   PostRow,
-} from "../types/types";
+} from "../../types/types";
 
 export function mapDbMediaTypeToUi(
   mediaType: InstagramDbMediaType,

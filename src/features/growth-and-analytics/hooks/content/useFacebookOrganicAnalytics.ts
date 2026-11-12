@@ -10,15 +10,15 @@ import {
 } from "@/services/metaService";
 import { useFetch } from "@/shared/hooks/useFetch";
 
-import type { GrowthDateRange, OrganicAccount } from "../types/types";
+import type { GrowthDateRange, OrganicAccount } from "../../types/types";
 import {
   buildFacebookOrganicAnalytics,
   type FacebookOrganicAnalytics,
-} from "../utils/facebookOrganicMetrics";
+} from "../../utils/content/facebookOrganicMetrics";
 import {
   getMetaInsightChunksForSpan,
   resolveGrowthMetaSpan,
-} from "../utils/metaSyncMappers";
+} from "../../utils/meta/metaSyncMappers";
 
 const EMPTY: FacebookOrganicAnalytics = {
   dailyRows: [],

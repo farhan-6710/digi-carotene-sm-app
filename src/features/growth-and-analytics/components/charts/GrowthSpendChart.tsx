@@ -17,11 +17,11 @@ import {
   type ChartConfig,
 } from "@/shared/ui/chart";
 
-import { getSpendTrendMaxAxisTicks } from "../../constants/spendTrend";
+import { getSpendTrendMaxAxisTicks } from "../../constants/shared/spendTrend";
 import { GrowthChartCard } from "./GrowthChartCard";
 import type { GrowthSpendChartProps } from "../../types/components";
-import { pickChartAxisTicks } from "../../utils/chartAxisTicks";
-import { formatCompact } from "../../utils/formatters";
+import { pickChartAxisTicks } from "../../utils/shared/chartAxisTicks";
+import { formatCompact } from "../../utils/shared/formatters";
 
 const chartConfig: ChartConfig = {
   spend: { label: "Spend", color: "var(--chart-1)" },

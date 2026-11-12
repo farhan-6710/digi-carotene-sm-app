@@ -1,15 +1,15 @@
-import { growthCampaignDetailStatItems } from "../constants/campaignDetailStats";
-import { googleCampaignTypeSwitch } from "./google-campaigns/googleCampaignTypeSwitch";
-import { AdsetsTable } from "./tables/AdsetsTable";
-import { CampaignDailyMetricsTable } from "./tables/CampaignDailyMetricsTable";
-import { StatusBadge } from "./tables/tableBits";
-import type { GrowthCampaignProfileCardProps } from "../types/components";
+import { growthCampaignDetailStatItems } from "../../constants/campaigns/campaignDetailStats";
+import { googleCampaignTypeSwitch } from "../google-campaigns/googleCampaignTypeSwitch";
+import { AdsetsTable } from "../tables/AdsetsTable";
+import { CampaignDailyMetricsTable } from "../tables/CampaignDailyMetricsTable";
+import { StatusBadge } from "../tables/tableBits";
+import type { GrowthCampaignProfileCardProps } from "../../types/components";
 import {
   formatCampaignObjective,
   formatCompact,
   formatCurrency,
   formatPercent,
-} from "../utils/formatters";
+} from "../../utils/shared/formatters";
 import { cn } from "@/shared/lib/utils";
 
 export function GrowthCampaignProfileCard({

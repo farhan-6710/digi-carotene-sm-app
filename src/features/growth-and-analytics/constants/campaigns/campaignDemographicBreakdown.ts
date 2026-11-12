@@ -1,4 +1,4 @@
-import type { DemographicBreakdown } from "../types/types";
+import type { DemographicBreakdown } from "../../types/types";
 
 export const CAMPAIGN_DEMOGRAPHIC_AGE_ORDER = [
   "18-24",

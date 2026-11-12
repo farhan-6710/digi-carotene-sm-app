@@ -2,7 +2,7 @@ import type {
   BenchmarkValues,
   CampaignKpiKey,
   CampaignMetricRow,
-} from "../types/types";
+} from "../../types/types";
 
 function sumMetrics(rows: CampaignMetricRow[]) {
   return rows.reduce(

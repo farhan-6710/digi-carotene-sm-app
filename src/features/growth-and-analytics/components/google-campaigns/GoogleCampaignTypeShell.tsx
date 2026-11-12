@@ -1,22 +1,22 @@
 import { StatusBadge } from "../tables/tableBits";
 import { AdsetsTable } from "../tables/AdsetsTable";
 import { GoogleCampaignDailyMetricsTable } from "./GoogleCampaignDailyMetricsTable";
-import { GOOGLE_CAMPAIGN_SUMMARY_KPI_IDS } from "../../constants/googleCampaignDetailLayout";
+import { GOOGLE_CAMPAIGN_SUMMARY_KPI_IDS } from "../../constants/campaigns/googleCampaignDetailLayout";
 import {
   GOOGLE_CAMPAIGN_KPI_DEFS,
   GOOGLE_CAMPAIGN_TYPE_LABEL,
   googleCampaignChildEntityLabel,
   type GoogleCampaignTypeId,
-} from "../../constants/googleCampaignTypeMatrix";
+} from "../../constants/campaigns/googleCampaignTypeMatrix";
 import type { GoogleCampaignTypePageProps } from "../../types/components";
-import { buildGoogleCampaignKpiValues } from "../../utils/googleCampaignKpiValues";
-import { googleCampaignRenderableKpis } from "../../utils/resolveGoogleCampaignType";
+import { buildGoogleCampaignKpiValues } from "../../utils/campaigns/googleCampaignKpiValues";
+import { googleCampaignRenderableKpis } from "../../utils/campaigns/resolveGoogleCampaignType";
 import {
   formatCompact,
   formatCurrency,
   formatNumber,
   formatPercent,
-} from "../../utils/formatters";
+} from "../../utils/shared/formatters";
 
 type GoogleCampaignTypeShellProps = GoogleCampaignTypePageProps & {
   typeId: GoogleCampaignTypeId;

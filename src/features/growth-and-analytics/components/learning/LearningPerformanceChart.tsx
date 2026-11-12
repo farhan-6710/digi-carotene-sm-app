@@ -11,7 +11,7 @@ import {
 } from "recharts";
 
 import type { CampaignBenchmark, CampaignKpiKey } from "../../types/types";
-import { kpiLabel } from "../../utils/defaultCampaignKpis";
+import { kpiLabel } from "../../utils/learning/defaultCampaignKpis";
 
 type LearningPerformanceChartProps = {
   points: Array<{ date: string; value: number | null }>;

@@ -1,6 +1,6 @@
 import { Link2 } from "lucide-react";
 
-import { useGrowthPaths } from "@/features/growth-and-analytics/hooks/useGrowthPaths";
+import { useGrowthPaths } from "@/features/growth-and-analytics/hooks/shared/useGrowthPaths";
 import { TransitionLink } from "@/shared/components/TransitionLink";
 import { buttonVariants } from "@/shared/utils/shadcn";
 import { cn } from "@/shared/lib/utils";

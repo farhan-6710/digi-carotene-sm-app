@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-import type { AdAccount, BackfillProgress, OrganicAccount } from "../types/types";
+import type { AdAccount, BackfillProgress, OrganicAccount } from "../../types/types";
 import {
   fetchAdAccountAccessToken,
   fetchOrganicAccessToken,

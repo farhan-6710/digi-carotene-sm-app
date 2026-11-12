@@ -1,7 +1,7 @@
 import { useContext, useMemo } from "react";
 
-import { GROWTH_AD_ACCOUNT_PARAM } from "../constants/growthUrlParams";
-import { GrowthPortalContext } from "../providers/growthPortalContext";
+import { GROWTH_AD_ACCOUNT_PARAM } from "../../constants/shared/growthUrlParams";
+import { GrowthPortalContext } from "../../providers/growthPortalContext";
 
 export function useGrowthPortal() {
   return useContext(GrowthPortalContext);
