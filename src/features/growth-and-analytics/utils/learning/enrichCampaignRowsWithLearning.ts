@@ -15,6 +15,7 @@ import {
   readFrequencyRange,
 } from "./gapStatus";
 import { countDaysOfData } from "./autoBenchmark";
+import { idealBenchmarkValues } from "./idealBenchmark";
 import { kpisFromMetricRows, readKpiValue } from "./kpiFromMetrics";
 
 export function enrichCampaignRowsWithLearning(
@@ -42,27 +43,30 @@ export function enrichCampaignRowsWithLearning(
     const direction = defaults.primaryDirection;
     const currentValues = kpisFromMetricRows(campaignMetrics);
     const current = readKpiValue(currentValues, primaryKpi);
-    let benchmarkValue: number | null = null;
+    const defaultValues = benchmark
+      ? null
+      : idealBenchmarkValues(campaignMetrics, [primaryKpi]);
+    const targets = benchmark?.values ?? defaultValues;
+    let benchmarkValue: number | null;
     let gap: number | null = null;
-    if (primaryKpi === "frequency" && benchmark) {
-      const range = readFrequencyRange(benchmark.values);
+    if (primaryKpi === "frequency" && targets) {
+      const range = readFrequencyRange(targets);
       benchmarkValue = frequencyRangeMid(range);
       if (current !== null && range) {
         gap = computeFrequencyRangeGap(current, range.min, range.max);
       }
     } else {
-      benchmarkValue = benchmark
-        ? readKpiValue(benchmark.values, primaryKpi)
-        : null;
+      benchmarkValue = targets ? readKpiValue(targets, primaryKpi) : null;
       if (current !== null && benchmarkValue !== null) {
         gap = computeGap(current, benchmarkValue, direction);
       }
     }
     const volumeOk =
       campaignMetrics.reduce((s, r) => s + r.conversions, 0) >= 10;
-    const gapStatus: GapStatus | null = benchmark
-      ? gapToStatus(gap, volumeOk)
-      : null;
+    const gapStatus: GapStatus | null =
+      benchmark || benchmarkValue !== null
+        ? gapToStatus(gap, volumeOk)
+        : null;
     const days = countDaysOfData(campaignMetrics);
     const learningMode: LearningModeState = benchmark
       ? "tracking"

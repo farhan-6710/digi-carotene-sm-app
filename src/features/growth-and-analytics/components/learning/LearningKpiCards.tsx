@@ -81,10 +81,10 @@ export function LearningKpiCards({
               kpi.benchmarkMin !== null &&
               kpi.benchmarkMax !== null
                 ? kpi.benchmarkMin === kpi.benchmarkMax
-                  ? `Target ${formatKpiValue(kpi.key, kpi.benchmarkMin, currencyCode)}`
-                  : `Ideal ${formatKpiValue(kpi.key, kpi.benchmarkMin, currencyCode)}–${formatKpiValue(kpi.key, kpi.benchmarkMax, currencyCode)}`
+                  ? `${kpi.benchmarkIsDefault ? "Default" : "Target"} ${formatKpiValue(kpi.key, kpi.benchmarkMin, currencyCode)}`
+                  : `${kpi.benchmarkIsDefault ? "Default" : "Ideal"} ${formatKpiValue(kpi.key, kpi.benchmarkMin, currencyCode)}–${formatKpiValue(kpi.key, kpi.benchmarkMax, currencyCode)}`
                 : kpi.benchmark !== null
-                  ? `Target ${formatKpiValue(kpi.key, kpi.benchmark, currencyCode)}`
+                  ? `${kpi.benchmarkIsDefault ? "Default" : "Target"} ${formatKpiValue(kpi.key, kpi.benchmark, currencyCode)}`
                   : "No target set"}
             </p>
             <p className={cn("mt-2 text-xs font-medium", statusTone(kpi.status))}>

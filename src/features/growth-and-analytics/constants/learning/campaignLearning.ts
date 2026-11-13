@@ -13,6 +13,14 @@ export const BENCHMARK_DEFAULT_LOOKBACK_DAYS = 90;
 export const BENCHMARK_DEFAULT_MIN_RESULTS = 10;
 export const BENCHMARK_DEFAULT_METHOD = "top3" as const;
 
+/** Shown until the user saves a benchmark. Not the mean — the dense band. */
+export const IDEAL_BENCHMARK_LOOKBACK_DAYS = 30;
+export const IDEAL_BENCHMARK_MIN_DAYS = 7;
+/** Share of days in the tightest cluster ("where the chart sits"). */
+export const IDEAL_BENCHMARK_DENSE_SHARE = 0.5;
+/** Nudge that cluster slightly toward a better result. */
+export const IDEAL_BENCHMARK_NUDGE = 0.08;
+
 /** Gap status thresholds (PDF §7.5). */
 export const GAP_ON_TRACK_MIN = -0.1;
 export const GAP_BELOW_MIN = -0.25;

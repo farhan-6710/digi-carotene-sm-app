@@ -153,6 +153,7 @@ export function GrowthCampaignLearningPage() {
         points={view.chartPoints}
         chartKpi={learning.chartKpi}
         benchmark={view.benchmark}
+        fallbackValues={view.benchmarkIsDefault ? view.displayBenchmarkValues : null}
         currencyCode={view.currencyCode}
       />
 

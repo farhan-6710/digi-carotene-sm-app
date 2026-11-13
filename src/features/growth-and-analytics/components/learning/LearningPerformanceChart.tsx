@@ -16,7 +16,11 @@ import {
   type ChartConfig,
 } from "@/shared/ui/chart";
 
-import type { CampaignBenchmark, CampaignKpiKey } from "../../types/types";
+import type {
+  BenchmarkValues,
+  CampaignBenchmark,
+  CampaignKpiKey,
+} from "../../types/types";
 import { GrowthChartCard } from "../charts/GrowthChartCard";
 import { kpiLabel } from "../../utils/learning/defaultCampaignKpis";
 import {
@@ -29,6 +33,8 @@ type LearningPerformanceChartProps = {
   points: Array<{ date: string; value: number | null }>;
   chartKpi: CampaignKpiKey;
   benchmark: CampaignBenchmark | null;
+  /** Used when no benchmark is saved. */
+  fallbackValues?: BenchmarkValues | null;
   currencyCode?: string;
 };
 
@@ -47,6 +53,7 @@ export function LearningPerformanceChart({
   points,
   chartKpi,
   benchmark,
+  fallbackValues = null,
 }: LearningPerformanceChartProps) {
   const data = useMemo(
     () =>
@@ -59,22 +66,38 @@ export function LearningPerformanceChart({
   );
 
   const plottedCount = data.filter((d) => d.value !== null).length;
+  const values = benchmark?.values ?? fallbackValues;
+  const usingDefault = !benchmark && fallbackValues !== null;
   const freqRange =
-    chartKpi === "frequency" ? readFrequencyRange(benchmark?.values) : null;
+    chartKpi === "frequency" ? readFrequencyRange(values) : null;
   const benchmarkValue =
     chartKpi === "frequency"
       ? frequencyRangeMid(freqRange)
-      : (benchmark?.values[chartKpi] ?? null);
+      : (values?.[chartKpi] ?? null);
   const windows =
     benchmark?.mode === "auto" ? (benchmark.bestWindows ?? []) : [];
   const showDots = plottedCount > 0 && plottedCount <= 14;
+  const yNumbers = data
+    .map((row) => row.value)
+    .filter((value): value is number => value !== null && Number.isFinite(value));
+  if (benchmarkValue !== null) yNumbers.push(benchmarkValue);
+  if (freqRange) yNumbers.push(freqRange.min, freqRange.max);
+  const yDomain = (() => {
+    if (yNumbers.length === 0) return undefined;
+    const min = Math.min(...yNumbers);
+    const max = Math.max(...yNumbers);
+    const pad = (max - min) * 0.1 || Math.abs(max) * 0.1 || 1;
+    return [Math.max(0, min - pad), max + pad] as [number, number];
+  })();
 
   const description =
-    chartKpi === "frequency" && freqRange && freqRange.min !== freqRange.max
-      ? "Shaded horizontal band is the ideal frequency range."
-      : benchmark?.mode === "auto" && windows.length > 0
-        ? "Shaded ranges are the periods used for the auto benchmark."
-        : "Daily values for the selected KPI in the range above.";
+    usingDefault
+      ? "Dashed line is the default benchmark from where the last 30 days sit."
+      : chartKpi === "frequency" && freqRange && freqRange.min !== freqRange.max
+        ? "Shaded horizontal band is the ideal frequency range."
+        : benchmark?.mode === "auto" && windows.length > 0
+          ? "Shaded ranges are the periods used for the auto benchmark."
+          : "Daily values for the selected KPI in the range above.";
 
   return (
     <GrowthChartCard
@@ -107,6 +130,7 @@ export function LearningPerformanceChart({
             axisLine={false}
             tickMargin={8}
             width={44}
+            domain={yDomain}
             tickFormatter={(value) => formatCompact(Number(value))}
             className="text-muted-foreground font-medium"
           />
@@ -146,7 +170,12 @@ export function LearningPerformanceChart({
               strokeDasharray="4 4"
               strokeWidth={1.5}
               label={{
-                value: freqRange && freqRange.min !== freqRange.max ? "Ideal mid" : "Benchmark",
+                value:
+                  usingDefault
+                    ? "Default"
+                    : freqRange && freqRange.min !== freqRange.max
+                      ? "Ideal mid"
+                      : "Benchmark",
                 position: "insideTopRight",
                 fontSize: 11,
                 fill: "var(--muted-foreground)",

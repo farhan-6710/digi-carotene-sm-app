@@ -574,6 +574,8 @@ export type KpiCardView = {
   current: number | null;
   /** Midpoint / single target (chart + list). */
   benchmark: number | null;
+  /** True when this target is the 30-day default, not a saved benchmark. */
+  benchmarkIsDefault: boolean;
   /** Frequency ideal band (when set). */
   benchmarkMin: number | null;
   benchmarkMax: number | null;
@@ -596,6 +598,9 @@ export type CampaignLearningView = {
   learningMode: LearningModeView;
   kpiConfig: CampaignKpiConfig;
   benchmark: CampaignBenchmark | null;
+  /** Saved values, or the 30-day default when nothing is saved. */
+  displayBenchmarkValues: BenchmarkValues | null;
+  benchmarkIsDefault: boolean;
   pendingBenchmark: CampaignBenchmark | null;
   kpis: KpiCardView[];
   chartPoints: Array<{ date: string; value: number | null }>;

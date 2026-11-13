@@ -1,5 +1,6 @@
 import type {
   AdAccount,
+  BenchmarkValues,
   CampaignBenchmark,
   CampaignKpiConfig,
   CampaignKpiKey,
@@ -8,6 +9,7 @@ import type {
   KpiCardView,
 } from "../../types/types";
 import { kpiDirection, kpiLabel } from "./defaultCampaignKpis";
+import { idealBenchmarkValues } from "./idealBenchmark";
 import {
   computeFrequencyRangeGap,
   computeGap,
@@ -49,7 +51,8 @@ function buildKpiCard(input: {
   primary: boolean;
   currentRows: CampaignMetricRow[];
   allDailyRows: CampaignMetricRow[];
-  benchmark: CampaignBenchmark | null;
+  targets: BenchmarkValues | null;
+  isDefault: boolean;
   minResults: number;
 }): KpiCardView {
   const direction = kpiDirection(input.key);
@@ -59,13 +62,13 @@ function buildKpiCard(input: {
     input.currentRows.reduce((s, r) => s + r.conversions, 0) >=
     input.minResults;
 
-  let benchmarkValue: number | null = null;
+  let benchmarkValue: number | null;
   let benchmarkMin: number | null = null;
   let benchmarkMax: number | null = null;
   let gap: number | null = null;
 
-  if (input.key === "frequency" && input.benchmark) {
-    const range = readFrequencyRange(input.benchmark.values);
+  if (input.key === "frequency" && input.targets) {
+    const range = readFrequencyRange(input.targets);
     benchmarkMin = range?.min ?? null;
     benchmarkMax = range?.max ?? null;
     benchmarkValue = frequencyRangeMid(range);
@@ -73,17 +76,16 @@ function buildKpiCard(input: {
       gap = computeFrequencyRangeGap(current, range.min, range.max);
     }
   } else {
-    benchmarkValue = input.benchmark
-      ? readKpiValue(input.benchmark.values, input.key)
+    benchmarkValue = input.targets
+      ? readKpiValue(input.targets, input.key)
       : null;
     if (current !== null && benchmarkValue !== null) {
       gap = computeGap(current, benchmarkValue, direction);
     }
   }
 
-  const status = input.benchmark
-    ? gapToStatus(gap, volumeOk)
-    : "not_enough_data";
+  const hasTarget = benchmarkValue !== null;
+  const status = hasTarget ? gapToStatus(gap, volumeOk) : "not_enough_data";
 
   return {
     key: input.key,
@@ -92,6 +94,7 @@ function buildKpiCard(input: {
     direction,
     current,
     benchmark: benchmarkValue,
+    benchmarkIsDefault: input.isDefault && hasTarget,
     benchmarkMin,
     benchmarkMax,
     gap,
@@ -122,13 +125,22 @@ export function buildCampaignLearningView(input: {
     ),
   ].slice(0, 5);
 
+  const defaultValues = input.benchmark
+    ? null
+    : idealBenchmarkValues(input.dailyRows, keys);
+  const hasDefault =
+    defaultValues !== null && Object.keys(defaultValues).length > 0;
+  const targets = input.benchmark?.values ?? (hasDefault ? defaultValues : null);
+  const isDefault = !input.benchmark && hasDefault;
+
   const kpis = keys.map((key) =>
     buildKpiCard({
       key,
       primary: key === input.kpiConfig.primaryKpi,
       currentRows,
       allDailyRows: input.dailyRows,
-      benchmark: input.benchmark,
+      targets,
+      isDefault,
       minResults: input.kpiConfig.minResults,
     }),
   );
@@ -163,6 +175,8 @@ export function buildCampaignLearningView(input: {
     learningMode,
     kpiConfig: input.kpiConfig,
     benchmark: input.benchmark,
+    displayBenchmarkValues: targets,
+    benchmarkIsDefault: isDefault,
     pendingBenchmark: input.pendingBenchmark,
     kpis,
     chartPoints,

@@ -1,7 +1,10 @@
 import { Button } from "@/shared/ui/button";
 
 import type { CampaignLearningView } from "../../types/types";
-import { LEARNING_MIN_HISTORY_DAYS } from "../../constants/learning/campaignLearning";
+import {
+  IDEAL_BENCHMARK_LOOKBACK_DAYS,
+  LEARNING_MIN_HISTORY_DAYS,
+} from "../../constants/learning/campaignLearning";
 import { kpiLabel } from "../../utils/learning/defaultCampaignKpis";
 
 type LearningBenchmarkStripProps = {
@@ -41,6 +44,7 @@ export function LearningBenchmarkStrip({
 }: LearningBenchmarkStripProps) {
   const { learningMode, benchmark, pendingBenchmark, kpiConfig } = view;
   const collecting = learningMode.state === "collecting";
+  const usingDefault = !benchmark && view.benchmarkIsDefault;
 
   return (
     <div className="space-y-3 rounded-2xl border border-border bg-card p-5 shadow-xs">
@@ -48,9 +52,11 @@ export function LearningBenchmarkStrip({
         <div className="min-w-0 space-y-1">
           <h3 className="text-sm font-semibold text-foreground">Benchmark</h3>
           <p className="text-sm text-muted-foreground">
-            {collecting
-              ? `Collecting history · ${learningMode.daysOfData} / ${LEARNING_MIN_HISTORY_DAYS} days`
-              : `${benchmarkSummary(view)} · Primary ${kpiLabel(kpiConfig.primaryKpi)}`}
+            {usingDefault
+              ? `Default · last ${IDEAL_BENCHMARK_LOOKBACK_DAYS} days · Primary ${kpiLabel(kpiConfig.primaryKpi)}`
+              : collecting
+                ? `Collecting history · ${learningMode.daysOfData} / ${LEARNING_MIN_HISTORY_DAYS} days`
+                : `${benchmarkSummary(view)} · Primary ${kpiLabel(kpiConfig.primaryKpi)}`}
           </p>
           {benchmark?.needsReview ? (
             <p className="text-sm text-destructive">Needs review before trusting gaps.</p>
@@ -77,7 +83,12 @@ export function LearningBenchmarkStrip({
         </div>
       </div>
 
-      {collecting ? (
+      {usingDefault ? (
+        <p className="text-sm text-muted-foreground">
+          Default benchmark from the last 30 days, based on where daily results sit
+          most, nudged a little toward a better result. Set your own target any time.
+        </p>
+      ) : collecting ? (
         <p className="text-sm text-muted-foreground">
           Learning needs more daily metrics before auto-benchmarks. You can still set a
           manual target now.
