@@ -1,14 +1,19 @@
 import { useMemo, useState } from "react";
 
 import { Button } from "@/shared/ui/button";
+import { Checkbox } from "@/shared/ui/checkbox";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@/shared/ui/sheet";
+import { Switch } from "@/shared/ui/switch";
+import { cn } from "@/shared/lib/utils";
 
 import {
   BENCHMARK_DEFAULT_LOOKBACK_DAYS,
@@ -29,6 +34,13 @@ import type {
 } from "../../types/types";
 import { computeAutoBenchmark } from "../../utils/learning/autoBenchmark";
 import { kpiLabel } from "../../utils/learning/defaultCampaignKpis";
+import {
+  computeFrequencyRangeGap,
+  formatGapPercent,
+  frequencyRangeMid,
+  readFrequencyRange,
+} from "../../utils/learning/gapStatus";
+import { kpisFromMetricRows, readKpiValue } from "../../utils/learning/kpiFromMetrics";
 
 type SetBenchmarkDrawerProps = {
   open: boolean;
@@ -48,14 +60,46 @@ type SetBenchmarkDrawerProps = {
   ) => Promise<void>;
 };
 
-type FormProps = {
+const MODE_OPTIONS: Array<{ value: BenchmarkMode; label: string }> = [
+  { value: "auto", label: "Auto" },
+  { value: "manual", label: "Manual" },
+  { value: "client_target", label: "Client target" },
+];
+
+const selectClassName =
+  "h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+
+function Field({
+  label,
+  htmlFor,
+  children,
+  hint,
+}: {
+  label: string;
+  htmlFor?: string;
+  children: React.ReactNode;
+  hint?: string;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={htmlFor}>{label}</Label>
+      {children}
+      {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
+function SetBenchmarkForm({
+  view,
+  dailyRows,
+  onSave,
+  onClose,
+}: {
   view: CampaignLearningView;
   dailyRows: CampaignMetricRow[];
   onSave: SetBenchmarkDrawerProps["onSave"];
   onClose: () => void;
-};
-
-function SetBenchmarkForm({ view, dailyRows, onSave, onClose }: FormProps) {
+}) {
   const [mode, setMode] = useState<BenchmarkMode>(
     view.benchmark?.mode ?? "auto",
   );
@@ -108,16 +152,56 @@ function SetBenchmarkForm({ view, dailyRows, onSave, onClose }: FormProps) {
     ],
   );
 
+  const current7d = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const from = new Date(`${today}T00:00:00Z`);
+    from.setUTCDate(from.getUTCDate() - 6);
+    const fromStr = from.toISOString().slice(0, 10);
+    const rows = dailyRows.filter((r) => r.date.slice(0, 10) >= fromStr);
+    return kpisFromMetricRows(rows);
+  }, [dailyRows]);
+
   const previewValues = mode === "auto" ? preview.values : manualValues;
   const kpiKeys: CampaignKpiKey[] = [
     view.kpiConfig.primaryKpi,
-    ...view.kpiConfig.secondaryKpis,
+    ...view.kpiConfig.secondaryKpis.filter(
+      (k) => k !== view.kpiConfig.primaryKpi,
+    ),
   ];
 
-  const handleSave = async () => {
-    if (mode === "manual" && !reason.trim()) return;
-    if (mode === "auto" && preview.status === "insufficient_data") return;
+  const frequencyOk =
+    view.kpiConfig.primaryKpi !== "frequency" &&
+    !view.kpiConfig.secondaryKpis.includes("frequency")
+      ? true
+      : mode === "auto"
+        ? true
+        : (() => {
+            const min = manualValues.frequency_min;
+            const max = manualValues.frequency_max;
+            return (
+              typeof min === "number" &&
+              typeof max === "number" &&
+              min > 0 &&
+              max >= min
+            );
+          })();
 
+  const primaryOk =
+    mode === "auto"
+      ? true
+      : view.kpiConfig.primaryKpi === "frequency"
+        ? frequencyOk
+        : (manualValues[view.kpiConfig.primaryKpi] ?? 0) > 0;
+
+  const canSave =
+    !saving &&
+    !(mode === "manual" && !reason.trim()) &&
+    !(mode === "auto" && preview.status === "insufficient_data") &&
+    primaryOk &&
+    (mode === "auto" || frequencyOk);
+
+  const handleSave = async () => {
+    if (!canSave) return;
     setSaving(true);
     try {
       await onSave({
@@ -142,218 +226,366 @@ function SetBenchmarkForm({ view, dailyRows, onSave, onClose }: FormProps) {
   };
 
   return (
-    <div className="mt-4 space-y-5 px-1 pb-8">
-      <p className="text-sm text-muted-foreground">
-        {view.campaignName} · Primary: {kpiLabel(view.kpiConfig.primaryKpi)}
-      </p>
-
-      <div className="flex flex-wrap gap-2">
-        {(
-          [
-            ["auto", "Auto — best performance"],
-            ["manual", "Manual"],
-            ["client_target", "Client target"],
-          ] as const
-        ).map(([value, label]) => (
-          <Button
-            key={value}
-            type="button"
-            size="sm"
-            variant={mode === value ? "default" : "outline"}
-            onClick={() => setMode(value)}
-          >
-            {label}
-          </Button>
-        ))}
-      </div>
-
-      {mode === "auto" ? (
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="bench-method">Method</Label>
-            <select
-              id="bench-method"
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-              value={method}
-              onChange={(e) => setMethod(e.target.value as BenchmarkMethod)}
+    <>
+      <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-4 py-4">
+        <div className="flex flex-wrap gap-2">
+          {MODE_OPTIONS.map((opt) => (
+            <Button
+              key={opt.value}
+              type="button"
+              size="sm"
+              variant="outline"
+              className={cn(
+                "rounded-full",
+                mode === opt.value &&
+                  "border-primary bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
+              )}
+              onClick={() => setMode(opt.value)}
             >
-              <option value="top3">Average of top 3 windows</option>
-              <option value="best">Single best window</option>
-              <option value="p80">80th percentile</option>
-            </select>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="bench-window">Window length</Label>
-            <select
-              id="bench-window"
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-              value={windowDays}
-              onChange={(e) => setWindowDays(Number(e.target.value))}
-            >
-              {BENCHMARK_WINDOW_DAYS.map((d) => (
-                <option key={d} value={d}>
-                  {d} days
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="bench-lookback">Look back</Label>
-            <select
-              id="bench-lookback"
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-              value={lookbackDays}
-              onChange={(e) => setLookbackDays(Number(e.target.value))}
-            >
-              {BENCHMARK_LOOKBACK_DAYS.map((d) => (
-                <option key={d} value={d}>
-                  Last {d} days
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="bench-min">Min results / window</Label>
-            <Input
-              id="bench-min"
-              type="number"
-              min={1}
-              value={minResults}
-              onChange={(e) => setMinResults(Number(e.target.value) || 1)}
-            />
-          </div>
+              {opt.label}
+            </Button>
+          ))}
         </div>
-      ) : null}
 
-      {mode === "auto" && preview.status === "insufficient_data" ? (
-        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-200">
-          Not enough history for an automatic benchmark yet. Switch to Manual or
-          wait for more data.
-        </p>
-      ) : null}
-
-      <div className="space-y-2">
-        <p className="text-sm font-medium">Preview</p>
-        <div className="overflow-hidden rounded-lg border border-border">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/40 text-left text-xs text-muted-foreground">
-              <tr>
-                <th className="px-3 py-2">KPI</th>
-                <th className="px-3 py-2">Benchmark</th>
-              </tr>
-            </thead>
-            <tbody>
-              {kpiKeys.map((key) => (
-                <tr key={key} className="border-t border-border">
-                  <td className="px-3 py-2">{kpiLabel(key)}</td>
-                  <td className="px-3 py-2">
-                    {mode === "auto" ? (
-                      <span className="font-mono tabular-nums">
-                        {previewValues[key]?.toFixed(2) ?? "—"}
-                      </span>
-                    ) : (
-                      <Input
-                        type="number"
-                        step="any"
-                        className="h-8"
-                        value={manualValues[key] ?? ""}
-                        onChange={(e) =>
-                          setManualValues((prev) => ({
-                            ...prev,
-                            [key]:
-                              e.target.value === ""
-                                ? undefined
-                                : Number(e.target.value),
-                          }))
-                        }
-                      />
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {mode === "auto" && preview.windows.length > 0 ? (
-          <p className="text-xs text-muted-foreground">
-            Best windows:{" "}
-            {preview.windows.map((w) => `${w.start}–${w.end}`).join(", ")}
-          </p>
+        {mode === "auto" ? (
+          <section className="space-y-4 rounded-2xl border border-border bg-card p-4">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground">
+                Auto settings
+              </h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Built from this campaign’s own best periods.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Method" htmlFor="bench-method">
+                <select
+                  id="bench-method"
+                  className={selectClassName}
+                  value={method}
+                  onChange={(e) => setMethod(e.target.value as BenchmarkMethod)}
+                >
+                  <option value="top3">Average of top 3</option>
+                  <option value="best">Single best window</option>
+                  <option value="p80">80th percentile</option>
+                </select>
+              </Field>
+              <Field label="Window length" htmlFor="bench-window">
+                <select
+                  id="bench-window"
+                  className={selectClassName}
+                  value={windowDays}
+                  onChange={(e) => setWindowDays(Number(e.target.value))}
+                >
+                  {BENCHMARK_WINDOW_DAYS.map((d) => (
+                    <option key={d} value={d}>
+                      {d} days
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Look back" htmlFor="bench-lookback">
+                <select
+                  id="bench-lookback"
+                  className={selectClassName}
+                  value={lookbackDays}
+                  onChange={(e) => setLookbackDays(Number(e.target.value))}
+                >
+                  {BENCHMARK_LOOKBACK_DAYS.map((d) => (
+                    <option key={d} value={d}>
+                      Last {d} days
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Min results / window" htmlFor="bench-min">
+                <Input
+                  id="bench-min"
+                  type="number"
+                  min={1}
+                  value={minResults}
+                  onChange={(e) => setMinResults(Number(e.target.value) || 1)}
+                />
+              </Field>
+            </div>
+            {preview.status === "insufficient_data" ? (
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-200">
+                Not enough history for auto yet.{" "}
+                <button
+                  type="button"
+                  className="font-medium underline underline-offset-2"
+                  onClick={() => setMode("manual")}
+                >
+                  Switch to Manual
+                </button>
+              </div>
+            ) : null}
+          </section>
         ) : null}
-      </div>
 
-      {mode === "client_target" ? (
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="agreed-with">Agreed with</Label>
-            <Input
-              id="agreed-with"
-              value={agreedWith}
-              onChange={(e) => setAgreedWith(e.target.value)}
-            />
+        <section className="space-y-3">
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">
+              {mode === "auto" ? "Preview" : "Target values"}
+            </h3>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Current is the last 7 days. Frequency uses a min–max ideal band;
+              other KPIs use a single target. Gap rules match the Learning cards.
+            </p>
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="agreed-on">Agreed on</Label>
-            <Input
-              id="agreed-on"
-              type="date"
-              value={agreedOn}
-              onChange={(e) => setAgreedOn(e.target.value)}
-            />
+          <div className="overflow-hidden rounded-2xl border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/40 text-left text-xs text-muted-foreground">
+                <tr>
+                  <th className="px-3 py-2.5 font-medium">KPI</th>
+                  <th className="px-3 py-2.5 font-medium">Target</th>
+                  <th className="px-3 py-2.5 font-medium">Current 7d</th>
+                  <th className="px-3 py-2.5 font-medium">Gap</th>
+                </tr>
+              </thead>
+              <tbody>
+                {kpiKeys.map((key) => {
+                  const current = readKpiValue(current7d, key);
+                  const freqRange =
+                    key === "frequency"
+                      ? readFrequencyRange(previewValues)
+                      : null;
+                  const target =
+                    key === "frequency"
+                      ? frequencyRangeMid(freqRange)
+                      : readKpiValue(previewValues, key);
+                  const card = view.kpis.find((k) => k.key === key);
+                  const direction = card?.direction ?? "higher";
+                  let gap: number | null = null;
+                  if (key === "frequency" && current !== null && freqRange) {
+                    gap = computeFrequencyRangeGap(
+                      current,
+                      freqRange.min,
+                      freqRange.max,
+                    );
+                  } else if (target !== null && current !== null && target !== 0) {
+                    gap =
+                      direction === "lower"
+                        ? (target - current) / target
+                        : (current - target) / target;
+                  }
+                  return (
+                    <tr key={key} className="border-t border-border">
+                      <td className="px-3 py-2.5">
+                        <span className="font-medium text-foreground">
+                          {kpiLabel(key)}
+                        </span>
+                        {key === view.kpiConfig.primaryKpi ? (
+                          <span className="ml-1 text-xs text-muted-foreground">
+                            Primary
+                          </span>
+                        ) : null}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        {key === "frequency" ? (
+                          mode === "auto" ? (
+                            <span className="tabular-nums text-foreground">
+                              {freqRange
+                                ? freqRange.min === freqRange.max
+                                  ? freqRange.min.toFixed(2)
+                                  : `${freqRange.min.toFixed(2)}–${freqRange.max.toFixed(2)}`
+                                : "—"}
+                            </span>
+                          ) : (
+                            <div className="flex items-center gap-1.5">
+                              <Input
+                                type="number"
+                                step="any"
+                                min={0}
+                                className="h-8 w-[4.5rem]"
+                                placeholder="Min"
+                                aria-label="Frequency min"
+                                value={manualValues.frequency_min ?? ""}
+                                onChange={(e) =>
+                                  setManualValues((prev) => {
+                                    const min =
+                                      e.target.value === ""
+                                        ? undefined
+                                        : Number(e.target.value);
+                                    const max = prev.frequency_max;
+                                    const mid =
+                                      min != null && max != null
+                                        ? (min + max) / 2
+                                        : min;
+                                    return {
+                                      ...prev,
+                                      frequency_min: min,
+                                      frequency: mid,
+                                    };
+                                  })
+                                }
+                              />
+                              <span className="text-xs text-muted-foreground">–</span>
+                              <Input
+                                type="number"
+                                step="any"
+                                min={0}
+                                className="h-8 w-[4.5rem]"
+                                placeholder="Max"
+                                aria-label="Frequency max"
+                                value={manualValues.frequency_max ?? ""}
+                                onChange={(e) =>
+                                  setManualValues((prev) => {
+                                    const max =
+                                      e.target.value === ""
+                                        ? undefined
+                                        : Number(e.target.value);
+                                    const min = prev.frequency_min;
+                                    const mid =
+                                      min != null && max != null
+                                        ? (min + max) / 2
+                                        : max;
+                                    return {
+                                      ...prev,
+                                      frequency_max: max,
+                                      frequency: mid,
+                                    };
+                                  })
+                                }
+                              />
+                            </div>
+                          )
+                        ) : mode === "auto" ? (
+                          <span className="tabular-nums text-foreground">
+                            {target?.toFixed(2) ?? "—"}
+                          </span>
+                        ) : (
+                          <Input
+                            type="number"
+                            step="any"
+                            className="h-8"
+                            value={manualValues[key] ?? ""}
+                            onChange={(e) =>
+                              setManualValues((prev) => ({
+                                ...prev,
+                                [key]:
+                                  e.target.value === ""
+                                    ? undefined
+                                    : Number(e.target.value),
+                              }))
+                            }
+                          />
+                        )}
+                      </td>
+                      <td className="px-3 py-2.5 tabular-nums text-muted-foreground">
+                        {current?.toFixed(2) ?? "—"}
+                      </td>
+                      <td className="px-3 py-2.5 tabular-nums text-muted-foreground">
+                        {formatGapPercent(gap)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-        </div>
-      ) : null}
+          {mode === "auto" && preview.windows.length > 0 ? (
+            <p className="text-xs text-muted-foreground">
+              Best windows:{" "}
+              {preview.windows.map((w) => `${w.start}–${w.end}`).join(", ")}
+              {preview.eligible > 0
+                ? ` · ${preview.eligible} eligible windows`
+                : null}
+            </p>
+          ) : null}
+        </section>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="bench-reason">
-          Reason / note{mode === "manual" ? " *" : ""}
-        </Label>
-        <Input
-          id="bench-reason"
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-          placeholder="e.g. Best month before the Diwali offer ended"
-        />
-      </div>
+        {mode === "client_target" ? (
+          <section className="grid gap-4 rounded-2xl border border-border bg-card p-4 sm:grid-cols-2">
+            <Field label="Agreed with" htmlFor="agreed-with">
+              <Input
+                id="agreed-with"
+                value={agreedWith}
+                onChange={(e) => setAgreedWith(e.target.value)}
+                placeholder="Client contact name"
+              />
+            </Field>
+            <Field label="Agreed on" htmlFor="agreed-on">
+              <Input
+                id="agreed-on"
+                type="date"
+                value={agreedOn}
+                onChange={(e) => setAgreedOn(e.target.value)}
+              />
+            </Field>
+          </section>
+        ) : null}
 
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={suggestUpdates}
-          onChange={(e) => setSuggestUpdates(e.target.checked)}
-        />
-        Suggest an update when the campaign beats this benchmark for 7 days
-      </label>
-      {mode === "auto" ? (
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={autoAdvance}
-            onChange={(e) => setAutoAdvance(e.target.checked)}
+        <Field
+          label={mode === "manual" ? "Reason / note *" : "Reason / note"}
+          htmlFor="bench-reason"
+          hint={
+            mode === "manual"
+              ? "Required for manual benchmarks."
+              : "Optional context for the team."
+          }
+        >
+          <Input
+            id="bench-reason"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="e.g. Best month before the Diwali offer ended"
           />
-          Auto-advance without asking
-        </label>
-      ) : null}
+        </Field>
 
-      <div className="flex gap-2 pt-2">
+        <section className="space-y-3 rounded-2xl border border-border bg-card p-4">
+          <label className="flex items-start gap-3 text-sm">
+            <Checkbox
+              checked={suggestUpdates}
+              onCheckedChange={(checked) =>
+                setSuggestUpdates(checked === true)
+              }
+              className="mt-0.5"
+            />
+            <span>
+              <span className="font-medium text-foreground">
+                Suggest an update
+              </span>
+              <span className="mt-0.5 block text-xs text-muted-foreground">
+                When the campaign beats this benchmark for 7 days.
+              </span>
+            </span>
+          </label>
+          {mode === "auto" ? (
+            <div className="flex items-center justify-between gap-3 border-t border-border pt-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  Auto-advance
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Apply new best without asking.
+                </p>
+              </div>
+              <Switch checked={autoAdvance} onCheckedChange={setAutoAdvance} />
+            </div>
+          ) : null}
+        </section>
+      </div>
+
+      <SheetFooter className="border-t border-border sm:flex-row sm:justify-end">
         <Button
           type="button"
+          variant="outline"
+          className="rounded-full"
+          onClick={onClose}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="button"
+          className="rounded-full"
           onClick={handleSave}
-          disabled={
-            saving ||
-            (mode === "manual" && !reason.trim()) ||
-            (mode === "auto" && preview.status === "insufficient_data") ||
-            (mode !== "auto" &&
-              (manualValues[view.kpiConfig.primaryKpi] ?? 0) <= 0)
-          }
+          disabled={!canSave}
         >
           {saving ? "Saving…" : "Save benchmark"}
         </Button>
-        <Button type="button" variant="outline" onClick={onClose}>
-          Cancel
-        </Button>
-      </div>
-    </div>
+      </SheetFooter>
+    </>
   );
 }
 
@@ -366,9 +598,15 @@ export function SetBenchmarkDrawer({
 }: SetBenchmarkDrawerProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full overflow-y-auto sm:max-w-[480px]">
-        <SheetHeader>
+      <SheetContent
+        side="right"
+        className="flex w-full flex-col gap-0 p-0 sm:max-w-[480px]"
+      >
+        <SheetHeader className="border-b border-border pr-12">
           <SheetTitle>Set benchmark</SheetTitle>
+          <SheetDescription>
+            {view.campaignName} · Primary {kpiLabel(view.kpiConfig.primaryKpi)}
+          </SheetDescription>
         </SheetHeader>
         {open ? (
           <SetBenchmarkForm

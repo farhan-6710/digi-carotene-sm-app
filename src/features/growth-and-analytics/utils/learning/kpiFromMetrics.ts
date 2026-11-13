@@ -56,12 +56,34 @@ export function kpisFromMetricRows(rows: CampaignMetricRow[]): BenchmarkValues {
   return values;
 }
 
+const RATIO_KPI_KEYS = new Set<CampaignKpiKey>([
+  "ctr",
+  "conversion_rate",
+  "search_impression_share",
+]);
+
+/**
+ * KPIs stored as 0–1 ratios. Manual benchmarks sometimes get typed as percent
+ * points (e.g. 20 for 20%) — normalize those so gaps/charts stay sane.
+ */
+export function normalizeKpiValue(
+  key: CampaignKpiKey,
+  value: number | null,
+): number | null {
+  if (value === null || Number.isNaN(value)) return null;
+  if (RATIO_KPI_KEYS.has(key) && Math.abs(value) > 1) {
+    return value / 100;
+  }
+  return value;
+}
+
 export function readKpiValue(
   values: BenchmarkValues,
   key: CampaignKpiKey,
 ): number | null {
   const value = values[key];
-  return value === undefined || Number.isNaN(value) ? null : value;
+  if (value === undefined || Number.isNaN(value)) return null;
+  return normalizeKpiValue(key, value);
 }
 
 export function totalResults(rows: CampaignMetricRow[]): number {

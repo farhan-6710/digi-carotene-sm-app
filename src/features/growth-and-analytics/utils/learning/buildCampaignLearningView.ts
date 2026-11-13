@@ -8,7 +8,13 @@ import type {
   KpiCardView,
 } from "../../types/types";
 import { kpiDirection, kpiLabel } from "./defaultCampaignKpis";
-import { computeGap, gapToStatus } from "./gapStatus";
+import {
+  computeFrequencyRangeGap,
+  computeGap,
+  frequencyRangeMid,
+  gapToStatus,
+  readFrequencyRange,
+} from "./gapStatus";
 import { isSyncStale } from "../shared/isSyncStale";
 import { kpisFromMetricRows, readKpiValue } from "./kpiFromMetrics";
 import { resolveLearningMode } from "./learningMode";
@@ -49,16 +55,32 @@ function buildKpiCard(input: {
   const direction = kpiDirection(input.key);
   const currentValues = kpisFromMetricRows(input.currentRows);
   const current = readKpiValue(currentValues, input.key);
-  const benchmarkValue = input.benchmark
-    ? readKpiValue(input.benchmark.values, input.key)
-    : null;
   const volumeOk =
     input.currentRows.reduce((s, r) => s + r.conversions, 0) >=
     input.minResults;
-  const gap =
-    current !== null && benchmarkValue !== null
-      ? computeGap(current, benchmarkValue, direction)
+
+  let benchmarkValue: number | null = null;
+  let benchmarkMin: number | null = null;
+  let benchmarkMax: number | null = null;
+  let gap: number | null = null;
+
+  if (input.key === "frequency" && input.benchmark) {
+    const range = readFrequencyRange(input.benchmark.values);
+    benchmarkMin = range?.min ?? null;
+    benchmarkMax = range?.max ?? null;
+    benchmarkValue = frequencyRangeMid(range);
+    if (current !== null && range) {
+      gap = computeFrequencyRangeGap(current, range.min, range.max);
+    }
+  } else {
+    benchmarkValue = input.benchmark
+      ? readKpiValue(input.benchmark.values, input.key)
       : null;
+    if (current !== null && benchmarkValue !== null) {
+      gap = computeGap(current, benchmarkValue, direction);
+    }
+  }
+
   const status = input.benchmark
     ? gapToStatus(gap, volumeOk)
     : "not_enough_data";
@@ -70,6 +92,8 @@ function buildKpiCard(input: {
     direction,
     current,
     benchmark: benchmarkValue,
+    benchmarkMin,
+    benchmarkMax,
     gap,
     status,
     volumeOk,
@@ -117,7 +141,8 @@ export function buildCampaignLearningView(input: {
     minResults: input.kpiConfig.minResults,
   });
 
-  const chartSource = [...input.dailyRows].sort((a, b) =>
+  // Same window as KPI cards — chart used to ignore rangeDays and looked empty/odd.
+  const chartSource = [...currentRows].sort((a, b) =>
     a.date.localeCompare(b.date),
   );
   const chartPoints = chartSource.map((row) => ({

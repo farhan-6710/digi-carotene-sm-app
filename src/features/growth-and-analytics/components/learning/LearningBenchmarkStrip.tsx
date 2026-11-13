@@ -14,20 +14,20 @@ type LearningBenchmarkStripProps = {
   onDismissNewBest: () => void;
 };
 
-function modeLabel(view: CampaignLearningView): string {
+function benchmarkSummary(view: CampaignLearningView): string {
   const b = view.benchmark;
-  if (!b) return "No benchmark";
+  if (!b) return "No benchmark yet";
   if (b.mode === "auto") {
     const method =
       b.method === "top3"
-        ? "Top-3 windows"
+        ? "top 3 windows"
         : b.method === "best"
-          ? "Best window"
+          ? "best window"
           : "80th percentile";
     return `Auto · ${method}`;
   }
   if (b.mode === "client_target") return "Client target";
-  return "Manual";
+  return "Manual target";
 }
 
 export function LearningBenchmarkStrip({
@@ -40,83 +40,88 @@ export function LearningBenchmarkStrip({
   onDismissNewBest,
 }: LearningBenchmarkStripProps) {
   const { learningMode, benchmark, pendingBenchmark, kpiConfig } = view;
-  const windows =
-    benchmark?.bestWindows
-      .map((w) => `${w.start.slice(5)}–${w.end.slice(5)}`)
-      .join(", ") ?? null;
+  const collecting = learningMode.state === "collecting";
 
   return (
-    <div className="space-y-3 rounded-xl border border-border bg-card p-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium uppercase tracking-wide">
-          Benchmark · {modeLabel(view)}
-        </span>
-        <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium uppercase tracking-wide">
-          Learning mode: {learningMode.state}
-        </span>
-        {pendingBenchmark ? (
-          <span className="rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-300">
-            Pending approval
-          </span>
-        ) : null}
-        {benchmark?.needsReview ? (
-          <span className="rounded-full bg-destructive/15 px-2.5 py-0.5 text-xs font-medium text-destructive">
-            Needs review
-          </span>
-        ) : null}
-      </div>
-
-      {learningMode.state === "collecting" ? (
-        <div className="space-y-2 text-sm text-muted-foreground">
-          <p>Learning mode needs more history before it can set a benchmark.</p>
-          <p>
-            Days of data {learningMode.daysOfData} / {LEARNING_MIN_HISTORY_DAYS}
+    <div className="space-y-3 rounded-2xl border border-border bg-card p-5 shadow-xs">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 space-y-1">
+          <h3 className="text-sm font-semibold text-foreground">Benchmark</h3>
+          <p className="text-sm text-muted-foreground">
+            {collecting
+              ? `Collecting history · ${learningMode.daysOfData} / ${LEARNING_MIN_HISTORY_DAYS} days`
+              : `${benchmarkSummary(view)} · Primary ${kpiLabel(kpiConfig.primaryKpi)}`}
           </p>
-          <Button type="button" size="sm" onClick={onEdit}>
-            Set manual benchmark
+          {benchmark?.needsReview ? (
+            <p className="text-sm text-destructive">Needs review before trusting gaps.</p>
+          ) : null}
+          {pendingBenchmark ? (
+            <p className="text-sm text-amber-700 dark:text-amber-300">
+              A new benchmark is waiting for approval.
+            </p>
+          ) : null}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" size="sm" className="rounded-full" onClick={onEdit}>
+            {benchmark ? "Edit benchmark" : "Set benchmark"}
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="rounded-full"
+            onClick={onHistory}
+          >
+            History
           </Button>
         </div>
-      ) : (
+      </div>
+
+      {collecting ? (
         <p className="text-sm text-muted-foreground">
-          {windows ? `Best periods: ${windows}` : "Manual / client target"}
-          {" · "}
-          Primary KPI: {kpiLabel(kpiConfig.primaryKpi)}
+          Learning needs more daily metrics before auto-benchmarks. You can still set a
+          manual target now.
         </p>
-      )}
+      ) : null}
 
       {learningMode.newBest ? (
-        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-sm">
-          <span className="font-medium text-emerald-700 dark:text-emerald-300">
-            New best — campaign beat its benchmark for 7 days.
-          </span>
-          <Button type="button" size="sm" variant="outline" onClick={onEdit}>
-            Review update
-          </Button>
-          <Button type="button" size="sm" variant="ghost" onClick={onDismissNewBest}>
-            Dismiss
-          </Button>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-muted/40 px-4 py-3">
+          <p className="text-sm text-foreground">
+            New best — this campaign beat its benchmark for 7 days.
+          </p>
+          <div className="flex gap-2">
+            <Button type="button" size="sm" className="rounded-full" onClick={onEdit}>
+              Review
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              className="rounded-full"
+              onClick={onDismissNewBest}
+            >
+              Dismiss
+            </Button>
+          </div>
         </div>
       ) : null}
 
       {pendingBenchmark && canApprove ? (
         <div className="flex flex-wrap gap-2">
-          <Button type="button" size="sm" onClick={onApprove}>
-            Approve
+          <Button type="button" size="sm" className="rounded-full" onClick={onApprove}>
+            Approve pending
           </Button>
-          <Button type="button" size="sm" variant="outline" onClick={onReject}>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="rounded-full"
+            onClick={onReject}
+          >
             Reject
           </Button>
         </div>
       ) : null}
-
-      <div className="flex flex-wrap gap-2">
-        <Button type="button" size="sm" variant="outline" onClick={onEdit}>
-          Edit benchmark
-        </Button>
-        <Button type="button" size="sm" variant="ghost" onClick={onHistory}>
-          History
-        </Button>
-      </div>
     </div>
   );
 }

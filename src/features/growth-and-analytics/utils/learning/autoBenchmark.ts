@@ -267,6 +267,12 @@ export function computeAutoBenchmark(
 
   const combinedRows = picked.flatMap((w) => w.rows);
   const values = kpisFromMetricRows(combinedRows);
+  // Frequency ideal band: ±15% around the auto value (manual uses explicit min/max).
+  const freq = values.frequency;
+  if (typeof freq === "number" && freq > 0) {
+    values.frequency_min = Number((freq * 0.85).toFixed(3));
+    values.frequency_max = Number((freq * 1.15).toFixed(3));
+  }
   const windows: DateWindow[] = picked.map((w) => ({
     start: w.start,
     end: w.end,

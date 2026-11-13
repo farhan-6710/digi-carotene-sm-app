@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 
 import { fetchBenchmarkHistory } from "@/services/campaignLearningService";
+import { fetchAdsetBenchmarkHistory } from "@/services/adsetLearningService";
 import { useFetch } from "@/shared/hooks/useFetch";
 import {
   Sheet,
@@ -15,19 +16,24 @@ type BenchmarkHistorySheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   adAccountId: string;
-  campaignId: string;
+  entityId: string;
+  scope?: "campaign" | "adset";
 };
 
 export function BenchmarkHistorySheet({
   open,
   onOpenChange,
   adAccountId,
-  campaignId,
+  entityId,
+  scope = "campaign",
 }: BenchmarkHistorySheetProps) {
   const load = useCallback(async (): Promise<CampaignBenchmark[]> => {
-    if (!open || !adAccountId || !campaignId) return [];
-    return fetchBenchmarkHistory(adAccountId, campaignId);
-  }, [open, adAccountId, campaignId]);
+    if (!open || !adAccountId || !entityId) return [];
+    if (scope === "adset") {
+      return fetchAdsetBenchmarkHistory(adAccountId, entityId);
+    }
+    return fetchBenchmarkHistory(adAccountId, entityId);
+  }, [open, adAccountId, entityId, scope]);
 
   const { data: rows, isLoading } = useFetch(load, []);
 

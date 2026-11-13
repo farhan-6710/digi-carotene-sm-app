@@ -6,15 +6,16 @@ import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { Button } from "@/shared/ui/button";
+import { cn } from "@/shared/lib/utils";
 
 import { BenchmarkHistorySheet } from "../components/learning/BenchmarkHistorySheet";
 import { CampaignDetailTabs } from "../components/learning/CampaignDetailTabs";
 import { LearningBenchmarkStrip } from "../components/learning/LearningBenchmarkStrip";
 import { LearningKpiCards } from "../components/learning/LearningKpiCards";
 import { LearningPerformanceChart } from "../components/learning/LearningPerformanceChart";
-import { GrowthRefetchModal } from "../components/shared/GrowthRefetchModal";
 import { LearningStaleDataBanner } from "../components/learning/LearningStaleDataBanner";
 import { SetBenchmarkDrawer } from "../components/learning/SetBenchmarkDrawer";
+import { GrowthRefetchModal } from "../components/shared/GrowthRefetchModal";
 import { GROWTH_AD_ACCOUNT_PARAM } from "../constants/shared/growthUrlParams";
 import { useAccountRefetch } from "../hooks/shared/useAccountRefetch";
 import { useCampaignLearning } from "../hooks/learning/useCampaignLearning";
@@ -22,9 +23,9 @@ import { useGrowthPaths } from "../hooks/shared/useGrowthPaths";
 import { useGrowthSelectedAdAccount } from "../hooks/shared/useGrowthSelectedAdAccount";
 
 const RANGE_OPTIONS = [
-  { days: 7, label: "Last 7 days" },
-  { days: 14, label: "Last 14" },
-  { days: 30, label: "Last 30" },
+  { days: 7, label: "7 days" },
+  { days: 14, label: "14 days" },
+  { days: 30, label: "30 days" },
 ] as const;
 
 export function GrowthCampaignLearningPage() {
@@ -105,20 +106,6 @@ export function GrowthCampaignLearningPage() {
 
       <GrowthRefetchModal {...modalProps} />
 
-      <div className="flex flex-wrap gap-2">
-        {RANGE_OPTIONS.map((opt) => (
-          <Button
-            key={opt.days}
-            type="button"
-            size="sm"
-            variant={learning.rangeDays === opt.days ? "default" : "outline"}
-            onClick={() => learning.setRangeDays(opt.days)}
-          >
-            {opt.label}
-          </Button>
-        ))}
-      </div>
-
       {learning.error ? <ErrorBanner message={learning.error} /> : null}
 
       <LearningBenchmarkStrip
@@ -131,6 +118,30 @@ export function GrowthCampaignLearningPage() {
         onDismissNewBest={learning.dismissNewBest}
       />
 
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">
+          Select a KPI card to change the chart. Range applies to both cards and chart.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {RANGE_OPTIONS.map((opt) => (
+            <Button
+              key={opt.days}
+              type="button"
+              size="sm"
+              variant="outline"
+              className={cn(
+                "rounded-full",
+                learning.rangeDays === opt.days &&
+                  "border-primary bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
+              )}
+              onClick={() => learning.setRangeDays(opt.days)}
+            >
+              {opt.label}
+            </Button>
+          ))}
+        </div>
+      </div>
+
       <LearningKpiCards
         kpis={view.kpis}
         currencyCode={view.currencyCode}
@@ -142,6 +153,7 @@ export function GrowthCampaignLearningPage() {
         points={view.chartPoints}
         chartKpi={learning.chartKpi}
         benchmark={view.benchmark}
+        currencyCode={view.currencyCode}
       />
 
       <SetBenchmarkDrawer
@@ -156,7 +168,8 @@ export function GrowthCampaignLearningPage() {
         open={learning.historyOpen}
         onOpenChange={learning.setHistoryOpen}
         adAccountId={accountId}
-        campaignId={campaignId}
+        entityId={campaignId}
+        scope="campaign"
       />
     </PageContent>
   );

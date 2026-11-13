@@ -535,6 +535,16 @@ export const DB = {
     SELECT:
       "id, ad_account_id, campaign_id, platform, mode, method, window_days, lookback_days, min_results, values, locked_kpis, edited_kpis, best_windows, eligible_windows, excluded, attribution_setting, currency, reason, agreed_with, agreed_on, status, auto_advance, suggest_updates, needs_review, created_by, approved_by, approved_at, superseded_at, new_best_dismissed_until, created_at, updated_at",
   },
+  ADSET_KPI_CONFIG: {
+    TABLE: "adset_kpi_config",
+    SELECT:
+      "id, ad_account_id, campaign_id, adset_id, primary_kpi, primary_direction, secondary_kpis, min_results, qualified_call_seconds, last_goal_change_at, created_at, updated_at",
+  },
+  ADSET_BENCHMARKS: {
+    TABLE: "adset_benchmarks",
+    SELECT:
+      "id, ad_account_id, campaign_id, adset_id, platform, mode, method, window_days, lookback_days, min_results, values, locked_kpis, edited_kpis, best_windows, eligible_windows, excluded, attribution_setting, currency, reason, agreed_with, agreed_on, status, auto_advance, suggest_updates, needs_review, created_by, approved_by, approved_at, superseded_at, new_best_dismissed_until, created_at, updated_at",
+  },
   CURRENCIES: {
     TABLE: "currencies",
     SELECT: "code, name, symbol",

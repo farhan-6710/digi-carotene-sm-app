@@ -88,6 +88,8 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 | `production_plan_team_members` | Extra people on a plan. All `admin` team members are auto-assigned on create/update (unless they are already manager or shoot incharge). |
 | `growth_organic_*` | Connected IG/Page + post metrics + daily followers (`last_synced_at` on accounts) |
 | `growth_ad_*` | Connected ad accounts + campaign / ad set / ad daily metrics (`last_synced_at` on accounts) |
+| `campaign_kpi_config` / `campaign_benchmarks` | Learning Tab targets per **ad account + campaign** (`values` jsonb; frequency uses `frequency_min` / `frequency_max`) |
+| `adset_kpi_config` / `adset_benchmarks` | Learning Tab targets per **ad account + adset** (parallel to campaign; denormalized `campaign_id` for nav) |
 
 Types for the UI live in `src/features/<feature>/types/types.ts` — not duplicated here.
 

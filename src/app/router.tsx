@@ -62,6 +62,10 @@ const GrowthAdsetDetailPage = lazyRoutePage(
   () => import("@/features/growth-and-analytics/pages/GrowthAdsetDetailPage"),
   "GrowthAdsetDetailPage",
 );
+const GrowthAdsetLearningPage = lazyRoutePage(
+  () => import("@/features/growth-and-analytics/pages/GrowthAdsetLearningPage"),
+  "GrowthAdsetLearningPage",
+);
 const GrowthAdDetailPage = lazyRoutePage(
   () => import("@/features/growth-and-analytics/pages/GrowthAdDetailPage"),
   "GrowthAdDetailPage",
@@ -347,6 +351,10 @@ export const router = createBrowserRouter([
                 element: <GrowthAdsetDetailPage />,
               },
               {
+                path: "campaigns/:campaignId/adsets/:adsetId/learning",
+                element: <GrowthAdsetLearningPage />,
+              },
+              {
                 path: "campaigns/:campaignId/adsets/:adsetId/ads/:adId",
                 element: <GrowthAdDetailPage />,
               },
@@ -516,6 +524,10 @@ export const router = createBrowserRouter([
               {
                 path: "campaigns/:campaignId/adsets/:adsetId",
                 element: <GrowthAdsetDetailPage />,
+              },
+              {
+                path: "campaigns/:campaignId/adsets/:adsetId/learning",
+                element: <GrowthAdsetLearningPage />,
               },
               {
                 path: "campaigns/:campaignId/adsets/:adsetId/ads/:adId",

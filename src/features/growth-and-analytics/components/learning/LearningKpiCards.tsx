@@ -11,13 +11,19 @@ type LearningKpiCardsProps = {
   onSelect: (key: CampaignKpiKey) => void;
 };
 
+const RATIO_KEYS = new Set<CampaignKpiKey>([
+  "ctr",
+  "conversion_rate",
+  "search_impression_share",
+]);
+
 function formatKpiValue(
   key: CampaignKpiKey,
   value: number | null,
   currencyCode: string,
 ): string {
   if (value === null) return "—";
-  if (key === "ctr" || key === "conversion_rate" || key === "search_impression_share") {
+  if (RATIO_KEYS.has(key)) {
     return formatPercent(value * 100);
   }
   if (key === "roas") return `${value.toFixed(2)}x`;
@@ -27,16 +33,16 @@ function formatKpiValue(
   return formatCpm(value, currencyCode);
 }
 
-function statusClass(status: KpiCardView["status"]): string {
+function statusTone(status: KpiCardView["status"]): string {
   switch (status) {
     case "on_track":
-      return "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300";
+      return "text-emerald-700 dark:text-emerald-300";
     case "below":
-      return "bg-amber-500/15 text-amber-700 dark:text-amber-300";
+      return "text-amber-700 dark:text-amber-300";
     case "off_track":
-      return "bg-destructive/15 text-destructive";
+      return "text-destructive";
     default:
-      return "bg-muted text-muted-foreground";
+      return "text-muted-foreground";
   }
 }
 
@@ -47,50 +53,48 @@ export function LearningKpiCards({
   onSelect,
 }: LearningKpiCardsProps) {
   return (
-    <div className="flex gap-3 overflow-x-auto pb-1">
-      {kpis.map((kpi) => (
-        <button
-          key={kpi.key}
-          type="button"
-          onClick={() => onSelect(kpi.key)}
-          className={cn(
-            "min-w-[160px] flex-1 rounded-xl border bg-card p-4 text-left transition-colors",
-            selectedKey === kpi.key
-              ? "border-primary ring-1 ring-primary/30"
-              : "border-border hover:bg-muted/30",
-          )}
-        >
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {kpi.label}
-            {kpi.primary ? " · Primary" : ""}
-          </p>
-          <p className="mt-2 font-mono text-2xl font-semibold tabular-nums">
-            {formatKpiValue(kpi.key, kpi.current, currencyCode)}
-          </p>
-          {kpi.benchmark !== null ? (
-            <p className="mt-1 text-xs text-muted-foreground">
-              Benchmark {formatKpiValue(kpi.key, kpi.benchmark, currencyCode)}
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      {kpis.map((kpi) => {
+        const selected = selectedKey === kpi.key;
+        return (
+          <button
+            key={kpi.key}
+            type="button"
+            onClick={() => onSelect(kpi.key)}
+            aria-pressed={selected}
+            className={cn(
+              "rounded-2xl border bg-card p-5 text-left shadow-xs transition",
+              selected
+                ? "border-primary/50 ring-1 ring-primary/20"
+                : "border-border hover:bg-muted/40",
+            )}
+          >
+            <p className="truncate text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              {kpi.label}
+              {kpi.primary ? " · Primary" : ""}
             </p>
-          ) : (
-            <p className="mt-1 text-xs text-muted-foreground">No benchmark</p>
-          )}
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            {kpi.status !== "not_enough_data" && kpi.gap !== null ? (
-              <span className="font-mono text-xs tabular-nums">
-                {formatGapPercent(kpi.gap)} vs benchmark
-              </span>
-            ) : null}
-            <span
-              className={cn(
-                "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
-                statusClass(kpi.status),
-              )}
-            >
-              {gapStatusLabel(kpi.status)}
-            </span>
-          </div>
-        </button>
-      ))}
+            <p className="mt-2 text-3xl font-semibold tracking-tight tabular-nums text-foreground">
+              {formatKpiValue(kpi.key, kpi.current, currencyCode)}
+            </p>
+            <p className="mt-2 truncate text-xs text-muted-foreground">
+              {kpi.key === "frequency" &&
+              kpi.benchmarkMin !== null &&
+              kpi.benchmarkMax !== null
+                ? kpi.benchmarkMin === kpi.benchmarkMax
+                  ? `Target ${formatKpiValue(kpi.key, kpi.benchmarkMin, currencyCode)}`
+                  : `Ideal ${formatKpiValue(kpi.key, kpi.benchmarkMin, currencyCode)}–${formatKpiValue(kpi.key, kpi.benchmarkMax, currencyCode)}`
+                : kpi.benchmark !== null
+                  ? `Target ${formatKpiValue(kpi.key, kpi.benchmark, currencyCode)}`
+                  : "No target set"}
+            </p>
+            <p className={cn("mt-2 text-xs font-medium", statusTone(kpi.status))}>
+              {kpi.status === "not_enough_data" || kpi.gap === null
+                ? gapStatusLabel(kpi.status)
+                : `${formatGapPercent(kpi.gap)} · ${gapStatusLabel(kpi.status)}`}
+            </p>
+          </button>
+        );
+      })}
     </div>
   );
 }

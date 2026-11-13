@@ -518,7 +518,11 @@ export type CampaignKpiConfig = {
   lastGoalChangeAt: string | null;
 };
 
-export type BenchmarkValues = Partial<Record<CampaignKpiKey, number>>;
+/** KPI targets. Frequency uses an ideal band via frequency_min / frequency_max. */
+export type BenchmarkValues = Partial<Record<CampaignKpiKey, number>> & {
+  frequency_min?: number;
+  frequency_max?: number;
+};
 
 export type DateWindow = { start: string; end: string };
 
@@ -568,7 +572,11 @@ export type KpiCardView = {
   primary: boolean;
   direction: KpiDirection;
   current: number | null;
+  /** Midpoint / single target (chart + list). */
   benchmark: number | null;
+  /** Frequency ideal band (when set). */
+  benchmarkMin: number | null;
+  benchmarkMax: number | null;
   gap: number | null;
   status: GapStatus;
   volumeOk: boolean;
@@ -617,6 +625,11 @@ export type SaveBenchmarkInput = {
   suggestUpdates?: boolean;
   requireApproval: boolean;
   createdBy?: string | null;
+};
+
+export type SaveAdsetBenchmarkInput = Omit<SaveBenchmarkInput, "campaignId"> & {
+  campaignId: string;
+  adsetId: string;
 };
 
 export type AutoBenchmarkPreview = {

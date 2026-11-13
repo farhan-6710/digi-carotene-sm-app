@@ -110,6 +110,21 @@ Google sync follows the campaign-type matrix (`googleCampaignTypeMatrix.ts`): un
 
 ---
 
+## Campaign Learning benchmarks
+
+- Stored per **ad account + campaign** (`campaign_benchmarks.ad_account_id` + `campaign_id`) — each connected ad account has its own benchmarks, not one global set.
+- Modes: Auto (from that campaign’s history), Manual, Client target.
+- Gap status vs target: On track (≥ −10%), Below (−10% to −25%), Off track (&lt; −25%).
+- **Frequency** uses an **ideal min–max band** (`frequency_min` / `frequency_max` in `values` jsonb). Inside the band = on track; distance outside uses the same gap thresholds. Other KPIs stay single-target.
+
+
+## Ad set Learning benchmarks
+
+- Parallel tables: `adset_kpi_config` / `adset_benchmarks`, keyed by **ad account + adset_id** (same shape as campaign Learning).
+- `campaign_id` is denormalized for navigation only — not a polymorphic entity type.
+- Reuses campaign Learning UI utils (`buildCampaignLearningView`, gap, auto-benchmark, cards/chart/drawer).
+- Metrics adapted from thinner `growth_ad_adset_daily_metrics` (Google-only KPI columns are null/0 until metric parity).
+
 ## Code map
 
 | Area | Where |
