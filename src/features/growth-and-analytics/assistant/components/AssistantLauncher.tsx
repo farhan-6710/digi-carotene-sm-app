@@ -54,22 +54,22 @@ export function AssistantLauncher() {
   const isBusy = assistant.status !== "idle";
 
   useEffect(() => {
-    assistant.setSheetOpen(open);
-  }, [open, assistant.setSheetOpen]);
-
-  useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (
         event.key.toLowerCase() === ASSISTANT_SHORTCUT_KEY &&
         (event.metaKey || event.ctrlKey)
       ) {
         event.preventDefault();
-        setOpen((current) => !current);
+        setOpen((current) => {
+          const next = !current;
+          assistant.setSheetOpen(next);
+          return next;
+        });
       }
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [assistant.setSheetOpen]);
 
   function handleOpenChange(next: boolean) {
     setOpen(next);

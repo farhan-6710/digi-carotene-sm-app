@@ -76,6 +76,7 @@ export function buildLearningAnalysisPrompt(
     "Give a short executive brief: what might be going wrong vs target,",
     "likely causes, and 1–3 concrete moves to improve KPI delivery and cut wasted spend.",
     "Keep it tight — verdict first, then bullets.",
+    "All money is INR — use ₹, never $.",
   ].join(" ");
 }
 

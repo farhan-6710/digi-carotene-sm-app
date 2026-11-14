@@ -1,10 +1,4 @@
-import {
-  createElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { createElement, useCallback, useRef, useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router";
 
 import { GROWTH_AD_ACCOUNT_PARAM } from "../../constants/shared/growthUrlParams";
@@ -106,6 +100,17 @@ export function useAssistant() {
       notifyWhenReadyRef.current = true;
     }
   }, []);
+
+  /** Learning brief only when the sheet opens — not on mere tab visit. */
+  const onSheetOpenChange = useCallback(
+    (open: boolean) => {
+      setSheetOpen(open);
+      if (open) void runLearningAnalysisRef.current();
+    },
+    [setSheetOpen],
+  );
+
+  const runLearningAnalysisRef = useRef(() => Promise.resolve());
 
   async function ask(question: string, options?: { statusDetail?: string }) {
     const trimmed = question.trim();
@@ -250,20 +255,7 @@ export function useAssistant() {
     });
   }
 
-  useEffect(() => {
-    const focus = resolveLearningFocus({
-      pathname,
-      adAccountId,
-      campaignId,
-      adsetId,
-      adId,
-    });
-    if (!focus || !user) return;
-    if (analyzedKey.current === learningFocusKey(focus)) return;
-    void runLearningAnalysis();
-    // Route identity only — avoid re-firing on unrelated renders.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, adAccountId, campaignId, adsetId, adId, user?.id]);
+  runLearningAnalysisRef.current = () => runLearningAnalysis();
 
   function reset() {
     history.current = [];
@@ -286,7 +278,7 @@ export function useAssistant() {
     ask,
     reset,
     displayName,
-    setSheetOpen,
+    setSheetOpen: onSheetOpenChange,
     runLearningAnalysis,
   };
 }
