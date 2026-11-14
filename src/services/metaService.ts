@@ -523,6 +523,7 @@ export type MetaAdset = {
   id: string;
   name: string;
   campaign_id?: string;
+  status?: string;
   optimization_goal?: string;
   targeting?: Record<string, unknown>;
   publisher_platforms?: string[];
@@ -537,7 +538,7 @@ export async function fetchAdsetMasters(
   const id = adAccountId.startsWith("act_") ? adAccountId : `act_${adAccountId}`;
   return graphGetAll<MetaAdset>(META_API_VERSION.ads, `${id}/adsets`, {
     fields:
-      "id,name,campaign_id,optimization_goal,targeting,publisher_platforms,facebook_positions,instagram_positions",
+      "id,name,campaign_id,status,optimization_goal,targeting,publisher_platforms,facebook_positions,instagram_positions",
     limit: "100",
     access_token: accessToken,
   });
@@ -548,6 +549,7 @@ export type MetaAd = {
   name: string;
   adset_id?: string;
   campaign_id?: string;
+  status?: string;
   creative?: {
     thumbnail_url?: string;
     body?: string;
@@ -561,7 +563,8 @@ export async function fetchAdMasters(
 ): Promise<MetaAd[]> {
   const id = adAccountId.startsWith("act_") ? adAccountId : `act_${adAccountId}`;
   return graphGetAll<MetaAd>(META_API_VERSION.ads, `${id}/ads`, {
-    fields: "id,name,adset_id,campaign_id,creative{thumbnail_url,body,title}",
+    fields:
+      "id,name,adset_id,campaign_id,status,creative{thumbnail_url,body,title}",
     limit: "100",
     access_token: accessToken,
   });

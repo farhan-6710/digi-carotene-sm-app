@@ -1,17 +1,14 @@
 import { Button } from "@/shared/ui/button";
 
 import type { CampaignLearningView } from "../../types/types";
-import {
-  IDEAL_BENCHMARK_LOOKBACK_DAYS,
-  LEARNING_MIN_HISTORY_DAYS,
-} from "../../constants/learning/campaignLearning";
+import { LEARNING_MIN_HISTORY_DAYS } from "../../constants/learning/campaignLearning";
 import { kpiLabel } from "../../utils/learning/defaultCampaignKpis";
 
 type LearningBenchmarkStripProps = {
   view: CampaignLearningView;
   canApprove: boolean;
-  onEdit: () => void;
-  onHistory: () => void;
+  onEdit?: () => void;
+  onHistory?: () => void;
   onApprove: () => void;
   onReject: () => void;
   onDismissNewBest: () => void;
@@ -53,7 +50,7 @@ export function LearningBenchmarkStrip({
           <h3 className="text-sm font-semibold text-foreground">Benchmark</h3>
           <p className="text-sm text-muted-foreground">
             {usingDefault
-              ? `Default · last ${IDEAL_BENCHMARK_LOOKBACK_DAYS} days · Primary ${kpiLabel(kpiConfig.primaryKpi)}`
+              ? `Default · full history · Primary ${kpiLabel(kpiConfig.primaryKpi)}`
               : collecting
                 ? `Collecting history · ${learningMode.daysOfData} / ${LEARNING_MIN_HISTORY_DAYS} days`
                 : `${benchmarkSummary(view)} · Primary ${kpiLabel(kpiConfig.primaryKpi)}`}
@@ -67,26 +64,30 @@ export function LearningBenchmarkStrip({
             </p>
           ) : null}
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button type="button" size="sm" className="rounded-full" onClick={onEdit}>
-            {benchmark ? "Edit benchmark" : "Set benchmark"}
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            className="rounded-full"
-            onClick={onHistory}
-          >
-            History
-          </Button>
-        </div>
+        {onEdit ? (
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" size="sm" className="rounded-full" onClick={onEdit}>
+              {benchmark ? "Edit benchmark" : "Set benchmark"}
+            </Button>
+            {onHistory ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="rounded-full"
+                onClick={onHistory}
+              >
+                History
+              </Button>
+            ) : null}
+          </div>
+        ) : null}
       </div>
 
       {usingDefault ? (
         <p className="text-sm text-muted-foreground">
-          Default benchmark from the last 30 days, based on where daily results sit
-          most, nudged a little toward a better result. Set your own target any time.
+          Default benchmark from all stored days, based on where daily results sit
+          most, nudged a little toward a better result. Day filters do not move it.
         </p>
       ) : collecting ? (
         <p className="text-sm text-muted-foreground">
@@ -101,9 +102,11 @@ export function LearningBenchmarkStrip({
             New best — this campaign beat its benchmark for 7 days.
           </p>
           <div className="flex gap-2">
-            <Button type="button" size="sm" className="rounded-full" onClick={onEdit}>
-              Review
-            </Button>
+            {onEdit ? (
+              <Button type="button" size="sm" className="rounded-full" onClick={onEdit}>
+                Review
+              </Button>
+            ) : null}
             <Button
               type="button"
               size="sm"

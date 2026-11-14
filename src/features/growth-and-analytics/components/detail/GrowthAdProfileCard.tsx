@@ -1,5 +1,6 @@
 import { growthAdDetailStatItems } from "../../constants/campaigns/adDetailStats";
 import { AdDailyMetricsTable } from "../tables/AdDailyMetricsTable";
+import { StatusBadge } from "../tables/tableBits";
 import type { GrowthAdProfileCardProps } from "../../types/components";
 import {
   formatCompact,
@@ -41,9 +42,12 @@ export function GrowthAdProfileCard({
           <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
             Ad details
           </p>
-          <h2 className="mt-2 text-xl font-semibold tracking-tight">
-            {view.adName}
-          </h2>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <h2 className="text-xl font-semibold tracking-tight">
+              {view.adName}
+            </h2>
+            <StatusBadge status={view.status} />
+          </div>
           <p className="mt-2 text-sm text-muted-foreground">
             {isGoogle
               ? `Daily performance for ${periodLabel.toLowerCase()}.`

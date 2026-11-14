@@ -5,7 +5,7 @@ import { cn } from "@/shared/lib/utils";
 
 import { useGrowthPaths } from "../../hooks/shared/useGrowthPaths";
 import { DailyMetricsBreakdownSelect } from "./DailyMetricsBreakdownSelect";
-import { MobileLabel } from "./tableBits";
+import { MobileLabel, StatusBadge } from "./tableBits";
 import type { AdsTableProps, CampaignMetricCellsMetric } from "../../types/components";
 import {
   formatCompact,
@@ -15,7 +15,10 @@ import {
   formatPercent,
 } from "../../utils/shared/formatters";
 
-const GRID_CLASS =
+const AD_GRID_CLASS =
+  "grid-cols-[1.4fr_0.7fr_repeat(8,minmax(0,0.72fr))]";
+
+const BREAKDOWN_GRID_CLASS =
   "grid-cols-[1.4fr_repeat(8,minmax(0,0.72fr))]";
 
 const DOUBLE_GRID_CLASS =
@@ -103,7 +106,11 @@ export function AdsTable({
   const hasPlacement = effectiveBreakdowns.includes("placement");
   const isBreakdown = hasAge || hasGender || hasPlacement;
   const isTwoDimensional = hasAge && hasGender;
-  const gridClass = isTwoDimensional ? DOUBLE_GRID_CLASS : GRID_CLASS;
+  const gridClass = isTwoDimensional
+    ? DOUBLE_GRID_CLASS
+    : isBreakdown
+      ? BREAKDOWN_GRID_CLASS
+      : AD_GRID_CLASS;
   const leadingColumns = isTwoDimensional
     ? [{ label: "AGE" }, { label: "GENDER" }]
     : hasAge
@@ -112,7 +119,7 @@ export function AdsTable({
         ? [{ label: "GENDER" }]
         : hasPlacement
           ? [{ label: "PLACEMENT" }]
-          : [{ label: "AD" }];
+          : [{ label: "AD" }, { label: "STATUS" }];
   const breakdownTitle = hasPlacement ? "Placement" : "Age & gender";
 
   return (
@@ -190,6 +197,10 @@ export function AdsTable({
                 >
                   {row.name}
                 </Link>
+              </div>
+              <div>
+                <MobileLabel>STATUS</MobileLabel>
+                <StatusBadge status={row.status} />
               </div>
               <MetricCells metrics={row} currencyCode={currencyCode} />
             </div>

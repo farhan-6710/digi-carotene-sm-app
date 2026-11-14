@@ -1,5 +1,6 @@
 import { growthAdsetDetailStatItems } from "../../constants/campaigns/adsetDetailStats";
 import { AdsTable } from "../tables/AdsTable";
+import { StatusBadge } from "../tables/tableBits";
 import type { GrowthAdsetProfileCardProps } from "../../types/components";
 import {
   formatCompact,
@@ -52,9 +53,12 @@ export function GrowthAdsetProfileCard({
           <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
             {isGoogle ? "Ad group details" : "Ad set details"}
           </p>
-          <h2 className="mt-2 text-xl font-semibold tracking-tight">
-            {view.adsetName}
-          </h2>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <h2 className="text-xl font-semibold tracking-tight">
+              {view.adsetName}
+            </h2>
+            <StatusBadge status={view.status} />
+          </div>
           <p className="mt-2 text-sm text-muted-foreground">
             {isGoogle
               ? `Performance for ${periodLabel.toLowerCase()}.`

@@ -62,6 +62,7 @@ export function buildAdsetRows(
   metricRows: AdsetMetricRow[],
 ): AdsetRow[] {
   const nameById = new Map(adsets.map((adset) => [adset.adsetId, adset.adsetName]));
+  const statusById = new Map(adsets.map((adset) => [adset.adsetId, adset.status]));
   const byAdset = new Map<string, MetricTotals>();
 
   for (const row of metricRows) {
@@ -79,6 +80,7 @@ export function buildAdsetRows(
       return {
         id: adsetId,
         name: nameById.get(adsetId) ?? "Unnamed ad set",
+        status: statusById.get(adsetId) ?? "Active",
         spend: finalized.spend,
         impressions: finalized.impressions,
         reach: finalized.reach,
@@ -94,6 +96,7 @@ export function buildAdsetRows(
 
 export function buildAdRows(ads: Ad[], metricRows: AdMetricRow[]): AdRow[] {
   const nameById = new Map(ads.map((ad) => [ad.adId, ad.adName]));
+  const statusById = new Map(ads.map((ad) => [ad.adId, ad.status]));
   const byAd = new Map<string, MetricTotals>();
 
   for (const row of metricRows) {
@@ -111,6 +114,7 @@ export function buildAdRows(ads: Ad[], metricRows: AdMetricRow[]): AdRow[] {
       return {
         id: adId,
         name: nameById.get(adId) ?? "Unnamed ad",
+        status: statusById.get(adId) ?? "Active",
         spend: finalized.spend,
         impressions: finalized.impressions,
         reach: finalized.reach,

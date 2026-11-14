@@ -112,11 +112,11 @@ export async function runGoogleAdBackfill(
   const [adGroupMasters, adMasters] = await Promise.all([
     searchGoogleAds(
       session,
-      "SELECT campaign.id, ad_group.id, ad_group.name FROM ad_group WHERE ad_group.status != 'REMOVED'",
+      "SELECT campaign.id, ad_group.id, ad_group.name, ad_group.status FROM ad_group WHERE ad_group.status != 'REMOVED'",
     ),
     searchGoogleAds(
       session,
-      "SELECT campaign.id, ad_group.id, ad_group_ad.ad.id, ad_group_ad.ad.name FROM ad_group_ad WHERE ad_group_ad.status != 'REMOVED'",
+      "SELECT campaign.id, ad_group.id, ad_group_ad.ad.id, ad_group_ad.ad.name, ad_group_ad.status FROM ad_group_ad WHERE ad_group_ad.status != 'REMOVED'",
     ),
   ]);
   assertBackfillNotAborted(options?.signal);
@@ -132,6 +132,7 @@ export async function runGoogleAdBackfill(
       campaignId,
       adsetId,
       adsetName: String(adGroup.name ?? "").trim() || "Unnamed ad group",
+      status: mapGoogleCampaignStatus(String(adGroup.status ?? "")),
       performanceGoal: null,
       locationSummary: null,
       ageSummary: null,
@@ -156,6 +157,7 @@ export async function runGoogleAdBackfill(
       adsetId,
       adId,
       adName: String(ad.name ?? "").trim() || "Unnamed ad",
+      status: mapGoogleCampaignStatus(String(adGroupAd.status ?? "")),
       thumbnailUrl: null,
       primaryText: null,
       headline: null,

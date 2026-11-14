@@ -11,3 +11,9 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
+
+/** Public URL + key for Edge Function fetch (session token proves the user). */
+export const supabaseConfig = {
+  url: supabaseUrl,
+  publishableKey: supabaseKey,
+};

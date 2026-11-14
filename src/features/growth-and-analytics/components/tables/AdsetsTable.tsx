@@ -4,7 +4,7 @@ import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { cn } from "@/shared/lib/utils";
 
 import { useGrowthPaths } from "../../hooks/shared/useGrowthPaths";
-import { MobileLabel } from "./tableBits";
+import { MobileLabel, StatusBadge } from "./tableBits";
 import type { AdsetsTableProps } from "../../types/components";
 import {
   formatCompact,
@@ -15,7 +15,7 @@ import {
 } from "../../utils/shared/formatters";
 
 const GRID_CLASS =
-  "grid-cols-[1.4fr_repeat(8,minmax(0,0.72fr))]";
+  "grid-cols-[1.4fr_0.7fr_repeat(8,minmax(0,0.72fr))]";
 
 export function AdsetsTable({
   rows,
@@ -42,6 +42,7 @@ export function AdsetsTable({
       gridClass={GRID_CLASS}
       columns={[
         { label: entityColumn },
+        { label: "STATUS" },
         { label: "SPEND", align: "right" },
         { label: "IMPRESSIONS", align: "right" },
         { label: "REACH", align: "right" },
@@ -71,6 +72,10 @@ export function AdsetsTable({
             >
               {row.name}
             </Link>
+          </div>
+          <div>
+            <MobileLabel>STATUS</MobileLabel>
+            <StatusBadge status={row.status} />
           </div>
           <div className="text-right font-mono text-sm text-foreground">
             <MobileLabel>SPEND</MobileLabel>

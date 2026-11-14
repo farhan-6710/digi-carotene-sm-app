@@ -216,6 +216,7 @@ export type Adset = {
   adsetId: string;
   campaignId: string;
   adsetName: string;
+  status: CampaignRow["status"];
   performanceGoal: string | null;
   locationSummary: string | null;
   ageSummary: string | null;
@@ -241,6 +242,7 @@ export type AdsetMetricRow = {
 export type AdsetRow = {
   id: string;
   name: string;
+  status: CampaignRow["status"];
   spend: number;
   impressions: number;
   reach: number;
@@ -256,6 +258,7 @@ export type Ad = {
   adsetId: string;
   campaignId: string;
   adName: string;
+  status: CampaignRow["status"];
   thumbnailUrl: string | null;
   primaryText: string | null;
   headline: string | null;
@@ -279,6 +282,7 @@ export type AdMetricRow = {
 export type AdRow = {
   id: string;
   name: string;
+  status: CampaignRow["status"];
   spend: number;
   impressions: number;
   reach: number;
@@ -356,6 +360,7 @@ export type GrowthAdsetDetailView = {
   campaignId: string;
   adsetId: string;
   adsetName: string;
+  status: CampaignRow["status"];
   performanceGoal: string | null;
   locationSummary: string | null;
   ageSummary: string | null;
@@ -382,6 +387,7 @@ export type GrowthAdDetailView = {
   adsetId: string;
   adId: string;
   adName: string;
+  status: CampaignRow["status"];
   thumbnailUrl: string | null;
   primaryText: string | null;
   headline: string | null;
@@ -605,6 +611,8 @@ export type CampaignLearningView = {
   kpis: KpiCardView[];
   chartPoints: Array<{ date: string; value: number | null }>;
   chartKpi: CampaignKpiKey;
+  /** Explains whether 7/14/30 ends today or on the last day with results. */
+  rangeNote: string;
 };
 
 export type SaveBenchmarkInput = {

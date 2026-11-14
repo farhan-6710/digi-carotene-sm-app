@@ -28,6 +28,10 @@ const AboutPage = lazyRoutePage(
   () => import("@/features/public/pages/AboutPage"),
   "AboutPage",
 );
+const GrowthAnalyticsOutlet = lazyRoutePage(
+  () => import("@/features/growth-and-analytics/pages/GrowthAnalyticsOutlet"),
+  "GrowthAnalyticsOutlet",
+);
 const GrowthDashboardPage = lazyRoutePage(
   () => import("@/features/growth-and-analytics/pages/GrowthDashboardPage"),
   "GrowthDashboardPage",
@@ -58,6 +62,13 @@ const GrowthCampaignLearningPage = lazyRoutePage(
     import("@/features/growth-and-analytics/pages/GrowthCampaignLearningPage"),
   "GrowthCampaignLearningPage",
 );
+const GrowthCampaignTabPlaceholderPage = lazyRoutePage(
+  () =>
+    import(
+      "@/features/growth-and-analytics/pages/GrowthCampaignTabPlaceholderPage"
+    ),
+  "GrowthCampaignTabPlaceholderPage",
+);
 const GrowthAdsetDetailPage = lazyRoutePage(
   () => import("@/features/growth-and-analytics/pages/GrowthAdsetDetailPage"),
   "GrowthAdsetDetailPage",
@@ -69,6 +80,10 @@ const GrowthAdsetLearningPage = lazyRoutePage(
 const GrowthAdDetailPage = lazyRoutePage(
   () => import("@/features/growth-and-analytics/pages/GrowthAdDetailPage"),
   "GrowthAdDetailPage",
+);
+const GrowthAdLearningPage = lazyRoutePage(
+  () => import("@/features/growth-and-analytics/pages/GrowthAdLearningPage"),
+  "GrowthAdLearningPage",
 );
 const GrowthCustomReportBuilderPage = lazyRoutePage(
   () =>
@@ -327,6 +342,7 @@ export const router = createBrowserRouter([
           { path: "dashboard", element: <TeamDashboardPage /> },
           {
             path: "growth-and-analytics",
+            element: <GrowthAnalyticsOutlet />,
             children: [
               { index: true, element: <GrowthDashboardPage /> },
               {
@@ -347,6 +363,22 @@ export const router = createBrowserRouter([
                 element: <GrowthCampaignLearningPage />,
               },
               {
+                path: "campaigns/:campaignId/changes",
+                element: <GrowthCampaignTabPlaceholderPage />,
+              },
+              {
+                path: "campaigns/:campaignId/alerts",
+                element: <GrowthCampaignTabPlaceholderPage />,
+              },
+              {
+                path: "campaigns/:campaignId/structure",
+                element: <GrowthCampaignTabPlaceholderPage />,
+              },
+              {
+                path: "campaigns/:campaignId/settings",
+                element: <GrowthCampaignTabPlaceholderPage />,
+              },
+              {
                 path: "campaigns/:campaignId/adsets/:adsetId",
                 element: <GrowthAdsetDetailPage />,
               },
@@ -357,6 +389,10 @@ export const router = createBrowserRouter([
               {
                 path: "campaigns/:campaignId/adsets/:adsetId/ads/:adId",
                 element: <GrowthAdDetailPage />,
+              },
+              {
+                path: "campaigns/:campaignId/adsets/:adsetId/ads/:adId/learning",
+                element: <GrowthAdLearningPage />,
               },
               {
                 path: "custom-report",
@@ -522,6 +558,22 @@ export const router = createBrowserRouter([
                 element: <GrowthCampaignLearningPage />,
               },
               {
+                path: "campaigns/:campaignId/changes",
+                element: <GrowthCampaignTabPlaceholderPage />,
+              },
+              {
+                path: "campaigns/:campaignId/alerts",
+                element: <GrowthCampaignTabPlaceholderPage />,
+              },
+              {
+                path: "campaigns/:campaignId/structure",
+                element: <GrowthCampaignTabPlaceholderPage />,
+              },
+              {
+                path: "campaigns/:campaignId/settings",
+                element: <GrowthCampaignTabPlaceholderPage />,
+              },
+              {
                 path: "campaigns/:campaignId/adsets/:adsetId",
                 element: <GrowthAdsetDetailPage />,
               },
@@ -532,6 +584,10 @@ export const router = createBrowserRouter([
               {
                 path: "campaigns/:campaignId/adsets/:adsetId/ads/:adId",
                 element: <GrowthAdDetailPage />,
+              },
+              {
+                path: "campaigns/:campaignId/adsets/:adsetId/ads/:adId/learning",
+                element: <GrowthAdLearningPage />,
               },
               { path: "reports", element: <GrowthReportsPage /> },
             ],

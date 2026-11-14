@@ -7,6 +7,7 @@ type AdsetRow = {
   campaign_id: string;
   adset_id: string;
   adset_name: string;
+  status: Adset["status"];
   performance_goal: string | null;
   location_summary: string | null;
   age_summary: string | null;
@@ -20,6 +21,7 @@ function mapAdset(row: AdsetRow): Adset {
     adsetId: row.adset_id,
     campaignId: row.campaign_id,
     adsetName: row.adset_name,
+    status: row.status ?? "Active",
     performanceGoal: row.performance_goal,
     locationSummary: row.location_summary,
     ageSummary: row.age_summary,
@@ -33,6 +35,7 @@ export type AdsetMasterInsert = {
   campaignId: string;
   adsetId: string;
   adsetName: string;
+  status: Adset["status"];
   performanceGoal: string | null;
   locationSummary: string | null;
   ageSummary: string | null;
@@ -47,6 +50,7 @@ function toInsertRow(adAccountId: string, row: AdsetMasterInsert) {
     campaign_id: row.campaignId,
     adset_id: row.adsetId,
     adset_name: row.adsetName,
+    status: row.status,
     performance_goal: row.performanceGoal,
     location_summary: row.locationSummary,
     age_summary: row.ageSummary,

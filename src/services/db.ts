@@ -567,7 +567,7 @@ export const DB = {
   GROWTH_AD_ADSETS: {
     TABLE: "growth_ad_adsets",
     SELECT:
-      "id, ad_account_id, campaign_id, adset_id, adset_name, performance_goal, location_summary, age_summary, custom_targeting_summary, detailed_targeting_summary, placements_summary",
+      "id, ad_account_id, campaign_id, adset_id, adset_name, status, performance_goal, location_summary, age_summary, custom_targeting_summary, detailed_targeting_summary, placements_summary",
   },
   GROWTH_AD_ADSET_DAILY_METRICS: {
     TABLE: "growth_ad_adset_daily_metrics",
@@ -577,7 +577,7 @@ export const DB = {
   GROWTH_AD_AD: {
     TABLE: "growth_ad_ad",
     SELECT:
-      "id, ad_account_id, campaign_id, adset_id, ad_id, ad_name, thumbnail_url, primary_text, headline",
+      "id, ad_account_id, campaign_id, adset_id, ad_id, ad_name, status, thumbnail_url, primary_text, headline",
   },
   GROWTH_AD_DAILY_METRICS: {
     TABLE: "growth_ad_daily_metrics",

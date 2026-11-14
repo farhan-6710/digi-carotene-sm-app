@@ -43,10 +43,30 @@ const chartConfig: ChartConfig = {
   benchmark: { label: "Benchmark", color: "var(--muted-foreground)" },
 };
 
+const RATIO_KEYS = new Set<CampaignKpiKey>([
+  "ctr",
+  "conversion_rate",
+  "search_impression_share",
+]);
+
 function shortDate(iso: string): string {
   const parts = iso.slice(0, 10).split("-");
   if (parts.length !== 3) return iso;
   return `${parts[1]}/${parts[2]}`;
+}
+
+/** Axis / tooltip labels. Ratios stay as percent so small CTRs do not round to 0. */
+function formatChartValue(key: CampaignKpiKey, value: number): string {
+  if (RATIO_KEYS.has(key)) {
+    return `${(value * 100).toFixed(2)}%`;
+  }
+  if (key === "frequency" || key === "results_per_day" || key === "roas") {
+    return value.toFixed(2);
+  }
+  if (Math.abs(value) > 0 && Math.abs(value) < 10) {
+    return value.toFixed(2);
+  }
+  return formatCompact(value);
 }
 
 export function LearningPerformanceChart({
@@ -92,7 +112,7 @@ export function LearningPerformanceChart({
 
   const description =
     usingDefault
-      ? "Dashed line is the default benchmark from where the last 30 days sit."
+      ? "Dashed line is the default benchmark from the full history. Day filters do not move it."
       : chartKpi === "frequency" && freqRange && freqRange.min !== freqRange.max
         ? "Shaded horizontal band is the ideal frequency range."
         : benchmark?.mode === "auto" && windows.length > 0
@@ -129,9 +149,9 @@ export function LearningPerformanceChart({
             tickLine={false}
             axisLine={false}
             tickMargin={8}
-            width={44}
+            width={52}
             domain={yDomain}
-            tickFormatter={(value) => formatCompact(Number(value))}
+            tickFormatter={(value) => formatChartValue(chartKpi, Number(value))}
             className="text-muted-foreground font-medium"
           />
           <ChartTooltip
@@ -143,6 +163,9 @@ export function LearningPerformanceChart({
                     | undefined;
                   return row?.date ?? "";
                 }}
+                formatter={(value) =>
+                  formatChartValue(chartKpi, Number(value))
+                }
               />
             }
           />

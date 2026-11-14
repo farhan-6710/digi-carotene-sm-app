@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 
 import { useClientGrowthAccounts } from "@/features/client-portal/hooks/useClientGrowthAccounts";
+import { AssistantLauncher } from "@/features/growth-and-analytics/assistant/components/AssistantLauncher";
 import { CenteredLoading } from "@/shared/components/LoadingSpinner";
 
 const GROWTH_BASE = "/client-portal/growth-and-analytics";
@@ -28,5 +29,10 @@ export function ClientGrowthOutlet() {
   }
 
   // Each child page owns its heading (Dashboard, Content Performance, etc.).
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+      <AssistantLauncher />
+    </>
+  );
 }

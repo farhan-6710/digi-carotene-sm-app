@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { GrowthAdProfileCard } from "../components/detail/GrowthAdProfileCard";
+import { AdDetailTabs } from "../components/learning/AdDetailTabs";
 import { useGrowthAdEntityBreakdown } from "../hooks/campaigns/useGrowthCampaignDemographicBreakdown";
 import { useGrowthAdDetailQuery } from "../hooks/campaigns/useGrowthAdDetailQuery";
 import { useGrowthPaths } from "../hooks/shared/useGrowthPaths";
@@ -171,6 +172,14 @@ export function GrowthAdDetailPage() {
             <DateFiltersTwo {...dateFilterProps} />
           </div>
         }
+      />
+
+      <AdDetailTabs
+        campaignId={campaignId}
+        adsetId={adsetId}
+        adId={adId}
+        adAccountId={accountId}
+        active="overview"
       />
 
       {error ? <ErrorBanner message={error} /> : null}

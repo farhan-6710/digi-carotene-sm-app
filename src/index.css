@@ -286,3 +286,84 @@ body {
 .animate-border-spin {
   animation: border-spin 8s linear infinite;
 }
+
+/* Pulse assistant chat (Growth & Analytics) — same motion language as DayFlow Flowy. */
+@utility animate-stream-word {
+  animation: stream-word 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility animate-stream-char {
+  animation: stream-char 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility animate-message-in {
+  animation: message-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility animate-caret {
+  animation: caret-blink 1s steps(1, end) infinite;
+}
+
+@utility animate-orbit {
+  transform-box: view-box;
+  transform-origin: center;
+  animation: orbit 2.4s linear infinite;
+}
+
+@keyframes stream-word {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes stream-char {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes message-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-stream-word,
+  .animate-stream-char,
+  .animate-message-in,
+  .animate-orbit {
+    animation: none;
+  }
+}

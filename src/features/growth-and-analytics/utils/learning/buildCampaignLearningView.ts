@@ -21,16 +21,55 @@ import { isSyncStale } from "../shared/isSyncStale";
 import { kpisFromMetricRows, readKpiValue } from "./kpiFromMetrics";
 import { resolveLearningMode } from "./learningMode";
 
+function addDays(dateStr: string, days: number): string {
+  const d = new Date(`${dateStr}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+function latestOnOrBeforeToday(rows: CampaignMetricRow[]): string | null {
+  const today = new Date().toISOString().slice(0, 10);
+  let latest: string | null = null;
+  for (const row of rows) {
+    const date = row.date.slice(0, 10);
+    if (date > today) continue;
+    if (!latest || date > latest) latest = date;
+  }
+  return latest;
+}
+
+/** Last N days ending on this entity's newest stored day, not on today. */
 function filterRowsByRange(
   rows: CampaignMetricRow[],
   rangeDays: number,
-): CampaignMetricRow[] {
-  if (rangeDays <= 0) return rows;
-  const today = new Date().toISOString().slice(0, 10);
-  const from = new Date(`${today}T00:00:00Z`);
-  from.setUTCDate(from.getUTCDate() - (rangeDays - 1));
-  const fromStr = from.toISOString().slice(0, 10);
-  return rows.filter((r) => r.date.slice(0, 10) >= fromStr);
+): { rows: CampaignMetricRow[]; end: string | null } {
+  const end = latestOnOrBeforeToday(rows);
+  if (!end) return { rows: [], end: null };
+  const fromStr = rangeDays > 0 ? addDays(end, -(rangeDays - 1)) : "0000-01-01";
+  return {
+    end,
+    rows: rows.filter((row) => {
+      const date = row.date.slice(0, 10);
+      return date >= fromStr && date <= end;
+    }),
+  };
+}
+
+function formatDay(iso: string): string {
+  const [year, month, day] = iso.split("-");
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const label = `${Number(day)} ${months[Number(month) - 1] ?? month}`;
+  const thisYear = new Date().toISOString().slice(0, 4);
+  return year === thisYear ? label : `${label} ${year}`;
+}
+
+function rangeNote(end: string | null): string {
+  const lead = "Select a KPI card to change the chart.";
+  const tail = "The benchmark stays on the full history.";
+  if (!end || end >= addDays(new Date().toISOString().slice(0, 10), -1)) {
+    return `${lead} The range changes current numbers only. ${tail}`;
+  }
+  return `${lead} Ranges count back from ${formatDay(end)}, the last day with results. ${tail}`;
 }
 
 function sparklineForKpi(
@@ -85,7 +124,9 @@ function buildKpiCard(input: {
   }
 
   const hasTarget = benchmarkValue !== null;
-  const status = hasTarget ? gapToStatus(gap, volumeOk) : "not_enough_data";
+  const status = hasTarget
+    ? gapToStatus(gap, volumeOk || input.isDefault)
+    : "not_enough_data";
 
   return {
     key: input.key,
@@ -117,7 +158,8 @@ export function buildCampaignLearningView(input: {
   rangeDays: number;
   chartKpi: CampaignKpiKey;
 }): CampaignLearningView {
-  const currentRows = filterRowsByRange(input.dailyRows, input.rangeDays);
+  const metricWindow = filterRowsByRange(input.dailyRows, input.rangeDays);
+  const currentRows = metricWindow.rows;
   const keys: CampaignKpiKey[] = [
     input.kpiConfig.primaryKpi,
     ...input.kpiConfig.secondaryKpis.filter(
@@ -125,6 +167,7 @@ export function buildCampaignLearningView(input: {
     ),
   ].slice(0, 5);
 
+  // Full stored history. rangeDays changes the cards and chart only.
   const defaultValues = input.benchmark
     ? null
     : idealBenchmarkValues(input.dailyRows, keys);
@@ -181,5 +224,6 @@ export function buildCampaignLearningView(input: {
     kpis,
     chartPoints,
     chartKpi: input.chartKpi,
+    rangeNote: rangeNote(metricWindow.end),
   };
 }

@@ -30,6 +30,26 @@ export function useGrowthPaths() {
         if (!adAccountId) return path;
         return `${path}?${GROWTH_AD_ACCOUNT_PARAM}=${adAccountId}`;
       },
+      buildCampaignChangesPath: (campaignId: string, adAccountId?: string) => {
+        const path = `${basePath}/campaigns/${campaignId}/changes`;
+        if (!adAccountId) return path;
+        return `${path}?${GROWTH_AD_ACCOUNT_PARAM}=${adAccountId}`;
+      },
+      buildCampaignAlertsPath: (campaignId: string, adAccountId?: string) => {
+        const path = `${basePath}/campaigns/${campaignId}/alerts`;
+        if (!adAccountId) return path;
+        return `${path}?${GROWTH_AD_ACCOUNT_PARAM}=${adAccountId}`;
+      },
+      buildCampaignStructurePath: (campaignId: string, adAccountId?: string) => {
+        const path = `${basePath}/campaigns/${campaignId}/structure`;
+        if (!adAccountId) return path;
+        return `${path}?${GROWTH_AD_ACCOUNT_PARAM}=${adAccountId}`;
+      },
+      buildCampaignSettingsPath: (campaignId: string, adAccountId?: string) => {
+        const path = `${basePath}/campaigns/${campaignId}/settings`;
+        if (!adAccountId) return path;
+        return `${path}?${GROWTH_AD_ACCOUNT_PARAM}=${adAccountId}`;
+      },
       buildAdsetDetailPath: (
         campaignId: string,
         adsetId: string,
@@ -55,6 +75,16 @@ export function useGrowthPaths() {
         adAccountId?: string,
       ) => {
         const path = `${basePath}/campaigns/${campaignId}/adsets/${adsetId}/ads/${adId}`;
+        if (!adAccountId) return path;
+        return `${path}?${GROWTH_AD_ACCOUNT_PARAM}=${adAccountId}`;
+      },
+      buildAdLearningPath: (
+        campaignId: string,
+        adsetId: string,
+        adId: string,
+        adAccountId?: string,
+      ) => {
+        const path = `${basePath}/campaigns/${campaignId}/adsets/${adsetId}/ads/${adId}/learning`;
         if (!adAccountId) return path;
         return `${path}?${GROWTH_AD_ACCOUNT_PARAM}=${adAccountId}`;
       },

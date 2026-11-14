@@ -1,6 +1,5 @@
 import {
   IDEAL_BENCHMARK_DENSE_SHARE,
-  IDEAL_BENCHMARK_LOOKBACK_DAYS,
   IDEAL_BENCHMARK_MIN_DAYS,
   IDEAL_BENCHMARK_NUDGE,
 } from "../../constants/learning/campaignLearning";
@@ -14,12 +13,6 @@ import { kpiDirection } from "./defaultCampaignKpis";
 import { kpisFromMetricRows, readKpiValue } from "./kpiFromMetrics";
 
 type DenseBand = { low: number; high: number; center: number };
-
-function addDays(dateStr: string, days: number): string {
-  const d = new Date(`${dateStr}T00:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString().slice(0, 10);
-}
 
 function median(sorted: number[]): number {
   const mid = Math.floor(sorted.length / 2);
@@ -72,13 +65,10 @@ function roundIdeal(key: CampaignKpiKey, value: number): number {
   return Number(value.toFixed(2));
 }
 
-function rowsInLookback(rows: CampaignMetricRow[]): CampaignMetricRow[] {
+/** Every stored day up to today. The 7/14/30 filter must not be applied before this. */
+function rowsForBenchmark(rows: CampaignMetricRow[]): CampaignMetricRow[] {
   const today = new Date().toISOString().slice(0, 10);
-  const from = addDays(today, -(IDEAL_BENCHMARK_LOOKBACK_DAYS - 1));
-  return rows.filter((row) => {
-    const date = row.date.slice(0, 10);
-    return date >= from && date <= today;
-  });
+  return rows.filter((row) => row.date.slice(0, 10) <= today);
 }
 
 function dailyValues(rows: CampaignMetricRow[], key: CampaignKpiKey): number[] {
@@ -92,15 +82,15 @@ function dailyValues(rows: CampaignMetricRow[], key: CampaignKpiKey): number[] {
 }
 
 /**
- * Default targets from the last 30 days.
- * Uses the densest half of daily values, then nudges slightly toward better.
+ * Default targets from all stored days for this campaign, ad set, or ad.
+ * Densest half of daily values, then a small nudge toward better.
  * Frequency keeps the band itself (too low is not better).
  */
 export function idealBenchmarkValues(
   dailyRows: CampaignMetricRow[],
   keys: CampaignKpiKey[],
 ): BenchmarkValues {
-  const recent = rowsInLookback(dailyRows);
+  const recent = rowsForBenchmark(dailyRows);
   const values: BenchmarkValues = {};
 
   for (const key of keys) {

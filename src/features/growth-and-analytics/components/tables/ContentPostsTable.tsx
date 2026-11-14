@@ -6,9 +6,70 @@ import { cn } from "@/shared/lib/utils";
 import { useGrowthPaths } from "../../hooks/shared/useGrowthPaths";
 import { MobileLabel } from "./tableBits";
 import type { ContentPostsTableProps } from "../../types/components";
+import type { ContentPostRow } from "../../types/types";
 import { formatCompact, formatPercent } from "../../utils/shared/formatters";
 
-const GRID_CLASS = "grid-cols-[2.4fr_0.75fr_0.7fr_0.7fr_0.7fr_0.8fr]";
+/**
+ * Track mins match the Ovo header widths (Comments ~75px, Eng. rate ~66px).
+ * Below that, the card scrolls instead of crushing the caption.
+ */
+const INSTAGRAM_GRID =
+  "max-sm:grid-cols-1 sm:min-w-[53rem] sm:grid-cols-[minmax(10rem,1.8fr)_minmax(4.5rem,0.5fr)_minmax(4.25rem,0.55fr)_minmax(4.25rem,0.55fr)_minmax(5.25rem,0.72fr)_minmax(4.25rem,0.55fr)_minmax(4.5rem,0.6fr)_minmax(5.25rem,0.75fr)]";
+
+const FACEBOOK_GRID =
+  "max-sm:grid-cols-1 sm:grid-cols-[minmax(10rem,2.2fr)_minmax(4.5rem,0.55fr)_minmax(5.1rem,0.72fr)_minmax(5.25rem,0.75fr)_minmax(4rem,0.6fr)_minmax(6.5rem,0.95fr)]";
+
+type PostMetricColumn = {
+  label: string;
+  accent?: boolean;
+  value: (row: ContentPostRow) => string;
+};
+
+const INSTAGRAM_METRICS: PostMetricColumn[] = [
+  { label: "REACH", value: (row) => formatCompact(row.reach) },
+  { label: "LIKES", value: (row) => formatCompact(row.likes) },
+  { label: "COMMENTS", value: (row) => formatCompact(row.comments) },
+  { label: "SAVES", value: (row) => formatCompact(row.saves) },
+  { label: "SHARES", value: (row) => formatCompact(row.shares) },
+  {
+    label: "ENG. RATE",
+    accent: true,
+    value: (row) => formatPercent(row.engagementRate),
+  },
+];
+
+const FACEBOOK_METRICS: PostMetricColumn[] = [
+  { label: "REACTIONS", value: (row) => formatCompact(row.likes) },
+  { label: "COMMENTS", value: (row) => formatCompact(row.comments) },
+  { label: "SHARES", value: (row) => formatCompact(row.shares) },
+  {
+    label: "INTERACTIONS",
+    accent: true,
+    value: (row) => formatCompact(row.engagementRate),
+  },
+];
+
+function MetricCell({
+  label,
+  value,
+  accent = false,
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "font-mono text-sm whitespace-nowrap max-sm:text-left sm:text-right",
+        accent ? "text-primary" : "text-foreground",
+      )}
+    >
+      <MobileLabel>{label}</MobileLabel>
+      {value}
+    </div>
+  );
+}
 
 export function ContentPostsTable({
   rows,
@@ -16,31 +77,24 @@ export function ContentPostsTable({
 }: ContentPostsTableProps) {
   const { buildPostDetailPath } = useGrowthPaths();
   const isFacebook = variant === "facebook";
+  const gridClass = isFacebook ? FACEBOOK_GRID : INSTAGRAM_GRID;
+  const metricColumns = isFacebook ? FACEBOOK_METRICS : INSTAGRAM_METRICS;
 
   return (
     <DirectoryTable
       title="Post Performance"
       description="Individual post metrics for the selected account and period."
-      gridClass={GRID_CLASS}
+      gridClass={gridClass}
       columns={[
         { label: "POST" },
         { label: "TYPE" },
-        {
-          label: isFacebook ? "REACTIONS" : "REACH",
-          align: "right",
-        },
-        {
-          label: isFacebook ? "COMMENTS" : "LIKES",
-          align: "right",
-        },
-        {
-          label: isFacebook ? "SHARES" : "SAVES",
-          align: "right",
-        },
-        {
-          label: isFacebook ? "INTERACTIONS" : "ENG. RATE",
-          align: "right",
-        },
+        ...metricColumns.map((metric) => ({
+          label: metric.label,
+          align: "right" as const,
+          header: (
+            <span className="block whitespace-nowrap">{metric.label}</span>
+          ),
+        })),
       ]}
       isLoading={false}
       isEmpty={rows.length === 0}
@@ -48,20 +102,21 @@ export function ContentPostsTable({
     >
       {rows.map((row) => {
         const canLink = row.linkToDetail !== false && !isFacebook;
-        const primaryMetric = isFacebook ? row.likes : row.reach;
-        const secondaryMetric = isFacebook ? row.comments : row.likes;
-        const tertiaryMetric = isFacebook ? row.shares : row.saves;
+        const metrics = metricColumns.map((metric) => ({
+          label: metric.label,
+          value: metric.value(row),
+          accent: metric.accent,
+        }));
 
         return (
           <div
             key={row.id}
             className={cn(
-              "grid items-center gap-2 px-6 py-4 transition-colors hover:bg-muted/10 sm:gap-4",
-              GRID_CLASS,
+              "grid items-center gap-3 px-4 py-4 transition-colors hover:bg-muted/10 sm:gap-4 sm:px-6",
+              gridClass,
             )}
           >
             <div className="min-w-0 text-sm font-medium text-foreground">
-              <MobileLabel>POST</MobileLabel>
               <div className="flex items-center gap-3">
                 {row.postThumbnail ? (
                   <img
@@ -75,41 +130,35 @@ export function ContentPostsTable({
                     aria-hidden
                   />
                 )}
-                {canLink ? (
-                  <Link
-                    to={buildPostDetailPath(row.id)}
-                    className="line-clamp-1 min-w-0 text-primary hover:underline"
-                  >
-                    {row.caption}
-                  </Link>
-                ) : (
-                  <span className="line-clamp-1 min-w-0">{row.caption}</span>
-                )}
+                <div className="min-w-0">
+                  {canLink ? (
+                    <Link
+                      to={buildPostDetailPath(row.id)}
+                      className="line-clamp-1 text-primary hover:underline"
+                    >
+                      {row.caption}
+                    </Link>
+                  ) : (
+                    <span className="line-clamp-1">{row.caption}</span>
+                  )}
+                  <p className="mt-0.5 text-xs text-muted-foreground sm:hidden">
+                    {row.mediaType}
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
-              <MobileLabel>TYPE</MobileLabel>
+            <div className="hidden text-sm text-muted-foreground sm:block">
               {row.mediaType}
             </div>
-            <div className="text-right font-mono text-sm text-foreground">
-              <MobileLabel>{isFacebook ? "REACTIONS" : "REACH"}</MobileLabel>
-              {formatCompact(primaryMetric)}
-            </div>
-            <div className="text-right font-mono text-sm text-foreground">
-              <MobileLabel>{isFacebook ? "COMMENTS" : "LIKES"}</MobileLabel>
-              {formatCompact(secondaryMetric)}
-            </div>
-            <div className="text-right font-mono text-sm text-foreground">
-              <MobileLabel>{isFacebook ? "SHARES" : "SAVES"}</MobileLabel>
-              {formatCompact(tertiaryMetric)}
-            </div>
-            <div className="text-right font-mono text-sm text-primary">
-              <MobileLabel>
-                {isFacebook ? "INTERACTIONS" : "ENG. RATE"}
-              </MobileLabel>
-              {isFacebook
-                ? formatCompact(row.engagementRate)
-                : formatPercent(row.engagementRate)}
+            <div
+              className={cn(
+                "grid gap-x-3 gap-y-2 sm:contents",
+                isFacebook ? "grid-cols-2" : "grid-cols-2 min-[400px]:grid-cols-3",
+              )}
+            >
+              {metrics.map((metric) => (
+                <MetricCell key={metric.label} {...metric} />
+              ))}
             </div>
           </div>
         );

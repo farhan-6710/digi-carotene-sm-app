@@ -120,7 +120,7 @@ export function GrowthCampaignLearningPage() {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
-          Select a KPI card to change the chart. Range applies to both cards and chart.
+          {view.rangeNote}
         </p>
         <div className="flex flex-wrap gap-2">
           {RANGE_OPTIONS.map((opt) => (

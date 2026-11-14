@@ -8,6 +8,7 @@ type AdRow = {
   adset_id: string;
   ad_id: string;
   ad_name: string;
+  status: Ad["status"];
   thumbnail_url: string | null;
   primary_text: string | null;
   headline: string | null;
@@ -19,6 +20,7 @@ function mapAd(row: AdRow): Ad {
     adsetId: row.adset_id,
     campaignId: row.campaign_id,
     adName: row.ad_name,
+    status: row.status ?? "Active",
     thumbnailUrl: row.thumbnail_url,
     primaryText: row.primary_text,
     headline: row.headline,
@@ -30,6 +32,7 @@ export type AdMasterInsert = {
   adsetId: string;
   adId: string;
   adName: string;
+  status: Ad["status"];
   thumbnailUrl: string | null;
   primaryText: string | null;
   headline: string | null;
@@ -42,6 +45,7 @@ function toInsertRow(adAccountId: string, row: AdMasterInsert) {
     adset_id: row.adsetId,
     ad_id: row.adId,
     ad_name: row.adName,
+    status: row.status,
     thumbnail_url: row.thumbnailUrl,
     primary_text: row.primaryText,
     headline: row.headline,
