@@ -46,7 +46,7 @@ function AssistantStatusLine({
   );
 }
 
-/** Floating round trigger + sheet. Chat in sessionStorage; Learning auto-brief. */
+/** Floating round trigger + sheet. Chat is entity-scoped in sessionStorage. */
 export function AssistantLauncher() {
   const [open, setOpen] = useState(false);
   const assistant = useAssistant();

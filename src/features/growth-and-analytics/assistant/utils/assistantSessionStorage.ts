@@ -3,49 +3,73 @@ import type {
   AssistantMessage,
 } from "@/shared/types/assistant";
 
-const STORAGE_KEY = "digi-carotene-pulse-chat";
+const STORAGE_KEY = "digi-carotene-pulse-chats";
 
 export type AssistantSessionState = {
   messages: AssistantMessage[];
   history: AssistantContent[];
-  analyzedKey: string | null;
+};
+
+type SessionStore = {
+  sessions: Record<string, AssistantSessionState>;
 };
 
 const EMPTY: AssistantSessionState = {
   messages: [],
   history: [],
-  analyzedKey: null,
 };
 
-/** Per-tab chat: survives reload, cleared when the tab/session closes. */
-export function loadAssistantSession(): AssistantSessionState {
+function readStore(): SessionStore {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
-    if (!raw) return EMPTY;
-    const parsed = JSON.parse(raw) as Partial<AssistantSessionState>;
-    return {
-      messages: Array.isArray(parsed.messages) ? parsed.messages : [],
-      history: Array.isArray(parsed.history) ? parsed.history : [],
-      analyzedKey:
-        typeof parsed.analyzedKey === "string" ? parsed.analyzedKey : null,
-    };
+    if (!raw) return { sessions: {} };
+    const parsed = JSON.parse(raw) as Partial<SessionStore>;
+    if (!parsed.sessions || typeof parsed.sessions !== "object") {
+      return { sessions: {} };
+    }
+    return { sessions: parsed.sessions };
   } catch {
-    return EMPTY;
+    return { sessions: {} };
   }
 }
 
-export function saveAssistantSession(state: AssistantSessionState): void {
+function writeStore(store: SessionStore): void {
   try {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(store));
   } catch {
     // Quota / private mode — chat still works in memory.
   }
 }
 
-export function clearAssistantSession(): void {
-  try {
-    sessionStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // ignore
-  }
+function normalizeSession(
+  value: Partial<AssistantSessionState> | undefined,
+): AssistantSessionState {
+  if (!value) return EMPTY;
+  return {
+    messages: Array.isArray(value.messages) ? value.messages : [],
+    history: Array.isArray(value.history) ? value.history : [],
+  };
+}
+
+/** Per-tab, per-entity chat: survives reload, cleared when the tab closes. */
+export function loadAssistantSession(scopeKey: string): AssistantSessionState {
+  return normalizeSession(readStore().sessions[scopeKey]);
+}
+
+export function saveAssistantSession(
+  scopeKey: string,
+  state: AssistantSessionState,
+): void {
+  const store = readStore();
+  store.sessions[scopeKey] = {
+    messages: state.messages,
+    history: state.history,
+  };
+  writeStore(store);
+}
+
+export function clearAssistantSession(scopeKey: string): void {
+  const store = readStore();
+  delete store.sessions[scopeKey];
+  writeStore(store);
 }

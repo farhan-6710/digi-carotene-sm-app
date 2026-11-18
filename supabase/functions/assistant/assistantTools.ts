@@ -8,6 +8,10 @@ const AD_ACCOUNT = {
   type: "string",
   description: "Growth ad account UUID (adAccount query param when set).",
 };
+const ORGANIC_ACCOUNT = {
+  type: "string",
+  description: "Growth organic account UUID (account query param when set).",
+};
 
 export const ASSISTANT_TOOLS = [
   {
@@ -114,6 +118,50 @@ export const ASSISTANT_TOOLS = [
             campaign_id: { type: "string" },
           },
           required: ["ad_account_id", "campaign_id"],
+        },
+      },
+      {
+        name: "list_organic_accounts",
+        description:
+          "Lists connected Instagram/Facebook organic accounts with followers. Empty query lists all.",
+        parameters: {
+          type: "object",
+          properties: {
+            query: {
+              type: "string",
+              description: "Words to match in the account name or platform.",
+            },
+          },
+        },
+      },
+      {
+        name: "get_organic_account_overview",
+        description:
+          "Organic account followers, follower gains, and aggregated post reach/views/shares/likes for a date window. Prefer for Instagram; Facebook returns followers with a live-UI note for posts.",
+        parameters: {
+          type: "object",
+          properties: {
+            organic_account_id: ORGANIC_ACCOUNT,
+            from: DATE,
+            to: DATE,
+          },
+          required: ["organic_account_id"],
+        },
+      },
+      {
+        name: "get_organic_post_performance",
+        description:
+          "One synced organic post: reach, views (impressions), likes, comments, saves, shares, reposts.",
+        parameters: {
+          type: "object",
+          properties: {
+            post_id: {
+              type: "string",
+              description:
+                "Post row id from the URL (/content-performance/posts/:postId) or recentPosts.",
+            },
+          },
+          required: ["post_id"],
         },
       },
     ],

@@ -154,6 +154,19 @@ export async function fetchOrganicAccounts(): Promise<OrganicAccount[]> {
   return ((data ?? []) as OrganicRow[]).map(mapOrganic);
 }
 
+export async function fetchOrganicAccountById(
+  accountId: string,
+): Promise<OrganicAccount | null> {
+  const { data, error } = await supabase
+    .from(DB.GROWTH_ORGANIC_ACCOUNTS.TABLE)
+    .select(DB.GROWTH_ORGANIC_ACCOUNTS.SELECT)
+    .eq("id", accountId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  return data ? mapOrganic(data as OrganicRow) : null;
+}
+
 export async function fetchAdAccounts(): Promise<AdAccount[]> {
   const { data, error } = await supabase
     .from(DB.GROWTH_AD_ACCOUNTS.TABLE)

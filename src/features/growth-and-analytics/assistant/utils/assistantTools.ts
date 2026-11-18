@@ -7,6 +7,7 @@ import {
   aggregateMetricRows,
   filterByDateRange,
 } from "./aggregateMetrics";
+import { ORGANIC_TOOLS } from "./assistantOrganicTools";
 import {
   fetchAdCampaignMetricsByCampaignId,
   fetchAdCampaignMetricsForAccount,
@@ -303,6 +304,7 @@ const TOOLS: Record<string, Tool> = {
   list_ads: listAds,
   get_ad_performance: getAdPerformance,
   get_campaign_benchmark: getCampaignBenchmark,
+  ...ORGANIC_TOOLS,
 };
 
 export async function runAssistantTool(

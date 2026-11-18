@@ -24,9 +24,11 @@ export type AssistantContext = {
   today: string;
   currentPath: string;
   adAccountId: string;
+  organicAccountId: string;
   campaignId: string;
   adsetId: string;
   adId: string;
+  postId: string;
 };
 
 export type AssistantStreamEvent =

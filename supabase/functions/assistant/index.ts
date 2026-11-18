@@ -88,9 +88,11 @@ function parseBody(
       today: safe(raw.today, 40),
       currentPath: safe(raw.currentPath, 300),
       adAccountId: safe(raw.adAccountId, 80),
+      organicAccountId: safe(raw.organicAccountId, 80),
       campaignId: safe(raw.campaignId, 80),
       adsetId: safe(raw.adsetId, 80),
       adId: safe(raw.adId, 80),
+      postId: safe(raw.postId, 80),
     },
   };
 }

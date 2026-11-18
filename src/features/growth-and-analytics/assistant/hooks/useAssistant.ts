@@ -1,22 +1,19 @@
-import { createElement, useCallback, useRef, useState } from "react";
+import { createElement, useEffect, useRef, useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router";
 
-import { GROWTH_AD_ACCOUNT_PARAM } from "../../constants/shared/growthUrlParams";
-import { useGrowthPaths } from "../../hooks/shared/useGrowthPaths";
 import {
-  analysingStatusLabel,
-  buildLearningAnalysisPrompt,
-  learningFocusKey,
-  resolveLearningFocus,
-} from "../constants/learningAnalysis";
+  GROWTH_AD_ACCOUNT_PARAM,
+  GROWTH_ORGANIC_ACCOUNT_PARAM,
+} from "../../constants/shared/growthUrlParams";
+import { useGrowthPaths } from "../../hooks/shared/useGrowthPaths";
 import { AssistantMark } from "../components/AssistantMark";
 import type { AssistantStatus } from "../types/components";
+import { resolveAssistantChatScope } from "../utils/assistantChatScope";
 import {
   clearAssistantSession,
   loadAssistantSession,
   saveAssistantSession,
 } from "../utils/assistantSessionStorage";
-import { resolveLearningEntityName } from "../utils/resolveLearningEntityName";
 import { runAssistantTool } from "../utils/assistantTools";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { streamAssistantTurn } from "@/services/assistantService";
@@ -56,68 +53,89 @@ export function useAssistant() {
   const { user } = useAuth();
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
-  const { campaignId = "", adsetId = "", adId = "" } = useParams();
+  const {
+    campaignId = "",
+    adsetId = "",
+    adId = "",
+    postId = "",
+  } = useParams();
   const { basePath } = useGrowthPaths();
   const adAccountId = searchParams.get(GROWTH_AD_ACCOUNT_PARAM) ?? "";
+  const organicAccountId =
+    searchParams.get(GROWTH_ORGANIC_ACCOUNT_PARAM) ?? "";
+  const chatScope = resolveAssistantChatScope({
+    searchParams,
+    campaignId,
+    adsetId,
+    adId,
+    postId,
+  });
 
-  const boot = useRef(loadAssistantSession());
-  const [messages, setMessages] = useState<AssistantMessage[]>(
-    () => boot.current.messages,
+  const [messages, setMessages] = useState<AssistantMessage[]>(() =>
+    loadAssistantSession(chatScope).messages,
   );
   const [status, setStatus] = useState<AssistantStatus>("idle");
   const [streamingId, setStreamingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [statusDetail, setStatusDetail] = useState<string | null>(null);
 
-  const history = useRef<AssistantContent[]>(boot.current.history);
-  const analyzedKey = useRef<string | null>(boot.current.analyzedKey);
+  const history = useRef<AssistantContent[]>(
+    loadAssistantSession(chatScope).history,
+  );
+  const scopeRef = useRef(chatScope);
   const messagesRef = useRef(messages);
   const statusRef = useRef(status);
   const sheetOpenRef = useRef(false);
   const notifyWhenReadyRef = useRef(false);
-  const analyzingRef = useRef(false);
   const displayName = user?.email?.split("@")[0] ?? "";
 
-  messagesRef.current = messages;
-  statusRef.current = status;
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
+
+  useEffect(() => {
+    if (scopeRef.current === chatScope) return;
+    scopeRef.current = chatScope;
+    const next = loadAssistantSession(chatScope);
+    history.current = next.history;
+    messagesRef.current = next.messages;
+    setMessages(next.messages);
+    setError(null);
+    setStreamingId(null);
+    setStatusDetail(null);
+    setStatus("idle");
+    statusRef.current = "idle";
+  }, [chatScope]);
 
   function persist(nextMessages: AssistantMessage[] = messagesRef.current) {
     messagesRef.current = nextMessages;
-    saveAssistantSession({
+    saveAssistantSession(scopeRef.current, {
       messages: nextMessages,
       history: history.current,
-      analyzedKey: analyzedKey.current,
     });
   }
 
-  const setSheetOpen = useCallback((open: boolean) => {
+  function setSheetOpen(open: boolean) {
     sheetOpenRef.current = open;
     if (open) {
       notifyWhenReadyRef.current = false;
       return;
     }
-    if (statusRef.current !== "idle" || analyzingRef.current) {
+    if (statusRef.current !== "idle") {
       notifyWhenReadyRef.current = true;
     }
-  }, []);
+  }
 
-  /** Learning brief only when the sheet opens — not on mere tab visit. */
-  const onSheetOpenChange = useCallback(
-    (open: boolean) => {
-      setSheetOpen(open);
-      if (open) void runLearningAnalysisRef.current();
-    },
-    [setSheetOpen],
-  );
-
-  const runLearningAnalysisRef = useRef(() => Promise.resolve());
-
-  async function ask(question: string, options?: { statusDetail?: string }) {
+  async function ask(question: string) {
     const trimmed = question.trim();
     if (!trimmed || statusRef.current !== "idle" || !user) return;
 
     setError(null);
-    setStatusDetail(options?.statusDetail ?? null);
+    setStatusDetail(null);
     setStatus("thinking");
     statusRef.current = "thinking";
 
@@ -135,9 +153,11 @@ export function useAssistant() {
       today: new Date().toDateString(),
       currentPath: pathname,
       adAccountId,
+      organicAccountId,
       campaignId,
       adsetId,
       adId,
+      postId,
     };
     let contents = trimHistory([
       ...history.current,
@@ -213,7 +233,6 @@ export function useAssistant() {
       statusRef.current = "idle";
       setStreamingId(null);
       setStatusDetail(null);
-      analyzingRef.current = false;
 
       if (notifyWhenReadyRef.current && !sheetOpenRef.current) {
         notifyWhenReadyRef.current = false;
@@ -224,45 +243,10 @@ export function useAssistant() {
     }
   }
 
-  async function runLearningAnalysis() {
-    const focus = resolveLearningFocus({
-      pathname,
-      adAccountId,
-      campaignId,
-      adsetId,
-      adId,
-    });
-    if (!focus || !user) return;
-    if (statusRef.current !== "idle" || analyzingRef.current) return;
-
-    const key = learningFocusKey(focus);
-    if (analyzedKey.current === key) return;
-
-    analyzingRef.current = true;
-    analyzedKey.current = key;
-    persist();
-
-    let entityName = "";
-    try {
-      entityName = await resolveLearningEntityName(focus);
-    } catch {
-      entityName = "";
-    }
-
-    const detail = analysingStatusLabel(focus.kind, entityName);
-    await ask(buildLearningAnalysisPrompt(focus.kind, entityName), {
-      statusDetail: detail,
-    });
-  }
-
-  runLearningAnalysisRef.current = () => runLearningAnalysis();
-
   function reset() {
     history.current = [];
-    analyzedKey.current = null;
-    analyzingRef.current = false;
     notifyWhenReadyRef.current = false;
-    clearAssistantSession();
+    clearAssistantSession(scopeRef.current);
     messagesRef.current = [];
     setMessages([]);
     setError(null);
@@ -278,7 +262,6 @@ export function useAssistant() {
     ask,
     reset,
     displayName,
-    setSheetOpen: onSheetOpenChange,
-    runLearningAnalysis,
+    setSheetOpen,
   };
 }
