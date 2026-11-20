@@ -9,14 +9,13 @@ export type CampaignDetailTabId =
   | "structure"
   | "settings";
 
-/** Placeholder-only tabs until Changes / Alerts / Structure / Settings ship. */
+/** Placeholder-only tabs until Alerts / Structure / Settings ship. */
 export type CampaignPlaceholderTabId = Exclude<
   CampaignDetailTabId,
-  "overview" | "learning"
+  "overview" | "learning" | "changes"
 >;
 
 export const CAMPAIGN_PLACEHOLDER_TAB_IDS = [
-  "changes",
   "alerts",
   "structure",
   "settings",
@@ -26,11 +25,6 @@ const PLACEHOLDER_COPY: Record<
   CampaignPlaceholderTabId,
   { title: string; description: string }
 > = {
-  changes: {
-    title: "Changes tab coming soon",
-    description:
-      "Every Meta activity-log or Google change_event for this campaign, with reason and impact. Spec §8.3.",
-  },
   alerts: {
     title: "Alerts tab coming soon",
     description:
@@ -61,7 +55,6 @@ export function resolveCampaignPlaceholderTab(
 ): CampaignPlaceholderTabId | null {
   const segment = pathname.split("/").filter(Boolean).at(-1);
   if (
-    segment === "changes" ||
     segment === "alerts" ||
     segment === "structure" ||
     segment === "settings"

@@ -62,6 +62,11 @@ const GrowthCampaignLearningPage = lazyRoutePage(
     import("@/features/growth-and-analytics/pages/GrowthCampaignLearningPage"),
   "GrowthCampaignLearningPage",
 );
+const GrowthCampaignChangesPage = lazyRoutePage(
+  () =>
+    import("@/features/growth-and-analytics/pages/GrowthCampaignChangesPage"),
+  "GrowthCampaignChangesPage",
+);
 const GrowthCampaignTabPlaceholderPage = lazyRoutePage(
   () =>
     import(
@@ -364,7 +369,7 @@ export const router = createBrowserRouter([
               },
               {
                 path: "campaigns/:campaignId/changes",
-                element: <GrowthCampaignTabPlaceholderPage />,
+                element: <GrowthCampaignChangesPage />,
               },
               {
                 path: "campaigns/:campaignId/alerts",
@@ -559,7 +564,7 @@ export const router = createBrowserRouter([
               },
               {
                 path: "campaigns/:campaignId/changes",
-                element: <GrowthCampaignTabPlaceholderPage />,
+                element: <GrowthCampaignChangesPage />,
               },
               {
                 path: "campaigns/:campaignId/alerts",

@@ -653,3 +653,46 @@ export type AutoBenchmarkPreview = {
   excluded: Record<string, number>;
   method: BenchmarkMethod;
 };
+
+/** Campaign Changes tab (PDF §8.3) — UI types; wire to API later. */
+export type CampaignChangeCategory =
+  | "budget"
+  | "bidding"
+  | "audience"
+  | "keywords"
+  | "creative"
+  | "placement"
+  | "landing_page"
+  | "tracking"
+  | "status"
+  | "other";
+
+export type CampaignChangeVerification =
+  | "needs_reason"
+  | "verified"
+  | "mismatch"
+  | "not_applied"
+  | "pending";
+
+export type CampaignChangeImpact =
+  | "measuring"
+  | "improved"
+  | "worsened"
+  | "no_clear_effect"
+  | "inconclusive"
+  | "pending";
+
+export type CampaignChangeRow = {
+  id: string;
+  occurredAt: string;
+  actorLabel: string;
+  isPlanned: boolean;
+  summary: string;
+  plannedValueNote: string | null;
+  category: CampaignChangeCategory;
+  reason: string | null;
+  expectation: string | null;
+  verification: CampaignChangeVerification;
+  impact: CampaignChangeImpact;
+  impactDetail: string | null;
+};
