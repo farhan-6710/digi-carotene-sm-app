@@ -70,8 +70,11 @@ export function ExplainChangeDrawer({
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent className="flex w-full flex-col gap-0 sm:max-w-md">
-        <SheetHeader className="border-b border-border px-1 pb-4">
+      <SheetContent
+        side="right"
+        className="flex w-full flex-col gap-0 p-0 sm:max-w-md"
+      >
+        <SheetHeader className="border-b border-border pr-12">
           <SheetTitle>Explain a change</SheetTitle>
           <SheetDescription>
             {campaignName}
@@ -79,7 +82,7 @@ export function ExplainChangeDrawer({
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 space-y-4 overflow-y-auto px-1 py-4">
+        <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-4 py-4">
           <div className="space-y-1.5">
             <Label htmlFor="explain-category">Category</Label>
             <Select
@@ -112,7 +115,7 @@ export function ExplainChangeDrawer({
             />
           </div>
 
-          <div className="space-y-2 rounded-xl border border-border p-3">
+          <div className="space-y-3 rounded-xl border border-border p-4">
             <p className="text-sm font-medium text-foreground">
               Expected impact
             </p>
@@ -157,11 +160,16 @@ export function ExplainChangeDrawer({
           </div>
         </div>
 
-        <SheetFooter className="border-t border-border px-1 pt-4">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+        <SheetFooter className="border-t border-border sm:flex-row sm:justify-end">
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-full"
+            onClick={() => onOpenChange(false)}
+          >
             Cancel
           </Button>
-          <Button type="button" onClick={handleSave}>
+          <Button type="button" className="rounded-full" onClick={handleSave}>
             Save
           </Button>
         </SheetFooter>
