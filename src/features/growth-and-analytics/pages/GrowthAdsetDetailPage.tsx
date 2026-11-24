@@ -10,6 +10,7 @@ import { useGrowthPaths } from "../hooks/shared/useGrowthPaths";
 import { useGrowthSelectedAdAccount } from "../hooks/shared/useGrowthSelectedAdAccount";
 import type { DemographicBreakdown } from "../types/types";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -149,7 +150,13 @@ export function GrowthAdsetDetailPage() {
                 platform={platform}
               />
             </div>
-            <DateFiltersTwo {...dateFilterProps} />
+            <ListingFiltersChrome
+              title="Date filters"
+              activeCount={1}
+              className="w-full sm:w-auto"
+            >
+              <DateFiltersTwo {...dateFilterProps} />
+            </ListingFiltersChrome>
           </div>
         }
       />

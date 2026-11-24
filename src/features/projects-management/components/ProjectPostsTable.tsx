@@ -11,9 +11,11 @@ import {
 import { useProjectPostsFilters } from "@/features/projects-management/hooks/useProjectPostsFilters";
 import type { ProjectPostsTableProps } from "@/features/projects-management/types/components";
 import { PostStatusSelect } from "@/features/posts-management/components/PostStatusSelect";
+import { POST_STATUS_SELECT_ALL } from "@/features/posts-management/constants/postStatusSelect";
 import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import { DirectoryBulkDeleteBar } from "@/shared/components/DirectoryBulkDeleteBar";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { useDirectoryBulkDelete } from "@/shared/hooks/useDirectoryBulkDelete";
 import { useDirectoryBulkSelection } from "@/shared/hooks/useDirectoryBulkSelection";
 import type { DirectoryTableColumn } from "@/shared/types/components";
@@ -108,27 +110,34 @@ export function ProjectPostsTable({
       isLoading={isLoading}
       isEmpty={filteredPosts.length === 0}
       headerAside={
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-          {showBulk ? (
-            <DirectoryBulkDeleteBar
-              selectedCount={bulk.selectedIds.length}
-              singularLabel="post"
-              pluralLabel="posts"
-              isDeleting={isDeleting}
-              onClear={bulk.clear}
-              onConfirmDelete={() => runBulkDelete(bulk.selectedIds)}
-            />
-          ) : null}
-          {addPostHref ? (
-            <Button asChild className="rounded-full shadow-sm">
-              <Link to={addPostHref}>
-                <Plus className="mr-2 size-4" />
-                Add Post
-              </Link>
-            </Button>
-          ) : null}
+        <ListingFiltersChrome
+          title="Post filters"
+          activeCount={statusFilter !== POST_STATUS_SELECT_ALL ? 1 : 0}
+          leading={
+            <>
+              {showBulk ? (
+                <DirectoryBulkDeleteBar
+                  selectedCount={bulk.selectedIds.length}
+                  singularLabel="post"
+                  pluralLabel="posts"
+                  isDeleting={isDeleting}
+                  onClear={bulk.clear}
+                  onConfirmDelete={() => runBulkDelete(bulk.selectedIds)}
+                />
+              ) : null}
+              {addPostHref ? (
+                <Button asChild className="w-full rounded-full shadow-sm sm:w-auto">
+                  <Link to={addPostHref}>
+                    <Plus className="mr-2 size-4" />
+                    Add Post
+                  </Link>
+                </Button>
+              ) : null}
+            </>
+          }
+        >
           <PostStatusSelect value={statusFilter} onChange={setStatusFilter} />
-        </div>
+        </ListingFiltersChrome>
       }
     >
       {filteredPosts.map((post) => (

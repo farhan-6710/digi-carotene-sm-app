@@ -5,6 +5,7 @@ import { buildProjectDetailPath } from "@/features/projects-management/constants
 import { useProjectsQuery } from "@/features/projects-management/hooks/useProjectsQuery";
 import { buildProjectCommitmentRows } from "@/features/projects-management/utils/projectCommitmentsUtils";
 import { ActiveStatusFilter } from "@/shared/components/ActiveStatusFilter";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 import { PageShell } from "@/shared/components/PageShell";
 import type { ActiveStatusFilterId } from "@/shared/constants/activeStatusFilter";
@@ -45,7 +46,12 @@ export function ProjectCommitmentsPage() {
             : "No active projects yet."
         }
         filters={
-          <>
+          <ListingFiltersChrome
+            title="Commitment filters"
+            activeCount={
+              (searchQuery.trim() ? 1 : 0) + (statusFilter !== "active" ? 1 : 0)
+            }
+          >
             <ListingSearchInput
               value={searchQuery}
               onChange={setSearchQuery}
@@ -61,7 +67,7 @@ export function ProjectCommitmentsPage() {
               disabled={isLoading}
               placeholder="Filter projects"
             />
-          </>
+          </ListingFiltersChrome>
         }
       />
     </PageShell>

@@ -10,9 +10,11 @@ import {
 } from "@/features/posts-management/constants/dayPostsDirectory";
 import type { DayPostsTableProps } from "@/features/posts-management/types/components";
 import { useProjectPostsFilters } from "@/features/projects-management/hooks/useProjectPostsFilters";
+import { POST_STATUS_SELECT_ALL } from "@/features/posts-management/constants/postStatusSelect";
 import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import { DirectoryBulkDeleteBar } from "@/shared/components/DirectoryBulkDeleteBar";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { useDirectoryBulkDelete } from "@/shared/hooks/useDirectoryBulkDelete";
 import { useDirectoryBulkSelection } from "@/shared/hooks/useDirectoryBulkSelection";
 import type { DirectoryTableColumn } from "@/shared/types/components";
@@ -101,17 +103,27 @@ export function DayPostsTable({
         ) : null
       }
       filters={
-        <>
-          <ClientProjectFilters
-            projects={projects}
-            selectedClientIds={selectedClientIds}
-            selectedProjectIds={selectedProjectIds}
-            onClientChange={onClientChange}
-            onProjectChange={onProjectChange}
-            className="grid w-full min-w-0 gap-2 sm:grid-cols-2 sm:max-w-xl"
-          />
-          <PostStatusSelect value={statusFilter} onChange={setStatusFilter} />
-        </>
+        <ListingFiltersChrome
+          title="Day post filters"
+          activeCount={
+            selectedClientIds.length +
+            selectedProjectIds.length +
+            (statusFilter !== POST_STATUS_SELECT_ALL ? 1 : 0)
+          }
+          className="w-full"
+        >
+          <div className="flex w-full min-w-0 flex-col gap-3 md:flex-row md:flex-wrap md:items-end">
+            <ClientProjectFilters
+              projects={projects}
+              selectedClientIds={selectedClientIds}
+              selectedProjectIds={selectedProjectIds}
+              onClientChange={onClientChange}
+              onProjectChange={onProjectChange}
+              className="grid w-full min-w-0 gap-2 md:max-w-xl md:grid-cols-2"
+            />
+            <PostStatusSelect value={statusFilter} onChange={setStatusFilter} />
+          </div>
+        </ListingFiltersChrome>
       }
     >
       {filteredPosts.map((post) => (

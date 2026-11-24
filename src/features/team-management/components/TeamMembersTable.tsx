@@ -9,6 +9,7 @@ import {
 import type { TeamMembersTableProps } from "@/features/team-management/types/components";
 import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import { DirectoryBulkDeleteBar } from "@/shared/components/DirectoryBulkDeleteBar";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import type { DirectoryTableColumn } from "@/shared/types/components";
@@ -74,24 +75,29 @@ export function TeamMembersTable({
       isLoading={isLoading}
       isEmpty={members.length === 0}
       headerAside={
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-          {canDelete && onClearSelection && onBulkDelete ? (
-            <DirectoryBulkDeleteBar
-              selectedCount={selectedIds.length}
-              singularLabel="team member"
-              pluralLabel="team members"
-              isDeleting={isDeleting}
-              onClear={onClearSelection}
-              onConfirmDelete={onBulkDelete}
-            />
-          ) : null}
+        <ListingFiltersChrome
+          title="Team filters"
+          activeCount={searchQuery.trim() ? 1 : 0}
+          leading={
+            canDelete && onClearSelection && onBulkDelete ? (
+              <DirectoryBulkDeleteBar
+                selectedCount={selectedIds.length}
+                singularLabel="team member"
+                pluralLabel="team members"
+                isDeleting={isDeleting}
+                onClear={onClearSelection}
+                onConfirmDelete={onBulkDelete}
+              />
+            ) : null
+          }
+        >
           <ListingSearchInput
             value={searchQuery}
             onChange={onSearchQueryChange}
             placeholder="Search team"
             disabled={isLoading}
           />
-        </div>
+        </ListingFiltersChrome>
       }
     >
       {members.map((member) => (

@@ -81,9 +81,8 @@ export function PostsManagementPage() {
       />
 
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-4 text-xs text-muted-foreground sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-          <PostsManagementStatusLegend />
-          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
+        <div className="flex flex-col gap-3 text-xs text-muted-foreground">
+          <div className="flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <PostsCalendarViewToggle
               listView={listView}
               onListViewChange={setListView}
@@ -94,6 +93,9 @@ export function PostsManagementPage() {
               onSelect={selectDate}
               className="w-full sm:w-auto"
             />
+          </div>
+          <div className="max-h-20 overflow-y-auto sm:max-h-none">
+            <PostsManagementStatusLegend />
           </div>
         </div>
 

@@ -9,6 +9,7 @@ import type { ClientProductionPlansTableProps } from "@/features/client-portal/t
 import { formatPlanDeliverables } from "@/features/production-planner/utils/productionPlanFormUtils";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 import { cn } from "@/shared/lib/utils";
 
@@ -32,12 +33,17 @@ export function ClientProductionPlansTable({
       isLoading={isLoading}
       isEmpty={plans.length === 0}
       headerAside={
-        <ListingSearchInput
-          value={searchQuery}
-          onChange={onSearchQueryChange}
-          placeholder="Search plans"
-          disabled={isLoading}
-        />
+        <ListingFiltersChrome
+          title="Plan filters"
+          activeCount={searchQuery.trim() ? 1 : 0}
+        >
+          <ListingSearchInput
+            value={searchQuery}
+            onChange={onSearchQueryChange}
+            placeholder="Search plans"
+            disabled={isLoading}
+          />
+        </ListingFiltersChrome>
       }
     >
       {plans.map((plan) => (

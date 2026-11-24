@@ -12,6 +12,7 @@ import { useGrowthSelectedAccount } from "../hooks/shared/useGrowthSelectedAccou
 import { isSyncStale } from "../utils/shared/isSyncStale";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { StatsCards } from "@/shared/components/StatsCards";
@@ -51,20 +52,26 @@ export function GrowthDashboardPage() {
             <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
               <GrowthOrganicAccountSelect />
               {showLiveDashboard ? (
-                <div className="flex flex-wrap items-center justify-end gap-2">
+                <ListingFiltersChrome
+                  title="Date filters"
+                  activeCount={1}
+                  className="w-full sm:w-auto"
+                  leading={
+                    canRefetch && activeAccount ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full rounded-full sm:w-auto"
+                        disabled={modalProps.open}
+                        onClick={() => void refetchOrganic(activeAccount)}
+                      >
+                        Refetch data
+                      </Button>
+                    ) : null
+                  }
+                >
                   <DateFiltersTwo {...dateFilterProps} />
-                  {canRefetch && activeAccount ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="rounded-full"
-                      disabled={modalProps.open}
-                      onClick={() => void refetchOrganic(activeAccount)}
-                    >
-                      Refetch data
-                    </Button>
-                  ) : null}
-                </div>
+                </ListingFiltersChrome>
               ) : null}
             </div>
           ) : null

@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { cn } from "@/shared/lib/utils";
 
 import { useGrowthPaths } from "../../hooks/shared/useGrowthPaths";
@@ -134,11 +135,17 @@ export function AdsTable({
       columns={[...leadingColumns, ...METRIC_COLUMNS]}
       headerAside={
         showDemographicBreakdown ? (
-          <DailyMetricsBreakdownSelect
-            value={breakdowns}
-            onChange={onBreakdownsChange}
-            emptyLabel="Ads"
-          />
+          <ListingFiltersChrome
+            title="Breakdown"
+            activeCount={breakdowns.length > 0 ? 1 : 0}
+            className="w-full sm:w-72"
+          >
+            <DailyMetricsBreakdownSelect
+              value={breakdowns}
+              onChange={onBreakdownsChange}
+              emptyLabel="Ads"
+            />
+          </ListingFiltersChrome>
         ) : undefined
       }
       isLoading={isBreakdown ? isDemographicLoading : false}

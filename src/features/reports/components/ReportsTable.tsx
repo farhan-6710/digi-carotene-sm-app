@@ -18,6 +18,7 @@ import {
 import { buildClientReportPath } from "@/features/reports/utils/reportsUrlParams";
 import type { ReportsTableProps } from "@/features/reports/types/components";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { cn } from "@/shared/lib/utils";
 
 export function ReportsTable({
@@ -50,12 +51,18 @@ export function ReportsTable({
       isLoading={isLoading}
       isEmpty={!hasGenerated || summaries.length === 0}
       headerAside={
-        <PostStatusFilter
-          options={statusFilterOptions}
-          showAll={showAll}
-          activeStatuses={activeStatuses}
-          onToggle={onToggleStatusFilter}
-        />
+        <ListingFiltersChrome
+          title="Report filters"
+          activeCount={showAll ? 0 : activeStatuses.length}
+          className="w-full"
+        >
+          <PostStatusFilter
+            options={statusFilterOptions}
+            showAll={showAll}
+            activeStatuses={activeStatuses}
+            onToggle={onToggleStatusFilter}
+          />
+        </ListingFiltersChrome>
       }
     >
       {summaries.map((summary) => (

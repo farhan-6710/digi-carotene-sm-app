@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { usePersistedColumnIds } from "@/shared/hooks/usePersistedColumnIds";
 import { cn } from "@/shared/lib/utils";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
@@ -88,7 +89,11 @@ export function GoogleCampaignDailyMetricsTable({
       columns={columns}
       onColumnMove={moveColumn}
       headerAside={
-        <div className="w-full min-w-0 sm:w-72">
+        <ListingFiltersChrome
+          title="Table options"
+          activeCount={columnIds.length > 0 ? 1 : 0}
+          className="w-full sm:w-72"
+        >
           <MultiSelect
             id="google-daily-metric-columns"
             label="Columns"
@@ -98,7 +103,7 @@ export function GoogleCampaignDailyMetricsTable({
             placeholder="Select columns"
             emptyMessage="No metrics available."
           />
-        </div>
+        </ListingFiltersChrome>
       }
       isLoading={false}
       isEmpty={rows.length === 0}

@@ -25,6 +25,7 @@ import {
 } from "@/features/projects-management/utils/projectKindUtils";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { Button } from "@/shared/ui/button";
@@ -123,7 +124,7 @@ export function ProjectTasksSection({
           canCreateTasks ? (
             <Button
               type="button"
-              className="rounded-full shadow-sm"
+              className="w-full rounded-full shadow-sm sm:w-auto"
               onClick={() => openAddDialog({ projectKey })}
             >
               <Plus className="mr-2 size-4" />
@@ -132,26 +133,35 @@ export function ProjectTasksSection({
           ) : null
         }
         filters={
-          <>
-            <TaskStatusFilter
-              value={statusFilter}
-              onChange={setStatusFilter}
-              disabled={isLoading}
-            />
-            <TaskSortSelect
-              value={sort}
-              onChange={setSort}
-              disabled={isLoading}
-            />
-            <div className="w-full min-w-0 sm:min-w-[200px] sm:flex-1 sm:max-w-sm">
-              <ListingSearchInput
-                value={searchQuery}
-                onChange={setSearchQuery}
-                placeholder="Search tasks"
+          <ListingFiltersChrome
+            title="Task filters"
+            activeCount={
+              (statusFilter !== DEFAULT_TASK_STATUS_FILTER ? 1 : 0) +
+              (searchQuery.trim() ? 1 : 0)
+            }
+            className="w-full"
+          >
+            <div className="flex w-full min-w-0 flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
+              <TaskStatusFilter
+                value={statusFilter}
+                onChange={setStatusFilter}
                 disabled={isLoading}
               />
+              <TaskSortSelect
+                value={sort}
+                onChange={setSort}
+                disabled={isLoading}
+              />
+              <div className="w-full min-w-0 md:min-w-[200px] md:max-w-sm md:flex-1">
+                <ListingSearchInput
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  placeholder="Search tasks"
+                  disabled={isLoading}
+                />
+              </div>
             </div>
-          </>
+          </ListingFiltersChrome>
         }
       >
         {projectTasks.map((task) => (

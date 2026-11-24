@@ -1,4 +1,5 @@
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { cn } from "@/shared/lib/utils";
 
 import { DailyMetricsBreakdownSelect } from "./DailyMetricsBreakdownSelect";
@@ -120,10 +121,16 @@ export function AdDailyMetricsTable({
       columns={[...leadingColumns, ...METRIC_COLUMNS]}
       headerAside={
         showDemographicBreakdown ? (
-          <DailyMetricsBreakdownSelect
-            value={breakdowns}
-            onChange={onBreakdownsChange}
-          />
+          <ListingFiltersChrome
+            title="Breakdown"
+            activeCount={breakdowns.length > 0 ? 1 : 0}
+            className="w-full sm:w-72"
+          >
+            <DailyMetricsBreakdownSelect
+              value={breakdowns}
+              onChange={onBreakdownsChange}
+            />
+          </ListingFiltersChrome>
         ) : undefined
       }
       isLoading={isBreakdown ? isDemographicLoading : false}

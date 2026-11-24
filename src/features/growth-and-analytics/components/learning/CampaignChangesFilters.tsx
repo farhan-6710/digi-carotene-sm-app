@@ -1,5 +1,6 @@
 import { Plus } from "lucide-react";
 
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { Button } from "@/shared/ui/button";
 import {
   Select,
@@ -47,11 +48,35 @@ export function CampaignChangesFilters({
   onMadeByChange,
   onLogPlanned,
 }: CampaignChangesFiltersProps) {
+  const activeCount =
+    (range !== "60" ? 1 : 0) +
+    (category !== "all" ? 1 : 0) +
+    (status !== "all" ? 1 : 0) +
+    (madeBy !== "all" ? 1 : 0);
+
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <div className="flex flex-wrap gap-2">
+    <ListingFiltersChrome
+      title="Change filters"
+      activeCount={activeCount}
+      className="w-full"
+      leading={
+        <Button
+          type="button"
+          className="w-full rounded-full sm:w-auto"
+          onClick={onLogPlanned}
+        >
+          <Plus className="size-4" />
+          Log planned change
+        </Button>
+      }
+    >
+      <div className="flex w-full min-w-0 flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
         <Select value={range} onValueChange={onRangeChange}>
-          <SelectTrigger size="sm" className="min-w-36 rounded-full" aria-label="Date range">
+          <SelectTrigger
+            size="sm"
+            className="min-w-36 w-full rounded-full md:w-auto"
+            aria-label="Date range"
+          >
             <SelectValue placeholder="Date range" />
           </SelectTrigger>
           <SelectContent>
@@ -64,7 +89,11 @@ export function CampaignChangesFilters({
         </Select>
 
         <Select value={category} onValueChange={onCategoryChange}>
-          <SelectTrigger size="sm" className="min-w-40 rounded-full" aria-label="Category">
+          <SelectTrigger
+            size="sm"
+            className="min-w-40 w-full rounded-full md:w-auto"
+            aria-label="Category"
+          >
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -78,7 +107,11 @@ export function CampaignChangesFilters({
         </Select>
 
         <Select value={status} onValueChange={onStatusChange}>
-          <SelectTrigger size="sm" className="min-w-40 rounded-full" aria-label="Status">
+          <SelectTrigger
+            size="sm"
+            className="min-w-40 w-full rounded-full md:w-auto"
+            aria-label="Status"
+          >
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -92,7 +125,11 @@ export function CampaignChangesFilters({
         </Select>
 
         <Select value={madeBy} onValueChange={onMadeByChange}>
-          <SelectTrigger size="sm" className="min-w-36 rounded-full" aria-label="Made by">
+          <SelectTrigger
+            size="sm"
+            className="min-w-36 w-full rounded-full md:w-auto"
+            aria-label="Made by"
+          >
             <SelectValue placeholder="Made by" />
           </SelectTrigger>
           <SelectContent>
@@ -102,11 +139,6 @@ export function CampaignChangesFilters({
           </SelectContent>
         </Select>
       </div>
-
-      <Button type="button" className="rounded-full" onClick={onLogPlanned}>
-        <Plus className="size-4" />
-        Log planned change
-      </Button>
-    </div>
+    </ListingFiltersChrome>
   );
 }

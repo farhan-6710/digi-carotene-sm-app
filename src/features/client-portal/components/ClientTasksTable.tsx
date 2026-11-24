@@ -9,6 +9,7 @@ import {
 } from "@/features/tasks-management/constants/taskStatusFilter";
 import type { Task } from "@/features/tasks-management/types/types";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 
 type ClientTasksTableProps = {
@@ -49,26 +50,35 @@ export function ClientTasksTable({
       isLoading={isLoading}
       isEmpty={tasks.length === 0}
       filters={
-        <>
-          <TaskStatusFilter
-            value={statusFilter}
-            onChange={onStatusFilterChange}
-            disabled={isLoading}
-          />
-          <TaskSortSelect
-            value={sort}
-            onChange={onSortChange}
-            disabled={isLoading}
-          />
-          <div className="w-full min-w-0 sm:min-w-[200px] sm:flex-1 sm:max-w-sm">
-            <ListingSearchInput
-              value={searchQuery}
-              onChange={onSearchQueryChange}
-              placeholder="Search tasks"
+        <ListingFiltersChrome
+          title="Task filters"
+          activeCount={
+            (statusFilter !== DEFAULT_TASK_STATUS_FILTER ? 1 : 0) +
+            (searchQuery.trim() ? 1 : 0)
+          }
+          className="w-full"
+        >
+          <div className="flex w-full min-w-0 flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
+            <TaskStatusFilter
+              value={statusFilter}
+              onChange={onStatusFilterChange}
               disabled={isLoading}
             />
+            <TaskSortSelect
+              value={sort}
+              onChange={onSortChange}
+              disabled={isLoading}
+            />
+            <div className="w-full min-w-0 md:min-w-[200px] md:max-w-sm md:flex-1">
+              <ListingSearchInput
+                value={searchQuery}
+                onChange={onSearchQueryChange}
+                placeholder="Search tasks"
+                disabled={isLoading}
+              />
+            </div>
           </div>
-        </>
+        </ListingFiltersChrome>
       }
     >
       {tasks.map((task) => (

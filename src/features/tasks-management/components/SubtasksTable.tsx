@@ -29,7 +29,7 @@ export function SubtasksTable({
           <Button
             type="button"
             onClick={onAddSubtask}
-            className="rounded-full shadow-sm"
+            className="w-full rounded-full shadow-sm sm:w-auto"
             disabled={isLoading}
           >
             <Plus className="mr-2 size-4" />

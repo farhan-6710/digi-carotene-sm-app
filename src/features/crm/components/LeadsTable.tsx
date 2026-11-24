@@ -16,6 +16,7 @@ import { getListingFollowUp } from "@/features/crm/utils/leadFollowUpFilterUtils
 import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import { DirectoryBulkDeleteBar } from "@/shared/components/DirectoryBulkDeleteBar";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 import type { DirectoryTableColumn } from "@/shared/types/components";
 
@@ -107,33 +108,43 @@ export function LeadsTable({
         ) : null
       }
       filters={
-        <div className="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-          <div className="w-full min-w-0 sm:max-w-sm">
-            <ListingSearchInput
-              value={searchQuery}
-              onChange={onSearchQueryChange}
-              placeholder="Search leads"
-              disabled={isLoading}
-            />
+        <ListingFiltersChrome
+          title="Lead filters"
+          activeCount={
+            (searchQuery.trim() ? 1 : 0) +
+            (followUpFilter !== DEFAULT_LEAD_FOLLOW_UP_FILTER ? 1 : 0) +
+            (monthFilter !== LEAD_MONTH_FILTER_ALL ? 1 : 0)
+          }
+          className="w-full"
+        >
+          <div className="flex w-full min-w-0 flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:justify-between">
+            <div className="w-full min-w-0 md:max-w-sm">
+              <ListingSearchInput
+                value={searchQuery}
+                onChange={onSearchQueryChange}
+                placeholder="Search leads"
+                disabled={isLoading}
+              />
+            </div>
+            <div className="flex w-full min-w-0 flex-col gap-2 md:w-auto md:flex-row md:flex-wrap md:items-center">
+              <LeadFollowUpFilterSelect
+                value={followUpFilter}
+                onChange={onFollowUpFilterChange}
+                disabled={isLoading}
+              />
+              <LeadMonthFilter
+                value={monthFilter}
+                onChange={onMonthFilterChange}
+                disabled={isLoading}
+              />
+              <LeadSortSelect
+                value={sort}
+                onChange={onSortChange}
+                disabled={isLoading}
+              />
+            </div>
           </div>
-          <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
-            <LeadFollowUpFilterSelect
-              value={followUpFilter}
-              onChange={onFollowUpFilterChange}
-              disabled={isLoading}
-            />
-            <LeadMonthFilter
-              value={monthFilter}
-              onChange={onMonthFilterChange}
-              disabled={isLoading}
-            />
-            <LeadSortSelect
-              value={sort}
-              onChange={onSortChange}
-              disabled={isLoading}
-            />
-          </div>
-        </div>
+        </ListingFiltersChrome>
       }
     >
       {leads.map((lead) => (

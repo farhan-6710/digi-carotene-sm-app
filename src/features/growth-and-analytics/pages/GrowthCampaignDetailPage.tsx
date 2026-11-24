@@ -17,6 +17,7 @@ import { isSyncStale } from "../utils/shared/isSyncStale";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { Button } from "@/shared/ui/button";
@@ -135,20 +136,26 @@ export function GrowthCampaignDetailPage() {
                 adAccountId={accountId}
               />
             </div>
-            <div className="flex flex-wrap items-center justify-end gap-2">
+            <ListingFiltersChrome
+              title="Date filters"
+              activeCount={1}
+              className="w-full sm:w-auto"
+              leading={
+                activeAccount ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full rounded-full sm:w-auto"
+                    disabled={modalProps.open}
+                    onClick={() => void refetchAd(activeAccount)}
+                  >
+                    Refetch data
+                  </Button>
+                ) : null
+              }
+            >
               <DateFiltersTwo {...dateFilterProps} />
-              {activeAccount ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="rounded-full"
-                  disabled={modalProps.open}
-                  onClick={() => void refetchAd(activeAccount)}
-                >
-                  Refetch data
-                </Button>
-              ) : null}
-            </div>
+            </ListingFiltersChrome>
           </div>
         }
       />

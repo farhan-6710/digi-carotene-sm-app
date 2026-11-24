@@ -1,6 +1,7 @@
 import { ProjectCommitmentsTable } from "@/features/projects-management/components/ProjectCommitmentsTable";
 import { PROJECT_COMMITMENTS_PATH } from "@/features/projects-management/constants/projectCommitments";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { useDateFiltersTwo } from "@/shared/hooks/useDateFiltersTwo";
 import { TeamMyTodosCard } from "@/features/team-portal/components/TeamMyTodosCard";
 import { TeamNeedsAttention } from "@/features/team-portal/components/TeamNeedsAttention";
@@ -33,7 +34,15 @@ export function TeamDashboardPage() {
       <PageHeader
         heading="Dashboard"
         description="Agency overview — team workload, posts publishing comparison, and posts needing attention."
-        actions={<DateFiltersTwo {...dateFilterProps} />}
+        actions={
+          <ListingFiltersChrome
+            title="Date filters"
+            activeCount={1}
+            className="w-full sm:w-auto"
+          >
+            <DateFiltersTwo {...dateFilterProps} />
+          </ListingFiltersChrome>
+        }
       />
 
       {error ? <ErrorBanner message={error} /> : null}

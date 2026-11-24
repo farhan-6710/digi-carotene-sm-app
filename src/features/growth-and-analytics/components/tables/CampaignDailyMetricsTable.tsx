@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { usePersistedColumnIds } from "@/shared/hooks/usePersistedColumnIds";
 import { cn } from "@/shared/lib/utils";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
@@ -161,23 +162,31 @@ export function CampaignDailyMetricsTable({
       columns={[...leadingColumns, ...metricColumns]}
       onColumnMove={moveColumn}
       headerAside={
-        <div className="flex w-full min-w-0 flex-col gap-2 sm:w-72 sm:items-stretch">
-          <MultiSelect
-            id="meta-daily-metric-columns"
-            label="Columns"
-            value={selectedColumnIds}
-            onChange={setColumnIds}
-            options={metricOptions}
-            placeholder="Select columns"
-            emptyMessage="No metrics available."
-          />
-          {showDemographicBreakdown ? (
-            <DailyMetricsBreakdownSelect
-              value={breakdowns}
-              onChange={onBreakdownsChange}
+        <ListingFiltersChrome
+          title="Table options"
+          activeCount={
+            selectedColumnIds.length > 0 || breakdowns.length > 0 ? 1 : 0
+          }
+          className="w-full sm:w-72"
+        >
+          <div className="flex w-full min-w-0 flex-col gap-2">
+            <MultiSelect
+              id="meta-daily-metric-columns"
+              label="Columns"
+              value={selectedColumnIds}
+              onChange={setColumnIds}
+              options={metricOptions}
+              placeholder="Select columns"
+              emptyMessage="No metrics available."
             />
-          ) : null}
-        </div>
+            {showDemographicBreakdown ? (
+              <DailyMetricsBreakdownSelect
+                value={breakdowns}
+                onChange={onBreakdownsChange}
+              />
+            ) : null}
+          </div>
+        </ListingFiltersChrome>
       }
       isLoading={isBreakdown ? isDemographicLoading : false}
       isEmpty={isBreakdown ? demographicView.rows.length === 0 : rows.length === 0}

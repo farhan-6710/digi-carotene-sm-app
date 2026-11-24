@@ -2,6 +2,7 @@ import { ContactTableRow } from "@/features/crm/components/ContactTableRow";
 import { contactDirectoryConfig } from "@/features/crm/constants/contactDirectory";
 import type { ContactTableProps } from "@/features/crm/types/components";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 
 export function ContactTable({
@@ -24,12 +25,17 @@ export function ContactTable({
       isLoading={isLoading}
       isEmpty={contacts.length === 0}
       headerAside={
-        <ListingSearchInput
-          value={searchQuery}
-          onChange={onSearchQueryChange}
-          placeholder="Search contacts"
-          disabled={isLoading}
-        />
+        <ListingFiltersChrome
+          title="Contact filters"
+          activeCount={searchQuery.trim() ? 1 : 0}
+        >
+          <ListingSearchInput
+            value={searchQuery}
+            onChange={onSearchQueryChange}
+            placeholder="Search contacts"
+            disabled={isLoading}
+          />
+        </ListingFiltersChrome>
       }
     >
       {contacts.map((contact) => (

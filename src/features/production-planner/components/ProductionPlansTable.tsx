@@ -10,7 +10,10 @@ import {
   productionPlannerColumns,
   productionPlannerDirectoryConfig,
 } from "@/features/production-planner/constants/productionPlannerDirectory";
-import { buildProductionPlanDetailPath } from "@/features/production-planner/constants/routes";
+import {
+  buildProductionPlanDetailPath,
+  PRODUCTION_PLANNER_ALL_CLIENTS,
+} from "@/features/production-planner/constants/routes";
 import type { ProductionPlansTableProps } from "@/features/production-planner/types/components";
 import type { ProductionPlan } from "@/features/production-planner/types/types";
 import { formatPlanDeliverables } from "@/features/production-planner/utils/productionPlanFormUtils";
@@ -18,6 +21,7 @@ import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox
 import { DirectoryBulkDeleteBar } from "@/shared/components/DirectoryBulkDeleteBar";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { stopDirectoryRowNav } from "@/shared/utils/directoryTableRow";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
@@ -173,24 +177,31 @@ export function ProductionPlansTable({
       isLoading={isLoading}
       isEmpty={plans.length === 0}
       headerAside={
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-          {canDelete && onClearSelection && onBulkDelete ? (
-            <DirectoryBulkDeleteBar
-              selectedCount={selectedIds.length}
-              singularLabel="plan"
-              pluralLabel="plans"
-              isDeleting={isDeleting}
-              onClear={onClearSelection}
-              onConfirmDelete={onBulkDelete}
-            />
-          ) : null}
+        <ListingFiltersChrome
+          title="Plan filters"
+          activeCount={
+            clientFilter !== PRODUCTION_PLANNER_ALL_CLIENTS ? 1 : 0
+          }
+          leading={
+            canDelete && onClearSelection && onBulkDelete ? (
+              <DirectoryBulkDeleteBar
+                selectedCount={selectedIds.length}
+                singularLabel="plan"
+                pluralLabel="plans"
+                isDeleting={isDeleting}
+                onClear={onClearSelection}
+                onConfirmDelete={onBulkDelete}
+              />
+            ) : null
+          }
+        >
           <ProductionPlanClientFilter
             value={clientFilter}
             onChange={onClientFilterChange}
             clients={clientOptions}
             disabled={isLoading}
           />
-        </div>
+        </ListingFiltersChrome>
       }
     >
       {plans.map((plan) => (

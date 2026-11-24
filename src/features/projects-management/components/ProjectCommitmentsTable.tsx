@@ -10,6 +10,7 @@ import type { ProjectCommitmentRow } from "@/features/projects-management/utils/
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import type { DateFiltersTwoProps } from "@/shared/types/components";
 import { cn } from "@/shared/lib/utils";
 
@@ -83,8 +84,16 @@ export function ProjectCommitmentsTable({
       paginated={paginated}
       filters={filters}
       headerAside={
-        <div className="flex flex-wrap items-center justify-end gap-3">
-          {dateFilterProps ? <DateFiltersTwo {...dateFilterProps} /> : null}
+        <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+          {dateFilterProps ? (
+            <ListingFiltersChrome
+              title="Date filters"
+              activeCount={1}
+              className="w-full sm:w-auto"
+            >
+              <DateFiltersTwo {...dateFilterProps} />
+            </ListingFiltersChrome>
+          ) : null}
           {headerAsideExtra}
           {viewAllPath ? (
             <Link

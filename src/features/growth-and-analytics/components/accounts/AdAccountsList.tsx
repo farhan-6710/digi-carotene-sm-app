@@ -31,7 +31,7 @@ export function AdAccountsList({
       isEmpty={accounts.length === 0}
       emptyMessage="No ad accounts connected yet."
       headerAside={
-        <Button onClick={onAdd} className="rounded-full">
+        <Button onClick={onAdd} className="w-full rounded-full sm:w-auto">
           <Plus className="size-4" />
           Connect Account
         </Button>

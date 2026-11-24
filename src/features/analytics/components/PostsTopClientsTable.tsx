@@ -7,6 +7,7 @@ import {
 import type { PostsTopClientsTableProps } from "@/features/analytics/types/components";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { cn } from "@/shared/lib/utils";
 
 export function PostsTopClientsTable({
@@ -24,15 +25,21 @@ export function PostsTopClientsTable({
       isLoading={isLoading}
       isEmpty={clients.length === 0}
       headerAside={
-        <div className="flex flex-wrap items-center justify-end gap-3">
+        <ListingFiltersChrome
+          title="Date filters"
+          activeCount={dateFilterProps ? 1 : 0}
+          className="w-full sm:w-auto"
+          leading={
+            <Link
+              to="/team-portal/posts-management"
+              className="text-sm font-medium text-primary hover:underline"
+            >
+              View all <span aria-hidden="true">↗</span>
+            </Link>
+          }
+        >
           {dateFilterProps ? <DateFiltersTwo {...dateFilterProps} /> : null}
-          <Link
-            to="/team-portal/posts-management"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            View all <span aria-hidden="true">↗</span>
-          </Link>
-        </div>
+        </ListingFiltersChrome>
       }
     >
       {clients.map((client, index) => (

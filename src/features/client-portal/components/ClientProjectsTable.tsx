@@ -7,6 +7,7 @@ import { projectKindLabel } from "@/features/projects-management/utils/projectKi
 import { ActiveStatusLabel } from "@/shared/components/ActiveStatusSwitchField";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 import { SocialPlatformButtons } from "@/shared/components/SocialPlatformButtons";
 import { stopDirectoryRowNav } from "@/shared/utils/directoryTableRow";
@@ -32,12 +33,17 @@ export function ClientProjectsTable({
       isLoading={isLoading}
       isEmpty={projects.length === 0}
       headerAside={
-        <ListingSearchInput
-          value={searchQuery}
-          onChange={onSearchQueryChange}
-          placeholder="Search projects"
-          disabled={isLoading}
-        />
+        <ListingFiltersChrome
+          title="Project filters"
+          activeCount={searchQuery.trim() ? 1 : 0}
+        >
+          <ListingSearchInput
+            value={searchQuery}
+            onChange={onSearchQueryChange}
+            placeholder="Search projects"
+            disabled={isLoading}
+          />
+        </ListingFiltersChrome>
       }
     >
       {projects.map((project) => (

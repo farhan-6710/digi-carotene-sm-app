@@ -23,7 +23,7 @@ export function HomeHeroDashboardStats() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 min-[360px]:gap-4">
         {heroDashboardMeta.stats.map((stat) => {
           const Icon = getDashboardStatIcon(stat.icon);
           const isPrimary = isPrimaryVariant(stat.color);

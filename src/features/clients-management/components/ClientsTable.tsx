@@ -10,6 +10,7 @@ import type { ClientsTableProps } from "@/features/clients-management/types/comp
 import { ActiveStatusFilter } from "@/shared/components/ActiveStatusFilter";
 import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
 import { DirectoryBulkDeleteBar } from "@/shared/components/DirectoryBulkDeleteBar";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 import { ACTIVE_STATUS_FILTER_OPTIONS } from "@/shared/constants/activeStatusFilter";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
@@ -80,17 +81,24 @@ export function ClientsTable({
       isLoading={isLoading}
       isEmpty={clients.length === 0}
       headerAside={
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-          {canDelete && onClearSelection && onBulkDelete ? (
-            <DirectoryBulkDeleteBar
-              selectedCount={selectedIds.length}
-              singularLabel="client"
-              pluralLabel="clients"
-              isDeleting={isDeleting}
-              onClear={onClearSelection}
-              onConfirmDelete={onBulkDelete}
-            />
-          ) : null}
+        <ListingFiltersChrome
+          title="Client filters"
+          activeCount={
+            (searchQuery.trim() ? 1 : 0) + (statusFilter !== "active" ? 1 : 0)
+          }
+          leading={
+            canDelete && onClearSelection && onBulkDelete ? (
+              <DirectoryBulkDeleteBar
+                selectedCount={selectedIds.length}
+                singularLabel="client"
+                pluralLabel="clients"
+                isDeleting={isDeleting}
+                onClear={onClearSelection}
+                onConfirmDelete={onBulkDelete}
+              />
+            ) : null
+          }
+        >
           <ListingSearchInput
             value={searchQuery}
             onChange={onSearchQueryChange}
@@ -106,7 +114,7 @@ export function ClientsTable({
             disabled={isLoading}
             placeholder="Filter clients"
           />
-        </div>
+        </ListingFiltersChrome>
       }
     >
       {clients.map((client) => (

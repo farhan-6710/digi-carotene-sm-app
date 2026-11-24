@@ -43,7 +43,7 @@ export function BenchmarkHistorySheet({
         <SheetHeader>
           <SheetTitle>Benchmark history</SheetTitle>
         </SheetHeader>
-        <div className="mt-4 space-y-3 px-1 pb-6">
+        <div className="mt-4 space-y-3 px-4 pb-6">
           {isLoading ? (
             <p className="text-sm text-muted-foreground">Loading…</p>
           ) : rows.length === 0 ? (

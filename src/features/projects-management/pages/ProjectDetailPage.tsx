@@ -30,6 +30,7 @@ import { copyProjectShareLink } from "@/services/shareService";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { useDateFiltersTwo } from "@/shared/hooks/useDateFiltersTwo";
@@ -95,7 +96,13 @@ function ProjectDetailHeaderActions({
           campaignAnalyticsHref={campaignAnalyticsHref}
         />
       </div>
-      <DateFiltersTwo {...dateFilterProps} />
+      <ListingFiltersChrome
+        title="Date filters"
+        activeCount={1}
+        className="w-full sm:w-auto"
+      >
+        <DateFiltersTwo {...dateFilterProps} />
+      </ListingFiltersChrome>
     </div>
   );
 }

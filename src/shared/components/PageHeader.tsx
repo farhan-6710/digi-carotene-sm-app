@@ -35,7 +35,7 @@ export function PageHeader({
             <div
               className={
                 hasTitleBlock
-                  ? "flex w-full min-w-0 flex-wrap items-center gap-2 lg:w-auto lg:shrink-0 lg:justify-end"
+                  ? "flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center lg:w-auto lg:shrink-0 lg:justify-end [&_a]:w-full sm:[&_a]:w-auto [&_button]:w-full sm:[&_button]:w-auto"
                   : "w-full min-w-0"
               }
             >

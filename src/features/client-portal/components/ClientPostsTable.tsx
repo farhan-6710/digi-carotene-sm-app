@@ -1,6 +1,7 @@
 import { ClientPostsTableRow } from "@/features/client-portal/components/ClientPostsTableRow";
 import { clientPostsDirectoryConfig } from "@/features/client-portal/constants/postsDirectory";
 import type { ClientPostsTableProps } from "@/features/client-portal/types/components";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 
@@ -24,12 +25,17 @@ export function ClientPostsTable({
       isLoading={isLoading}
       isEmpty={posts.length === 0}
       headerAside={
-        <ListingSearchInput
-          value={searchQuery}
-          onChange={onSearchQueryChange}
-          placeholder="Search posts"
-          disabled={isLoading}
-        />
+        <ListingFiltersChrome
+          title="Post filters"
+          activeCount={searchQuery.trim() ? 1 : 0}
+        >
+          <ListingSearchInput
+            value={searchQuery}
+            onChange={onSearchQueryChange}
+            placeholder="Search posts"
+            disabled={isLoading}
+          />
+        </ListingFiltersChrome>
       }
     >
       {posts.map((post) => (

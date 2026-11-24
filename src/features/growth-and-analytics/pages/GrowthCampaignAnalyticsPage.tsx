@@ -11,6 +11,7 @@ import { useGrowthSelectedAdAccount } from "../hooks/shared/useGrowthSelectedAdA
 import { isSyncStale } from "../utils/shared/isSyncStale";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { PageContent } from "@/shared/components/PageContent";
 import { PageHeader } from "@/shared/components/PageHeader";
 import { StatsCards } from "@/shared/components/StatsCards";
@@ -46,27 +47,35 @@ export function GrowthCampaignAnalyticsPage() {
             <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
               <GrowthAdAccountSelect />
               {analyticsReady ? (
-                <div className="flex flex-wrap items-center justify-end gap-2">
+                <ListingFiltersChrome
+                  title="Campaign filters"
+                  activeCount={1}
+                  className="w-full sm:w-auto"
+                  leading={
+                    <>
+                      {activeAccount ? (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full rounded-full sm:w-auto"
+                          disabled={modalProps.open}
+                          onClick={() => void refetchAd(activeAccount)}
+                        >
+                          Refetch data
+                        </Button>
+                      ) : null}
+                      <Button
+                        onClick={() => void generateReport()}
+                        disabled={isGeneratingReport || modalProps.open}
+                        className="w-full rounded-full sm:w-auto"
+                      >
+                        {isGeneratingReport ? "Saving..." : "Generate Report"}
+                      </Button>
+                    </>
+                  }
+                >
                   <DateFiltersTwo {...dateFilterProps} />
-                  {activeAccount ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="rounded-full"
-                      disabled={modalProps.open}
-                      onClick={() => void refetchAd(activeAccount)}
-                    >
-                      Refetch data
-                    </Button>
-                  ) : null}
-                  <Button
-                    onClick={() => void generateReport()}
-                    disabled={isGeneratingReport || modalProps.open}
-                    className="rounded-full"
-                  >
-                    {isGeneratingReport ? "Saving..." : "Generate Report"}
-                  </Button>
-                </div>
+                </ListingFiltersChrome>
               ) : null}
             </div>
           ) : null

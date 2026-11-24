@@ -6,6 +6,7 @@ import { useAnalyticsData } from "@/features/analytics/hooks/useAnalyticsData";
 import { useAnalyticsTab } from "@/features/analytics/hooks/useAnalyticsTab";
 import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { PageContent } from "@/shared/components/PageContent";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageHeader } from "@/shared/components/PageHeader";
@@ -36,7 +37,13 @@ export function AnalyticsPage() {
 
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <AnalyticsTabNav activeTab={activeTab} onTabChange={setActiveTab} />
-        <DateFiltersTwo {...dateFilterProps} />
+        <ListingFiltersChrome
+          title="Date filters"
+          activeCount={1}
+          className="w-full sm:w-auto"
+        >
+          <DateFiltersTwo {...dateFilterProps} />
+        </ListingFiltersChrome>
       </div>
 
       <AnalyticsTabPanel

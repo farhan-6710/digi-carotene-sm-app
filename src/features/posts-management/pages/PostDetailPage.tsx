@@ -106,7 +106,7 @@ export function PostDetailPage() {
         description={description}
         backButton={backButton}
         actions={
-          <div className="flex flex-wrap items-center gap-2">
+          <>
             <Button asChild variant="outline" className="rounded-full">
               <Link
                 to={
@@ -129,7 +129,7 @@ export function PostDetailPage() {
                 Edit
               </Button>
             ) : null}
-          </div>
+          </>
         }
       />
 

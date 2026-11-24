@@ -17,6 +17,7 @@ import {
 } from "@/features/projects-management/utils/projectGrowthPaths";
 import { buildProjectPostStats } from "@/features/projects-management/utils/projectPostStatsUtils";
 import { DateFiltersTwo } from "@/shared/components/DateFiltersTwo";
+import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { DetailPageLoading } from "@/shared/components/DetailPageLoading";
 import { ErrorBanner } from "@/shared/components/ErrorBanner";
 import { PageContent } from "@/shared/components/PageContent";
@@ -87,7 +88,13 @@ export function ClientProjectDetailPage() {
               contentPerformanceHref={contentPerformanceHref}
               campaignAnalyticsHref={campaignAnalyticsHref}
             />
-            <DateFiltersTwo {...dateFilterProps} />
+            <ListingFiltersChrome
+              title="Date filters"
+              activeCount={1}
+              className="w-full sm:w-auto"
+            >
+              <DateFiltersTwo {...dateFilterProps} />
+            </ListingFiltersChrome>
           </div>
         }
       />
