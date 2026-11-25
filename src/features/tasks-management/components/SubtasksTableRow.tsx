@@ -39,30 +39,18 @@ export function SubtasksTableRow({
   const cells = (
     <>
       <div className="min-w-0">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          TITLE
-        </span>
         <p className="text-sm font-medium text-foreground">{subtask.title}</p>
       </div>
 
       <div className="min-w-0">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          RAISED BY
-        </span>
         <p className="truncate text-sm text-muted-foreground">{raiserLabel}</p>
       </div>
 
       <div className="min-w-0">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          ASSIGNED TO
-        </span>
         <p className="truncate text-sm text-muted-foreground">{assigneeLabel}</p>
       </div>
 
       <div>
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          PRIORITY
-        </span>
         <span
           className={cn(
             "inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold",
@@ -78,18 +66,12 @@ export function SubtasksTableRow({
       </div>
 
       <div className="min-w-0">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          ETA
-        </span>
         <p className="text-sm text-muted-foreground sm:truncate">
           {formatTaskEta(subtask.eta_date, subtask.eta_time)}
         </p>
       </div>
 
       <div>
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          STATUS
-        </span>
         <span className="inline-flex w-fit rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">
           {TASK_STATUS_LABELS[subtask.status]}
         </span>

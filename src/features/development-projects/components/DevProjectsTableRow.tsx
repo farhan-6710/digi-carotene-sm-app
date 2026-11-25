@@ -39,25 +39,16 @@ export function DevProjectsTableRow({
         />
       ) : null}
       <div className="min-w-0 text-sm font-medium text-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          PROJECT
-        </span>
         <span className="truncate">{project.project_name}</span>
       </div>
 
       <div className="min-w-0 text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          CLIENT
-        </span>
         <span className="truncate">
           {project.clients?.client_name ?? "—"}
         </span>
       </div>
 
       <div className="min-w-0 text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          MANAGER
-        </span>
         <span className="truncate">
           {project.team_members?.member_name ?? "—"}
         </span>
@@ -68,9 +59,6 @@ export function DevProjectsTableRow({
         onClick={stopDirectoryRowNav}
         onKeyDown={(event) => event.stopPropagation()}
       >
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          PRODUCTION
-        </span>
         {project.production_url?.trim() ? (
           <a
             href={
@@ -91,16 +79,10 @@ export function DevProjectsTableRow({
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          ETA
-        </span>
         {project.eta_date || "—"}
       </div>
 
       <div>
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          STATUS
-        </span>
         <ActiveStatusLabel
           label={DEV_PROJECT_STATUS_LABELS[project.status]}
         />

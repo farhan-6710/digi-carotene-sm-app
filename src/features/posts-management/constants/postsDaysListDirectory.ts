@@ -3,7 +3,7 @@ import type { DirectoryTableColumn } from "@/shared/types/components";
 export const POSTS_DAYS_LIST_GRID_CLASS =
   "grid-cols-[minmax(0,0.5fr)_minmax(0,1fr)_minmax(0,0.7fr)_minmax(0,1.4fr)]";
 export const POSTS_DAYS_LIST_ROW_GRID_CLASS =
-  "sm:grid-cols-[minmax(0,0.5fr)_minmax(0,1fr)_minmax(0,0.7fr)_minmax(0,1.4fr)]";
+  "grid-cols-[minmax(0,0.5fr)_minmax(0,1fr)_minmax(0,0.7fr)_minmax(0,1.4fr)]";
 
 export const postsDaysListColumns: DirectoryTableColumn[] = [
   { label: "DAY" },

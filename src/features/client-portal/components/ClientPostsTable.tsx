@@ -27,15 +27,15 @@ export function ClientPostsTable({
       headerAside={
         <ListingFiltersChrome
           title="Post filters"
-          activeCount={searchQuery.trim() ? 1 : 0}
-        >
-          <ListingSearchInput
-            value={searchQuery}
-            onChange={onSearchQueryChange}
-            placeholder="Search posts"
-            disabled={isLoading}
-          />
-        </ListingFiltersChrome>
+          search={
+            <ListingSearchInput
+              value={searchQuery}
+              onChange={onSearchQueryChange}
+              placeholder="Search posts"
+              disabled={isLoading}
+            />
+          }
+        />
       }
     >
       {posts.map((post) => (

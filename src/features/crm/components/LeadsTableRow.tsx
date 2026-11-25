@@ -43,67 +43,40 @@ export function LeadsTableRow({
         />
       ) : null}
       <div className="text-sm font-medium text-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          NAME
-        </span>
         {lead.name}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          COMPANY
-        </span>
         {lead.company || <span className="text-muted-foreground/50">—</span>}
       </div>
 
       <div className="min-w-0 text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          EMAIL
-        </span>
         <span className="block truncate">
           {lead.email || <span className="text-muted-foreground/50">—</span>}
         </span>
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          PHONE
-        </span>
         {lead.phone || <span className="text-muted-foreground/50">—</span>}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          INDUSTRY
-        </span>
         {lead.industry || <span className="text-muted-foreground/50">—</span>}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          SCORE
-        </span>
         {lead.lead_score}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          STATUS
-        </span>
         {LEAD_STATUS_LABELS[lead.status]}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          SOURCE
-        </span>
         {LEAD_SOURCE_LABELS[lead.lead_source]}
       </div>
 
       <div className="min-w-0">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          FOLLOW-UP
-        </span>
         <LeadFollowUpCell
           followUp={nextFollowUp}
           canEdit={canEdit}

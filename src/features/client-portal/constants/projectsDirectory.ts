@@ -9,7 +9,7 @@ import type { DirectoryTableColumn } from "@/shared/types/components";
 export const CLIENT_PROJECTS_GRID_CLASS =
   "grid-cols-[minmax(0,1.1fr)_minmax(0,0.7fr)_minmax(0,0.6fr)_minmax(0,0.8fr)_minmax(0,0.5fr)]";
 export const CLIENT_PROJECTS_ROW_GRID_CLASS =
-  "sm:grid-cols-[minmax(0,1.1fr)_minmax(0,0.7fr)_minmax(0,0.6fr)_minmax(0,0.8fr)_minmax(0,0.5fr)]";
+  "grid-cols-[minmax(0,1.1fr)_minmax(0,0.7fr)_minmax(0,0.6fr)_minmax(0,0.8fr)_minmax(0,0.5fr)]";
 
 export const clientProjectsColumns: DirectoryTableColumn[] = [
   { label: "PROJECT" },

@@ -15,25 +15,16 @@ export function ContactTableRow({ contact }: ContactTableRowProps) {
       )}
     >
       <div className="text-sm font-medium text-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          NAME
-        </span>
         {contact.name}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          COMPANY
-        </span>
         {contact.company || (
           <span className="text-muted-foreground/50">—</span>
         )}
       </div>
 
       <div className="min-w-0 text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          EMAIL
-        </span>
         <span className="block truncate">
           {contact.email || (
             <span className="text-muted-foreground/50">—</span>
@@ -42,25 +33,16 @@ export function ContactTableRow({ contact }: ContactTableRowProps) {
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          PHONE
-        </span>
         {contact.phone || <span className="text-muted-foreground/50">—</span>}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          INDUSTRY
-        </span>
         {contact.industry || (
           <span className="text-muted-foreground/50">—</span>
         )}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          SOURCE
-        </span>
         {LEAD_SOURCE_LABELS[contact.lead_source]}
       </div>
     </DirectoryTableRow>

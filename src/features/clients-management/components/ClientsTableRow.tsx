@@ -41,32 +41,20 @@ export function ClientsTableRow({
         />
       ) : null}
       <div className="text-sm font-medium text-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          CLIENT NAME
-        </span>
         {client.client_name}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          PRIMARY CONTACT PERSON
-        </span>
         {client.primary_contact_name || (
           <span className="text-muted-foreground/50">—</span>
         )}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          MOBILE NUMBER
-        </span>
         {client.mobile_number || <span className="text-muted-foreground/50">—</span>}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          WEBSITE
-        </span>
         {website ? (
           <a
             href={website.startsWith("http") ? website : `https://${website}`}
@@ -83,9 +71,6 @@ export function ClientsTableRow({
       </div>
 
       <div>
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          STATUS
-        </span>
         <ActiveStatusLabel isActive={client.is_active} />
       </div>
 

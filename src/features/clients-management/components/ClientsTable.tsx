@@ -83,9 +83,7 @@ export function ClientsTable({
       headerAside={
         <ListingFiltersChrome
           title="Client filters"
-          activeCount={
-            (searchQuery.trim() ? 1 : 0) + (statusFilter !== "active" ? 1 : 0)
-          }
+          activeCount={statusFilter !== "active" ? 1 : 0}
           leading={
             canDelete && onClearSelection && onBulkDelete ? (
               <DirectoryBulkDeleteBar
@@ -98,13 +96,15 @@ export function ClientsTable({
               />
             ) : null
           }
+          search={
+            <ListingSearchInput
+              value={searchQuery}
+              onChange={onSearchQueryChange}
+              placeholder="Search clients"
+              disabled={isLoading}
+            />
+          }
         >
-          <ListingSearchInput
-            value={searchQuery}
-            onChange={onSearchQueryChange}
-            placeholder="Search clients"
-            disabled={isLoading}
-          />
           <ActiveStatusFilter
             value={statusFilter}
             onChange={(value) =>

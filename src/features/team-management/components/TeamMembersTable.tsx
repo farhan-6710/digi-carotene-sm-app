@@ -77,7 +77,6 @@ export function TeamMembersTable({
       headerAside={
         <ListingFiltersChrome
           title="Team filters"
-          activeCount={searchQuery.trim() ? 1 : 0}
           leading={
             canDelete && onClearSelection && onBulkDelete ? (
               <DirectoryBulkDeleteBar
@@ -90,14 +89,15 @@ export function TeamMembersTable({
               />
             ) : null
           }
-        >
-          <ListingSearchInput
-            value={searchQuery}
-            onChange={onSearchQueryChange}
-            placeholder="Search team"
-            disabled={isLoading}
-          />
-        </ListingFiltersChrome>
+          search={
+            <ListingSearchInput
+              value={searchQuery}
+              onChange={onSearchQueryChange}
+              placeholder="Search team"
+              disabled={isLoading}
+            />
+          }
+        />
       }
     >
       {members.map((member) => (

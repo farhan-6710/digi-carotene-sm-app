@@ -10,7 +10,7 @@ export function DirectoryBulkCheckbox({
 }: DirectoryBulkCheckboxProps) {
   return (
     <div
-      className="flex items-center justify-center"
+      className="flex items-center justify-start"
       onClick={stopDirectoryRowNav}
       onKeyDown={(event) => event.stopPropagation()}
     >

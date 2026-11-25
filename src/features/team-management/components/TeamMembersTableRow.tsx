@@ -13,16 +13,7 @@ import {
   TEAM_DIRECTORY_ROW_GRID_CLASS,
 } from "@/features/team-management/constants/teamDirectory";
 import { DirectoryBulkCheckbox } from "@/shared/components/DirectoryBulkCheckbox";
-import type { ReactNode } from "react";
 import { Pencil } from "lucide-react";
-
-function MobileLabel({ children }: { children: ReactNode }) {
-  return (
-    <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-      {children}
-    </span>
-  );
-}
 
 export function TeamMembersTableRow({
   member,
@@ -50,12 +41,10 @@ export function TeamMembersTableRow({
         />
       ) : null}
       <div className="text-sm font-medium text-foreground">
-        <MobileLabel>NAME</MobileLabel>
         {member.member_name}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <MobileLabel>EMAIL</MobileLabel>
         <a
           href={`mailto:${member.email}`}
           className="text-primary hover:underline"
@@ -66,14 +55,12 @@ export function TeamMembersTableRow({
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <MobileLabel>MOBILE NUMBER</MobileLabel>
         {member.mobile_number || (
           <span className="text-muted-foreground/50">—</span>
         )}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <MobileLabel>TEAM MEMBER ROLE</MobileLabel>
         <span
           className={cn(
             "inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold",

@@ -110,19 +110,18 @@ export function DayPostsTable({
             selectedProjectIds.length +
             (statusFilter !== POST_STATUS_SELECT_ALL ? 1 : 0)
           }
+          filterCount={3}
           className="w-full"
         >
-          <div className="flex w-full min-w-0 flex-col gap-3 md:flex-row md:flex-wrap md:items-end">
-            <ClientProjectFilters
-              projects={projects}
-              selectedClientIds={selectedClientIds}
-              selectedProjectIds={selectedProjectIds}
-              onClientChange={onClientChange}
-              onProjectChange={onProjectChange}
-              className="grid w-full min-w-0 gap-2 md:max-w-xl md:grid-cols-2"
-            />
-            <PostStatusSelect value={statusFilter} onChange={setStatusFilter} />
-          </div>
+          <ClientProjectFilters
+            projects={projects}
+            selectedClientIds={selectedClientIds}
+            selectedProjectIds={selectedProjectIds}
+            onClientChange={onClientChange}
+            onProjectChange={onProjectChange}
+            className="grid w-full min-w-0 gap-2 md:max-w-xl md:grid-cols-2"
+          />
+          <PostStatusSelect value={statusFilter} onChange={setStatusFilter} />
         </ListingFiltersChrome>
       }
     >

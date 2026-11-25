@@ -120,7 +120,7 @@ export function DirectoryTable({
           <TooltipProvider delayDuration={300}>
             <div
               className={cn(
-                "grid text-xs font-semibold tracking-wider text-muted-foreground max-sm:hidden bg-muted px-6 border-b border-border",
+                "grid bg-muted px-6 text-xs font-semibold tracking-wider text-muted-foreground border-b border-border",
                 contentMinWidthPx ? "min-w-full" : "w-full",
                 divided
                   ? "items-stretch divide-x divide-border"

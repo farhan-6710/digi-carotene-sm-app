@@ -70,75 +70,73 @@ export function CampaignChangesFilters({
         </Button>
       }
     >
-      <div className="flex w-full min-w-0 flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
-        <Select value={range} onValueChange={onRangeChange}>
-          <SelectTrigger
-            size="sm"
-            className="min-w-36 w-full rounded-full md:w-auto"
-            aria-label="Date range"
-          >
-            <SelectValue placeholder="Date range" />
-          </SelectTrigger>
-          <SelectContent>
-            {CHANGE_RANGE_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <Select value={range} onValueChange={onRangeChange}>
+        <SelectTrigger
+          size="sm"
+          className="min-w-36 w-full rounded-full md:w-auto"
+          aria-label="Date range"
+        >
+          <SelectValue placeholder="Date range" />
+        </SelectTrigger>
+        <SelectContent>
+          {CHANGE_RANGE_OPTIONS.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-        <Select value={category} onValueChange={onCategoryChange}>
-          <SelectTrigger
-            size="sm"
-            className="min-w-40 w-full rounded-full md:w-auto"
-            aria-label="Category"
-          >
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Category: All</SelectItem>
-            {CATEGORIES.map((key) => (
-              <SelectItem key={key} value={key}>
-                {CHANGE_CATEGORY_LABEL[key]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <Select value={category} onValueChange={onCategoryChange}>
+        <SelectTrigger
+          size="sm"
+          className="min-w-40 w-full rounded-full md:w-auto"
+          aria-label="Category"
+        >
+          <SelectValue placeholder="Category" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Category: All</SelectItem>
+          {CATEGORIES.map((key) => (
+            <SelectItem key={key} value={key}>
+              {CHANGE_CATEGORY_LABEL[key]}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-        <Select value={status} onValueChange={onStatusChange}>
-          <SelectTrigger
-            size="sm"
-            className="min-w-40 w-full rounded-full md:w-auto"
-            aria-label="Status"
-          >
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Status: All</SelectItem>
-            {STATUSES.map((key) => (
-              <SelectItem key={key} value={key}>
-                {CHANGE_VERIFICATION_LABEL[key]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <Select value={status} onValueChange={onStatusChange}>
+        <SelectTrigger
+          size="sm"
+          className="min-w-40 w-full rounded-full md:w-auto"
+          aria-label="Status"
+        >
+          <SelectValue placeholder="Status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Status: All</SelectItem>
+          {STATUSES.map((key) => (
+            <SelectItem key={key} value={key}>
+              {CHANGE_VERIFICATION_LABEL[key]}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-        <Select value={madeBy} onValueChange={onMadeByChange}>
-          <SelectTrigger
-            size="sm"
-            className="min-w-36 w-full rounded-full md:w-auto"
-            aria-label="Made by"
-          >
-            <SelectValue placeholder="Made by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Made by: All</SelectItem>
-            <SelectItem value="ravi">Ravi K.</SelectItem>
-            <SelectItem value="priya">Priya S.</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <Select value={madeBy} onValueChange={onMadeByChange}>
+        <SelectTrigger
+          size="sm"
+          className="min-w-36 w-full rounded-full md:w-auto"
+          aria-label="Made by"
+        >
+          <SelectValue placeholder="Made by" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Made by: All</SelectItem>
+          <SelectItem value="ravi">Ravi K.</SelectItem>
+          <SelectItem value="priya">Priya S.</SelectItem>
+        </SelectContent>
+      </Select>
     </ListingFiltersChrome>
   );
 }

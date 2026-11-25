@@ -5,12 +5,10 @@ import { cn } from "@/shared/lib/utils";
 import type { AdAccountKind, GrowthPlatform } from "../../types/types";
 import { adAccountKindLabel } from "../../constants/shared/growthPlatformConfig";
 
-export function MobileLabel({ children }: { children: ReactNode }) {
-  return (
-    <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-      {children}
-    </span>
-  );
+/** Labels come from the table header; kept for call-site compatibility. */
+export function MobileLabel({ children: _children }: { children: ReactNode }) {
+  void _children;
+  return null;
 }
 
 export function PlatformBadge({ platform }: { platform: GrowthPlatform }) {

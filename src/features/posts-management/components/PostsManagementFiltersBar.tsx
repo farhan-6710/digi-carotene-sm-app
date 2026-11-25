@@ -22,38 +22,39 @@ export function PostsManagementFiltersBar({
     (statusFilter !== POST_STATUS_SELECT_ALL ? 1 : 0) +
     (listView && listDateRange.isDateRangeActive ? 1 : 0);
 
+  const filterCount = 3 + (listView ? 1 : 0);
+
   return (
     <ListingFiltersChrome
       title="Posting filters"
       description="Filter the calendar or list by client, project, and status."
       activeCount={activeCount}
+      filterCount={filterCount}
       className="w-full"
     >
-      <div className="flex w-full min-w-0 flex-col gap-3 md:flex-row md:flex-wrap md:items-end">
-        <ClientProjectFilters
-          projects={projects}
-          selectedClientIds={selectedClientIds}
-          selectedProjectIds={selectedProjectIds}
-          onClientChange={onClientChange}
-          onProjectChange={onProjectChange}
-          className="grid w-full min-w-0 gap-3 md:max-w-xl md:grid-cols-2"
+      <ClientProjectFilters
+        projects={projects}
+        selectedClientIds={selectedClientIds}
+        selectedProjectIds={selectedProjectIds}
+        onClientChange={onClientChange}
+        onProjectChange={onProjectChange}
+        className="grid w-full min-w-0 gap-3 md:max-w-xl md:grid-cols-2"
+      />
+      <PostStatusSelect value={statusFilter} onChange={onStatusChange} />
+      {listView ? (
+        <DateRangePicker
+          open={listDateRange.isPickerOpen}
+          onOpenChange={listDateRange.onPickerOpenChange}
+          range={listDateRange.pickerRange}
+          rangeLabel={listDateRange.rangeButtonLabel}
+          isActive={listDateRange.isDateRangeActive}
+          onRangeChange={listDateRange.onPickerRangeChange}
+          onApply={listDateRange.onApplyDateRange}
+          onClear={listDateRange.onClearDateRange}
+          onKeyDown={listDateRange.onPickerKeyDown}
+          error={listDateRange.pickerError}
         />
-        <PostStatusSelect value={statusFilter} onChange={onStatusChange} />
-        {listView ? (
-          <DateRangePicker
-            open={listDateRange.isPickerOpen}
-            onOpenChange={listDateRange.onPickerOpenChange}
-            range={listDateRange.pickerRange}
-            rangeLabel={listDateRange.rangeButtonLabel}
-            isActive={listDateRange.isDateRangeActive}
-            onRangeChange={listDateRange.onPickerRangeChange}
-            onApply={listDateRange.onApplyDateRange}
-            onClear={listDateRange.onClearDateRange}
-            onKeyDown={listDateRange.onPickerKeyDown}
-            error={listDateRange.pickerError}
-          />
-        ) : null}
-      </div>
+      ) : null}
     </ListingFiltersChrome>
   );
 }

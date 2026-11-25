@@ -35,15 +35,15 @@ export function ClientProjectsTable({
       headerAside={
         <ListingFiltersChrome
           title="Project filters"
-          activeCount={searchQuery.trim() ? 1 : 0}
-        >
-          <ListingSearchInput
-            value={searchQuery}
-            onChange={onSearchQueryChange}
-            placeholder="Search projects"
-            disabled={isLoading}
-          />
-        </ListingFiltersChrome>
+          search={
+            <ListingSearchInput
+              value={searchQuery}
+              onChange={onSearchQueryChange}
+              placeholder="Search projects"
+              disabled={isLoading}
+            />
+          }
+        />
       }
     >
       {projects.map((project) => (

@@ -35,15 +35,15 @@ export function ClientProductionPlansTable({
       headerAside={
         <ListingFiltersChrome
           title="Plan filters"
-          activeCount={searchQuery.trim() ? 1 : 0}
-        >
-          <ListingSearchInput
-            value={searchQuery}
-            onChange={onSearchQueryChange}
-            placeholder="Search plans"
-            disabled={isLoading}
-          />
-        </ListingFiltersChrome>
+          search={
+            <ListingSearchInput
+              value={searchQuery}
+              onChange={onSearchQueryChange}
+              placeholder="Search plans"
+              disabled={isLoading}
+            />
+          }
+        />
       }
     >
       {plans.map((plan) => (

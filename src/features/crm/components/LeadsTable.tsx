@@ -111,13 +111,11 @@ export function LeadsTable({
         <ListingFiltersChrome
           title="Lead filters"
           activeCount={
-            (searchQuery.trim() ? 1 : 0) +
             (followUpFilter !== DEFAULT_LEAD_FOLLOW_UP_FILTER ? 1 : 0) +
             (monthFilter !== LEAD_MONTH_FILTER_ALL ? 1 : 0)
           }
           className="w-full"
-        >
-          <div className="flex w-full min-w-0 flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:justify-between">
+          search={
             <div className="w-full min-w-0 md:max-w-sm">
               <ListingSearchInput
                 value={searchQuery}
@@ -126,24 +124,23 @@ export function LeadsTable({
                 disabled={isLoading}
               />
             </div>
-            <div className="flex w-full min-w-0 flex-col gap-2 md:w-auto md:flex-row md:flex-wrap md:items-center">
-              <LeadFollowUpFilterSelect
-                value={followUpFilter}
-                onChange={onFollowUpFilterChange}
-                disabled={isLoading}
-              />
-              <LeadMonthFilter
-                value={monthFilter}
-                onChange={onMonthFilterChange}
-                disabled={isLoading}
-              />
-              <LeadSortSelect
-                value={sort}
-                onChange={onSortChange}
-                disabled={isLoading}
-              />
-            </div>
-          </div>
+          }
+        >
+          <LeadFollowUpFilterSelect
+            value={followUpFilter}
+            onChange={onFollowUpFilterChange}
+            disabled={isLoading}
+          />
+          <LeadMonthFilter
+            value={monthFilter}
+            onChange={onMonthFilterChange}
+            disabled={isLoading}
+          />
+          <LeadSortSelect
+            value={sort}
+            onChange={onSortChange}
+            disabled={isLoading}
+          />
         </ListingFiltersChrome>
       }
     >

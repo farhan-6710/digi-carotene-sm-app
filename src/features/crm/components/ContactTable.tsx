@@ -27,15 +27,15 @@ export function ContactTable({
       headerAside={
         <ListingFiltersChrome
           title="Contact filters"
-          activeCount={searchQuery.trim() ? 1 : 0}
-        >
-          <ListingSearchInput
-            value={searchQuery}
-            onChange={onSearchQueryChange}
-            placeholder="Search contacts"
-            disabled={isLoading}
-          />
-        </ListingFiltersChrome>
+          search={
+            <ListingSearchInput
+              value={searchQuery}
+              onChange={onSearchQueryChange}
+              placeholder="Search contacts"
+              disabled={isLoading}
+            />
+          }
+        />
       }
     >
       {contacts.map((contact) => (

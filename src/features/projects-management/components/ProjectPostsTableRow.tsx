@@ -53,13 +53,8 @@ export function ProjectPostsTableRow({
         <p className="text-sm font-medium text-foreground">
           {post.post_title?.trim() || "Untitled post"}
         </p>
-        <p className="mt-0.5 text-xs text-muted-foreground sm:hidden">
-          {toBePostedLabel}
-        </p>
       </div>
-      <p className="hidden text-sm text-muted-foreground sm:block">
-        {toBePostedLabel}
-      </p>
+      <p className="text-sm text-muted-foreground">{toBePostedLabel}</p>
       <p className="text-sm text-muted-foreground">{postedLabel}</p>
       <p className="text-xs text-muted-foreground">
         {(post.socials ?? []).join(", ") || "—"}

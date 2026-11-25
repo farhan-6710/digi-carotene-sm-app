@@ -24,23 +24,14 @@ export function PostsDaysListTableRow({
       )}
     >
       <div className="min-w-0">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          DAY
-        </span>
         <p className="text-sm font-semibold text-foreground">{dateLabel}</p>
       </div>
 
       <div className="min-w-0">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          WEEKDAY
-        </span>
         <p className="truncate text-sm text-muted-foreground">{dayLabel}</p>
       </div>
 
       <div className="min-w-0">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          POSTS
-        </span>
         <p className="text-sm text-muted-foreground">
           {postCount === 0
             ? "No posts"
@@ -49,9 +40,6 @@ export function PostsDaysListTableRow({
       </div>
 
       <div className="min-w-0">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          STATUS MIX
-        </span>
         {statusMix.length === 0 ? (
           <p className="text-sm text-muted-foreground">—</p>
         ) : (

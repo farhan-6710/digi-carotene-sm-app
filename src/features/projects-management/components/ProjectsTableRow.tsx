@@ -39,23 +39,14 @@ export function ProjectsTableRow({
         />
       ) : null}
       <div className="text-sm font-medium text-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          PROJECT
-        </span>
         {project.project_name}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          CLIENT
-        </span>
         {project.clients?.client_name ?? "—"}
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          MANAGER
-        </span>
         {project.team_members?.member_name ?? "—"}
       </div>
 
@@ -64,23 +55,14 @@ export function ProjectsTableRow({
         onClick={stopDirectoryRowNav}
         onKeyDown={(event) => event.stopPropagation()}
       >
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          SOCIALS
-        </span>
         <SocialPlatformButtons socials={project.socials} />
       </div>
 
       <div className="text-sm text-muted-foreground">
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          ETA
-        </span>
         {project.eta_date || "—"}
       </div>
 
       <div>
-        <span className="mb-1 block text-xs font-semibold tracking-wider text-muted-foreground sm:hidden">
-          STATUS
-        </span>
         <ActiveStatusLabel isActive={project.is_active} />
       </div>
 

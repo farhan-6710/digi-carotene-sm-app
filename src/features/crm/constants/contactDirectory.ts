@@ -3,7 +3,7 @@ import type { DirectoryTableColumn } from "@/shared/types/components";
 export const CONTACT_GRID_CLASS =
   "grid-cols-[minmax(0,1.2fr)_minmax(0,1.1fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]";
 export const CONTACT_ROW_GRID_CLASS =
-  "sm:grid-cols-[minmax(0,1.2fr)_minmax(0,1.1fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]";
+  "grid-cols-[minmax(0,1.2fr)_minmax(0,1.1fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]";
 
 export const contactDirectoryColumns: DirectoryTableColumn[] = [
   { label: "NAME" },

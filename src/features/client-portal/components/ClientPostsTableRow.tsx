@@ -28,14 +28,11 @@ export function ClientPostsTableRow({ post }: ClientPostsTableRowProps) {
         <p className="text-sm font-medium text-foreground">
           {post.post_title?.trim() || "Untitled post"}
         </p>
-        <p className="mt-0.5 text-xs text-muted-foreground sm:hidden">
-          {formatToBePostedOn(post)}
-        </p>
       </div>
       <p className="text-sm text-muted-foreground">
         {post.project_name ?? "—"}
       </p>
-      <p className="hidden text-sm text-muted-foreground sm:block">
+      <p className="text-sm text-muted-foreground">
         {formatToBePostedOn(post)}
       </p>
       <p className="text-xs text-muted-foreground">

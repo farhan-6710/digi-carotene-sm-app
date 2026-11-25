@@ -44,14 +44,11 @@ export function DayPostsTableRow({
         <p className="truncate text-sm font-medium text-foreground">
           {projectLabel}
         </p>
-        <p className="mt-0.5 text-xs text-muted-foreground sm:hidden">
-          {post.to_be_posted_time}
-        </p>
       </div>
       <p className="truncate text-sm text-muted-foreground">
         {post.post_title?.trim() || "Untitled post"}
       </p>
-      <p className="hidden font-mono text-sm text-muted-foreground sm:block">
+      <p className="font-mono text-sm text-muted-foreground">
         {post.to_be_posted_time}
       </p>
       <p className="text-xs text-muted-foreground">

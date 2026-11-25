@@ -14,10 +14,10 @@ import { formatCompact, formatPercent } from "../../utils/shared/formatters";
  * Below that, the card scrolls instead of crushing the caption.
  */
 const INSTAGRAM_GRID =
-  "max-sm:grid-cols-1 sm:min-w-[53rem] sm:grid-cols-[minmax(10rem,1.8fr)_minmax(4.5rem,0.5fr)_minmax(4.25rem,0.55fr)_minmax(4.25rem,0.55fr)_minmax(5.25rem,0.72fr)_minmax(4.25rem,0.55fr)_minmax(4.5rem,0.6fr)_minmax(5.25rem,0.75fr)]";
+  "min-w-[53rem] grid-cols-[minmax(10rem,1.8fr)_minmax(4.5rem,0.5fr)_minmax(4.25rem,0.55fr)_minmax(4.25rem,0.55fr)_minmax(5.25rem,0.72fr)_minmax(4.25rem,0.55fr)_minmax(4.5rem,0.6fr)_minmax(5.25rem,0.75fr)]";
 
 const FACEBOOK_GRID =
-  "max-sm:grid-cols-1 sm:grid-cols-[minmax(10rem,2.2fr)_minmax(4.5rem,0.55fr)_minmax(5.1rem,0.72fr)_minmax(5.25rem,0.75fr)_minmax(4rem,0.6fr)_minmax(6.5rem,0.95fr)]";
+  "grid-cols-[minmax(10rem,2.2fr)_minmax(4.5rem,0.55fr)_minmax(5.1rem,0.72fr)_minmax(5.25rem,0.75fr)_minmax(4rem,0.6fr)_minmax(6.5rem,0.95fr)]";
 
 type PostMetricColumn = {
   label: string;
