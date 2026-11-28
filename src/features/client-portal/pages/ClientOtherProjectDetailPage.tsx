@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { ClientProjectTasksSection } from "@/features/client-portal/components/ClientProjectTasksSection";
 import { CLIENT_PROJECTS_PATH } from "@/features/client-portal/constants/routes";
 import { OtherProjectProfileCard } from "@/features/other-projects/components/OtherProjectProfileCard";
 import { useOtherProjectDetailQuery } from "@/features/other-projects/hooks/useOtherProjectDetailQuery";
@@ -52,6 +53,7 @@ export function ClientOtherProjectDetailPage() {
       />
       {error ? <ErrorBanner message={error} /> : null}
       <OtherProjectProfileCard project={project} hideClientLink />
+      <ClientProjectTasksSection projectId={project.id} />
     </PageContent>
   );
 }

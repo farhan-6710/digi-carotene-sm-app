@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { ProjectChatSection } from "@/features/chat/components/ProjectChatSection";
+import { ClientProjectTasksSection } from "@/features/client-portal/components/ClientProjectTasksSection";
 import { CLIENT_PROJECTS_PATH } from "@/features/client-portal/constants/routes";
 import { filterPostsByDateRange } from "@/features/analytics/utils/analyticsFilterUtils";
 import { useGrowthAccountsByClientId } from "@/features/growth-and-analytics/hooks/shared/useGrowthAccountsByClientId";
@@ -106,6 +107,7 @@ export function ClientProjectDetailPage() {
         hideClientLink
       />
       <ProjectPostsTable posts={dateFilteredPosts} isLoading={false} />
+      <ClientProjectTasksSection projectId={project.id} />
       <ProjectChatSection project={project} teamMembers={teamMembers} />
     </PageContent>
   );

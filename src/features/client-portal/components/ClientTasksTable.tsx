@@ -2,26 +2,11 @@ import { ClientTasksTableRow } from "@/features/client-portal/components/ClientT
 import { clientTasksDirectoryConfig } from "@/features/client-portal/constants/tasksDirectory";
 import { TaskSortSelect } from "@/features/tasks-management/components/TaskSortSelect";
 import { TaskStatusFilter } from "@/features/tasks-management/components/TaskStatusFilter";
-import type { TaskSortId } from "@/features/tasks-management/constants/taskSort";
-import {
-  DEFAULT_TASK_STATUS_FILTER,
-  type TaskStatusFilterId,
-} from "@/features/tasks-management/constants/taskStatusFilter";
-import type { Task } from "@/features/tasks-management/types/types";
+import type { ClientTasksTableProps } from "@/features/client-portal/types/components";
+import { DEFAULT_TASK_STATUS_FILTER } from "@/features/tasks-management/constants/taskStatusFilter";
 import { DirectoryTable } from "@/shared/components/DirectoryTable";
 import { ListingFiltersChrome } from "@/shared/components/ListingFiltersChrome";
 import { ListingSearchInput } from "@/shared/components/ListingSearchInput";
-
-type ClientTasksTableProps = {
-  tasks: Task[];
-  isLoading: boolean;
-  searchQuery: string;
-  onSearchQueryChange: (query: string) => void;
-  sort: TaskSortId;
-  onSortChange: (sort: TaskSortId) => void;
-  statusFilter: TaskStatusFilterId;
-  onStatusFilterChange: (filter: TaskStatusFilterId) => void;
-};
 
 export function ClientTasksTable({
   tasks,

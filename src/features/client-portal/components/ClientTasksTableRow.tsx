@@ -2,15 +2,11 @@ import { buildClientTaskDetailPath } from "@/features/client-portal/constants/ta
 import { CLIENT_TASKS_ROW_GRID_CLASS } from "@/features/client-portal/constants/tasksDirectory";
 import { TASK_PRIORITY_LABELS } from "@/features/tasks-management/constants/taskPriorities";
 import { TASK_STATUS_LABELS } from "@/features/tasks-management/constants/taskStatuses";
-import type { Task } from "@/features/tasks-management/types/types";
+import type { ClientTasksTableRowProps } from "@/features/client-portal/types/components";
 import { formatAssigneeLabels } from "@/features/tasks-management/utils/taskAssigneeListUtils";
 import { formatTaskEta } from "@/features/tasks-management/utils/taskDisplayUtils";
 import { DirectoryTableRow } from "@/shared/components/DirectoryTableRow";
 import { cn } from "@/shared/lib/utils";
-
-type ClientTasksTableRowProps = {
-  task: Task;
-};
 
 export function ClientTasksTableRow({ task }: ClientTasksTableRowProps) {
   const projectLabel = task.projects?.project_name ?? "—";
@@ -48,6 +44,12 @@ export function ClientTasksTableRow({ task }: ClientTasksTableRowProps) {
 
       <div className="min-w-0">
         <p className="truncate text-sm text-muted-foreground">{projectLabel}</p>
+      </div>
+
+      <div className="min-w-0">
+        <p className="truncate text-sm text-muted-foreground">
+          {task.created_by?.member_name ?? "—"}
+        </p>
       </div>
 
       <div className="min-w-0">

@@ -1,12 +1,15 @@
 import {
   CalendarClock,
+  Camera,
   CheckCircle2,
   ClipboardList,
   FileText,
   FolderKanban,
-  XCircle,
+  Hourglass,
+  PenLine,
 } from "lucide-react";
 
+import { CLIENT_SHOOT_BOOKINGS_PATH } from "@/features/client-portal/constants/routes";
 import type { DevProjectListItem } from "@/features/development-projects/types/types";
 import type { OtherProjectListItem } from "@/features/other-projects/types/types";
 import type { ProductionPlan } from "@/features/production-planner/types/types";
@@ -20,6 +23,7 @@ export function buildClientStatCards(
   plans: ProductionPlan[] = [],
   devProjects: DevProjectListItem[] = [],
   otherProjects: OtherProjectListItem[] = [],
+  upcomingShoots = 0,
 ): StatCardItem[] {
   const projectCount =
     projects.length + devProjects.length + otherProjects.length;
@@ -52,8 +56,18 @@ export function buildClientStatCards(
       id: "client-editing",
       label: "Editing",
       value: String(posts.filter((post) => post.status === "editing").length),
-      description: "Still in draft or review",
-      icon: XCircle,
+      description: "Being prepared by the team",
+      icon: PenLine,
+      href: "/client-portal/posts",
+    },
+    {
+      id: "client-awaiting-approval",
+      label: "Awaiting approval",
+      value: String(
+        posts.filter((post) => post.status === "sent_for_approval").length,
+      ),
+      description: "Sent to you for review",
+      icon: Hourglass,
       href: "/client-portal/posts",
     },
     {
@@ -71,6 +85,14 @@ export function buildClientStatCards(
       description: "Review content and client approval",
       icon: ClipboardList,
       href: "/client-portal/production-planner",
+    },
+    {
+      id: "client-upcoming-shoots",
+      label: "Upcoming shoots",
+      value: String(upcomingShoots),
+      description: "Booked shoot slots",
+      icon: Camera,
+      href: CLIENT_SHOOT_BOOKINGS_PATH,
     },
   ];
 }

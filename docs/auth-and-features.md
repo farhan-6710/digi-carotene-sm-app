@@ -84,7 +84,7 @@ Content approvals on a plan item:
 
 ### Posts
 
-Statuses: `Not posted` · `Scheduled` · `Posted`. Platforms on the **post**; profile URLs on the **project**. `post_links` jsonb holds live URLs after publish.
+Statuses: `Editing` · `Sent for approval` · `Changes suggested` · `Approved` · `Scheduled` · `Posted`. Platforms on the **post**; profile URLs on the **project**. `post_links` jsonb holds live URLs after publish.
 
 If an **SM executive** creates a post whose to-be-posted time is already past, it goes to `post_approval_requests` (not `posts`) until the project manager or an admin approves. Managers/admins insert backdated posts directly.
 
@@ -128,13 +128,16 @@ The brand sees only their own data (`profiles.client_id`). No team CRUD, no Mana
 
 | Area | Path | What |
 |------|------|------|
-| Dashboard | `/client-portal/dashboard` | Post stats, projects/plans counts, upcoming posts, socials |
-| Projects | `/client-portal/projects` | SM + Dev + Other list; detail under `/projects/:id`, `/dev-projects/:id`, `/other-projects/:id` (view-only) |
+| Dashboard | `/client-portal/dashboard` | Post stats (incl. awaiting approval), projects/plans counts, upcoming shoots, upcoming posts, socials |
+| Projects | `/client-portal/projects` | SM + Dev + Other list; detail under `/projects/:id`, `/dev-projects/:id`, `/other-projects/:id` (view-only, with project tasks) |
 | Task Management | `/client-portal/tasks-management` | All tasks on their SM/Dev/Other projects; detail + chat; all subtasks under those tasks |
-| Posts | `/client-portal/posts` | Read-only post list with search |
-| Production planner | `/client-portal/production-planner` | Their plans; detail: **Client approval** dropdown only |
+| Posts | `/client-portal/posts` | Read-only post list with search + status filter |
+| Production planner | `/client-portal/production-planner` | Their plans; detail: **Client approval** dropdown, approval filter, content lightbox |
+| Shoot bookings | `/client-portal/shoot-bookings` | Book a shoot slot (date + client-chosen start/end time); cancel own upcoming shoots |
 | Growth | `/client-portal/growth-and-analytics` | Same charts as team, scoped to linked accounts; page-level account dropdown |
 | Account | `/client-portal/account` | Brand details, password |
+
+**Shoot bookings** — the client opens **Book a shoot**, picks a highlighted date, a start time, then an end time (30-minute steps, 08:00–22:00, minimum 30 minutes, up to 60 days ahead; rules in `shoot-bookings/constants/shootBookings.ts`). Times already booked by any client are hidden, and the database rejects overlaps (back-to-back is fine). Optional link to one of their production plans + notes. Team sees every booking at `/team-portal/shoot-bookings` (Projects Management → Shoot Bookings); anyone with `productionPlans.update` can mark a shoot completed or cancel it.
 
 Forgot / reset password uses the shared `/auth` flow (email magic link → new + confirm password) for team and client.
 

@@ -2,15 +2,18 @@ import { useMemo, useState } from "react";
 
 import { ClientPostsTable } from "@/features/client-portal/components/ClientPostsTable";
 import { useClientPortal } from "@/features/client-portal/hooks/useClientPortal";
+import { useProjectPostsFilters } from "@/features/projects-management/hooks/useProjectPostsFilters";
 import { PageShell } from "@/shared/components/PageShell";
 import { matchesListingSearch } from "@/shared/utils/listingSearch";
 
 export function ClientPostsPage() {
   const { posts, loading, error } = useClientPortal();
   const [searchQuery, setSearchQuery] = useState("");
+  const { filteredPosts: statusPosts, statusFilter, setStatusFilter } =
+    useProjectPostsFilters(posts);
   const filteredPosts = useMemo(
     () =>
-      posts.filter((post) =>
+      statusPosts.filter((post) =>
         matchesListingSearch(searchQuery, [
           post.post_title,
           post.project_name,
@@ -18,7 +21,7 @@ export function ClientPostsPage() {
           post.status,
         ]),
       ),
-    [posts, searchQuery],
+    [statusPosts, searchQuery],
   );
 
   return (
@@ -32,6 +35,8 @@ export function ClientPostsPage() {
         isLoading={loading}
         searchQuery={searchQuery}
         onSearchQueryChange={setSearchQuery}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
       />
     </PageShell>
   );

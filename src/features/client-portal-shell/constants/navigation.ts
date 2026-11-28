@@ -1,4 +1,5 @@
 import type { ShellNavIconKey } from "@/shared/constants/shellNavIcons";
+import { CLIENT_SHOOT_BOOKINGS_PATH } from "@/features/client-portal/constants/routes";
 import { clientGrowthNav } from "@/features/growth-and-analytics/constants/shared/navigation";
 
 export type ClientNavIconKey = Extract<
@@ -7,6 +8,7 @@ export type ClientNavIconKey = Extract<
   | "posts"
   | "projects"
   | "productionPlanner"
+  | "shootBookings"
   | "growth"
   | "account"
   | "tasks"
@@ -32,6 +34,11 @@ export const clientNav: ClientNavItem[] = [
     label: "Production Planner",
     to: "/client-portal/production-planner",
     icon: "productionPlanner",
+  },
+  {
+    label: "Shoot Bookings",
+    to: CLIENT_SHOOT_BOOKINGS_PATH,
+    icon: "shootBookings",
   },
   {
     label: "Growth & Analytics",

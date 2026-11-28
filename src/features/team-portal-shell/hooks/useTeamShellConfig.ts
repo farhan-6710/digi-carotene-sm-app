@@ -2,6 +2,7 @@ import { useMemo } from "react";
 
 import { CRM_BASE_PATH } from "@/features/crm/constants/routes";
 import { PRODUCTION_PLANNER_PATH } from "@/features/production-planner/constants/routes";
+import { SHOOT_BOOKINGS_PATH } from "@/features/shoot-bookings/constants/shootBookings";
 import { teamBasePath } from "@/features/team-portal-shell/constants/navigation";
 import { teamShellConfig } from "@/features/team-portal-shell/constants/shellConfig";
 import { usePermissions } from "@/shared/hooks/usePermissions";
@@ -41,7 +42,7 @@ export function useTeamShellConfig(): ShellSidebarConfig {
         if (!item.children) return item;
 
         const children = item.children.filter((child) => {
-          if (child.to === PRODUCTION_PLANNER_PATH) {
+          if (child.to === PRODUCTION_PLANNER_PATH || child.to === SHOOT_BOOKINGS_PATH) {
             return canReadProductionPlans;
           }
           return canReadProjects;

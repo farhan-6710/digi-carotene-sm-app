@@ -1,6 +1,7 @@
 import { format, parseISO } from "date-fns";
 import { Link } from "react-router";
 
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { ClientSocialLinks } from "@/features/client-portal/components/ClientSocialLinks";
 import { useClientPortal } from "@/features/client-portal/hooks/useClientPortal";
 import {
@@ -11,6 +12,8 @@ import {
   statusBadgeStyles,
   statusLabels,
 } from "@/features/posts-management/constants/postsManagement";
+import { useShootBookingsQuery } from "@/features/shoot-bookings/hooks/useShootBookingsQuery";
+import { countUpcomingShoots } from "@/features/shoot-bookings/utils/shootBookingListUtils";
 import { PageShell } from "@/shared/components/PageShell";
 import { LoadingSpinner, TableLoadingState } from "@/shared/components/LoadingSpinner";
 import { PageHeader } from "@/shared/components/PageHeader";
@@ -27,12 +30,15 @@ export function ClientDashboardPage() {
     loading,
     error,
   } = useClientPortal();
+  const { clientId } = useAuth();
+  const { bookings } = useShootBookingsQuery(clientId);
   const statCards = buildClientStatCards(
     posts,
     projects,
     productionPlans,
     devProjects,
     otherProjects,
+    countUpcomingShoots(bookings),
   );
   const upcoming = getUpcomingPosts(posts);
 

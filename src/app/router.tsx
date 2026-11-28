@@ -216,6 +216,10 @@ const ProductionPlannerPage = lazyRoutePage(
   () => import("@/features/production-planner/pages/ProductionPlannerPage"),
   "ProductionPlannerPage",
 );
+const ShootBookingsPage = lazyRoutePage(
+  () => import("@/features/shoot-bookings/pages/ShootBookingsPage"),
+  "ShootBookingsPage",
+);
 const TasksManagementPage = lazyRoutePage(
   () => import("@/features/tasks-management/pages/TasksManagementPage"),
   "TasksManagementPage",
@@ -284,6 +288,10 @@ const ClientProductionPlannerPage = lazyRoutePage(
 const ClientProductionPlanDetailPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientProductionPlanDetailPage"),
   "ClientProductionPlanDetailPage",
+);
+const ClientShootBookingsPage = lazyRoutePage(
+  () => import("@/features/client-portal/pages/ClientShootBookingsPage"),
+  "ClientShootBookingsPage",
 );
 const ClientTasksPage = lazyRoutePage(
   () => import("@/features/client-portal/pages/ClientTasksPage"),
@@ -452,6 +460,7 @@ export const router = createBrowserRouter([
             path: "production-planner/:planId",
             element: <ProductionPlanDetailPage />,
           },
+          { path: "shoot-bookings", element: <ShootBookingsPage /> },
           { path: "projects-management", element: <ProjectsManagementPage /> },
           {
             path: "projects-management/:projectId",
@@ -540,6 +549,7 @@ export const router = createBrowserRouter([
             path: "production-planner/:planId",
             element: <ClientProductionPlanDetailPage />,
           },
+          { path: "shoot-bookings", element: <ClientShootBookingsPage /> },
           {
             path: "growth-and-analytics",
             element: <ClientGrowthOutlet />,

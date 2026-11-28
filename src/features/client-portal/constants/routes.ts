@@ -3,6 +3,7 @@ export const CLIENT_DEV_PROJECTS_PATH = "/client-portal/dev-projects";
 export const CLIENT_OTHER_PROJECTS_PATH = "/client-portal/other-projects";
 export const CLIENT_PRODUCTION_PLANNER_PATH =
   "/client-portal/production-planner";
+export const CLIENT_SHOOT_BOOKINGS_PATH = "/client-portal/shoot-bookings";
 
 export function buildClientProjectDetailPath(projectId: string): string {
   return `${CLIENT_PROJECTS_PATH}/${projectId}`;

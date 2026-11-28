@@ -75,6 +75,8 @@ Run only migrations you have **not** applied yet, in order:
 | `080_google_ads_local_action_metrics.sql` | Local/Call location-asset action columns on campaign daily metrics |
 | `081_rename_growth_ads_tables_to_ad.sql` | Renames remaining `growth_ads_*` → `growth_ad_*` (creative master/daily → `growth_ad_ad` / `growth_ad_ad_daily_metrics`) |
 | `082_rename_growth_ad_ad_daily_metrics.sql` | Renames `growth_ad_ad_daily_metrics` → `growth_ad_daily_metrics` |
+| `096_production_plans_client_scoped_rls.sql` | Production plans + items: team full access; clients read own plans/items and update items (client approval) |
+| `097_shoot_bookings.sql` | `shoot_bookings` (client-picked date + start/end), no-overlap exclusion constraint, RLS, `fetch_shoot_busy_slots` |
 
 Also rename `team_members.admin_team_role` → `team_role` in Supabase (Table Editor or SQL) before running app code that expects `team_role`.
 

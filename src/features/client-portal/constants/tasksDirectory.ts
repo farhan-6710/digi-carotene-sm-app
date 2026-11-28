@@ -1,13 +1,13 @@
 import type { DirectoryTableColumn } from "@/shared/types/components";
 
 export const CLIENT_TASKS_GRID_CLASS =
-  "grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.55fr)_minmax(0,1fr)_minmax(0,0.6fr)]";
-export const CLIENT_TASKS_ROW_GRID_CLASS =
-  "grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.55fr)_minmax(0,1fr)_minmax(0,0.6fr)]";
+  "grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(0,0.55fr)_minmax(0,1fr)_minmax(0,0.6fr)]";
+export const CLIENT_TASKS_ROW_GRID_CLASS = CLIENT_TASKS_GRID_CLASS;
 
 export const clientTasksColumns: DirectoryTableColumn[] = [
   { label: "TITLE" },
   { label: "PROJECT" },
+  { label: "RAISED BY" },
   { label: "ASSIGNED TO" },
   { label: "PRIORITY" },
   { label: "ETA" },

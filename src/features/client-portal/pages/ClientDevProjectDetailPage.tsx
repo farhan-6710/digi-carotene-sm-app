@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { ClientProjectTasksSection } from "@/features/client-portal/components/ClientProjectTasksSection";
 import { CLIENT_PROJECTS_PATH } from "@/features/client-portal/constants/routes";
 import { DevProjectProfileCard } from "@/features/development-projects/components/DevProjectProfileCard";
 import { useDevProjectDetailQuery } from "@/features/development-projects/hooks/useDevProjectDetailQuery";
@@ -52,6 +53,7 @@ export function ClientDevProjectDetailPage() {
       />
       {error ? <ErrorBanner message={error} /> : null}
       <DevProjectProfileCard project={project} hideClientLink />
+      <ClientProjectTasksSection projectId={project.id} />
     </PageContent>
   );
 }

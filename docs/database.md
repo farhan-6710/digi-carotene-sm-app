@@ -37,6 +37,7 @@ clients
   │     ├── manager_id / shoot_incharge_id ──► team_members
   │     ├── production_plan_team_members ──► team_members
   │     └── production_plan_items
+  ├── shoot_bookings (production_plan_id optional)
   ├── growth_organic_accounts
   └── growth_ad_accounts
 
@@ -86,6 +87,7 @@ Rules: a **client** is a company. An **SM project** (`sm_projects`) is one socia
 | `production_plans` | Shoot plan per client + `share_token` |
 | `production_plan_items` | Content in a plan: shoot date, context, content pillar, script, reference link, three approvals, shoot completed + optional notes |
 | `production_plan_team_members` | Extra people on a plan. All `admin` team members are auto-assigned on create/update (unless they are already manager or shoot incharge). |
+| `shoot_bookings` | Client-booked shoot slot: `shoot_date`, `start_time`, `end_time`, optional plan + notes, `status` (`booked` / `completed` / `cancelled`). Exclusion constraint: active bookings never overlap. |
 | `growth_organic_*` | Connected IG/Page + post metrics + daily followers (`last_synced_at` on accounts) |
 | `growth_ad_*` | Connected ad accounts + campaign / ad set / ad daily metrics (`last_synced_at` on accounts) |
 | `campaign_kpi_config` / `campaign_benchmarks` | Learning Tab targets per **ad account + campaign** (`values` jsonb; frequency uses `frequency_min` / `frequency_max`) |
@@ -97,7 +99,7 @@ Types for the UI live in `src/features/<feature>/types/types.ts` — not duplica
 
 ## RLS (V1)
 
-Authenticated **team** users (`profiles.role = 'team'`): full CRUD on operational tables. **Client** portal: SELECT own `clients` row and posts under that client’s SM projects; SELECT own SM/Dev/Other projects; SELECT all tasks on those SM/Dev/Other projects; read/write own task messages; read all subtasks on those tasks (update only if raiser/assignee). Growth tables use authenticated access; the UI scopes by `client_id`. PHP crons use the **service_role** key (bypasses RLS).
+Authenticated **team** users (`profiles.role = 'team'`): full CRUD on operational tables. **Client** portal: SELECT own `clients` row and posts under that client’s SM projects; SELECT own SM/Dev/Other projects; SELECT all tasks on those SM/Dev/Other projects; read/write own task messages; read all subtasks on those tasks (update only if raiser/assignee); SELECT own production plans + items and UPDATE items on own plans (client approval, migration 096); SELECT/INSERT own `shoot_bookings` (future only) and cancel own booked rows. Other clients' busy shoot times come from `fetch_shoot_busy_slots` (date + times only, no client details). Growth tables use authenticated access; the UI scopes by `client_id`. PHP crons use the **service_role** key (bypasses RLS).
 
 Public share links:
 

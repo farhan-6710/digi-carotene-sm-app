@@ -3,6 +3,7 @@ import {
   BarChart3,
   Bell,
   CalendarClock,
+  Camera,
   ClipboardList,
   ContactRound,
   FileBarChart2,
@@ -39,6 +40,7 @@ export type ShellNavIconKey =
   | "reportLibrary"
   | "manageAccounts"
   | "productionPlanner"
+  | "shootBookings"
   | "tasks"
   | "crm";
 
@@ -60,6 +62,7 @@ export const shellNavIcons: Record<ShellNavIconKey, LucideIcon> = {
   reportLibrary: FolderOpen,
   manageAccounts: PlugZap,
   productionPlanner: ClipboardList,
+  shootBookings: Camera,
   tasks: ListTodo,
   crm: ContactRound,
 };

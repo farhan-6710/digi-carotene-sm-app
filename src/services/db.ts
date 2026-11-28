@@ -426,6 +426,11 @@ export const DB = {
     TABLE: "production_plan_team_members",
     SELECT: PLAN_ASSIGNMENT_SELECT,
   },
+  SHOOT_BOOKINGS: {
+    TABLE: "shoot_bookings",
+    SELECT:
+      "id, client_id, production_plan_id, shoot_date, start_time, end_time, notes, status, created_at, clients ( client_name ), production_plans ( plan_name )",
+  },
   TASKS: {
     TABLE: "tasks",
     SELECT: TASK_SELECT,
